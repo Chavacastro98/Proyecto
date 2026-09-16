@@ -1,0 +1,4 @@
+Transicion_ID,Etapa_Origen_Num,Etapa_Origen_Nombre,Etapa_Destino_Num,Etapa_Destino_Nombre,Timestamp_Inicio,Timestamp_Fin,Tiempo_Muerto_s,Temp_Ambiente_C,Humedad_Pct,Presion_hPa,Evaporacion_Estimada_g_h
+1,1,Limpieza Química,2,Decapado Ácido,2026-09-16T15:44:16,2026-09-16T15:44:16,11.2,24.2,54.5,1013.2,3.8
+2,2,Decapado Ácido,3,Zincado Celda Hull,2026-09-16T15:44:16,2026-09-16T15:44:16,12.4,24.2,54.5,1013.2,3.8
+3,3,Zincado Celda Hull,4,Niquelado Químico Watts,2026-09-16T15:44:16,2026-09-16T15:44:16,11.6,24.2,54.5,1013.2,3.8
