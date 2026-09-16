@@ -1,40 +1,25 @@
 /**
  * =================================================================================
- * PROYECTO PRINCIPAL DE ELECTRODEPOSICIÓN — Versión RTOS 2.0 (RTOS2.0.ino)
- *
- * NOVEDADES v2.0 (Canal A0 Eliminado & Sensor de pH Dedicado en Canal A1):
- *   • Eliminación total del Canal A0 de medición de pH y todas sus referencias.
- *   • Un solo sensor de pH dedicado en Canal A1 del convertidor ADS1115 con 100% de uso
- *     del bus I2C y capacidad de muestreo potenciométrico continua a 860 SPS.
- *   • Filtrado digital en cascada directo sin multiplexado ni retrasos por cambio de canal.
- *   • Exposición metrológica completa de puntos de calibración guardados en Flash NVS por modo.
- *   • Panel de offset de hardware adaptado a un único voltímetro digital y aguja para PH-4502C.
- *   • Arquitectura Single-Writer VCSS, Soft-Start determinista y Fail-Safe Latch preservados.
+ * CONTROLADOR MAESTRO DE ELECTRODEPOSICIÓN (RTOS2.0.ino)
  * =================================================================================
- * Arquitectura: ESP32 Master Controller / FreeRTOS SMP Dual-Core + MVC Web Modular
- * Microcontrolador: ESP32-S3 N16R8 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz, 16MB Flash, 8MB PSRAM)
+ * Plataforma: ESP32-S3 N16R8 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
+ * Sistema Operativo: FreeRTOS SMP (Symmetric Multiprocessing)
  *
- * 1. NÚCLEO DE TIEMPO REAL (Core 1 — Hardware Crítico):
- *    - Task_Supervisor (Prioridad 6): Watchdog software 50 Hz, control de baliza LED RGB
- *      y gestión centralizada del enclavamiento de seguridad "Fail-Safe Latch".
- *    - Task_Termico (Prioridad 5): 4 Lazos de control PI discretos (450W por celda),
- *      lectura SPI de termopares MAX6675 y comunicación UART2 con Arduino Nano.
- *    - Task_Fuente (Prioridad 4): Modulador de corriente VCSS en modo continuo (DC) y
- *      pulsado (1-100 Hz), conmutación segura ZCS de relé de +12V y muestreo estroboscópico.
- *    - Task_Sensado (Prioridad 3): Adquisición periódica del sensor dedicado de pH (ADS1115 A1)
- *      con aprovechamiento total de bus y meteorología ambiental (AHT20/BMP280).
+ * ASIGNACIÓN DE RECURSOS POR NÚCLEO:
+ * 1. Core 1 (Control de Hardware y Tiempo Real):
+ *    - Task_Supervisor (Prioridad 6): Watchdog software 50 Hz y enclavamiento Fail-Safe.
+ *    - Task_Termico    (Prioridad 5): Lazos PI térmicos (4 tinas) y enlace UART2 a Nano.
+ *    - Task_Fuente     (Prioridad 4): Modulación de corriente VCSS (DC/Pulsado 1-100 Hz).
+ *    - Task_Sensado    (Prioridad 3): Adquisición ADS1115 (pH y shunts) y sensores ambientales.
  *
- * 2. NÚCLEO DE COMUNICACIONES (Core 0 — Servidor y Pila de Red):
- *    - Task_Web (Prioridad 2): Servidor HTTP no bloqueante (Puerto 80), endpoints JSON REST,
- *      telemetría en tiempo real y actualización inalámbrica de firmware (OTA).
+ * 2. Core 0 (Comunicaciones y Pila de Red):
+ *    - Task_Web        (Prioridad 2): Servidor HTTP, endpoints REST JSON y servicio OTA.
  *
- * CONFIGURACIÓN DE COMPILACIÓN (Hardware ESP32-S3 N16R8):
- * - Board: "ESP32S3 Dev Module"
- * - Flash Size: "16MB (128Mb)"
- * - Partition Scheme: "16M Flash (3MB APP/9.9MB FATFS)"
- * - PSRAM: "OPI PSRAM"
- * - Flash Mode: "QIO 80MHz"
- * - USB CDC On Boot: "Enabled"
+ * CONFIGURACIÓN DE COMPILACIÓN (Arduino IDE):
+ * - Placa: "ESP32S3 Dev Module"
+ * - Flash: 16 MB (QIO 80 MHz), Partición: 3 MB APP / 9.9 MB FATFS
+ * - PSRAM: OPI PSRAM habilitada
+ * - USB CDC On Boot: Enabled
  * =================================================================================
  */
 

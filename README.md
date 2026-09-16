@@ -1,156 +1,147 @@
-# 🧪 Sistema Automatizado de Electrodeposición y Galvanoplastia (ESP32-S3 N16R8 RTOS 2.0 + Arduino Nano)
+# Sistema Automatizado de Electrodeposición y Galvanoplastia (ESP32-S3 N16R8 RTOS 2.0 + Arduino Nano)
 
-> **Tesis de Grado en Ingeniería / Química de Procesos Electroquímicos**  
-> *Automatización, Instrumentación y Control de Línea Piloto para Procesos de Zincado (Celda Hull 267 mL) y Niquelado sobre Zinc con Lazo Cerrado VCSS, Supervisión SCADA y Balanza Gravimétrica (Ley de Faraday).*
-
----
-
-## 🏛️ Aclaración Arquitectural: Estabilidad y Evolución hasta RTOS 2.0
-
-> [!IMPORTANT]
-> **Versiones Estables y Evolución Interna de Software:**  
-> Las versiones **v3.5**, **v4.0** y la familia **RTOS (1.0 a 1.4)** son versiones estables y funcionales preservadas en el archivo histórico. La versión activa, insignia y definitiva en producción es **RTOS 2.0**:
-> 1. **Sensor de pH Dedicado en Canal A1 (RTOS 2.0)**: Eliminación total del antiguo Canal A0. La sonda potenciométrica de pH opera con dedicación exclusiva en el Canal A1 del ADC ADS1115 con el 100% de uso del bus I2C, alcanzando muestreo continuo a 860 SPS sin retrasos de conmutación ni crosstalk.
-> 2. **Calibración Metrológica NVS por Modo**: Almacenamiento desacoplado en memoria Flash NVS de los puntos de calibración independientes por modo (Ácido, Neutro, Básico). Panel de offset analógico de hardware calibrado para un único voltímetro digital y aguja para el módulo PH-4502C.
-> 3. **Lazo Cerrado Híbrido VCSS (Single-Writer)**: Máquina de estados PI con Rampa Soft-Start (500 ms), Blanking anti-inrush optimizado a 300 ms (estabilización en <2.5s), PI discreto con Anti-Windup y banda muerta $\pm 10\text{ mA}$, muestreo estroboscópico ETS (Equivalent Time Sampling de 16 puntos) y diagnóstico continuo de salud de celda (`SaludCelda_t`).
-> 4. **Manejo de Memoria y Concurrencia FreeRTOS SMP**: Copias coherentes (*Atomic Snapshots*) bajo `xDataMutex`, desacoplamiento de escrituras Flash fuera de secciones críticas y asignación simétrica de núcleos (Core 0 para red/HTTP/SSE/OTA y Core 1 para lazos de control deterministas).
-> 5. **SCADA Telemetría 2.0 y Hardware**: Optimizado para **ESP32-S3 N16R8**, topología de alimentación híbrida (Fuente única 12V 10A + Pre-regulador Buck LM2596 a 6.80V + LDOs serie LM), matriz completa ISA-88, culombimetría faradaica continua, registro gravimétrico asistido (balanza analítica de 4 decimales) y suite científica offline de hasta 8 figuras a 300 DPI.
+> **Tesis de Licenciatura en Ingeniería / Química de Procesos Electroquímicos**  
+> *Automatización, Instrumentación y Control de Línea Piloto para Procesos de Zincado (Celda Hull 267 mL) y Niquelado sobre Zinc con Lazo VCSS, Supervisión SCADA y Balanza Gravimétrica (Ley de Faraday).*
 
 ---
 
-## 🌟 Guía Rápida: Puesta en Marcha en 1 Clic
+## 1. Arquitectura del Sistema (Versión RTOS 2.0)
 
-Si eres el **elaborador de la tesis**, **asesor** o **revisor** y deseas interactuar con el sistema:
+El proyecto preserva las versiones previas en sus respectivas carpetas históricas. La versión de producción activa es **RTOS 2.0**, estructurada en los siguientes módulos de control:
 
-### 1. Panel de Control Maestro:
-* **Lanzador Central**: Haz doble clic en **[`Iniciar_Sistema.bat`](Iniciar_Sistema.bat)**. Despliega un menú interactivo para abrir Telemetría 2.0, Telemetría 1.0, el Exportador de Gráficas, el Manual Químico, el Visor de Diagramas o las carpetas académicas.
-* **Telemetría Directa (SCADA Activo)**: Haz doble clic en **[`Iniciar_Telemetria_2.0.bat`](Iniciar_Telemetria_2.0.bat)** para monitoreo en vivo inmediato (RTOS 2.0).
-* **Lanzadores Individuales**: En la carpeta **[`herramientas/lanzadores/`](herramientas/lanzadores/)** dispones de accesos directos independientes para cada componente.
+1. **Medición de pH Pseudo-Diferencial (Canales A1 y A0 Kelvin Ground)**: El canal A1 adquiere la señal acondicionada del electrodo de vidrio (Po), mientras que el canal A0 toma la referencia analógica local aislada (Kelvin Ground) para suprimir ruidos de modo común y caídas óhmicas causadas por las corrientes galvánicas de celda. Muestreo continuo a 860 SPS en el convertidor ADS1115 con filtrado digital en cascada (promedio de bloque de 10 muestras, mediana móvil de 3 puntos y filtro pasabajas adaptativo IIR).
+2. **Calibración Metrológica NVS por Modo**: Almacenamiento desacoplado en memoria Flash NVS de los coeficientes de calibración independientes por modo (Teórico, 2 Puntos Ácido y 3 Puntos Asimétrico). Acondicionamiento analógico para voltímetro digital y módulo PH-4502C.
+3. **Control de Corriente VCSS (Single-Writer)**: Conducción por escalón directo calibrado al convertidor DAC MCP4725. La capacitancia de la doble capa electroquímica (Cdl) en la interfase electrodo/electrolito amortigua transitorios naturalmente y proporciona la sobretensión necesaria para una nucleación homogénea del zinc. Incluye monitoreo analógico de transconductancia (Gm = 2.0 S) con shunts de corriente y diagnóstico continuo de estado (`SaludCelda_t`).
+4. **Concurrencia FreeRTOS SMP Dual-Core**: Asignación simétrica de núcleos (Core 0 para pila TCP/IP, servidor HTTP, endpoints JSON y OTA; Core 1 para lazos de control en tiempo real y muestreo determinista). Sincronización mediante mutexes dedicados (`xI2CMutex`, `xSPIMutex`, `xDataMutex`, `xLogMutex`) y parada de emergencia segura con corte previo en cero corriente (ZCS).
+5. **Coprocesador de Potencia AC (Arduino Nano ATmega328P)**: Control de fase de 60 Hz para 4 calentadores de 450W mediante interrupción externa de cruce por cero (INT1 en pin 3), tabla de retardo trigonométrico para linealización de potencia RMS y desconexión automática por perro guardián serie UART.
+6. **SCADA Telemetría 2.0**: Supervisión en PC optimizada para Windows 10/11 con matriz ISA-88, culombimetría faradaica continua integrada con pesaje de balanza analítica (4 decimales) y generación automática de reportes y figuras a 300 DPI.
 
 ---
 
-## ⚙️ Especificaciones Técnicas del Hardware Maestro (ESP32-S3 N16R8)
+## 2. Guía de Puesta en Marcha
+
+### Opciones de Inicio:
+* **Panel de Control Maestro**: Ejecutar [`launcher.py`](launcher.py) o hacer doble clic en [`Iniciar_Sistema.bat`](Iniciar_Sistema.bat). Despliega el menú para acceder a Telemetría 2.0, visor de diagramas, manual químico y suite de gráficas.
+* **Telemetría Directa (SCADA en Vivo)**: Doble clic en [`Iniciar_Telemetria_2.0.bat`](Iniciar_Telemetria_2.0.bat).
+* **Lanzadores por Módulo**: En la carpeta [`herramientas/lanzadores/`](herramientas/lanzadores/) se encuentran accesos directos independientes para cada herramienta.
+
+---
+
+## 3. Especificaciones del Hardware Maestro (ESP32-S3 N16R8)
 
 | Parámetro | Especificación | Configuración en Arduino IDE |
 | :--- | :--- | :--- |
 | **Microcontrolador** | ESP32-S3 Dual-Core Xtensa LX7 @ 240 MHz | `ESP32S3 Dev Module` |
 | **Memoria Flash Externa** | 16 MB (128 Mbit) Quad/Octal SPI | `16MB (128Mb)` |
 | **Memoria RAM / PSRAM** | 512 KB SRAM interna + 8 MB Octal-SPI PSRAM | `OPI PSRAM` |
-| **Esquema de Partición** | 16 MB con ranuras duales de aplicación de 3.0 MB para OTA | `16M Flash (3MB APP/9.9MB FATFS)` |
-| **Velocidad del Bus I2C** | 400 kHz (Fast Mode) en GPIO 8 (SDA) y GPIO 9 (SCL) | `Wire.setClock(400000)` |
+| **Esquema de Partición** | 16 MB (3.0 MB APP / 9.9 MB FATFS) con soporte OTA | `16M Flash (3MB APP/9.9MB FATFS)` |
+| **Frecuencia Bus I2C** | 400 kHz (Fast Mode) en GPIO 8 (SDA) y GPIO 9 (SCL) | `Wire.setClock(400000)` |
 | **Comunicaciones USB** | USB-C Nativo con CDC activo en arranque | `USB CDC On Boot: Enabled` |
 | **Nodo de Potencia AC** | Arduino Nano (ATmega328P @ 16 MHz) vía UART2 (TX GPIO 17) | `9600 bps, 8N1` |
 
 ---
 
-## 📁 Estructura del Repositorio
-
-El repositorio se encuentra categorizado por dominios funcionales de ingeniería para facilitar la navegación y eliminar archivos sueltos:
+## 4. Estructura del Repositorio
 
 ```text
 Proyecto/
-├── Iniciar_Sistema.bat        <-- 🚀 PANEL MAESTRO: Menú interactivo para todos los módulos
-├── Iniciar_Telemetria_2.0.bat <-- 🚀 EJECUTABLE DIRECTO: Doble clic para SCADA activo (RTOS 2.0)
-├── README.md                  <-- 📘 Manual general y arquitectura del sistema (Versión 2.0)
-├── AGENTS.md                  <-- 📜 Reglas de estilo y desarrollo
-├── requirements.txt           <-- 📦 Dependencias de Python (requests, matplotlib, pandas, etc.)
+├── Iniciar_Sistema.bat        <- Lanzador interactivo principal (doble clic)
+├── Iniciar_Telemetria_2.0.bat <- Lanzador directo de Telemetria 2.0
+├── launcher.py                <- Panel maestro de inicio en Python (GUI / CLI)
+├── README.md                  <- Documentacion general y arquitectura
+├── AGENTS.md                  <- Reglas de estilo y desarrollo
+├── requirements.txt           <- Dependencias de Python (requests, matplotlib, pandas, etc.)
 │
-├── firmware/                  <-- 🧠 CÓDIGO FUENTE DE MICROCONTROLADORES
-│   ├── esp32/                 <-- Nodo Maestro ESP32-S3
-│   │   ├── RTOS2.0/           <-- ⭐ FIRMWARE ACTIVO (Canal A1 dedicado ADS1115, FreeRTOS SMP)
-│   │   └── historico/         <-- Archivo consolidado de versiones previas (RTOS 1.0-1.4 y Super-Loop)
-│   └── arduino_nano/          <-- Nodo de Potencia (Dimmer AC 60Hz ATmega328P)
-│       ├── nano/              <-- Firmware activo con Watchdog
-│       └── historico/         <-- Prototipos previos (Nano Beta, nano2)
+├── firmware/                  <- Codigo fuente de microcontroladores
+│   ├── esp32/                 <- Nodo maestro ESP32-S3
+│   │   ├── RTOS2.0/           <- Firmware activo (FreeRTOS SMP Dual-Core)
+│   │   └── historico/         <- Archivo de versiones previas (RTOS 1.0-1.4 y Super-Loop)
+│   └── arduino_nano/          <- Nodo de potencia (Dimmer AC 60Hz ATmega328P)
+│       ├── nano/              <- Firmware activo con control de fase por interrupcion
+│       └── historico/         <- Versiones previas de prueba
 │
-├── software/                  <-- 📊 APLICACIONES SCADA, TELEMETRÍA Y PROCESAMIENTO
-│   ├── telemetria2.0/         <-- ⭐ SCADA ACTIVO (Matriz ISA-88, Culombimetría, Balanza analítica)
-│   ├── telemetria/            <-- SCADA v1.0 (Versión base de referencia)
-│   └── exportar_graficas_offline.py <-- Generador offline de 8 figuras científicas (300 DPI)
+├── software/                  <- Aplicaciones SCADA y procesamiento en PC
+│   ├── telemetria2.0/         <- SCADA activo (Matriz ISA-88, Faraday, Balanza analitica)
+│   ├── telemetria/            <- SCADA v1.0 (Version base de referencia)
+│   └── exportar_graficas_offline.py <- Generador de figuras cientificas a 300 DPI
 │
-├── hardware/                  <-- 🔌 ELECTRÓNICA, ESQUEMAS Y MODELADO
-│   ├── esquemas_y_bom/        <-- Lista de materiales (BOM.md), diagrama de bloques y sumidero VCSS
-│   └── control_matlab/        <-- Modelado matemático en MATLAB (Control_termico.m y graficar_matlab.m)
+├── hardware/                  <- Documentacion electronica y modelado
+│   ├── esquemas_y_bom/        <- Lista de materiales (BOM.md) y diagramas esquematicos
+│   └── control_matlab/        <- Modelado termico y cinetico en MATLAB
 │
-├── documentos/                <-- 📚 DOCUMENTACIÓN TÉCNICA, QUÍMICA Y ACADÉMICA
-│   ├── academicos/            <-- Tesis de licenciatura, Cartel, Protocolo VUGR y Plantilla SMEQ26
-│   ├── manuales/              <-- Manual de operación química interactivo (HTML, PDF y Markdown)
-│   ├── guias/                 <-- Guía de compilación Arduino IDE, Changelog y generador PDF
-│   ├── datasheets/            <-- 15 hojas de datos oficiales de sensores y componentes
-│   ├── imagenes/              <-- Figuras científicas HD y capturas del SCADA
-│   └── instaladores/          <-- Scripts de instalación desatendida (Python y librerías Arduino)
+├── documentos/                <- Documentacion tecnica, quimica y academica
+│   ├── academicos/            <- Tesis de licenciatura, cartel y protocolo experimental
+│   ├── manuales/              <- Manual interactivo de operacion quimica (HTML y Markdown)
+│   ├── guias/                 <- Guia de compilacion y configuracion del entorno
+│   ├── datasheets/            <- Hojas de datos tecnicas de componentes y sensores
+│   ├── imagenes/              <- Capturas de telemetria y diagramas
+│   └── instaladores/          <- Scripts de configuracion de dependencias
 │
-├── visualizacion/             <-- 🌐 INTERFACES WEB Y DIAGRAMAS TÉCNICOS
-│   ├── diagramas/             <-- Visor interactivo y diagramas de arquitectura del firmware
-│   └── preview/               <-- Hub de previews y simuladores web de las pantallas del ESP32
+├── visualizacion/             <- Diagramas tecnicos y simuladores web
+│   ├── diagramas/             <- Visor interactivo y diagramas Mermaid de arquitectura
+│   └── preview/               <- Simuladores web de interfaces de usuario
 │
-└── herramientas/              <-- 🛠️ UTILIDADES Y SCRIPTS AUXILIARES
-    ├── lanzadores/            <-- Accesos directos .bat individuales para cada componente
-    └── scratch/               <-- Banco de pruebas y scripts de verificación experimental
+└── herramientas/              <- Utilidades y scripts auxiliares
+    ├── lanzadores/            <- Accesos directos independientes por modulo
+    └── scratch/               <- Scripts de prueba y verificacion experimental
 ```
 
 ---
 
-## ⚖️ Flujo Asistido de Ensayo y Gravimetría (ISA-88)
+## 5. Protocolo de Ensayo y Metrología Faradaica (ISA-88)
 
-El software SCADA [`telemetria2.0`](software/telemetria2.0/) (ejecutable directo **[`Iniciar_Telemetria_2.0.bat`](Iniciar_Telemetria_2.0.bat)**) incorpora un flujo automatizado para el registro experimental y el cálculo electroquímico:
+El software SCADA [`telemetria2.0`](software/telemetria2.0/) integra el flujo automatizado para el ensayo experimental de galvanoplastia sobre sustrato de aluminio Al 6061-T6:
 
-1. **Selección de Receta**: Escoge la placa (1 a 32) según el filtro de condición deseado ($\text{pH } 2\text{ o } 4$, $25^\circ\text{C}\text{ o }40^\circ\text{C}$, $\text{DC o Pulsado}$).
-2. **Registro de Peso Inicial**: Al presionar *"Iniciar Etapa"* en la Etapa 1 (Limpieza), un cuadro modal solicita el peso de la placa virgen en la balanza analítica ($P_{\text{ini}}$ con hasta 4 decimales, ej. `25.4321` g).
-3. **Ejecución Automática de Etapas (Protocolo VUGR - Sustrato Al 6061-T6)**:
-   - **Etapa 1 (Desengrase Alcalino)**: $240\text{ s @ } 85\text{--}90^\circ\text{C}$ ($0.00\text{ A}$, $\text{Na}_3\text{PO}_4 + \text{Na}_2\text{SiO}_4 + \text{PEG-400}$).
-   - **Etapa 2 (Decapado Alcalino)**: $120\text{ s @ } 85\text{--}90^\circ\text{C}$ ($0.00\text{ A}$, $\text{Na}_3\text{PO}_4 \cdot 12\text{H}_2\text{O}\ 37.5\text{ g/L}$). Disolución controlada de alúmina sin ataque ácido agresivo.
-   - **Etapa 3 (Zincado Celda Hull 267 mL)**: $120\text{ s / } 300\text{ s @ } 25^\circ\text{C} / 40^\circ\text{C}$ ($1.50\text{ A DC o Pulsado 10Hz/20\%}$, baño ácido $\text{ZnSO}_4$).
-   - **Etapa 4 (Niquelado sobre Zinc)**: $600\text{ s (10 min) @ } 30\text{--}40^\circ\text{C}$ ($1.13\text{ A DC}$, $\text{NiSO}_4 + \text{Na}_2\text{SO}_4$). El $\text{Na}_2\text{SO}_4$ evita el desplazamiento galvánico espontáneo.
-4. **Registro de Peso Final y Balanza**: Al concluir la Etapa 4, suena la alarma industrial y el sistema solicita el peso final ($P_{\text{fin}}$ en gramos).
-5. **Cálculos y Reporte Inmediato**:
-   - $\Delta m_{\text{real}} = P_{\text{fin}} - P_{\text{ini}}$ (mg y g)
-   - $m_{\text{teo}} = \frac{Q_{\text{total}} \cdot M}{z \cdot F}$ (mg)
-   - $\text{Eficiencia Faradaica: } \eta = \left(\frac{\Delta m_{\text{real}}}{m_{\text{teo}}}\right) \times 100\%$
-   - $\text{Espesor Medio: } e = \frac{\Delta m_{\text{real}}}{\rho \cdot A} \times 10^4 \text{ (\mu m)}$
-6. **Exportación de Figuras Científicas HD**: El sistema permite compilar de inmediato la suite de figuras científicas a 300 DPI dentro de la carpeta del ensayo.
+1. **Selección de Receta**: Selección de placa experimental según la matriz de variables (pH 2 o 4, temperatura de 25 °C o 40 °C, corriente continua DC o pulsada).
+2. **Registro de Peso Inicial**: Captura asistida del peso de la probeta virgen en balanza analítica (P_ini con resolución de 0.0001 g).
+3. **Secuencia de Fases (Protocolo VUGR)**:
+   - **Etapa 1 (Desengrase Alcalino)**: 240 s @ 85-90 °C (0.00 A, Na3PO4 + Na2SiO4 + PEG-400).
+   - **Etapa 2 (Decapado Alcalino)**: 120 s @ 85-90 °C (0.00 A, Na3PO4 · 12H2O 37.5 g/L). Remoción controlada de óxido de aluminio sin degradación superficial.
+   - **Etapa 3 (Zincado en Celda Hull 267 mL)**: 120 s / 300 s @ 25 °C / 40 °C (1.50 A DC o Pulsado 10 Hz / 20%, baño ZnSO4).
+   - **Etapa 4 (Niquelado sobre Zinc)**: 600 s (10 min) @ 30-40 °C (1.13 A DC, NiSO4 + Na2SO4). El sulfato de sodio estabiliza el potencial y evita el desplazamiento galvánico espontáneo.
+4. **Registro de Peso Final**: Al terminar la secuencia, se registra el peso seco de la pieza electrodepositada (P_fin en gramos).
+5. **Cálculos Faradaicos**:
+   - Masa real depositada: `Δm_real = P_fin - P_ini` (mg)
+   - Masa teórica esperada: `m_teo = (Q_total · M) / (z · F)` (mg)
+   - Eficiencia de corriente: `η = (Δm_real / m_teo) · 100%`
+   - Espesor medio de capa: `e = (Δm_real / (ρ · A)) · 10^4` (μm)
 
 ---
 
-## 📊 Paquete de Figuras Científicas a 300 DPI ([`exportar_graficas_offline.py`](software/exportar_graficas_offline.py))
+## 6. Generación de Figuras Científicas (300 DPI)
 
-Las figuras generadas automáticamente para la memoria de tesis abarcan:
+El script [`exportar_graficas_offline.py`](software/exportar_graficas_offline.py) genera la suite estandarizada de 8 figuras para la memoria de tesis:
 
 | Figura | Archivo PNG | Descripción |
 | :---: | :--- | :--- |
-| **Fig. 1** | `01_perfil_electroquimico_termico.png` | Perfil térmico multizona (4 tinas) y respuesta dinámica de corriente galvánica real. |
-| **Fig. 2** | `02_seguimiento_errores_control.png` | Errores instantáneos $e(t) = \text{SP} - \text{PV}$ con bandas de tolerancia $\pm 0.5^\circ\text{C}$ e índice IAE acumulado. |
-| **Fig. 3** | `03_actuadores_triacs_potencia.png` | Esfuerzo de control %, ángulos de disparo $\alpha$ (°), retardos de gate ($\mu\text{s}$) y potencia activa RMS en Watts. |
-| **Fig. 4** | `04_analisis_faraday_plano_fase.png` | Culombimetría de proceso $Q(t) = \int I dt$ con masa teórica/real y **Retrato de Fase** $\dot{e}(t)$ vs $e(t)$ con atractor de estabilidad. |
-| **Fig. 5** | `05_diagnostico_integral_resumen.png` | **Dashboard Ejecutivo**: IAE global, balance energético (Wh / kWh consumidos por las resistencias), gravimetría y condiciones ambientales. |
-| **Fig. 6** | `06_tiempos_muertos_gantt_fases.png` | Diagrama cronológico Gantt de ejecución de fases ISA-88 y tiempos muertos de transferencia. |
-| **Fig. 7** | `07_forma_onda_pulsada_ets.png` | Reconstrucción estroboscópica ETS (Equivalent Time Sampling) de la onda de corriente pulsada a 100 Hz. |
-| **Fig. 8** | `08_correlacion_espesor_densidad.png` | Distribución longitudinal de densidad de corriente $J(x)$ en Celda Hull y espesor local de zinc. |
+| **Fig. 1** | `01_perfil_electroquimico_termico.png` | Perfil térmico de las 4 tinas y respuesta de corriente real en la celda. |
+| **Fig. 2** | `02_seguimiento_errores_control.png` | Errores térmicos instantáneos e(t) = SP - PV con bandas de tolerancia de ±0.5 °C e índice IAE. |
+| **Fig. 3** | `03_actuadores_triacs_potencia.png` | Esfuerzo de control %, ángulos de disparo α (°), retardos de compuerta (μs) y potencia RMS calculada. |
+| **Fig. 4** | `04_analisis_faraday_plano_fase.png` | Carga total integrada Q(t) = ∫ I dt, comparación de masa teórica vs real y plano de fase de error. |
+| **Fig. 5** | `05_diagnostico_integral_resumen.png` | Resumen general: IAE térmico global, consumo energético acumulado en Wh, gravimetría y condiciones ambientales. |
+| **Fig. 6** | `06_tiempos_muertos_gantt_fases.png` | Cronograma de ejecución por fases ISA-88 y registro de tiempos de transferencia. |
+| **Fig. 7** | `07_forma_onda_pulsada_ets.png` | Reconstrucción estroboscópica ETS (Equivalent Time Sampling) de la corriente pulsada a 100 Hz. |
+| **Fig. 8** | `08_correlacion_espesor_densidad.png` | Distribución longitudinal de densidad de corriente J(x) en Celda Hull y perfil de espesor local de zinc. |
 
 ---
 
-## 🧪 Manual de Operación Química y Protocolo de Laboratorio
+## 7. Manual de Operación y Protocolo de Laboratorio
 
-Para químicos, analistas y operadores de laboratorio, el proyecto incluye un **Manual Interactivo Standalone** en formato HTML con calculadora de masas de reactivos en tiempo real, capturas HD de la interfaz SCADA, metrología de Faraday y resolución de anomalías:
-
-- **Lanzador directo**: Doble clic en **[`Iniciar_Sistema.bat`](Iniciar_Sistema.bat)** (Opción 4) o en **[`herramientas/lanzadores/Manual_de_Uso.bat`](herramientas/lanzadores/Manual_de_Uso.bat)**.
-- **Archivo fuente**: [`documentos/manuales/MANUAL_DE_OPERACION_QUIMICA.html`](documentos/manuales/MANUAL_DE_OPERACION_QUIMICA.html) (compatible con cualquier navegador web sin requerir dependencias; exportable a PDF con `Ctrl+P`).
-- **Versión de referencia técnica**: [`documentos/manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`](documentos/manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md).
+* **Acceso directo**: Doble clic en [`Iniciar_Sistema.bat`](Iniciar_Sistema.bat) (Opción 4) o en [`herramientas/lanzadores/Manual_de_Uso.bat`](herramientas/lanzadores/Manual_de_Uso.bat).
+* **Documento fuente**: [`documentos/manuales/MANUAL_DE_OPERACION_QUIMICA.html`](documentos/manuales/MANUAL_DE_OPERACION_QUIMICA.html). Funciona en cualquier navegador de forma local sin dependencias de internet y es exportable a PDF con `Ctrl+P`.
 
 ---
 
-## 🛠️ Requisitos e Instalación
+## 8. Instalación y Requisitos
 
-Para ejecutar la aplicación en cualquier PC con Windows 10/11:
-1. Asegúrate de tener Python 3.9 o superior.
-2. Abre una terminal en la carpeta del proyecto e instala dependencias:
+Para ejecutar el entorno en cualquier equipo con Windows 10 u 11:
+1. Asegúrate de tener Python 3.9 o superior instalado.
+2. Instala las librerías necesarias:
    ```bash
    pip install -r requirements.txt
    ```
-3. Ejecuta el monitor SCADA:
+3. Inicia la aplicación:
    ```bash
-   cd software
-   python -m telemetria2.0
+   python launcher.py
    ```
-   *(O simplemente haz doble clic en `Iniciar_Telemetria_2.0.bat` o en `Iniciar_Sistema.bat`).*
-
+   *(O simplemente haz doble clic en `Iniciar_Sistema.bat`).*
