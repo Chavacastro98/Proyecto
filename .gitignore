@@ -9,7 +9,6 @@
 *.tar.gz
 *.bak
 *.txt.bak
-]
 
 # Compilación y Artefactos de Microcontroladores (ESP32-S3 / Arduino)
 build/
@@ -57,5 +56,8 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-# Archivos Temporales de Logs
+# Archivos Temporales de Logs y Telemetría de Ensayo
 *.log
+*.tmp
+*.csv.tmp
+herramientas/telemetria/experimentos/
