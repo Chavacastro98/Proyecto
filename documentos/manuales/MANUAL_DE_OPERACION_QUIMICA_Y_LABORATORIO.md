@@ -1147,4 +1147,8 @@ Esta sección explica de forma clara y directa los términos técnicos utilizado
   * **Python Software Foundation & Matplotlib Team:** Ecosistema científico de análisis de datos.
   * **Mermaid-js & KaTeX:** Motores de renderizado de arquitectura y fórmulas matemáticas.
   * **Antigravity IDE (Google DeepMind):** Entorno unificado de navegación y pair-programming inteligente.
-* **Términos de Uso Libre:** El código fuente, esquemáticos y manuales se ponen a disposición bajo principios de libre consulta y replicabilidad para fines educativos, de investigación y desarrollo técnico.
+* **Términos de Consulta y Licencia:**
+  * **Copyright (c) 2026 Salvador² C Dev Team. Todos los derechos reservados.**
+  * Este manual operativo, los diagramas de conexionado, el código fuente y el firmware forman parte de un proyecto de investigación y tesis de licenciatura en curso.
+  * Se autoriza la consulta y acceso público exclusivamente con fines de evaluación académica, docencia y revisión técnica.
+  * Queda estrictamente prohibida la copia, reproducción, modificación, distribución o explotación comercial total o parcial sin autorización previa, expresa y por escrito de **Salvador² C Dev Team**.

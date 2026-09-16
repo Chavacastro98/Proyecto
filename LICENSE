@@ -1,0 +1,26 @@
+Copyright (c) 2026 Salvador² C Dev Team.
+Todos los derechos reservados.
+
+Este repositorio contiene el código fuente, esquemas de instrumentación,
+firmware (FreeRTOS RTOS 2.0), software SCADA y documentación técnica
+desarrollada para un proyecto de investigación y tesis de licenciatura en curso.
+
+TÉRMINOS DE ACCESO Y CONSULTA:
+
+1. El acceso a este repositorio y sus archivos se otorga exclusivamente
+   con fines de consulta técnica, evaluación académica y revisión por comités
+   o jurados evaluadores.
+
+2. Queda estrictamente prohibida la copia, reproducción, modificación,
+   distribución, sublicenciamiento, venta o explotación comercial total o parcial
+   de cualquier archivo, firmware, diagrama, código o algoritmo aquí contenido
+   sin la autorización previa, expresa y por escrito de los autores
+   (Salvador² C Dev Team).
+
+3. Ninguna persona física o moral tiene autorización de presentar, registrar,
+   patentar o acreditar como propia ninguna sección o algoritmo de este desarrollo.
+
+4. Los autores se reservan todos los derechos morales y patrimoniales hasta
+   la conclusión formal del proceso de titulación y dictamen institucional,
+   momento en el cual el equipo podrá determinar la publicación bajo una
+   licencia definitiva.
