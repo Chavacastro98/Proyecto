@@ -13,10 +13,14 @@ import sys
 import os
 import pytest
 
-# Incluir ruta del software SCADA para importar utilidades
-DIR_SOFTWARE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "software", "telemetria2.0")
-if DIR_SOFTWARE not in sys.path:
-    sys.path.insert(0, DIR_SOFTWARE)
+# Incluir rutas del software SCADA para resolver módulos de telemetria y utilidades
+DIR_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIR_SOFTWARE = os.path.join(DIR_ROOT, "software")
+DIR_TEL2 = os.path.join(DIR_SOFTWARE, "telemetria2.0")
+
+for p in [DIR_ROOT, DIR_SOFTWARE, DIR_TEL2]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from utilidades.calculos import calcular_disparo_triac
 
