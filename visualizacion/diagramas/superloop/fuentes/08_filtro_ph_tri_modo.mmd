@@ -1,0 +1,33 @@
+flowchart TD
+    subgraph TDM_SWITCH["Multiplexacion Temporal TDM (Cada 20 ms / 50 Hz Total)"]
+        SAMPLE_TICK["Tick de Muestreo 20 ms"] --> TDM_ROUTER{"canalActual ^= 1"}
+        TDM_ROUTER -- 0 --> CH0["Canal 0: Sonda Tina 1 (Zincado) @ 25 Hz"]
+        TDM_ROUTER -- 1 --> CH1["Canal 1: Sonda Tina 2 (Niquelado) @ 25 Hz"]
+    end
+
+    subgraph PIPELINE["Cadena de Filtrado Digital por Canal"]
+        RAW["Lectura ADC ADS1115 (A0 o A1 @ 860 SPS)"] --> ACC["Acumulador de 10 Muestras (200 ms por dato)"]
+        ACC --> HIST["Buffer Circular de 3 Muestras Promediadas"]
+        HIST --> MED3["Filtro de Mediana de 3 Elementos: mediana3(h0, h1, h2)<br>(Eliminacion de Picos de Ruido por TRIACs AC)"]
+        
+        MED3 --> CALC_PH{"Calculo segun Modo de Calibracion"}
+        
+        CALC_PH -- "Modo 0: Teorico Nernst (Zero-Config)" --> PH_M0["pH = 7.0 + (1.650 - V) * 4.242"]
+        CALC_PH -- "Modo 1: Lineal 2 Puntos (pH 7 + pH 4)" --> PH_M1["pH = 7.0 + (V - V7) * m_ph"]
+        CALC_PH -- "Modo 2: 3 Puntos Dual-Slope" --> CHECK_SEG{"V >= V7?"}
+        
+        CHECK_SEG -- Si: Rango Acido --> PH_AC["pH = 7.0 + (V - V7) * mAcida"]
+        CHECK_SEG -- No: Rango Basico --> PH_BA["pH = 7.0 + (V - V7) * mBasica"]
+        
+        PH_M0 --> EWMA
+        PH_M1 --> EWMA
+        PH_AC --> EWMA
+        PH_BA --> EWMA
+        
+        EWMA{"Primera Lectura o Salto Brusco > 0.35 pH?"}
+        EWMA -- Si: Salto Rapido --> DIRECT["phActual = phCalc (Respuesta Inmediata Dinamica)"]
+        EWMA -- No: Modo Estable --> FILTER["Filtro EWMA Suavizador: ph = ph*0.70 + phCalc*0.30"]
+    end
+
+    CH0 --> RAW
+    CH1 --> RAW

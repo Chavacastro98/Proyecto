@@ -1,0 +1,25 @@
+graph TB
+    subgraph ISA88_HIERARCHY["Jerarquia de Recetas por Lotes (Estandar ISA-88)"]
+        PROC["Procedimiento General: Matriz de 32 Placas Experimentales (Taguchi)"]
+        UNIT_OPS["Operaciones de Proceso por Tina:<br>1. Desengrase Limpieza (450W)<br>2. Decapado Quimico (450W)<br>3. Celda Hull Zincado (18W + VCSS)<br>4. Niquelado Watts (450W)"]
+        PHASES["Fases de Control Automatizado:<br>• Rampa de Calentamiento Soft-Start<br>• Meseta Isotermica Estable<br>• Electrodeposicion DC / Pulsada con Rele ZCS<br>• Enfriamiento y Lavado Final"]
+        PROC --> UNIT_OPS --> PHASES
+    end
+
+    subgraph SCADA_FEATURES["Arquitectura Multihilo del SCADA PC (telemetria_gui.py)"]
+        GUI_THREAD["Hilo Principal Tkinter (GUI 60 FPS)<br>• 2 Subplots Sincronizados (Termico y VCSS)<br>• Osciloscopio Virtual de Actuadores (TRIACs & Shunts)<br>• Visualizador de Calibracion pH"]
+        WORKER_THREAD["Hilo Secundario de Adquisicion (Worker Thread)<br>• Peticiones HTTP REST JSON (/data_t, /data_f, /get_ph_dual)<br>• Muestreo Periodico Configurable (1.0 s)"]
+        ERRORS["Modulo de Analisis de Errores e Indices Dinamicos<br>• Error Instantaneo: e(t) = SP(t) - PV(t)<br>• Bandas de Tolerancia +-1.0 C<br>• Calculo Acumulativo de Indices IAE e ISE"]
+        STORAGE["Gestor de Persistencia y Exportacion Cientifica<br>• Carpetas Jerarquicas Automaticas por Ensayo<br>• CSVs de Telemetria Completa y Metricas de Error<br>• Graficas Cientificas HD a 300 DPI"]
+    end
+
+    subgraph METRICAS_CONTROL["Indices de Desempeno de Control Calculados"]
+        IAE["IAE = Integral |e(t)| dt (Integral del Error Absoluto)"]
+        ISE["ISE = Integral e(t)^2 dt (Integral del Error Cuadratico)"]
+    end
+
+    PHASES --> GUI_THREAD
+    WORKER_THREAD <==>|Cola Sincronizada Thread-Safe| GUI_THREAD
+    GUI_THREAD --> ERRORS
+    ERRORS --> METRICAS_CONTROL
+    ERRORS --> STORAGE

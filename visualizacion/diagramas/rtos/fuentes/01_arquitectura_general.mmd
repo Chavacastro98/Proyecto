@@ -1,0 +1,56 @@
+graph TB
+    subgraph SCADA_PC["Capa de Supervision y SCADA (PC / Tablet)"]
+        GUI["SCADA GUI Python (telemetria_gui.py)<br>• Gestor ISA-88 (32 Ensayos Taguchi)<br>• Balanza Analitica Asistida (4 Decimales)<br>• Culombimetria Q = ∫ I dt & Rendimiento η%<br>• Retrato de Fase e_punto vs e & IAE/ISE<br>• Exportacion CSV & 8 Figuras 300 DPI"]
+        WEB["Navegador Web (http://interfaz.local)<br>• Panel MVC Asincrono (AJAX/JSON)<br>• Consola de Logs RingBuffer RAM (/logs)<br>• Calibracion Tri-Modo pH NVS (Canal A1)<br>• Actualizacion Web OTA (16MB N16R8)"]
+    end
+
+    subgraph ESP32_MASTER["Capa de Control Maestro (ESP32-S3 N16R8 Dual-Core @ 240 MHz)"]
+        subgraph CORE0["Core 0: Pila de Comunicaciones (Prioridad 2)"]
+            TASK_WEB["Task_Web (Stack 6KB)<br>• Servidor Web HTTP (Puerto 80)<br>• SoftAP Wi-Fi ('Uli') + mDNS<br>• Endpoint Unificado /data_all (-75% Trafico)<br>• Flasheo Firmware OTA"]
+        end
+        subgraph CORE1["Core 1: Lazos de Control Real-Time y Supervision"]
+            TASK_SUP["Task_Supervisor (Prio 6, 50ms)<br>• Watchdog Heartbeats (5000ms)<br>• Baliza Neopixel WS2812 (GPIO 48)<br>• Fail-Safe Latch ISA-18.2"]
+            TASK_TERM["Task_Termico (Prio 5, 100ms)<br>• 4 Lazos PI Termicos a 1 Hz<br>• Rampa Suave Soft-Start a 5 Hz (+1%/200ms)<br>• Puente UART2 al Nano (TX GPIO 17)"]
+            TASK_FUE["Task_Fuente (Prio 4, Determinista)<br>• DAC MCP4725 (DC / Pulsado 1-100 Hz)<br>• Soft-Start (500ms) + Inrush Blanking (300ms)<br>• Muestreo ETS 16 Puntos & Rele ZCS"]
+            TASK_SENS["Task_Sensado (Prio 3, 20ms Base)<br>• Sensor pH Dedicado A1 ADS1115 (860 SPS)<br>• Lazo PI VCSS Suave (2 Hz, Anti-Windup)<br>• Diagnostico de Celda & Clima AHT/BMP"]
+        end
+        MUTEXES["Sincronizacion Atomica SMP:<br>• xDataMutex (Estado Global)<br>• xI2CMutex (Bus Wire 400 kHz)<br>• xSPIMutex (Termopares MAX6675)<br>• xLogMutex (RingBuffer RAM)"]
+    end
+
+    subgraph ARDUINO_SLAVE["Capa de Potencia AC (Arduino Nano @ 16 MHz)"]
+        ZC["Interrupcion Cruce por Cero (INT1 Pin 3)<br>Hardware ISR ~8 us en Registros Directos"]
+        LUT["Look-Up Table PROGMEM Flash<br>Linealizacion Coseno Inverso 101 pts RMS"]
+        GATES["4x Disparadores TRIAC (BTA24 + MOC3021)<br>Pulsos de Gate Calibrados a 80 us"]
+        WDG["Watchdog UART Fail-Safe (Timeout 3.0 s)"]
+    end
+
+    subgraph HARDWARE_CONMUTACION["Modulo de Aislamiento y Potencia Galvanica"]
+        RELE_2CH["Modulo Rele Optoacoplado de Aislamiento<br>• Disparo Active-LOW desde GPIO 20<br>• Conmutacion ZCS a Corriente Nula (I=0.00A)<br>• Contactos de Potencia para Linea +12V VDD"]
+        VCSS_STAGE["Etapa VCSS Sumidero Lineal (LM358N + 2x IRLZ44Z)<br>DAC MCP4725 (I2C 0x60) -> Consigna 0-3.53V"]
+    end
+
+    subgraph PLANTA_FISICA["Planta Piloto de Procesos Quimicos (4 Tinas)"]
+        T1["Tina 1: Desengrase Alcalino (450W AC @ 90 C)"]
+        T2["Tina 2: Decapado Alcalino (Na3PO4 450W AC @ 90 C)"]
+        T3["Tina 3: Celda Hull - Zincado Acido (18W AC + VCSS 0-3.5A)"]
+        T4["Tina 4: Niquelado sobre Zinc (450W AC @ 30-40 C)"]
+        SENS_SPI["4x Termopares K + MAX6675 (SPI)"]
+        SENS_PH["1x Sonda pH (PH-4502C + ADS1115 Canal A1 Dedicado)"]
+        SENS_SHUNTS["2x Resistencias Shunt 1 Ohm (ADS1115 A2/A3)"]
+        SENS_AMB["Sensor Ambiental AHT20 + BMP280 (I2C)"]
+    end
+
+    SCADA_PC <==>|Wi-Fi HTTP / REST JSON - data_all| TASK_WEB
+    CORE0 <==>|Atomic Snapshot bajo xDataMutex| CORE1
+    TASK_TERM ==>|UART2 TX GPIO 17 @ 9600 bps| ARDUINO_SLAVE
+    ARDUINO_SLAVE ==>|Pulsos de Fase Optoacoplados| T1 & T2 & T3 & T4
+    
+    TASK_FUE ==>|Senal de Disparo ZCS| RELE_2CH
+    RELE_2CH ==>|Corte Fisico +12V Anodo| T3
+    TASK_FUE -->|I2C 400 kHz Consigna DAC| VCSS_STAGE
+    VCSS_STAGE ==>|Corriente Catodica Regulada 0-3.5A| T3
+
+    SENS_SPI ==>|Bus SPI SCK/MISO + 4x CS| TASK_TERM
+    SENS_PH ==>|Bus I2C ADS1115 Canal A1| TASK_SENS
+    SENS_SHUNTS ==>|Bus I2C ADS1115 A2/A3| TASK_SENS
+    SENS_AMB ==>|Bus I2C 0x38 / 0x76| TASK_SENS

@@ -1,0 +1,6 @@
+Timestamp_ISO,Tiempo_Relativo_s,Etapa_Nombre,Tipo_Evento,Subsistema_Sensor,Severidad,Valor_Detectado,Descripcion_Tecnica
+2026-09-14T22:03:04,0.0,Limpieza Electrolítica (T1),CAIDA_COMUNICACION,Enlace Wi-Fi ESP32,ADVERTENCIA,HTTP Timeout / Desconectado,Pérdida de enlace de comunicación o timeout con el microcontrolador ESP32.
+2026-09-14T22:03:40,40.5,Limpieza Electrolítica (T1),SALTO_TERMICO_EMI,MAX6675 Tina 1 Limpieza,CRITICO,ΔT = +24.1 °C/s (48.1 °C),Salto térmico abrupto en Tina 1 Limpieza. Perturbación incompatible con inercia de baño (posible ruido EMI o falso contacto).
+2026-09-14T22:03:40,40.5,Limpieza Electrolítica (T1),SALTO_TERMICO_EMI,MAX6675 Tina 2 Decapado,CRITICO,ΔT = +24.2 °C/s (48.2 °C),Salto térmico abrupto en Tina 2 Decapado. Perturbación incompatible con inercia de baño (posible ruido EMI o falso contacto).
+2026-09-14T22:03:41,41.5,Limpieza Electrolítica (T1),RECUPERACION_SENSOR,MAX6675 Tina 1 Limpieza,INFO,48.5 °C,Lectura de Tina 1 Limpieza normalizada y estable tras transitorio.
+2026-09-14T22:03:41,41.5,Limpieza Electrolítica (T1),RECUPERACION_SENSOR,MAX6675 Tina 2 Decapado,INFO,48.6 °C,Lectura de Tina 2 Decapado normalizada y estable tras transitorio.

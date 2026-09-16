@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Térmico - Beta</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 15px;
+            width: 220px;
+            border-left: 5px solid #64748b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            margin: 5px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+        .nav-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        .nav-back:hover {
+            color: #7dd3fc;
+        }
+        .selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            background: #0f172a;
+            padding: 5px;
+            border-radius: 8px;
+        }
+        .btn-step {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        .btn-step:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="nav-back">⬅ Menú</a>
+    <h1>CONTROL TÉRMICO</h1>
+    <button class="btn" style="background:#10b981; color:white;" onclick="control(1)">INICIAR TODO</button>
+    <button class="btn" style="background:#ef4444; color:white;" onclick="control(0)">PARAR TODO</button>
+    
+    <div class="grid" id="cont"></div>
+
+    <script>
+        let mockData = [
+            { t: 59.8, sp: 60, run: 1 },
+            { t: 45.1, sp: 45, run: 1 },
+            { t: 28.3, sp: 30, run: 0 },
+            { t: 55.0, sp: 55, run: 1 }
+        ];
+
+        function renderThermal(data){
+            let c = document.getElementById('cont');
+            c.innerHTML = "";
+            data.forEach((d, i) => {
+                let block = d.run ? 'disabled' : ''; // CANDADO VISUAL
+                c.innerHTML += `<div class="card" style="border-left-color:${d.run ? '#22c55e' : '#ef4444'}">
+                <h4>R${i+1}</h4><h2 style="color:${d.run ? '#22c55e' : 'white'}">${d.t.toFixed(1)}°C</h2>
+                <div class="selector">
+                    <button class="btn-step" onclick="adj(${i},-1)" ${block}>-</button>
+                    <span id="sp_${i}">${d.sp}</span>
+                    <button class="btn-step" onclick="adj(${i},1)" ${block}>+</button>
+                </div></div>`;
+            });
+        }
+
+        function update(){
+            fetch('/data_t')
+                .then(res => res.json())
+                .then(data => {
+                    renderThermal(data);
+                })
+                .catch(() => {
+                    mockData.forEach(c => {
+                        if (c.run === 1) {
+                            c.t = c.sp + (Math.random() * 0.4 - 0.2);
+                        }
+                    });
+                    renderThermal(mockData);
+                });
+        }
+
+        function adj(id, step){
+            let el = document.getElementById('sp_' + id);
+            let newVal = parseInt(el.innerText) + step;
+            if(newVal < 0) newVal = 0; 
+            if(newVal > 150) newVal = 150;
+            el.innerText = newVal;
+            mockData[id].sp = newVal;
+            fetch(`/set_t?id=${id}&v=${newVal}`).then(res => {
+                if(res.status === 403) alert("¡Detén el sistema primero para cambiar la temperatura!");
+            }).catch(() => {});
+        }
+
+        function control(s){ 
+            mockData.forEach(c => c.run = s);
+            fetch(`/act_t?run=${s}`).then(() => update()).catch(() => update()); 
+        }
+
+        setInterval(update, 1500); 
+        update();
+    </script>
+</body>
+</html>

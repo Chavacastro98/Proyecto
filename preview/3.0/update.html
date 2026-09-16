@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Firmware OTA - v3.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0b1120;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+        .ota-card {
+            background: linear-gradient(165deg, rgba(30,41,59,0.95), rgba(15,23,42,0.9));
+            padding: 32px 28px;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 540px;
+            border: 1px solid rgba(56,189,248,0.12);
+            text-align: center;
+        }
+        .nav-back {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.82em;
+            display: inline-block;
+            margin-bottom: 16px;
+            transition: 0.2s;
+        }
+        .nav-back:hover {
+            color: #7dd3fc;
+        }
+        h2 {
+            font-size: 1.35em;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .sub {
+            color: #64748b;
+            font-size: 0.78em;
+            font-weight: 600;
+            margin-top: 4px;
+            margin-bottom: 20px;
+        }
+        .ver-box {
+            background: rgba(15,23,42,0.6);
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(51,65,85,0.4);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            text-align: left;
+        }
+        .ver-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .ver-lbl {
+            font-size: 0.68em;
+            color: #64748b;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .ver-val {
+            font-size: 0.95em;
+            color: #38bdf8;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            margin-top: 2px;
+        }
+
+        /* Simulator Controls Toolbar */
+        .sim-toolbar {
+            background: rgba(15,23,42,0.5);
+            border: 1px solid rgba(56,189,248,0.1);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+            font-size: 0.74em;
+            text-align: left;
+        }
+        .sim-tool-title {
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sim-tool-badge {
+            background: rgba(56,189,248,0.12);
+            color: #38bdf8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 800;
+        }
+        .sim-toggles {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn-test-tog {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            padding: 5px 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .btn-test-tog.active-danger {
+            background: rgba(220,38,38,0.25);
+            color: #fca5a5;
+            border-color: rgba(239,68,68,0.5);
+        }
+
+        /* Interlock Alert */
+        .il-box {
+            background: linear-gradient(135deg, rgba(127,29,29,0.3), rgba(153,27,27,0.2));
+            border: 1px solid rgba(239,68,68,0.45);
+            color: #fca5a5;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-weight: 700;
+            font-size: 0.8em;
+            display: none;
+            animation: pulse 2.5s ease-in-out infinite;
+            line-height: 1.5;
+            text-align: left;
+        }
+        .il-box.vis {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .il-icon {
+            background: #ef4444;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 900;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* File Drop Zone */
+        .file-wrap {
+            background: rgba(15,23,42,0.5);
+            border: 2px dashed rgba(56,189,248,0.25);
+            border-radius: 14px;
+            padding: 24px 16px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-wrap:hover {
+            border-color: rgba(56,189,248,0.55);
+            background: rgba(15,23,42,0.7);
+        }
+        .file-wrap.drag {
+            border-color: #38bdf8;
+            background: rgba(30,64,175,0.2);
+        }
+        .file-icon {
+            font-size: 2.2em;
+            margin-bottom: 6px;
+        }
+        .file-text {
+            color: #64748b;
+            font-size: 0.82em;
+            font-weight: 600;
+        }
+        .file-text b {
+            color: #38bdf8;
+        }
+        .file-name {
+            color: #34d399;
+            font-weight: 800;
+            font-size: 0.85em;
+            margin-top: 8px;
+            display: none;
+            word-break: break-all;
+        }
+        .quick-file-btn {
+            display: inline-block;
+            margin-top: 8px;
+            background: rgba(56,189,248,0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.25);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quick-file-btn:hover {
+            background: rgba(56,189,248,0.25);
+            color: #fff;
+        }
+        input[type=file] {
+            display: none;
+        }
+
+        /* Upload Button */
+        .btn-upload {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 800;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
+            background: #059669;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(5,150,105,0.35);
+        }
+        .btn-upload:hover:not(:disabled) {
+            background: #10b981;
+            transform: translateY(-1px);
+        }
+        .btn-upload:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Progress Bar */
+        .prog-wrap {
+            display: none;
+            margin-top: 18px;
+            background: rgba(15,23,42,0.6);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(51,65,85,0.4);
+            text-align: left;
+        }
+        .prog-bar {
+            height: 10px;
+            background: #1e293b;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #059669, #34d399);
+            border-radius: 5px;
+            transition: width 0.15s ease-out;
+            width: 0%;
+        }
+        .prog-text {
+            font-size: 0.76em;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Terminal Logs Output */
+        .term-log {
+            font-family: 'JetBrains Mono', monospace;
+            background: #030712;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.72em;
+            color: #38bdf8;
+            max-height: 100px;
+            overflow-y: auto;
+            margin-top: 10px;
+            line-height: 1.5;
+            border: 1px solid #1e293b;
+            display: none;
+        }
+        .term-log div {
+            margin-bottom: 2px;
+        }
+        .term-log .ok {
+            color: #34d399;
+        }
+        .term-log .warn {
+            color: #fbbf24;
+        }
+
+        /* Status Messages */
+        .status {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.84em;
+            display: none;
+            line-height: 1.5;
+        }
+        .status.ok {
+            display: block;
+            background: rgba(5,150,105,0.15);
+            color: #34d399;
+            border: 1px solid rgba(52,211,153,0.3);
+        }
+        .status.err {
+            display: block;
+            background: rgba(220,38,38,0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        /* Info List */
+        .info-list {
+            text-align: left;
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: rgba(15,23,42,0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(51,65,85,0.3);
+        }
+        .info-list div {
+            font-size: 0.72em;
+            color: #64748b;
+            font-weight: 600;
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .info-list div span {
+            color: #94a3b8;
+        }
+        .chk {
+            color: #34d399;
+            font-weight: 900;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @media(max-width:440px) {
+            .ota-card { padding: 24px 18px; }
+            h2 { font-size: 1.18em; }
+            .ver-box { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="ota-card">
+    <a href="index.html" class="nav-back">&larr; Men&uacute; Principal</a>
+    <h2>&#9881; Actualizar Firmware</h2>
+    <div class="sub">Actualizaci&oacute;n Over-The-Air (OTA) &mdash; ESP32-S3</div>
+
+    <div class="ver-box">
+        <div class="ver-item">
+            <span class="ver-lbl">Versi&oacute;n Actual</span>
+            <span class="ver-val" id="fw-ver">v3.0.0</span>
+        </div>
+        <div class="ver-item">
+            <span class="ver-lbl">Partici&oacute;n Activa</span>
+            <span class="ver-val" style="color:#34d399;" id="part-val">app0 (OTA_0)</span>
+        </div>
+        <div class="ver-item">
+            <span class="ver-lbl">Esquema Flash</span>
+            <span class="ver-val" style="font-size:0.82em;color:#94a3b8;">Minimal SPIFFS (1.9MB)</span>
+        </div>
+        <div class="ver-item">
+            <span class="ver-lbl">Destino OTA</span>
+            <span class="ver-val" style="font-size:0.82em;color:#fbbf24;" id="target-part">app1 (1.9 MB libre)</span>
+        </div>
+    </div>
+
+    <!-- Simulator Interlock Tool -->
+    <div class="sim-toolbar">
+        <div class="sim-tool-title">
+            <span>🧪 Simulador de Interlock de Seguridad</span>
+            <span class="sim-tool-badge">Test en Vivo</span>
+        </div>
+        <div style="font-size:0.88em;color:#64748b;margin-bottom:8px;">
+            Simula el estado de los actuadores de potencia para probar el bloqueo preventivo:
+        </div>
+        <div class="sim-toggles">
+            <button class="btn-test-tog" id="tog-therm" onclick="toggleSimState('thermal')">🔥 Calefacción: OFF</button>
+            <button class="btn-test-tog" id="tog-fuent" onclick="toggleSimState('fuente')">⚡ Fuente: OFF</button>
+            <button class="btn-test-tog" id="tog-ph" onclick="toggleSimState('ph')">🧪 pH: OFF</button>
+        </div>
+    </div>
+
+    <div class="il-box" id="il-box">
+        <span class="il-icon">!</span>
+        <div>
+            <b>INTERLOCK DE SEGURIDAD ACTIVO:</b><br>
+            <span id="il-detail">Hay actuadores en ejecución.</span> Apague el sistema t&eacute;rmico, la fuente y el pH antes de actualizar para evitar reinicio no supervisado de cargas de 450W.
+        </div>
+    </div>
+
+    <div class="file-wrap" id="drop-zone" onclick="document.getElementById('fw-file').click()">
+        <div class="file-icon">&#128230;</div>
+        <div class="file-text">Arrastre el archivo <b>.bin</b> aqu&iacute; o haga clic para seleccionar</div>
+        <div class="file-name" id="file-name"></div>
+        <input type="file" id="fw-file" accept=".bin" onchange="onFileSelected(this)">
+        <div style="margin-top:8px;">
+            <button type="button" class="quick-file-btn" onclick="event.stopPropagation(); loadMockBinary();">
+                ✨ Usar binario de prueba (v3.0.1 &middot; 642.8 KB)
+            </button>
+        </div>
+    </div>
+
+    <button class="btn-upload" id="btn-upload" disabled onclick="startUpload()">SUBIR FIRMWARE</button>
+
+    <div class="prog-wrap" id="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-text">
+            <span id="prog-text">Iniciando transferencia...</span>
+            <span id="prog-kb">0 / 642 KB</span>
+        </div>
+        <div class="term-log" id="term-log"></div>
+    </div>
+
+    <div class="status" id="status-msg"></div>
+
+    <div class="info-list">
+        <div><span class="chk">&#10003;</span> <span>La calibraci&oacute;n de pH y setpoints térmicos se conservan en NVS</span></div>
+        <div><span class="chk">&#10003;</span> <span>Si falla el upload, el firmware anterior permanece intacto</span></div>
+        <div><span class="chk">&#10003;</span> <span>Apagado fail-safe de actuadores antes de reiniciar</span></div>
+        <div><span class="chk">&#10003;</span> <span>Rollback automático por hardware si la nueva versión falla</span></div>
+    </div>
+</div>
+
+<script>
+    let selectedFile = null;
+    let isLocked = false;
+    let simThermal = (localStorage.getItem('sim_thermal_on') === '1');
+    let simFuente = (localStorage.getItem('sim_fuente_on') === '1');
+    let simPH = (localStorage.getItem('sim_ph_on') === '1');
+
+    function checkOTA() {
+        const customVer = localStorage.getItem('sim_firmware_ver') || '3.0.0';
+        document.getElementById('fw-ver').innerText = 'v' + customVer;
+
+        // Check interlocks
+        let reasons = [];
+        if (simThermal) reasons.push('Control Térmico (450W)');
+        if (simFuente) reasons.push('Fuente DAC MCP4725');
+        if (simPH) reasons.push('Módulo de pH (Muestreo I2C)');
+
+        isLocked = (reasons.length > 0);
+        const ilBox = document.getElementById('il-box');
+        if (isLocked) {
+            ilBox.className = 'il-box vis';
+            document.getElementById('il-detail').innerText = 'Activo: ' + reasons.join(' + ') + '.';
+        } else {
+            ilBox.className = 'il-box';
+        }
+
+        // Update simulator toggle buttons
+        const bT = document.getElementById('tog-therm');
+        bT.className = simThermal ? 'btn-test-tog active-danger' : 'btn-test-tog';
+        bT.innerText = simThermal ? '🔥 Calefacción: ON' : '🔥 Calefacción: OFF';
+
+        const bF = document.getElementById('tog-fuent');
+        bF.className = simFuente ? 'btn-test-tog active-danger' : 'btn-test-tog';
+        bF.innerText = simFuente ? '⚡ Fuente: ON' : '⚡ Fuente: OFF';
+
+        const bP = document.getElementById('tog-ph');
+        bP.className = simPH ? 'btn-test-tog active-danger' : 'btn-test-tog';
+        bP.innerText = simPH ? '🧪 pH: ON' : '🧪 pH: OFF';
+
+        updateBtn();
+    }
+
+    function toggleSimState(type) {
+        if (type === 'thermal') {
+            simThermal = !simThermal;
+            localStorage.setItem('sim_thermal_on', simThermal ? '1' : '0');
+        } else if (type === 'fuente') {
+            simFuente = !simFuente;
+            localStorage.setItem('sim_fuente_on', simFuente ? '1' : '0');
+        } else if (type === 'ph') {
+            simPH = !simPH;
+            localStorage.setItem('sim_ph_on', simPH ? '1' : '0');
+        }
+        checkOTA();
+    }
+
+    function loadMockBinary() {
+        selectedFile = {
+            name: "Proyecto_PH_3.0.1_release.ino.bin",
+            size: 658240, // ~642.8 KB
+            type: "application/octet-stream"
+        };
+        const fn = document.getElementById('file-name');
+        fn.innerText = selectedFile.name + ' (' + (selectedFile.size / 1024).toFixed(1) + ' KB)';
+        fn.style.display = 'block';
+        updateBtn();
+    }
+
+    function onFileSelected(input) {
+        if (input.files.length > 0) {
+            selectedFile = input.files[0];
+            const fn = document.getElementById('file-name');
+            fn.innerText = selectedFile.name + ' (' + (selectedFile.size / 1024).toFixed(1) + ' KB)';
+            fn.style.display = 'block';
+            updateBtn();
+        }
+    }
+
+    function updateBtn() {
+        const btn = document.getElementById('btn-upload');
+        btn.disabled = (!selectedFile || isLocked);
+    }
+
+    function addLog(text, type) {
+        const term = document.getElementById('term-log');
+        term.style.display = 'block';
+        const d = document.createElement('div');
+        d.className = type || '';
+        const t = new Date().toLocaleTimeString();
+        d.innerHTML = '<span style="color:#64748b;">[' + t + ']</span> ' + text;
+        term.appendChild(d);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function startUpload() {
+        if (!selectedFile || isLocked) return;
+        if (!confirm('¿Confirmar actualización inalámbrica del firmware?\n\n- Archivo: ' + selectedFile.name + '\n- Destino: Partición app1 (OTA_1)\n- Calibración y NVS: Intactos\n- Reinicio automático al completar.')) return;
+
+        const btn = document.getElementById('btn-upload');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Subiendo Firmware...';
+
+        const prog = document.getElementById('prog-wrap');
+        prog.style.display = 'block';
+        const fill = document.getElementById('prog-fill');
+        const ptxt = document.getElementById('prog-text');
+        const pkb = document.getElementById('prog-kb');
+        const smsg = document.getElementById('status-msg');
+        smsg.className = 'status';
+        smsg.style.display = 'none';
+
+        addLog('Iniciando sesión OTA con Update.h...', 'warn');
+        addLog('Verificando espacio libre en partición app1 (1966080 bytes)...');
+
+        let currentLoaded = 0;
+        const total = selectedFile.size || 658240;
+        const step = Math.round(total / 35);
+
+        const iv = setInterval(function() {
+            currentLoaded += step;
+            if (currentLoaded >= total) {
+                currentLoaded = total;
+                clearInterval(iv);
+
+                fill.style.width = '100%';
+                ptxt.innerText = 'Verificación MD5 completada ✓';
+                pkb.innerText = (total / 1024).toFixed(0) + ' / ' + (total / 1024).toFixed(0) + ' KB';
+
+                addLog('Escritura en flash finalizada con éxito (' + total + ' bytes)', 'ok');
+                addLog('Calculando hash MD5 y comparando con header... OK', 'ok');
+                addLog('Configurando bootloader para arrancar desde app1...', 'warn');
+                addLog('Apagando DAC MCP4725 a 0A y enviando [0,0,0,0] al Nano...', 'warn');
+                addLog('Llamando esp_restart()...', 'warn');
+
+                smsg.className = 'status ok';
+                smsg.innerHTML = '&#10003; <b>Firmware actualizado con éxito.</b><br>El ESP32 se reiniciará en 3 segundos arrancando desde la nueva partición...';
+                smsg.style.display = 'block';
+                btn.innerHTML = 'COMPLETADO &#10003;';
+
+                // Update simulated version
+                localStorage.setItem('sim_firmware_ver', '3.0.1');
+
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 4000);
+            } else {
+                const pct = Math.round((currentLoaded / total) * 100);
+                fill.style.width = pct + '%';
+                ptxt.innerText = 'Subiendo a flash: ' + pct + '%';
+                pkb.innerText = (currentLoaded / 1024).toFixed(0) + ' / ' + (total / 1024).toFixed(0) + ' KB';
+
+                if (pct === 30) addLog('Escribiendo sector flash 0x110000..0x120000...');
+                if (pct === 65) addLog('Escribiendo sector flash 0x150000..0x160000...');
+                if (pct === 90) addLog('Cerrando stream Update.end(true)...');
+            }
+        }, 80);
+    }
+
+    /* Drag & drop */
+    const dz = document.getElementById('drop-zone');
+    dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag'); });
+    dz.addEventListener('dragleave', function() { dz.classList.remove('drag'); });
+    dz.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dz.classList.remove('drag');
+        if (e.dataTransfer.files.length > 0) {
+            document.getElementById('fw-file').files = e.dataTransfer.files;
+            onFileSelected(document.getElementById('fw-file'));
+        }
+    });
+
+    setInterval(checkOTA, 3000);
+    checkOTA();
+</script>
+</body>
+</html>

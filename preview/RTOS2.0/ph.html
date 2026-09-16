@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>M&oacute;dulo pH Dedicado &middot; FreeRTOS 2.0 (Preview)</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#070b14;background-image:radial-gradient(circle at 50% 0%,rgba(56,189,248,0.08) 0,transparent 50%),radial-gradient(circle at 90% 90%,rgba(52,211,153,0.05) 0,transparent 50%);color:#e2e8f0;min-height:100vh;padding:0;}
+        .page{max-width:860px;margin:0 auto;padding:16px 14px 36px;}
+
+        /* Hub Nav */
+        .hub-link{display:inline-flex;align-items:center;gap:6px;color:#38bdf8;text-decoration:none;font-size:0.75em;font-weight:700;margin-bottom:12px;padding:4px 12px;background:rgba(56,189,248,0.08);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;border:1px solid rgba(56,189,248,0.2);transition:all 0.2s;}
+        .hub-link:hover{color:#7dd3fc;background:rgba(56,189,248,0.18);transform:translateY(-1px);}
+
+        /* Header - Glassmorphism */
+        .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:16px 20px;background:rgba(15,23,42,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:16px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08);}
+        .nav-back{color:#38bdf8;text-decoration:none;font-weight:700;font-size:0.82em;transition:0.2s;}
+        .nav-back:hover{color:#7dd3fc;}
+        .hdr-title{font-size:1.15em;color:white;font-weight:800;letter-spacing:-0.3px;}
+        .hdr-sub{font-size:0.65em;color:#64748b;font-weight:600;display:block;margin-top:2px;letter-spacing:0.5px;}
+        .hdr-right{display:flex;align-items:center;gap:12px;}
+        .hdr-hb{display:flex;align-items:center;gap:5px;font-size:0.62em;font-weight:700;color:#475569;}
+        .hb-dot{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 5px #34d399;animation:hb-p 2s ease-in-out infinite;}
+        .hb-dot.off{background:#ef4444;box-shadow:0 0 5px #ef4444;animation:none;}
+        @keyframes hb-p{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.35;transform:scale(0.7);}}
+
+        /* Toggle Switch */
+        .tog-wrap{display:flex;align-items:center;gap:10px;}
+        .tog{position:relative;width:54px;height:28px;background:#334155;border-radius:14px;cursor:pointer;transition:all 0.35s cubic-bezier(.4,0,.2,1);border:2px solid #475569;outline:none;}
+        .tog.on{background:#059669;border-color:#34d399;box-shadow:0 0 16px rgba(5,150,105,0.4);}
+        .tog::after{content:'';position:absolute;width:20px;height:20px;background:#f8fafc;border-radius:50%;top:2px;left:3px;transition:all 0.35s cubic-bezier(.4,0,.2,1);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+        .tog.on::after{left:27px;}
+        .tog-lbl{font-size:0.68em;color:#64748b;font-weight:800;letter-spacing:1px;min-width:58px;text-align:right;}
+        .tog-lbl.act{color:#34d399;}
+
+        /* Card Principal - Classic Glassmorphism */
+        .card{background:rgba(15,23,42,0.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:22px;padding:24px 22px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 16px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);margin-bottom:20px;transition:all 0.3s;}
+        .card-t{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+        .card-t-left{display:flex;align-items:center;gap:10px;}
+        .card-dot{width:11px;height:11px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px rgba(56,189,248,0.6);}
+        .card-name{font-size:0.95em;color:#f1f5f9;font-weight:800;letter-spacing:0.3px;}
+        .card-slope-badge{font-size:0.7em;padding:4px 10px;border-radius:6px;background:rgba(56,189,248,0.12);color:#38bdf8;font-weight:800;border:1px solid rgba(56,189,248,0.25);}
+
+        /* Instrument Display Card - Classic Frosted Glassmorphism */
+        .ph-wrap{padding:10px 0 16px;position:relative;}
+        .ph-hud{
+            background:rgba(8,14,26,0.72);
+            backdrop-filter:blur(24px);
+            -webkit-backdrop-filter:blur(24px);
+            border-radius:22px;
+            border:1px solid rgba(52,211,153,0.3);
+            box-shadow:0 16px 40px rgba(0,0,0,0.5),0 0 25px rgba(52,211,153,0.08),inset 0 1px 1px rgba(255,255,255,0.12);
+            padding:26px 30px 22px;
+            margin:0 auto;
+            position:relative;
+            overflow:hidden;
+            transition:border-color 0.4s ease,box-shadow 0.4s ease;
+        }
+        .ph-hud.off{
+            border-color:rgba(51,65,85,0.5) !important;
+            box-shadow:0 4px 20px rgba(0,0,0,0.4) !important;
+        }
+        .ph-hud-top{
+            display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+        }
+        .ph-hud-pill{
+            display:inline-flex;align-items:center;gap:6px;font-size:0.75em;font-weight:800;color:#38bdf8;
+            background:rgba(56,189,248,0.12);backdrop-filter:blur(8px);border:1px solid rgba(56,189,248,0.3);padding:5px 12px;border-radius:8px;letter-spacing:0.6px;
+        }
+        .ph-hud-rate{
+            font-size:0.72em;font-weight:700;color:#94a3b8;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:8px;
+        }
+        .ph-hud-rate .pulse-dot{
+            width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399;animation:pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+        /* Main Big Numbers - Expansive Readout (Sin dígitos fantasma) */
+        .ph-main-readout{
+            display:flex;align-items:baseline;justify-content:center;gap:18px;margin:8px 0 16px;position:relative;
+        }
+        .ph-val-wrap{position:relative;display:inline-block;}
+        .ph-val{
+            font-size:92px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-2px;line-height:1;
+            color:#34d399;text-shadow:0 0 35px rgba(52,211,153,0.35);transition:color 0.4s,text-shadow 0.4s;position:relative;z-index:2;
+        }
+        .ph-val.off{
+            color:#334155 !important;text-shadow:none !important;font-size:64px;
+        }
+        .ph-unit-group{
+            display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+        }
+        .ph-unit{
+            font-size:2em;font-weight:900;color:#64748b;letter-spacing:1px;line-height:1;
+        }
+        .ph-state-tag{
+            font-size:0.75em;font-weight:800;padding:5px 12px;border-radius:8px;
+            background:rgba(34,197,94,0.15);backdrop-filter:blur(8px);color:#34d399;border:1px solid rgba(34,197,94,0.35);
+            letter-spacing:0.8px;text-transform:uppercase;transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.2);
+        }
+        .ph-stab-tag{
+            font-size:0.65em;font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.1);padding:3px 8px;border-radius:5px;
+            border:1px solid rgba(56,189,248,0.2);letter-spacing:0.3px;
+        }
+
+        /* Integrated Telemetry Sub-Panel - Frosted Glass */
+        .ph-hud-metrics{
+            display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:16px;
+            background:rgba(2,6,23,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px;padding:12px 14px;border:1px solid rgba(255,255,255,0.06);
+        }
+        .ph-metric-col{text-align:center;}
+        .ph-metric-lbl{font-size:0.65em;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.4px;}
+        .ph-metric-val{font-size:0.92em;font-weight:800;color:#f1f5f9;margin-top:2px;font-variant-numeric:tabular-nums;}
+        .ph-metric-val{font-size:0.92em;font-weight:800;color:#f1f5f9;margin-top:2px;font-variant-numeric:tabular-nums;}
+
+        /* Continuous Spectrum Scale */
+        .ph-spectrum-wrap{
+            margin-top:10px;position:relative;padding:0 6px;
+        }
+        .ph-spectrum-track{
+            height:12px;border-radius:6px;
+            background:linear-gradient(90deg,#ef4444 0%,#f97316 25%,#22c55e 50%,#3b82f6 75%,#8b5cf6 100%);
+            position:relative;box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 12px rgba(0,0,0,0.4);opacity:0.95;transition:opacity 0.3s;
+        }
+        .ph-spectrum-track.off{opacity:0.25;}
+        .ph-cursor{
+            position:absolute;top:-5px;width:22px;height:22px;background:#ffffff;border:3px solid #0f172a;border-radius:50%;
+            box-shadow:0 0 14px rgba(255,255,255,0.9),0 2px 6px rgba(0,0,0,0.6);transform:translateX(-50%);
+            transition:left 0.3s cubic-bezier(.4,0,.2,1);left:50.28%;
+        }
+        .ph-cursor::after{
+            content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+            width:6px;height:6px;border-radius:50%;background:#38bdf8;
+        }
+        .ph-cursor.off{display:none;}
+        .ph-spectrum-labels{
+            display:flex;justify-content:space-between;margin-top:10px;font-size:0.66em;font-weight:700;color:#64748b;
+        }
+        .ph-spectrum-labels b{color:#cbd5e1;}
+
+        /* Mode Selector */
+        .mode-sel{display:flex;gap:6px;margin:16px 0 12px;background:#0f172a;border-radius:10px;padding:4px;border:1px solid rgba(51,65,85,0.4);}
+        .mode-b{flex:1;padding:9px 6px;border-radius:8px;border:none;background:transparent;color:#64748b;font-size:0.72em;font-weight:800;cursor:pointer;transition:all 0.25s;text-align:center;letter-spacing:0.3px;}
+        .mode-b.act{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;box-shadow:0 2px 8px rgba(59,130,246,0.3);}
+        .mode-b:hover:not(.act){color:#94a3b8;background:rgba(30,41,59,0.5);}
+
+        /* Calibration Actions */
+        .cal-sec{background:rgba(15,23,42,0.5);border-radius:12px;padding:14px;margin-top:12px;border:1px solid rgba(51,65,85,0.4);}
+        .cal-title{color:#64748b;font-size:0.72em;font-weight:800;letter-spacing:0.5px;margin-bottom:10px;text-transform:uppercase;}
+        .cal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+        .cal-btn{padding:10px 8px;border-radius:8px;border:none;font-weight:700;cursor:pointer;font-size:0.75em;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;}
+        .cal-btn .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+        .cal-btn:disabled{opacity:0.5;cursor:wait;}
+        .cb7{background:rgba(6,78,59,0.5);color:#6ee7b7;border:1px solid rgba(34,197,94,0.25);}
+        .cb7 .dot{background:#22c55e;}
+        .cb4{background:rgba(127,29,29,0.35);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);}
+        .cb4 .dot{background:#ef4444;}
+        .cb10{background:rgba(30,58,138,0.35);color:#93c5fd;border:1px solid rgba(59,130,246,0.25);}
+        .cb10 .dot{background:#3b82f6;}
+        .cal-btn:hover:not(:disabled){filter:brightness(1.25);transform:translateY(-1px);}
+
+        .btn-rst-ph{width:100%;margin-top:10px;padding:8px 12px;background:transparent;border:1px dashed #475569;color:#94a3b8;border-radius:8px;font-size:0.74em;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+        .btn-rst-ph:hover{border-color:#ef4444;color:#fca5a5;background:rgba(239,68,68,0.08);}
+
+        .cal-status-box{margin-top:12px;padding:9px 12px;border-radius:10px;text-align:center;font-size:0.76em;font-weight:700;letter-spacing:0.3px;transition:all 0.3s;}
+        .cs-ok{background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);}
+        .cs-pending{background:rgba(217,119,6,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);}
+        .cs-theory{background:rgba(30,58,138,0.25);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+
+        /* Diagnostics Voltmeter in Card */
+        .diag-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+        .diag-item{background:rgba(15,23,42,0.6);border-radius:10px;padding:8px 10px;border:1px solid rgba(51,65,85,0.35);text-align:center;}
+        .diag-lbl{font-size:0.62em;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;}
+        .diag-val{font-size:0.95em;color:#f8fafc;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px;}
+
+        /* NUEVA SECCIÓN: Puntos Guardados en Flash NVS por Modo */
+        .nvs-panel{background:linear-gradient(165deg,rgba(30,41,59,0.95),rgba(15,23,42,0.9));border-radius:18px;padding:20px;border:1px solid rgba(56,189,248,0.12);box-shadow:0 4px 24px rgba(0,0,0,0.4);margin-bottom:20px;}
+        .nvs-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+        .nvs-t{display:flex;align-items:center;gap:8px;font-weight:800;font-size:0.9em;color:#38bdf8;}
+        .nvs-t-icon{width:26px;height:26px;border-radius:6px;background:rgba(56,189,248,0.12);display:flex;align-items:center;justify-content:center;font-size:13px;}
+        .nvs-badge{font-size:0.65em;padding:3px 8px;border-radius:6px;background:rgba(52,211,153,0.12);color:#34d399;font-weight:800;border:1px solid rgba(52,211,153,0.25);}
+
+        .nvs-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;}
+        .nvs-card{background:rgba(15,23,42,0.7);border-radius:12px;padding:12px;border:1px solid rgba(51,65,85,0.4);position:relative;transition:all 0.3s;}
+        .nvs-card.active-mode{border-color:#38bdf8;box-shadow:0 0 16px rgba(56,189,248,0.15);}
+        .nvs-card-title{font-size:0.7em;font-weight:800;color:#94a3b8;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+        .nvs-card-title span.tag{font-size:0.8em;padding:1px 5px;border-radius:4px;background:#334155;color:#f1f5f9;}
+        .nvs-card.active-mode .nvs-card-title span.tag{background:#0284c7;color:#fff;}
+        .nvs-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:0.68em;border-bottom:1px solid rgba(51,65,85,0.25);}
+        .nvs-row:last-child{border-bottom:none;}
+        .nvs-k{color:#64748b;font-weight:700;}
+        .nvs-v{color:#e2e8f0;font-weight:800;font-variant-numeric:tabular-nums;}
+        .nvs-v.highlight{color:#38bdf8;}
+
+        /* Panel de Ajuste de Offset de Hardware (En Corto) */
+        .off-panel{background:linear-gradient(165deg,rgba(30,41,59,0.95),rgba(15,23,42,0.9));border-radius:18px;padding:20px;border:1px solid rgba(251,191,36,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.4);}
+        .off-hdr{display:flex;align-items:center;justify-content:space-between;}
+        .off-t{display:flex;align-items:center;gap:8px;font-weight:800;font-size:0.9em;color:#fbbf24;}
+        .off-t-icon{width:28px;height:28px;border-radius:8px;background:rgba(251,191,36,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fbbf24;}
+        .off-tog{background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.75em;font-weight:800;transition:all 0.2s;letter-spacing:0.5px;}
+        .off-tog:hover{background:#334155;color:#e2e8f0;}
+        .off-tog.open{background:rgba(146,64,14,0.4);color:#fcd34d;border-color:rgba(251,191,36,0.3);}
+        .off-body{display:none;margin-top:16px;}
+        .off-desc{font-size:0.76em;color:#94a3b8;line-height:1.5;margin-bottom:16px;padding:10px 14px;background:rgba(15,23,42,0.6);border-radius:10px;border-left:3px solid #fbbf24;}
+
+        .off-single-wrap{background:rgba(15,23,42,0.7);border-radius:14px;padding:20px;border:1px solid rgba(51,65,85,0.4);text-align:center;max-width:540px;margin:0 auto;}
+        .vm-val{font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-1.5px;line-height:1;transition:color 0.3s;}
+        .vm-unit{font-size:18px;color:#64748b;font-weight:600;margin-left:4px;}
+        .vm-mv{font-size:0.85em;color:#64748b;font-weight:700;margin-top:4px;}
+
+        .gauge-wrap{padding:10px 12px 0;}
+        .gauge{position:relative;height:12px;border-radius:6px;overflow:visible;margin:18px 0 22px;background:linear-gradient(90deg,#dc2626 0%,#f59e0b 30%,#22c55e 42%,#22c55e 58%,#f59e0b 70%,#dc2626 100%);}
+        .gauge-tgt{position:absolute;top:-6px;left:50%;width:2px;height:24px;background:rgba(255,255,255,0.9);transform:translateX(-50%);z-index:2;}
+        .gauge-tgt::before{content:'1.765V';position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:0.6em;color:rgba(255,255,255,0.8);white-space:nowrap;font-weight:800;}
+        .gauge-ndl{position:absolute;top:-4px;width:6px;height:20px;background:#f8fafc;border-radius:3px;transform:translateX(-50%);transition:left 0.25s ease-out;box-shadow:0 0 8px rgba(255,255,255,0.5);z-index:3;}
+
+        .off-diff{font-size:1.05em;font-weight:800;margin:6px 0 10px;letter-spacing:-0.3px;transition:color 0.3s;}
+        .off-badge{display:inline-block;padding:6px 14px;border-radius:16px;font-weight:800;font-size:0.74em;letter-spacing:0.3px;transition:all 0.3s;}
+
+        /* Modal de Calibración */
+        .modal-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9998;padding:16px;}
+        .modal-backdrop.open{display:flex;animation:fade-in 0.25s ease-out;}
+        .modal-box{background:linear-gradient(165deg,#1e293b,#0f172a);border-radius:20px;border:1px solid rgba(56,189,248,0.25);width:100%;max-width:440px;padding:24px 22px;box-shadow:0 20px 50px rgba(0,0,0,0.6);text-align:center;}
+        .modal-icon{width:46px;height:46px;border-radius:12px;background:rgba(56,189,248,0.12);color:#38bdf8;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1px solid rgba(56,189,248,0.2);}
+        .modal-title{font-size:1.15em;font-weight:800;color:#fff;}
+        .modal-subtitle{font-size:0.75em;color:#94a3b8;font-weight:600;margin-top:3px;}
+
+        .buffer-warning-box{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);border-radius:12px;padding:12px 14px;margin:16px 0;text-align:left;font-size:0.76em;line-height:1.45;color:#fde68a;}
+        .buffer-warning-box b{color:#fbbf24;display:block;margin-bottom:3px;font-size:0.95em;}
+
+        .modal-timer-wrap{margin:18px 0 10px;}
+        .modal-timer-num{font-size:2.4em;font-weight:900;color:#38bdf8;line-height:1;}
+        .modal-timer-lbl{font-size:0.68em;color:#64748b;font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+        .modal-prog-bar{height:6px;background:rgba(51,65,85,0.4);border-radius:3px;margin:12px 10px 8px;overflow:hidden;}
+        .modal-prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#3b82f6);border-radius:3px;transition:width 0.1s linear;}
+        .modal-status-txt{font-size:0.75em;color:#94a3b8;font-weight:600;}
+
+        /* Toast */
+        .toast-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:9999;pointer-events:none;}
+        .toast{padding:12px 18px;border-radius:12px;font-size:0.82em;font-weight:700;color:#fff;pointer-events:auto;animation:toast-in 0.35s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 24px rgba(0,0,0,0.4);max-width:360px;}
+        .toast.out{animation:toast-out 0.3s forwards;}
+        .toast-ok{background:linear-gradient(135deg,#059669,#047857);border:1px solid #34d399;}
+        .toast-err{background:linear-gradient(135deg,#b91c1c,#991b1b);border:1px solid #ef4444;}
+        .toast-warn{background:linear-gradient(135deg,#b45309,#92400e);border:1px solid #f59e0b;}
+        .toast-info{background:linear-gradient(135deg,#1e40af,#1e3a8a);border:1px solid #38bdf8;}
+        @keyframes toast-in{from{opacity:0;transform:translateY(20px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+        @keyframes toast-out{to{opacity:0;transform:translateY(-10px) scale(0.95);}}
+        @keyframes fade-in{from{opacity:0;}to{opacity:1;}}
+
+        @media(max-width:700px){
+            .nvs-grid{grid-template-columns:1fr;}
+            .cal-grid{grid-template-columns:1fr;}
+            .hdr{flex-wrap:wrap;gap:8px;}
+        }
+    </style>
+</head>
+<body>
+<div class='page'>
+
+    <!-- Hub Link -->
+    <a href="../index.html" class="hub-link">&#8592; Ver Todas las Versiones (Hub de Previews)</a>
+
+    <!-- Header -->
+    <div class='hdr'>
+        <a href='index.html' class='nav-back'>&larr; Men&uacute; RTOS 2.0</a>
+        <div style='text-align:center'>
+            <span class='hdr-title'>M&oacute;dulo de pH Metrol&oacute;gico</span>
+            <span class='hdr-sub'>ADS1115 &middot; CANAL A1 DEDICADO &middot; RTOS 2.0</span>
+        </div>
+        <div class='hdr-right'>
+            <div class='hdr-hb'><span class='hb-dot' id='hb-dot'></span><span id='hb-txt'>OK (Simulado)</span></div>
+            <div class='tog-wrap'>
+                <span class='tog-lbl act' id='tog-lbl'>ACTIVO</span>
+                <button class='tog on' id='ph-tog' onclick='togglePH()'></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta Principal del Sensor Dedicado (Canal A1) -->
+    <div class='card'>
+        <div class='card-t'>
+            <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH &middot; Canal Dedicado A1</span></div>
+            <span class='card-slope-badge' id='sl-lbl'>Salud Sonda: 98.6%</span>
+        </div>
+        
+        <!-- Medidor Rectangular Moderno de Alta Precisión (HUD Cockpit) -->
+        <div class='ph-wrap'>
+            <div class='ph-hud' id='ph-hud'>
+                <div class='ph-hud-top'>
+                    <span class='ph-hud-pill'>⚡ ADS1115 CANAL A1 &middot; 16-BIT</span>
+                    <span class='ph-hud-rate'><span class='pulse-dot'></span>860 SPS CONTINUO</span>
+                </div>
+
+                <div class='ph-main-readout'>
+                    <div class='ph-val-wrap'>
+                        <span class='ph-val' id='ph-val'>7.04</span>
+                    </div>
+                    <div class='ph-unit-group'>
+                        <span class='ph-unit'>pH</span>
+                        <span class='ph-state-tag' id='ph-state-tag'>NEUTRO (7.0)</span>
+                        <span class='ph-stab-tag'>&bull; ESTABLE (&plusmn;0.2 mV)</span>
+                    </div>
+                </div>
+
+                <!-- Métricas Técnicas Integradas en la Pantalla del Instrumento -->
+                <div class='ph-hud-metrics'>
+                    <div class='ph-metric-col'>
+                        <div class='ph-metric-lbl'>Voltaje Sonda</div>
+                        <div class='ph-metric-val' id='hud-vsonda'>2.50 V</div>
+                    </div>
+                    <div class='ph-metric-col'>
+                        <div class='ph-metric-lbl'>Voltaje ADC (A1)</div>
+                        <div class='ph-metric-val' id='hud-vadc'>1.765 V</div>
+                    </div>
+                    <div class='ph-metric-col'>
+                        <div class='ph-metric-lbl'>Potencial Medido</div>
+                        <div class='ph-metric-val' id='hud-vmv'>1765.2 mV</div>
+                    </div>
+                </div>
+
+                <!-- Espectro Lineal Continuo con Cursor Deslizante -->
+                <div class='ph-spectrum-wrap'>
+                    <div class='ph-spectrum-track' id='ph-track'>
+                        <div class='ph-cursor' id='ph-cursor'></div>
+                    </div>
+                    <div class='ph-spectrum-labels'>
+                        <span>0 <b>&Aacute;cido Fuerte</b></span>
+                        <span>4 <b>Buffer</b></span>
+                        <span>7 <b>Neutro</b></span>
+                        <span>10 <b>Buffer</b></span>
+                        <span>14 <b>Base Fuerte</b></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class='mode-sel'>
+            <button class='mode-b act' id='m-0' onclick='setMode(0)'>TE&Oacute;RICO</button>
+            <button class='mode-b' id='m-1' onclick='setMode(1)'>2 PUNTOS</button>
+            <button class='mode-b' id='m-2' onclick='setMode(2)'>3 PUNTOS</button>
+        </div>
+        
+        <div class='cal-sec'>
+            <div class='cal-title'>Calibraci&oacute;n de Electrodo de Vidrio</div>
+            <div class='cal-grid'>
+                <button class='cal-btn cb7' id='cal-7' onclick='iniciarCalibracion(7)'><span class='dot'></span>Buffer 7.0 (Neutro)</button>
+                <button class='cal-btn cb4' id='cal-4' onclick='iniciarCalibracion(4)' style='display:none'><span class='dot'></span>Buffer 4.0 (&Aacute;cido)</button>
+                <button class='cal-btn cb10' id='cal-10' onclick='iniciarCalibracion(10)' style='display:none'><span class='dot'></span>Buffer 10.0 (B&aacute;sico)</button>
+            </div>
+            <button class='btn-rst-ph' id='rst-ph' onclick='resetCalibracion()'>&#8634; Restablecer Calibraci&oacute;n de F&aacute;brica</button>
+        </div>
+        
+        <div class='cal-status-box cs-theory' id='cstat'>Modo Te&oacute;rico (Preconfigurado de F&aacute;brica)</div>
+        
+        <div class='diag-box'>
+            <div class='diag-item'>
+                <div class='diag-lbl'>Voltaje Sonda (5.0V)</div>
+                <div class='diag-val' id='vs-val' style='color:#38bdf8'>2.50 V</div>
+            </div>
+            <div class='diag-item'>
+                <div class='diag-lbl'>Voltaje ADC A1 (3.53V)</div>
+                <div class='diag-val' id='va-val'>1.765 V</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Puntos Guardados en Flash NVS por Modo -->
+    <div class='nvs-panel'>
+        <div class='nvs-hdr'>
+            <div class='nvs-t'>
+                <span class='nvs-t-icon'>&#128190;</span>
+                <span>Puntos Guardados en Flash NVS por Modo</span>
+            </div>
+            <span class='nvs-badge' id='nvs-mode-badge'>Modo 0 Activo (Teórico)</span>
+        </div>
+
+        <div class='nvs-grid'>
+            <!-- Modo 0: Teórico -->
+            <div class='nvs-card active-mode' id='nvs-card-0'>
+                <div class='nvs-card-title'>
+                    <span>MODO TE&Oacute;RICO</span>
+                    <span class='tag' id='tag-0'>NVS</span>
+                </div>
+                <div class='nvs-row'><span class='nvs-k'>Offset V7:</span><span class='nvs-v highlight'>1.765 V</span></div>
+                <div class='nvs-row'><span class='nvs-k'>Pendiente m:</span><span class='nvs-v'>+4.242 pH/V</span></div>
+                <div class='nvs-row'><span class='nvs-k'>Eficiencia:</span><span class='nvs-v'>100.0% Te&oacute;rica</span></div>
+            </div>
+
+            <!-- Modo 1: 2 Puntos -->
+            <div class='nvs-card' id='nvs-card-1'>
+                <div class='nvs-card-title'>
+                    <span>MODO 2 PUNTOS</span>
+                    <span class='tag' id='tag-1'>NVS</span>
+                </div>
+                <div class='nvs-row'><span class='nvs-k'>Buffer 7 (V7):</span><span class='nvs-v' id='nvs-v7'>1.765 V</span></div>
+                <div class='nvs-row'><span class='nvs-k'>Buffer 4 (V4):</span><span class='nvs-v' id='nvs-v4'>2.472 V</span></div>
+                <div class='nvs-row'><span class='nvs-k'>Pendiente m:</span><span class='nvs-v highlight' id='nvs-mph'>+4.242 pH/V</span></div>
+            </div>
+
+            <!-- Modo 2: 3 Puntos -->
+            <div class='nvs-card' id='nvs-card-2'>
+                <div class='nvs-card-title'>
+                    <span>MODO 3 PUNTOS</span>
+                    <span class='tag' id='tag-2'>NVS</span>
+                </div>
+                <div class='nvs-row'><span class='nvs-k'>Buffer 10 (V10):</span><span class='nvs-v' id='nvs-v10'>1.058 V</span></div>
+                <div class='nvs-row'><span class='nvs-k'>m &Aacute;cida:</span><span class='nvs-v' id='nvs-mac'>+4.242 pH/V</span></div>
+                <div class='nvs-row'><span class='nvs-k'>m B&aacute;sica:</span><span class='nvs-v' id='nvs-mba'>+4.242 pH/V</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Ajuste de Offset de Hardware (En Corto) -->
+    <div class='off-panel'>
+        <div class='off-hdr'>
+            <div class='off-t'>
+                <span class='off-t-icon'>&#9881;</span>
+                <span>Ajuste de Offset de Hardware (Placa PH-4502C en Corto)</span>
+            </div>
+            <button class='off-tog' id='off-tog' onclick='toggleOffset()'>ABRIR</button>
+        </div>
+        
+        <div class='off-body' id='off-body'>
+            <div class='off-desc'>
+                <b>Instrucciones de Alineaci&oacute;n:</b> Conecte el conector BNC en cortocircuito (sin electrodo o con puente).
+                Ajuste el potenci&oacute;metro multivuelta de la placa PH-4502C (Canal A1) hasta que el volt&iacute;metro marque exactamente
+                <b style='color:#fbbf24'>1.765 V (&plusmn;10 mV)</b>. Esto establece el cero anal&oacute;gico neutro en pH 7.00.
+            </div>
+            
+            <div class='off-single-wrap'>
+                <div style='font-size:0.75em;color:#38bdf8;font-weight:800;margin-bottom:8px;'>
+                    &#9679; PLACA PH-4502C: CANAL DEDICADO (ADS1115 A1)
+                </div>
+                <div style='padding:4px 0;'>
+                    <span class='vm-val' id='raw-v'>1.765</span><span class='vm-unit'>V</span>
+                    <div class='vm-mv' id='raw-mv'>1765.2 mV</div>
+                </div>
+                <div class='gauge-wrap'>
+                    <div class='gauge'>
+                        <div class='gauge-tgt'></div>
+                        <div class='gauge-ndl' id='g-ndl' style='left:50%'></div>
+                    </div>
+                </div>
+                <div class='off-diff' id='off-diff' style='color:#34d399'>+0.2 mV</div>
+                <div>
+                    <span class='off-badge' id='off-badge' style='background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);'>
+                        &#10003; Calibrado (&plusmn;10 mV)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /page -->
+
+<!-- Modal de Estabilización de Calibración -->
+<div class='modal-backdrop' id='cal-modal'>
+    <div class='modal-box'>
+        <div class='modal-icon'>&#129514;</div>
+        <div class='modal-title' id='cal-m-title'>Calibrando pH 7.0</div>
+        <div class='modal-subtitle'>Canal A1 Dedicado &middot; RTOS 2.0</div>
+        
+        <div class='buffer-warning-box'>
+            <b>&#9888; ATENCI&Oacute;N METROL&Oacute;GICA:</b>
+            Mantenga el electrodo completamente sumergido en la soluci&oacute;n buffer y <b>SIN MOVERLO</b> durante los 3 segundos de muestreo para asegurar la estabilidad electroqu&iacute;mica.
+        </div>
+
+        <div class='modal-timer-wrap'>
+            <div class='modal-timer-num' id='cal-timer'>3</div>
+            <div class='modal-timer-lbl'>Segundos Restantes</div>
+        </div>
+
+        <div class='modal-prog-bar'>
+            <div class='modal-prog-fill' id='cal-prog'></div>
+        </div>
+
+        <div class='modal-status-txt' id='cal-m-status'>Adquiriendo 25 muestras continuas en Canal A1 y evaluando estabilidad...</div>
+    </div>
+</div>
+
+<div class='toast-container' id='toast-box'></div>
+
+<script>
+var phOn = true;
+var curM = 0;
+var offOpen = false;
+var calEnProceso = false;
+
+function showToast(msg, type){
+    var box = document.getElementById('toast-box');
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + (type || 'info');
+    t.innerHTML = msg;
+    box.appendChild(t);
+    setTimeout(function(){
+        t.classList.add('out');
+        setTimeout(function(){ t.remove(); }, 300);
+    }, 4000);
+}
+
+function togglePH(){
+    phOn = !phOn;
+    var tg = document.getElementById('ph-tog');
+    tg.className = phOn ? 'tog on' : 'tog';
+    var tl = document.getElementById('tog-lbl');
+    tl.innerText = phOn ? 'ACTIVO' : 'STANDBY';
+    tl.className = phOn ? 'tog-lbl act' : 'tog-lbl';
+
+    var hud = document.getElementById('ph-hud');
+    var val = document.getElementById('ph-val');
+    var cur = document.getElementById('ph-cursor');
+    var track = document.getElementById('ph-track');
+
+    if(!phOn){
+        if(hud) hud.className = 'ph-hud off';
+        val.innerHTML = '&mdash;';
+        val.className = 'ph-val off';
+        if(cur) cur.className = 'ph-cursor off';
+        if(track) track.className = 'ph-spectrum-track off';
+        document.getElementById('vs-val').innerText = '--- V';
+        document.getElementById('va-val').innerText = '--- V';
+        var hs = document.getElementById('hud-vsonda'); if(hs) hs.innerText = '--- V';
+        var ha = document.getElementById('hud-vadc'); if(ha) ha.innerText = '--- V';
+        var hm = document.getElementById('hud-vmv'); if(hm) hm.innerText = '--- mV';
+        showToast('Módulo pH en STANDBY', 'warn');
+    } else {
+        if(hud) hud.className = 'ph-hud';
+        val.className = 'ph-val';
+        if(cur) cur.className = 'ph-cursor';
+        if(track) track.className = 'ph-spectrum-track';
+        showToast('Módulo pH ACTIVADO (Canal A1 Dedicado)', 'ok');
+    }
+}
+
+function setMode(m){
+    curM = m;
+    for(var i=0; i<3; i++){
+        var b = document.getElementById('m-' + i);
+        if(b) b.className = (i === m) ? 'mode-b act' : 'mode-b';
+    }
+
+    var b4 = document.getElementById('cal-4');
+    var b10 = document.getElementById('cal-10');
+    if(b4) b4.style.display = (m >= 1) ? 'flex' : 'none';
+    if(b10) b10.style.display = (m === 2) ? 'flex' : 'none';
+
+    var cstat = document.getElementById('cstat');
+    if(m === 0){
+        cstat.className = 'cal-status-box cs-theory';
+        cstat.innerHTML = 'Modo Te&oacute;rico (Preconfigurado de F&aacute;brica)';
+    } else if(m === 1){
+        cstat.className = 'cal-status-box cs-ok';
+        cstat.innerHTML = '&#10003; Calibrado 2 Puntos (pH 7 + 4)';
+    } else {
+        cstat.className = 'cal-status-box cs-ok';
+        cstat.innerHTML = '&#10003; Calibrado 3 Puntos (pH 4, 7, 10)';
+    }
+
+    document.getElementById('nvs-mode-badge').innerText = 'Modo ' + m + ' Activo (' + (m===0?'Teórico':m===1?'2 Pts':'3 Pts') + ')';
+    for(var i=0; i<3; i++){
+        var c = document.getElementById('nvs-card-' + i);
+        if(c) c.className = (i === m) ? 'nvs-card active-mode' : 'nvs-card';
+    }
+
+    showToast('Modo ' + (m===0?'Teórico':m===1?'2 Puntos':'3 Puntos') + ' seleccionado', 'info');
+}
+
+function iniciarCalibracion(p){
+    if(calEnProceso) return;
+    var nombreBuf = (p === 7 ? 'Buffer pH 7.0 (Neutro)' : (p === 4 ? 'Buffer pH 4.0 (Ácido)' : 'Buffer pH 10.0 (Básico)'));
+
+    if(!confirm('¿Iniciar calibración metrológica para ' + nombreBuf + ' en Canal A1?\n\nAsegúrese de que el electrodo esté sumergido en la solución buffer correspondiente.')) return;
+
+    calEnProceso = true;
+    var modal = document.getElementById('cal-modal');
+    document.getElementById('cal-m-title').innerText = 'Calibrando ' + nombreBuf;
+    var timerEl = document.getElementById('cal-timer');
+    var progEl = document.getElementById('cal-prog');
+    var duration = 2800;
+    var startTime = Date.now();
+    modal.classList.add('open');
+
+    var animIv = setInterval(function(){
+        var elapsed = Date.now() - startTime;
+        var pct = Math.min(100, (elapsed / duration) * 100);
+        progEl.style.width = pct + '%';
+        var rem = Math.max(0, Math.ceil((duration - elapsed) / 1000));
+        timerEl.innerText = rem;
+
+        if(elapsed >= duration){
+            clearInterval(animIv);
+            modal.classList.remove('open');
+            calEnProceso = false;
+
+            var vSim = (p === 7 ? 1.765 : (p === 4 ? 2.470 : 1.055));
+            var estabSim = (0.8 + Math.random() * 0.6).toFixed(1);
+
+            if(p === 7) document.getElementById('nvs-v7').innerText = vSim.toFixed(3) + ' V';
+            if(p === 4) document.getElementById('nvs-v4').innerText = vSim.toFixed(3) + ' V';
+            if(p === 10) document.getElementById('nvs-v10').innerText = vSim.toFixed(3) + ' V';
+
+            showToast('&#10003; Calibrado pH ' + p + '.0 con éxito (' + vSim.toFixed(3) + ' V | Estabilidad &plusmn;' + estabSim + ' mV)<br>Pendiente guardada en Flash NVS', 'ok');
+        }
+    }, 100);
+}
+
+function resetCalibracion(){
+    if(!confirm('¿Restablecer calibración a VALORES DE FÁBRICA para el Sensor Dedicado?\n\nEsto borrará los puntos guardados en la Flash NVS y regresará al modelo teórico predeterminado.')) return;
+
+    setMode(0);
+    document.getElementById('nvs-v7').innerText = '1.765 V';
+    document.getElementById('nvs-v4').innerText = '2.472 V';
+    document.getElementById('nvs-v10').innerText = '1.058 V';
+    showToast('&#8634; Calibración restablecida a valores de fábrica en Flash NVS', 'ok');
+}
+
+function toggleOffset(){
+    offOpen = !offOpen;
+    document.getElementById('off-body').style.display = offOpen ? 'block' : 'none';
+    var btn = document.getElementById('off-tog');
+    btn.innerText = offOpen ? 'CERRAR' : 'ABRIR';
+    btn.className = offOpen ? 'off-tog open' : 'off-tog';
+}
+
+function simLoop(){
+    if(!phOn) return;
+
+    // Simulación del sensor de pH
+    var phVal = 7.02 + Math.sin(Date.now() / 2000) * 0.02;
+    var vadc = 1.765 - (phVal - 7.0) / 4.242;
+    var vsonda = vadc * (5.0 / 3.53);
+
+    document.getElementById('ph-val').innerText = phVal.toFixed(2);
+    document.getElementById('va-val').innerText = vadc.toFixed(3) + ' V';
+    document.getElementById('vs-val').innerText = vsonda.toFixed(2) + ' V';
+
+    var hs = document.getElementById('hud-vsonda'); if(hs) hs.innerText = vsonda.toFixed(2) + ' V';
+    var ha = document.getElementById('hud-vadc'); if(ha) ha.innerText = vadc.toFixed(3) + ' V';
+    var hm = document.getElementById('hud-vmv'); if(hm) hm.innerText = (vadc * 1000).toFixed(1) + ' mV';
+
+    // Actualizar cursor del espectro (0 a 14 pH)
+    var pct = Math.max(0, Math.min(100, (phVal / 14.0) * 100));
+    var cur = document.getElementById('ph-cursor');
+    if(cur) cur.style.left = pct + '%';
+
+    // Color dinámico, resplandor y etiqueta de estado
+    var valEl = document.getElementById('ph-val');
+    var tagEl = document.getElementById('ph-state-tag');
+    var hudEl = document.getElementById('ph-hud');
+    if(phVal < 6.5){
+        valEl.style.color = '#ef4444';
+        valEl.style.textShadow = '0 0 35px rgba(239,68,68,0.35)';
+        if(hudEl){ hudEl.style.borderColor = 'rgba(239,68,68,0.45)'; hudEl.style.boxShadow = '0 10px 32px rgba(0,0,0,0.5), 0 0 25px rgba(239,68,68,0.18)'; }
+        if(tagEl){ tagEl.innerText = 'ÁCIDO'; tagEl.style.color = '#fca5a5'; tagEl.style.borderColor = 'rgba(239,68,68,0.4)'; tagEl.style.background = 'rgba(239,68,68,0.15)'; }
+    } else if(phVal > 7.5){
+        valEl.style.color = '#a855f7';
+        valEl.style.textShadow = '0 0 35px rgba(168,85,247,0.35)';
+        if(hudEl){ hudEl.style.borderColor = 'rgba(168,85,247,0.45)'; hudEl.style.boxShadow = '0 10px 32px rgba(0,0,0,0.5), 0 0 25px rgba(168,85,247,0.18)'; }
+        if(tagEl){ tagEl.innerText = 'ALCALINO'; tagEl.style.color = '#d8b4fe'; tagEl.style.borderColor = 'rgba(168,85,247,0.4)'; tagEl.style.background = 'rgba(168,85,247,0.15)'; }
+    } else {
+        valEl.style.color = '#34d399';
+        valEl.style.textShadow = '0 0 35px rgba(52,211,153,0.35)';
+        if(hudEl){ hudEl.style.borderColor = 'rgba(52,211,153,0.45)'; hudEl.style.boxShadow = '0 10px 32px rgba(0,0,0,0.5), 0 0 25px rgba(52,211,153,0.18)'; }
+        if(tagEl){ tagEl.innerText = 'NEUTRO (7.0)'; tagEl.style.color = '#34d399'; tagEl.style.borderColor = 'rgba(52,211,153,0.4)'; tagEl.style.background = 'rgba(52,211,153,0.15)'; }
+    }
+
+    // Simulación Offset en corto
+    var vRaw = 1.765 + (Math.sin(Date.now() / 1600) * 0.002) + (Math.random() * 0.0008);
+    document.getElementById('raw-v').innerText = vRaw.toFixed(3);
+    document.getElementById('raw-mv').innerText = (vRaw * 1000).toFixed(1) + ' mV';
+    var pctRaw = (vRaw / 3.53) * 100;
+    document.getElementById('g-ndl').style.left = pctRaw + '%';
+    var diff = (vRaw - 1.765) * 1000;
+    document.getElementById('off-diff').innerText = (diff >= 0 ? '+' : '') + diff.toFixed(1) + ' mV';
+}
+
+setInterval(simLoop, 400);
+</script>
+</body>
+</html>

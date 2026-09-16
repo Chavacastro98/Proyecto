@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Actualizar Firmware &middot; FreeRTOS (Preview RTOS 1.1)</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0b1120;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px 14px;}
+        .ota-card{background:linear-gradient(165deg,rgba(30,41,59,0.95),rgba(15,23,42,0.92));padding:28px 24px;border-radius:22px;box-shadow:0 16px 45px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.05);width:100%;max-width:520px;border:1px solid rgba(56,189,248,0.12);text-align:center;}
+
+        /* Hub Nav */
+        .hub-link{display:inline-flex;align-items:center;gap:6px;color:#38bdf8;text-decoration:none;font-size:0.75em;font-weight:700;margin-bottom:12px;padding:4px 12px;background:rgba(56,189,248,0.08);border-radius:8px;border:1px solid rgba(56,189,248,0.2);transition:all 0.2s;}
+        .hub-link:hover{color:#7dd3fc;background:rgba(56,189,248,0.18);transform:translateY(-1px);}
+
+        /* Header */
+        .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(51,65,85,0.35);}
+        .nav-back{color:#38bdf8;text-decoration:none;font-weight:700;font-size:0.82em;transition:0.2s;}
+        .nav-back:hover{color:#7dd3fc;}
+        .hdr-title{font-size:1.15em;color:white;font-weight:800;letter-spacing:-0.3px;}
+        .hdr-sub{font-size:0.68em;color:#64748b;font-weight:600;display:block;margin-top:2px;letter-spacing:0.3px;}
+
+        /* Version Info Bar */
+        .ver-wrap{display:flex;align-items:center;justify-content:space-between;background:rgba(15,23,42,0.6);padding:10px 14px;border-radius:12px;margin-bottom:20px;border:1px solid rgba(51,65,85,0.4);font-size:0.75em;}
+        .ver-badge{padding:3px 10px;background:rgba(56,189,248,0.12);color:#38bdf8;border-radius:20px;font-weight:800;letter-spacing:0.3px;border:1px solid rgba(56,189,248,0.25);}
+        .ver-chip{color:#94a3b8;font-weight:700;}
+
+        /* Drop Zone */
+        .drop-zone{border:2px dashed rgba(56,189,248,0.3);border-radius:18px;padding:32px 18px;background:rgba(15,23,42,0.55);cursor:pointer;transition:all 0.3s;margin-bottom:18px;position:relative;}
+        .drop-zone:hover,.drop-zone.dragover{border-color:#38bdf8;background:rgba(30,58,138,0.2);transform:scale(1.01);}
+        .box-ico-wrap{width:64px;height:64px;border-radius:50%;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:32px;box-shadow:0 0 20px rgba(56,189,248,0.15);}
+        .drop-text{color:#f1f5f9;font-size:0.9em;font-weight:800;letter-spacing:-0.2px;}
+        .drop-sub{color:#64748b;font-size:0.75em;margin-top:6px;font-weight:600;}
+
+        /* File Info Box */
+        .file-info{display:none;background:rgba(15,23,42,0.85);padding:12px 16px;border-radius:12px;margin-bottom:18px;font-size:0.8em;color:#e2e8f0;font-weight:700;text-align:left;border:1px solid rgba(56,189,248,0.2);align-items:center;gap:10px;}
+
+        /* Upload Button */
+        .btn-upld{width:100%;padding:15px;background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;border:none;border-radius:14px;font-weight:800;font-size:0.9em;cursor:pointer;transition:all 0.25s;letter-spacing:0.5px;box-shadow:0 4px 18px rgba(37,99,235,0.35);}
+        .btn-upld:hover:not(:disabled){background:linear-gradient(135deg,#0369a1,#1d4ed8);transform:translateY(-1px);box-shadow:0 6px 24px rgba(37,99,235,0.5);}
+        .btn-upld:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;}
+
+        /* Progress Bar */
+        .prog-wrap{display:none;margin-top:20px;text-align:left;}
+        .prog-bar-bg{background:#1e293b;border-radius:10px;height:12px;overflow:hidden;border:1px solid #334155;}
+        .prog-bar{background:linear-gradient(90deg,#38bdf8,#34d399);height:100%;width:0%;transition:width 0.2s;}
+        .prog-txt{font-size:0.75em;color:#94a3b8;margin-top:8px;display:flex;justify-content:space-between;font-weight:700;}
+
+        /* Status Alerts */
+        .st-msg{margin-top:18px;padding:14px;border-radius:12px;font-size:0.82em;font-weight:700;display:none;text-align:left;line-height:1.45;}
+        .st-ok{background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.35);}
+    </style>
+</head>
+<body>
+    <div class='ota-card'>
+        <div style="text-align:left;">
+            <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
+        </div>
+
+        <div class='hdr'>
+            <a href='index.html' class='nav-back'>&larr; Men&uacute;</a>
+            <div>
+                <div class='hdr-title'>Actualizaci&oacute;n Inal&aacute;mbrica (OTA)</div>
+                <span class='hdr-sub'>FreeRTOS Dual-Partition &middot; RTOS 1.1</span>
+            </div>
+            <div style='width:36px'></div>
+        </div>
+
+        <div class='ver-wrap'>
+            <div>Versi&oacute;n Instalada: <span class='ver-badge'>1.1.0 (Visual Feedback)</span></div>
+            <div class='ver-chip'>Partici&oacute;n OTA_0</div>
+        </div>
+
+        <div class='drop-zone' id='drop-zone' onclick="document.getElementById('file-input').click()">
+            <div class='box-ico-wrap'>&#128230;</div>
+            <div class='drop-text'>Haz clic para seleccionar o arrastra el archivo <b>.bin</b></div>
+            <div class='drop-sub'>Paquete compilado ESP32-S3 (Partición App)</div>
+        </div>
+        <input type='file' id='file-input' accept='.bin' style='display:none' onchange='onFileSelected(this)'>
+
+        <div class='file-info' id='file-info'>
+            <span style='font-size:1.4em'>&#128196;</span>
+            <div style='flex:1'>
+                <div id='fn-txt' style='color:#fff'>firmware_rtos_1.1.bin</div>
+                <div id='fs-txt' style='font-size:0.8em;color:#94a3b8'>1,420,896 bytes</div>
+            </div>
+            <span style='color:#34d399;font-weight:800;'>&#10003; LISTO</span>
+        </div>
+
+        <button class='btn-upld' id='btn-upld' disabled onclick='simularFlasheo()'>INICIAR ACTUALIZACIÓN OTA</button>
+
+        <div class='prog-wrap' id='prog-wrap'>
+            <div class='prog-bar-bg'>
+                <div class='prog-bar' id='prog-bar'></div>
+            </div>
+            <div class='prog-txt'>
+                <span id='pct-txt'>0%</span>
+                <span id='byte-txt'>Flasheando en memoria Flash SPI...</span>
+            </div>
+        </div>
+
+        <div class='st-msg st-ok' id='msg-ok'>
+            &#10004; <b>¡Actualización Inalámbrica Completada!</b><br>
+            El ESP32-S3 ha validado la partición secundaria y se reiniciará en el nuevo firmware.
+        </div>
+    </div>
+
+    <script>
+        var selectedFile = null;
+
+        function onFileSelected(input){
+            if(input.files && input.files[0]){
+                selectedFile = input.files[0];
+                document.getElementById('fn-txt').innerText = selectedFile.name;
+                document.getElementById('fs-txt').innerText = (selectedFile.size / 1024).toFixed(1) + ' KB';
+                document.getElementById('file-info').style.display = 'flex';
+                document.getElementById('btn-upld').disabled = false;
+            }
+        }
+
+        function simularFlasheo(){
+            var btn = document.getElementById('btn-upld');
+            var progWrap = document.getElementById('prog-wrap');
+            var progBar = document.getElementById('prog-bar');
+            var pctTxt = document.getElementById('pct-txt');
+            var msgOk = document.getElementById('msg-ok');
+
+            btn.disabled = true;
+            progWrap.style.display = 'block';
+            msgOk.style.display = 'none';
+
+            var pct = 0;
+            var timer = setInterval(function(){
+                pct += Math.floor(Math.random() * 8) + 4;
+                if(pct > 100) pct = 100;
+                progBar.style.width = pct + '%';
+                pctTxt.innerText = pct + '%';
+
+                if(pct >= 100){
+                    clearInterval(timer);
+                    setTimeout(function(){
+                        msgOk.style.display = 'block';
+                        btn.disabled = false;
+                    }, 500);
+                }
+            }, 120);
+        }
+    </script>
+</body>
+</html>

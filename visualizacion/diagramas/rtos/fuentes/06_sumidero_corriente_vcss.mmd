@@ -1,0 +1,41 @@
+flowchart LR
+    subgraph LAZO_DIGITAL["ESP32 (Lazo Digital PI Discreto Outer Loop @ 2 Hz)"]
+        SP_I["Consigna Deseada (0.00 a 3.50 A)<br>VREF = 3.53V • Gm = 2.0 S"] --> COND_COMP{"Fuente Activa, !modoPulsado,<br>comp_f y t >= 800 ms?"}
+        COND_COMP -- No: Rampa o Blanking --> KEEP_DAC["Mantener / Rampa Soft-Start (500ms)<br>+ Blanking Time (300ms)"]
+        COND_COMP -- Si: Operacion Nominal --> COMP_ERR["Error: error = I_target - I_total"]
+        COMP_ERR --> DEADBAND{"|error| < 10 mA?"}
+        DEADBAND -- Si: Enganchado --> LOCKED["PI_STATE_LOCKED<br>(Salida Estable sin Perturbacion)"]
+        DEADBAND -- No: Corregir --> CALC_PI["Integrador Anti-Windup (+-0.15 A):<br>s_integral += error * 0.5s<br>u_amps = Kp*error + Ki*s_integral<br>(Kp=0.12, Ki=0.03)"]
+        CALC_PI --> DELTA_DAC["deltaDAC = u_amps * (4095/7.06)<br>Limitador de Pendiente: -4 a +4 LSB"]
+        DELTA_DAC --> ADJ_DAC["amplitudDAC = constrain(amplitudDAC + deltaDAC, 0, 4095)"]
+        LOCKED --> KEEP_DAC
+    end
+
+    ADJ_DAC --> DAC_HW["DAC MCP4725 (I2C 0x60 - 12 bits)"]
+    KEEP_DAC --> DAC_HW
+
+    subgraph POTENCIA_VCSS["Etapa de Potencia VCSS (Lazo Analogico Interno Instantaneo)"]
+        DAC_HW -->|Voltaje 0.00 a 3.53V| OPAMP["OpAmp LM358N (Feedback Negativo)"]
+        OPAMP -->|V_gate| MOSFET["2x MOSFET IRLZ44Z N-Channel (TO-220)"]
+        MOSFET -->|I_celda| CELDA["Celda Hull (Tina 3 Zincado Acido)"]
+        CELDA --> SHUNTS["2x Resistencias Shunt 1.0 Ohm / 10W Ceramicas de Cemento"]
+        SHUNTS -->|V_shunt1 y V_shunt2| OPAMP
+    end
+
+    subgraph ALIMENTACION_ZCS["Linea de Alimentacion +12V VDD"]
+        GPIO_RELE["ESP32 GPIO 20 (Disparo ZCS)"] --> RELE_2CH["Modulo Rele Optoacoplado<br>Conmutacion a Corriente Cero"]
+        RELE_2CH -->|+12V DC VDD Conmutado sin Arco| CELDA
+    end
+
+    SHUNTS -->|Caidas Vs1 y Vs2| ADC_ADS["ADC ADS1115 (Canales A2 y A3 @ 16-bit)"]
+    ADC_ADS --> CALC_ITOTAL["I1 = Vs1 / 1.0, I2 = Vs2 / 1.0<br>I_total = I1 + I2"]
+    
+    subgraph DIAGNOSTICO_CELDA["Supervision de Salud de Celda (SaludCelda_t)"]
+        CHECK_HEALTH{"Evaluar I_total vs I_sp<br>y Desbalance |I1 - I2|"}
+        CHECK_HEALTH -- "I_total < 70% & DAC >= 3800" --> SAT["CELDA_SATURADA<br>(Tension Cumplimiento / Pasivacion)"]
+        CHECK_HEALTH -- "|I1 - I2| > 0.35 A" --> DESB["CELDA_DESBALANCE<br>(Desbalance Termico de Ramas)"]
+        CHECK_HEALTH -- Normal --> OK["CELDA_OK (Operacion Optima)"]
+    end
+
+    CALC_ITOTAL --> COMP_ERR
+    CALC_ITOTAL --> CHECK_HEALTH

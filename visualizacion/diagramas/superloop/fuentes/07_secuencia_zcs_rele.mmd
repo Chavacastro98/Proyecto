@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    actor Usuario as Operador / SCADA
+    participant ESP as ESP32 (Modulo_Fuentes)
+    participant Rele as Rele 2CH Puenteado (GPIO 20)
+    participant DAC as DAC MCP4725 (I2C 0x60)
+    participant Celda as Celda Hull (+12V VDD)
+
+    Note over Usuario,Celda: Protocolo Zero-Current Switching (ZCS) - Encendido Seguro
+    Usuario->>ESP: POST /act_f?run=1 (Encender Fuente Galvanica)
+    ESP->>DAC: dac.setVoltage(0) (Asegurar corriente estrictamente 0.00 A)
+    ESP->>Rele: digitalWrite(GPIO20, LOW) (Cierra contactos Rele 1 + Rele 2 en paralelo)
+    Note over Rele: Espera mecanica: 80 ms (Extincion de rebotes / contact bounce)
+    ESP->>ESP: vTaskDelay(80 ms)
+    ESP->>DAC: dac.setVoltage(amplitudDAC_Setpoint) (Inyectar corriente nominal)
+    DAC->>Celda: Conduccion galvanica en curso (0.00 a 6.60 A DC / Pulsado)
+
+    Note over Usuario,Celda: Protocolo Zero-Current Switching (ZCS) - Apagado Seguro
+    Usuario->>ESP: POST /act_f?run=0 (Apagar Fuente Galvanica)
+    ESP->>DAC: dac.setVoltage(0) (Anular consigna a 0.00 V inmediatamente)
+    Note over DAC,Celda: Espera electrica: 30 ms (Descarga de capacitancias de desacoplo)
+    ESP->>ESP: vTaskDelay(30 ms)
+    ESP->>Rele: digitalWrite(GPIO20, HIGH) (Abre Rele 1 + Rele 2 a I=0.00 A sin arco)
+    Note over Rele,Celda: Linea +12V VDD Fisicamente Aislada (Seguridad Total)

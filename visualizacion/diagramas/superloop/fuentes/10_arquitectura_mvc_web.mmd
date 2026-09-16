@@ -1,0 +1,35 @@
+graph TD
+    subgraph CLIENTE["Cliente Web (Navegador en PC / Tablet / Smartphone)"]
+        BROWSER["Navegador Web (http://interfaz.local)<br>• Renderizado HTML5 / CSS3 Glassmorphism<br>• Script JS Asincrono (fetch / setInterval 1.0 s)"]
+    end
+
+    subgraph VISTAS["views/ (Plantillas Web en Flash PROGMEM - Inmutables)"]
+        V_MENU["View_Menu.h (Menu y Diagnostico General)"]
+        V_TERM["View_Termico.h (Control 4 Canales PI)"]
+        V_FUE["View_Fuente.h (Gestor VCSS y Rele 2CH ZCS)"]
+        V_PH["View_PH.h (pH Dual y Calibracion 3 Modos)"]
+        V_SENS["View_Sensores.h (Diagnostico I2C / SPI / NVS)"]
+        V_OTA["View_OTA.h (Carga de Firmware A/B)"]
+    end
+
+    subgraph CONTROLADORES["controllers/ (Manejadores de Peticiones HTTP REST)"]
+        C_SYS["Controller_System.cpp<br>Endpoints: /, /sensores, /data_env, /data_sensors"]
+        C_TERM["Controller_Termico.cpp<br>Endpoints: /termico, /data_t, /set_t, /act_t"]
+        C_FUE["Controller_Fuente.cpp<br>Endpoints: /fuente, /data_f, /set_f, /cal_vcss, /act_f"]
+        C_PH["Controller_PH.cpp<br>Endpoints: /ph, /get_ph_dual, /data_ph_raw, /do_cal_ph"]
+        C_OTA["Modulo_OTA.cpp<br>Endpoints: /ota, /update, /status_ota"]
+    end
+
+    subgraph MODELOS["Modulos/ (Capa de Logica de Negocio, Control y Hardware)"]
+        M_TERM["Modulo_Termico (MAX6675, Control PI, Rampa Soft-Start)"]
+        M_FUE["Modulo_Fuentes (MCP4725, ADS1115 Shunts, Rele 2CH ZCS)"]
+        M_PH["Modulo_PH (ADS1115 A0/A1, Filtro Mediana 3, EWMA)"]
+        M_AMB["Modulo_Ambiental (AHT20, BMP280, Presion)"]
+    end
+
+    BROWSER -->|1. Peticion GET Inicial - Carga de Pagina| CONTROLADORES
+    CONTROLADORES -->|Inyecta HTML/CSS/JS desde PROGMEM| VISTAS
+    VISTAS -->|Retorno Pagina Completa| BROWSER
+
+    BROWSER <==>|2. Peticiones Periodicas AJAX REST JSON - data_t, data_f, set_t| CONTROLADORES
+    CONTROLADORES <==>|Acceso con Spinlocks portMUX_TYPE| MODELOS

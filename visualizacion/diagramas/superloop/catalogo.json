@@ -1,0 +1,96 @@
+{
+  "suite": "superloop",
+  "version": "v4.0",
+  "nombre": "Arquitectura Super-Loop (v4.0)",
+  "descripcion": "Colección de diagramas de la arquitectura modular v4.0 basada en Super-Loop asíncrono, patrón MVC desacoplado, sincronización con spinlocks portMUX_TYPE y supervisión SCADA multihilo.",
+  "diagramas": {
+    "01_arquitectura_general": {
+      "num": "01",
+      "cat": "Arquitectura Global",
+      "title": "Arquitectura General Master-Slave y SCADA",
+      "badge": "Sistema Integral v4.0",
+      "archivo": "01_arquitectura_general.mmd",
+      "desc": "Visión completa de la planta piloto: ESP32-S3 (Maestro con Super-Loop, FPU 32-bit y Servidor Web MVC), Arduino Nano (Esclavo de potencia AC 60Hz), Estación SCADA en PC (ISA-88), Módulo de Relé Optoacoplado de 2 Canales (puenteados en paralelo a GPIO 20 con ZCS) y Planta de Procesos Químicos con 4 tinas térmicas, Celda Hull y sondas analógicas."
+    },
+    "02_topologia_buses_datos": {
+      "num": "02",
+      "cat": "Comunicaciones & Hardware",
+      "title": "Topología Detallada de Buses y Bloques de Hardware",
+      "badge": "I2C • SPI • UART • Relé 2CH Puenteado",
+      "archivo": "02_topologia_buses_datos.mmd",
+      "desc": "Distribución física y protocolos de hardware: Bus I2C Fast-Mode a 400 kHz (ADS1115, MCP4725, AHT20, BMP280), Bus SPI Half-Duplex Read-Only con reloj compartido y 4 líneas CS para MAX6675, Enlace UART2 a 9600 baud con el Arduino Nano, y Módulo de Relé Optoacoplado de 2 Canales puenteados en paralelo (IN1 + IN2 a GPIO 20) para conmutación ZCS de alta corriente de la línea +12V VDD."
+    },
+    "03_concurrencia_superloop": {
+      "num": "03",
+      "cat": "Sistemas Operativos & Concurrencia",
+      "title": "Concurrencia, FreeRTOS y Secciones Críticas",
+      "badge": "Spinlocks • Atomicidad 8-bit",
+      "archivo": "03_concurrencia_superloop.mmd",
+      "desc": "Protección de variables volátiles compartidas entre el Super-Loop, el servidor HTTP asíncrono y las rutinas de control mediante cerrojos de sección crítica FreeRTOS (muxTermico, muxPH, muxFuente) en ESP32, y atomicidad en el microcontrolador esclavo de 8 bits (ATmega328P) con noInterrupts()/interrupts()."
+    },
+    "04_interlocks_estados": {
+      "num": "04",
+      "cat": "Seguridad & Decisiones",
+      "title": "Máquina de Estados e Interlocks de Seguridad Multicapa",
+      "badge": "Exclusión Mutua Química",
+      "archivo": "04_interlocks_estados.mmd",
+      "desc": "Protocolo estricto de interlock bidireccional: Las etapas térmicas y la fuente galvánica pueden operar conjuntamente en el electrodepósito, pero son mutuamente excluyentes con el módulo de pH para evitar degradación del electrodo de vidrio y ruido en el ADC (rechazo con HTTP 409 Conflict). El modo OTA apaga inmediatamente todos los actuadores y aísla el relé de 2 canales."
+    },
+    "05_control_termico_pi": {
+      "num": "05",
+      "cat": "Control Automático",
+      "title": "Algoritmo y Flujo del Control Térmico PI + Soft-Start",
+      "badge": "PI + Anti-Windup + Soft-Start",
+      "archivo": "05_control_termico_pi.mmd",
+      "desc": "Flujo de cálculo de cada canal térmico: lectura digital MAX6675 por SPI, detección de fallos o desconexión (Fail-Safe a 0%), supresión de sobretiro (T >= SP+2°C), integración con límites Anti-Windup (0-100%), rampa suave de arranque asíncrona (+1% cada 200 ms) y transmisión UART2 hacia el Arduino Nano."
+    },
+    "06_sumidero_corriente_vcss": {
+      "num": "06",
+      "cat": "Control & Potencia DC",
+      "title": "Lazo Cerrado Híbrido de Corriente VCSS y Conmutación ZCS",
+      "badge": "Analógico + Digital Outer Loop @ 2 Hz",
+      "archivo": "06_sumidero_corriente_vcss.mmd",
+      "desc": "Control de corriente galvánica de 0.00 a 6.60 A: Lazo analógico interno de respuesta instantánea (OpAmp LM358N + 2x MOSFETs IRLZ44Z + Shunts 1Ω) acoplado a un lazo digital externo en ESP32 (@ 2 Hz) con lectura de 16 bits en ADS1115, compensación adaptativa con zona muerta de ±30 mA y conmutación ZCS mediante módulo de relé de 2 canales puenteados en paralelo."
+    },
+    "07_secuencia_zcs_rele": {
+      "num": "07",
+      "cat": "Secuencias de Potencia",
+      "title": "Secuencia de Conmutación ZCS con Relé de 2 Canales Puenteados",
+      "badge": "Protección Contactos +12V ZCS",
+      "archivo": "07_secuencia_zcs_rele.mmd",
+      "desc": "Protocolo temporal de conmutación sin arco eléctrico en el módulo de relé de 2 canales puenteados en paralelo (+12V VDD Celda): Al encender, se anula el DAC a 0V, se cierran ambos canales del relé simultáneamente y se aguardan 80 ms para extinción de rebotes mecánicos antes de inyectar corriente; al apagar, se anula el DAC a 0V, se aguardan 30 ms para descarga capacitiva y se abren los contactos con cero amperios circulantes."
+    },
+    "08_filtro_ph_tri_modo": {
+      "num": "08",
+      "cat": "Instrumentación Analítica",
+      "title": "Filtrado Digital y Calibración Tri-Modo de pH con TDM",
+      "badge": "TDM 25 Hz • Mediana-3 • Dual-Slope • EWMA",
+      "archivo": "08_filtro_ph_tri_modo.mmd",
+      "desc": "Acondicionamiento de señal para electrodos combinados con multiplexación temporal TDM: muestreo a 860 SPS, acumulador de 10 muestras, filtro no lineal de mediana de 3 elementos para eliminar ruido de TRIACs, cálculo según modo (Modo 0: Nernst teórico, Modo 1: Lineal 2 puntos, Modo 2: Dual-Slope segmentado 3 puntos) y filtro EWMA dinámico (70/30) con salto rápido (>0.35 pH)."
+    },
+    "09_control_triacs_ac60hz": {
+      "num": "09",
+      "cat": "Potencia AC 60Hz",
+      "title": "Control de Fase AC 60 Hz en Arduino Nano con Watchdog",
+      "badge": "Interrupciones INT1 • LUT 101 Pts • Watchdog",
+      "archivo": "09_control_triacs_ac60hz.mmd",
+      "desc": "Control de ángulo de fase a 60 Hz: Interrupción por hardware en INT1 (4N35, duración ~8 µs), reinicio de registros de puerto directos (PORTD y PORTB), conversión no lineal de potencia activa RMS mediante Look-Up Table (0-100% -> 8333-0 µs), pulsos de gate de 80 µs y rama de contingencia Fail-Safe por Watchdog UART (3.0 segundos)."
+    },
+    "10_arquitectura_mvc_web": {
+      "num": "10",
+      "cat": "Arquitectura de Software",
+      "title": "Arquitectura Modular MVC del Servidor Web Embebido",
+      "badge": "Firmware v4.0 • Desacoplado MVC",
+      "archivo": "10_arquitectura_mvc_web.mmd",
+      "desc": "Patrón Modelo-Vista-Controlador en firmware C++: Vistas en memoria Flash PROGMEM (views/), Controladores HTTP desacoplados por dominio de negocio (controllers/) y Modelos de hardware y control, separando el ciclo de entrega de vistas HTML/CSS del ciclo de telemetría asíncrona periódica AJAX REST JSON."
+    },
+    "11_supervision_scada_isa88": {
+      "num": "11",
+      "cat": "Supervisión SCADA & Datos",
+      "title": "Supervisión SCADA y Gestor de Ensayos ISA-88 en PC",
+      "badge": "Recetas ISA-88 • IAE / ISE • Multihilo",
+      "archivo": "11_supervision_scada_isa88.mmd",
+      "desc": "Estructura del software SCADA de escritorio en Python (telemetria_gui.py): Gestor de recetas por lotes para 32 placas experimentales (diseño Taguchi), arquitectura multihilo (Tkinter GUI vs. Worker HTTP REST), osciloscopio virtual de disparo de TRIACs y ramas VCSS, cálculo en tiempo real de índices de desempeño dinámico (IAE, ISE) y exportación estructurada a CSV y gráficos HD a 300 DPI."
+    }
+  }
+}

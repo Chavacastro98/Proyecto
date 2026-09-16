@@ -1,0 +1,48 @@
+graph TB
+    subgraph SCADA_PC["Capa de Supervision y SCADA (PC / Tablet)"]
+        GUI["SCADA GUI Python (telemetria_gui.py)<br>• Gestor ISA-88 (32 Ensayos Taguchi)<br>• Osciloscopio TRIACs & VCSS<br>• Indices IAE/ISE en Tiempo Real<br>• Exportacion CSV & Figuras 300 DPI"]
+        WEB["Navegador Web (http://interfaz.local)<br>• Panel MVC Asincrono (AJAX/JSON)<br>• Calibracion Tri-Modo pH<br>• Actualizacion OTA Particion A/B"]
+    end
+
+    subgraph ESP32_MASTER["Capa de Control Maestro (ESP32-S3 @ 240 MHz)"]
+        CORE["Super-Loop Asincrono + FreeRTOS<br>• 4 Lazos PI Termicos a 1 Hz (FPU 32-bit)<br>• Rampa Suave Soft-Start a 5 Hz (+1%/200ms)<br>• Lazo Cerrado VCSS a 2 Hz (Outer Loop)<br>• Filtrado Digital pH TDM a 25 Hz (Mediana-3)<br>• Memoria NVS Flash (Preferences)"]
+        WEB_SRV["Servidor Web HTTP (Puerto 80)<br>• Arquitectura Modular MVC (views/ + controllers/)<br>• Endpoints REST / JSON<br>• SoftAP Wi-Fi ('Uli') + mDNS"]
+        GPIO_RELE["Control ZCS GPIO 20<br>Disparo Active-LOW"]
+    end
+
+    subgraph ARDUINO_SLAVE["Capa de Potencia AC (Arduino Nano @ 16 MHz)"]
+        ZC["Interrupcion Cruce por Cero (INT1 Pin 3)<br>Sincronismo de Red AC 60 Hz (8.33 ms)"]
+        LUT["Look-Up Table de Potencia RMS<br>Linealizacion senoidal 101 puntos"]
+        GATES["4x Disparadores TRIAC (BTA24 + MOC3021)<br>Pulsos de Gate de 80 us"]
+        WDG["Watchdog UART Fail-Safe (Timeout 3.0 s)"]
+    end
+
+    subgraph HARDWARE_CONMUTACION["Modulo de Aislamiento y Potencia Galvanica"]
+        RELE_2CH["Modulo Rele Optoacoplado 2 Canales<br>• Entradas IN1 + IN2 Puenteadas en Paralelo<br>• Disparo Simultaneo desde GPIO 20<br>• Contactos en Paralelo para +12V VDD (10A)"]
+        VCSS_STAGE["Etapa VCSS Analoga (LM358N + 2x IRLZ44Z)<br>DAC MCP4725 (I2C 0x60) -> Consigna 0-3.3V"]
+    end
+
+    subgraph PLANTA_FISICA["Planta de Procesos Quimicos (4 Tinas)"]
+        T1["Tina 1: Desengrase (450W AC)"]
+        T2["Tina 2: Decapado (450W AC)"]
+        T3["Tina 3: Celda Hull - Zincado (18W AC + VCSS 0-6.6A)"]
+        T4["Tina 4: Niquelado Watts (450W AC)"]
+        SENS_SPI["4x Termopares K + MAX6675 (SPI)"]
+        SENS_PH["2x Sondas pH (PH-4502C + ADS1115 A0/A1)"]
+        SENS_SHUNTS["2x Resistencias Shunt 1 Ohm (ADS1115 A2/A3)"]
+        SENS_AMB["Sensor Ambiental AHT20 + BMP280 (I2C)"]
+    end
+
+    SCADA_PC <==>|Wi-Fi HTTP / REST JSON| ESP32_MASTER
+    ESP32_MASTER ==>|UART2 TX GPIO 17 @ 9600 bps| ARDUINO_SLAVE
+    ARDUINO_SLAVE ==>|Pulsos de Fase Optoacoplados| T1 & T2 & T3 & T4
+    
+    GPIO_RELE ==>|Senal de Disparo ZCS| RELE_2CH
+    RELE_2CH ==>|Corte Fisico +12V Anodo| T3
+    ESP32_MASTER -->|I2C 400 kHz Consigna DAC| VCSS_STAGE
+    VCSS_STAGE ==>|Corriente Catodica Regulada 0-6.6A| T3
+
+    SENS_SPI ==>|Bus SPI SCK/MISO + 4x CS| ESP32_MASTER
+    SENS_PH ==>|Bus I2C ADS1115 A0/A1| ESP32_MASTER
+    SENS_SHUNTS ==>|Bus I2C ADS1115 A2/A3| ESP32_MASTER
+    SENS_AMB ==>|Bus I2C 0x38 / 0x76| ESP32_MASTER

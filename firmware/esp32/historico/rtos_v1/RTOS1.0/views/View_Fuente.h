@@ -1,0 +1,332 @@
+#pragma once
+#include <Arduino.h>
+
+/**
+ * =================================================================================
+ * VISTA: FUENTE DE CORRIENTE VCSS (View_Fuente.h) — Versión RTOS 1.0
+ * =================================================================================
+ * Panel de control y monitoreo del sumidero de corriente galvánico (VCSS) con
+ * sensado de shunts duales (canales A2/A3 ADS1115), control de pulsos de alta
+ * velocidad, relé de corte ZCS y lazo cerrado de compensación digital.
+ * Almacenado en PROGMEM (Flash).
+ * =================================================================================
+ */
+
+const char HTML_FUENTE[] PROGMEM = R"rawliteral(
+<!DOCTYPE html><html><head><meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Salida de Corriente &middot; FreeRTOS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#0b1120;color:#e2e8f0;min-height:100vh;padding:16px 14px 32px;}
+.container{max-width:560px;margin:0 auto;}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:16px 20px;background:rgba(15,23,42,0.7);border-radius:14px;border:1px solid rgba(56,189,248,0.08);}
+.nav-back{color:#38bdf8;text-decoration:none;font-weight:700;font-size:0.82em;transition:0.2s;}
+.nav-back:hover{color:#7dd3fc;}
+.hdr-title{font-size:1.1em;color:white;font-weight:800;letter-spacing:-0.3px;}
+.hdr-sub{font-size:0.65em;color:#64748b;font-weight:600;display:block;margin-top:2px;letter-spacing:0.5px;}
+
+/* Main Instrument Card */
+.card{background:linear-gradient(165deg,rgba(30,41,59,0.95),rgba(15,23,42,0.92));border-radius:22px;padding:24px 20px;border:1px solid rgba(56,189,248,0.12);box-shadow:0 12px 40px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.04);text-align:center;}
+
+/* Power Switch */
+.btn-pwr{width:100%;font-size:1.02em;padding:16px;border-radius:14px;font-weight:800;cursor:pointer;border:none;transition:all 0.25s cubic-bezier(.4,0,.2,1);letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-pwr-off{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 20px rgba(5,150,105,0.35);}
+.btn-pwr-off:hover{background:linear-gradient(135deg,#10b981,#059669);transform:translateY(-1px);box-shadow:0 6px 24px rgba(5,150,105,0.45);}
+.btn-pwr-on{background:linear-gradient(135deg,#b91c1c,#991b1b);color:#fff;box-shadow:0 4px 20px rgba(185,28,28,0.35);}
+.btn-pwr-on:hover{background:linear-gradient(135deg,#dc2626,#b91c1c);transform:translateY(-1px);box-shadow:0 6px 24px rgba(220,38,38,0.45);}
+
+/* Status Badge */
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;font-weight:800;font-size:0.78em;margin:16px 0 10px;letter-spacing:0.3px;}
+.status-on{background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.35);}
+.status-off{background:rgba(220,38,38,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.35);}
+
+/* Digital Ammeter Display */
+.meter-box{background:#020617;border-radius:16px;padding:18px 14px;margin:12px 0 20px;border:1px solid rgba(56,189,248,0.15);box-shadow:inset 0 2px 8px rgba(0,0,0,0.7);position:relative;overflow:hidden;}
+.meter-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.4),transparent);}
+.meter-sub{font-size:0.68em;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.amp-box{font-size:54px;color:#38bdf8;font-weight:900;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;}
+.amp-box span{color:#fff;}
+.meter-meta{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:0.75em;color:#94a3b8;font-weight:700;}
+.meter-meta b{color:#38bdf8;}
+
+/* Mode Selector */
+.btn-mode-wrap{display:flex;gap:6px;margin-bottom:18px;background:#0f172a;border-radius:12px;padding:4px;border:1px solid rgba(51,65,85,0.4);}
+.btn-m{flex:1;padding:10px 8px;border-radius:9px;border:none;font-weight:800;font-size:0.78em;cursor:pointer;transition:all 0.25s;letter-spacing:0.3px;}
+.btn-m.act{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;box-shadow:0 2px 10px rgba(37,99,235,0.4);}
+.btn-m.inact{background:transparent;color:#64748b;}
+.btn-m.inact:hover{color:#94a3b8;background:rgba(30,41,59,0.5);}
+
+/* Controls & Sliders */
+.ctrl-group{background:rgba(15,23,42,0.6);padding:14px 16px;border-radius:14px;margin-top:12px;text-align:left;border:1px solid rgba(51,65,85,0.4);}
+.ctrl-group label{font-weight:700;font-size:0.8em;color:#94a3b8;display:flex;justify-content:space-between;margin-bottom:6px;}
+.ctrl-group b{color:#38bdf8;}
+input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointer;height:6px;background:#1e293b;border-radius:3px;}
+
+/* Presets */
+.preset-wrap{display:flex;gap:6px;margin-top:8px;}
+.btn-preset{flex:1;padding:6px 4px;border-radius:7px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:0.7em;font-weight:800;cursor:pointer;transition:0.2s;}
+.btn-preset:hover{background:#334155;color:#38bdf8;border-color:#38bdf8;}
+
+/* Panel VCSS RTOS */
+.vcss-panel{background:rgba(15,23,42,0.6);border-radius:16px;padding:18px 16px;margin-top:18px;border:1px solid rgba(56,189,248,0.15);text-align:left;}
+.vcss-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:0.7em;color:#94a3b8;font-weight:800;letter-spacing:0.5px;flex-wrap:wrap;gap:8px;}
+.vcss-badges{display:flex;gap:6px;}
+.vcss-badge{background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 8px;border-radius:6px;font-size:0.75em;font-weight:800;}
+.vcss-badge.off{background:rgba(71,85,105,0.2);color:#94a3b8;border-color:#475569;}
+.vcss-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.vcss-item{background:#0b1120;padding:12px 8px;border-radius:12px;text-align:center;border:1px solid rgba(51,65,85,0.4);box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);}
+.vcss-lbl{font-size:0.62em;color:#64748b;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
+.vcss-val{font-size:1.15em;font-weight:900;color:#38bdf8;font-variant-numeric:tabular-nums;}
+.vcss-sub{font-size:0.68em;color:#94a3b8;font-weight:700;margin-top:4px;}
+.vcss-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-vcss{flex:1;min-width:120px;padding:10px 8px;background:#1e293b;border:1px solid #334155;color:#cbd5e1;border-radius:9px;font-size:0.72em;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.btn-vcss:hover{background:#334155;color:#fff;}
+.btn-cal{border-color:rgba(251,191,36,0.3);color:#fbbf24;}
+.btn-cal:hover{background:rgba(217,119,6,0.2);color:#fcd34d;}
+.btn-reset{border-color:rgba(56,189,248,0.35);color:#38bdf8;}
+.btn-reset:hover{background:rgba(56,189,248,0.15);color:#7dd3fc;}
+
+@media(max-width:440px){
+  .amp-box{font-size:42px;}
+  .vcss-grid{grid-template-columns:1fr;}
+}
+</style></head>
+<body>
+    <div class='container'>
+        <div class='hdr'>
+            <a href='/' class='nav-back'>&larr; Men&uacute;</a>
+            <div style='text-align:center'>
+                <span class='hdr-title'>Salida de Corriente</span>
+                <span class='hdr-sub'>CONTROL VCSS &middot; SHUNT DUAL &middot; LAZO CERRADO</span>
+            </div>
+            <div></div>
+        </div>
+
+        <div class='card'>
+            <button class='btn-pwr btn-pwr-off' id='btn-power' onclick='togglePower()'>ENCENDER FUENTE</button>
+            
+            <div><span class='status-badge status-off' id='status-badge'>ESTADO: EN ESPERA (0.00 A)</span></div>
+
+            <div class='meter-box'>
+                <div class='meter-sub'>Salida de Corriente</div>
+                <div class='amp-box'><span id='amp-amps'>0.00</span> A</div>
+                <div class='meter-meta'>
+                    <span>Consigna: <b id='amp-calc'>1.65</b> A</span>
+                    <span>Modo: <b id='modo-str'>Continua (DC)</b></span>
+                </div>
+            </div>
+
+            <div class='btn-mode-wrap'>
+                <button class='btn-m act' id='btn-dc' onclick='setModo(0)'>CONTINUA (DC)</button>
+                <button class='btn-m inact' id='btn-pulsed' onclick='setModo(1)'>PULSADA (1-100 Hz)</button>
+            </div>
+
+            <div class='ctrl-group'>
+                <label>
+                    <span>Amplitud: <b id='amp-bits'>1024</b> bits</span>
+                    <span>(<span id='amp-calc2'>1.65</span> A)</span>
+                </label>
+                <input type='range' id='slide-amp' min='0' max='4095' value='1024' oninput='onAmpChange(this.value)'>
+                <div class='preset-wrap'>
+                    <button class='btn-preset' onclick='setPreset(0.5)'>0.50 A</button>
+                    <button class='btn-preset' onclick='setPreset(1.0)'>1.00 A</button>
+                    <button class='btn-preset' onclick='setPreset(1.5)'>1.50 A</button>
+                    <button class='btn-preset' onclick='setPreset(2.0)'>2.00 A</button>
+                </div>
+            </div>
+
+            <div id='pulsed-options' style='display:none;'>
+                <div class='ctrl-group'>
+                    <label><span>Frecuencia</span><b id='freq-val'>10 Hz</b></label>
+                    <input type='range' id='slide-freq' min='1' max='100' value='10' oninput='sendParam("f", this.value)'>
+                </div>
+                <div class='ctrl-group'>
+                    <label><span>Ciclo de Trabajo</span><b id='duty-val'>50 %</b></label>
+                    <input type='range' id='slide-duty' min='1' max='99' value='50' oninput='sendParam("d", this.value)'>
+                </div>
+            </div>
+
+            <!-- Panel Sensado VCSS -->
+            <div class='vcss-panel'>
+                <div class='vcss-hdr'>
+                    <span>MONITOREO DE CORRIENTE</span>
+                    <div class='vcss-badges'>
+                        <span class='vcss-badge' id='rele-badge'>REL&Eacute; +12V: AISLADO</span>
+                        <span class='vcss-badge' id='comp-badge'>CONTROL AUTOM&Aacute;TICO: ACTIVO</span>
+                    </div>
+                </div>
+                <div class='vcss-grid'>
+                    <div class='vcss-item'>
+                        <div class='vcss-lbl'>Rama 1 (MOSFET 1)</div>
+                        <div class='vcss-val' id='i1-val'>0.00 A</div>
+                        <div class='vcss-sub' id='v1-val'>0.000 V</div>
+                    </div>
+                    <div class='vcss-item'>
+                        <div class='vcss-lbl'>Rama 2 (MOSFET 2)</div>
+                        <div class='vcss-val' id='i2-val'>0.00 A</div>
+                        <div class='vcss-sub' id='v2-val'>0.000 V</div>
+                    </div>
+                    <div class='vcss-item'>
+                        <div class='vcss-lbl'>Total Medido</div>
+                        <div class='vcss-val' id='itot-val' style='color:#34d399;'>0.00 A</div>
+                        <div class='vcss-sub' id='gm-val'>Gm: 2.000 S</div>
+                    </div>
+                </div>
+                <div class='vcss-actions'>
+                    <button class='btn-vcss' id='btn-comp' onclick='toggleComp()'>Desactivar Control Autom&aacute;tico</button>
+                    <button class='btn-vcss btn-cal' onclick='calibrarVCSS()'>Auto-Calibrar</button>
+                    <button class='btn-vcss btn-reset' onclick='resetCalibrarVCSS()'>Ganancia Predeterminada</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var fuenteActiva = false;
+        var isDragging = false;
+        var compActivo = true;
+
+        function loadFuenteData(){
+            if (isDragging) return;
+            fetch('/data_f').then(function(r){return r.json();}).then(function(d){
+                fuenteActiva = (d.act == 1);
+                compActivo = (d.comp == 1);
+                var btnPwr = document.getElementById('btn-power');
+                var badge = document.getElementById('status-badge');
+                var ampVal = parseFloat(d.amps).toFixed(2);
+                
+                if (fuenteActiva) {
+                    btnPwr.innerText = "APAGAR FUENTE";
+                    btnPwr.className = "btn-pwr btn-pwr-on";
+                    badge.innerText = "ESTADO: ACTIVA (" + ampVal + " A)";
+                    badge.className = "status-badge status-on";
+                    document.getElementById('amp-amps').innerText = ampVal;
+                } else {
+                    btnPwr.innerText = "ENCENDER FUENTE";
+                    btnPwr.className = "btn-pwr btn-pwr-off";
+                    badge.innerText = "ESTADO: EN ESPERA (0.00 A)";
+                    badge.className = "status-badge status-off";
+                    document.getElementById('amp-amps').innerText = "0.00";
+                }
+
+                var isPulsed = (d.modo == 1);
+                document.getElementById('btn-dc').className = isPulsed ? "btn-m inact" : "btn-m act";
+                document.getElementById('btn-pulsed').className = isPulsed ? "btn-m act" : "btn-m inact";
+                document.getElementById('pulsed-options').style.display = isPulsed ? "block" : "none";
+                document.getElementById('modo-str').innerText = isPulsed ? "Pulsada (" + d.freq + " Hz)" : "Continua (DC)";
+
+                document.getElementById('slide-amp').value = d.sp;
+                document.getElementById('amp-bits').innerText = d.sp;
+                document.getElementById('amp-calc').innerText = ampVal;
+                var calcEl = document.getElementById('amp-calc2');
+                if(calcEl) calcEl.innerText = ampVal;
+
+                document.getElementById('slide-freq').value = d.freq;
+                document.getElementById('freq-val').innerText = d.freq + " Hz";
+
+                document.getElementById('slide-duty').value = d.duty;
+                document.getElementById('duty-val').innerText = d.duty + " %";
+
+                // VCSS
+                document.getElementById('i1-val').innerText = d.i1.toFixed(2) + " A";
+                document.getElementById('v1-val').innerText = d.vs1.toFixed(3) + " V";
+                document.getElementById('i2-val').innerText = d.i2.toFixed(2) + " A";
+                document.getElementById('v2-val').innerText = d.vs2.toFixed(3) + " V";
+                document.getElementById('itot-val').innerText = d.i_real.toFixed(2) + " A";
+                document.getElementById('gm-val').innerText = "Gm: " + (d.gm * 2.0).toFixed(3) + " S (" + d.gm.toFixed(3) + "x)";
+
+                var releBadge = document.getElementById('rele-badge');
+                if (d.rele == 1) {
+                    releBadge.innerText = "RELÉ +12V: CERRADO (ACTIVO)";
+                    releBadge.className = "vcss-badge";
+                } else {
+                    releBadge.innerText = "RELÉ +12V: AISLADO (0V)";
+                    releBadge.className = "vcss-badge off";
+                }
+
+                var compBadge = document.getElementById('comp-badge');
+                var btnComp = document.getElementById('btn-comp');
+                if (d.comp == 1) {
+                    compBadge.innerText = "CONTROL AUTOMÁTICO: ACTIVO";
+                    compBadge.className = "vcss-badge";
+                    btnComp.innerHTML = "Desactivar Control Autom&aacute;tico";
+                } else {
+                    compBadge.innerText = "CONTROL AUTOMÁTICO: INACTIVO";
+                    compBadge.className = "vcss-badge off";
+                    btnComp.innerHTML = "Activar Control Autom&aacute;tico";
+                }
+            }).catch(function(){});
+        }
+
+        function onAmpChange(val) {
+            isDragging = true;
+            document.getElementById('amp-bits').innerText = val;
+            var a = ((val / 4095.0) * 6.6).toFixed(2);
+            document.getElementById('amp-calc').innerText = a;
+            var calcEl = document.getElementById('amp-calc2');
+            if(calcEl) calcEl.innerText = a;
+            sendParam("a", val);
+            setTimeout(function(){ isDragging = false; }, 300);
+        }
+
+        function setPreset(amps) {
+            var val = Math.round((amps / 6.6) * 4095.0);
+            if(val > 4095) val = 4095;
+            document.getElementById('slide-amp').value = val;
+            onAmpChange(val);
+        }
+
+        function sendParam(param, val) {
+            fetch('/set_f?p=' + param + '&v=' + val).then(function(){
+                loadFuenteData();
+            });
+        }
+
+        function setModo(modo) {
+            fetch('/modo_f?v=' + modo).then(function(){
+                loadFuenteData();
+            });
+        }
+
+        function togglePower() {
+            var nuevoEstado = fuenteActiva ? 0 : 1;
+            fetch('/act_f?run=' + nuevoEstado).then(function(r){
+                if(r.status === 403) alert('¡Bloqueado por Interlock!\nEl módulo de pH está activo.\nDebes apagar el pH manualmente en su menú antes de encender la salida de corriente.');
+                loadFuenteData();
+            });
+        }
+
+        function toggleComp() {
+            var nuevoComp = compActivo ? 0 : 1;
+            fetch('/set_comp_f?v=' + nuevoComp).then(function(){
+                loadFuenteData();
+            });
+        }
+
+        function calibrarVCSS() {
+            if(!confirm("¿Iniciar auto-calibración de corriente?\nSe aplicará una corriente de prueba de 1.50 A durante 1 segundo para calibrar los sensores.")) return;
+            fetch('/cal_vcss').then(function(r){ return r.json(); }).then(function(res){
+                if(res.ok == 1) alert("¡Auto-calibración exitosa!\nNuevo factor Gm: " + res.gm.toFixed(4) + " (Guardado en Flash NVS)");
+                else alert("❌ Error en la calibración: La corriente medida estuvo fuera de rango.");
+                loadFuenteData();
+            }).catch(function(){
+                alert("Error de comunicación durante la calibración.");
+            });
+        }
+
+        function resetCalibrarVCSS() {
+            if(!confirm("¿Restablecer a la ganancia predeterminada (2.00 S)?\nEsto sobreescribe en Flash NVS el factor a 1.0000 y fija la transconductancia nominal.")) return;
+            fetch('/reset_cal_vcss').then(function(r){ return r.json(); }).then(function(res){
+                if(res.ok == 1) alert("¡Ganancia predeterminada restablecida con éxito!\nTransconductancia: 2.000 S (Factor: 1.0000x guardado en NVS).");
+                loadFuenteData();
+            }).catch(function(){
+                alert("Error de comunicación al restablecer la ganancia.");
+            });
+        }
+
+        setInterval(loadFuenteData, 1500); loadFuenteData();
+    </script>
+</body></html>
+)rawliteral";

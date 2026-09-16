@@ -1,0 +1,28 @@
+sequenceDiagram
+    autonumber
+    actor Usuario as Operador / SCADA
+    participant ESP as ESP32 (Modulo_Fuentes)
+    participant Rele as Rele VCSS (GPIO 20)
+    participant DAC as DAC MCP4725 (I2C 0x60)
+    participant Celda as Celda Hull (+12V VDD)
+
+    Note over Usuario,Celda: Protocolo Zero-Current Switching (ZCS) con Soft-Start (RTOS 2.0)
+    Usuario->>ESP: POST /act_f?run=1 (Encender Fuente Galvanica)
+    ESP->>DAC: dac.setVoltage(0) (Asegurar corriente estrictamente 0.00 A)
+    ESP->>Rele: digitalWrite(GPIO20, LOW) (Cierra contactos Rele de potencia)
+    Note over Rele: Espera mecanica: 80 ms (Extincion de rebotes / contact bounce)
+    ESP->>ESP: vTaskDelay(80 ms)
+    Note over ESP,DAC: Fase 1: Soft-Start Anti-Inrush (500 ms) - PI_STATE_RAMP
+    ESP->>DAC: Rampa lineal ascendente de DAC: 0 -> Setpoint (500 ms)
+    Note over ESP,Celda: Fase 2: Inrush Blanking Time (300 ms) - PI_STATE_BLANKING
+    ESP->>ESP: Asentamiento electroquimico seguro en lazo abierto (sin windup)
+    Note over ESP,Celda: Fase 3: Lazo PI Discreto Enganchado (2 Hz) - PI_STATE_LOCKED
+    DAC->>Celda: Conduccion galvanica regulada (0.00 a 3.50 A DC / Pulsado ETS)
+
+    Note over Usuario,Celda: Protocolo Zero-Current Switching (ZCS) - Apagado Seguro
+    Usuario->>ESP: POST /act_f?run=0 (Apagar Fuente Galvanica)
+    ESP->>DAC: dac.setVoltage(0) (Anular consigna a 0.00 V inmediatamente)
+    Note over DAC,Celda: Espera electrica: 30 ms (Descarga de capacitancias de desacoplo)
+    ESP->>ESP: vTaskDelay(30 ms)
+    ESP->>Rele: digitalWrite(GPIO20, HIGH) (Abre Rele a I=0.00 A sin arco)
+    Note over Rele,Celda: Linea +12V VDD Fisicamente Aislada (Seguridad Total)

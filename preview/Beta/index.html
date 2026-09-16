@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Maestro - Beta</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .menu-card {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 500px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+        .badge-beta {
+            display: inline-block;
+            background: #eab308;
+            color: #713f12;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-bottom: 12px;
+        }
+        .env-box {
+            display: flex;
+            justify-content: space-around;
+            background: #334155;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .env-item {
+            font-size: 0.9em;
+            color: #38bdf8;
+        }
+        .env-val {
+            font-size: 1.4em;
+            display: block;
+            color: white;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .btn-menu {
+            display: block;
+            padding: 18px;
+            margin: 15px auto;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .btn-menu:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-card">
+        <span class="badge-beta">PROTOTIPO MONOLÍTICO (BETA)</span>
+        <h1>DASHBOARD MAESTRO</h1>
+        <p style="color:#94a3b8">Fernando Salvador Samayoa Martinez</p>
+        <div class="env-box">
+            <div class="env-item">TEMP<span class="env-val" id="et">24.5°C</span></div>
+            <div class="env-item">HUM<span class="env-val" id="eh">48%</span></div>
+            <div class="env-item">PRES<span class="env-val" id="ep">1013.2 hPa</span></div>
+        </div>
+        <a href="termico.html" class="btn-menu">🔥 CONTROL TÉRMICO</a>
+        <a href="fuente.html" class="btn-menu">⚡ FUENTE DE CORRIENTE</a>
+        <a href="ph.html" class="btn-menu">🧪 MONITOR DE pH DUAL</a>
+    </div>
+    <script>
+        function updEnv(){
+            fetch('/data_env')
+                .then(r => r.json())
+                .then(d => {
+                    document.getElementById('et').innerText = d.t + "°C";
+                    document.getElementById('eh').innerText = d.h + "%";
+                    document.getElementById('ep').innerText = d.p + " hPa";
+                })
+                .catch(() => {
+                    const t = (24.2 + Math.random() * 0.4).toFixed(1);
+                    const h = Math.round(48 + Math.random() * 2);
+                    const p = (1013.1 + Math.random() * 0.3).toFixed(1);
+                    document.getElementById('et').innerText = t + "°C";
+                    document.getElementById('eh').innerText = h + "%";
+                    document.getElementById('ep').innerText = p + " hPa";
+                });
+        }
+        setInterval(updEnv, 3000); 
+        updEnv();
+    </script>
+</body>
+</html>

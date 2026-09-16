@@ -1,0 +1,28 @@
+graph TB
+    subgraph ISA88_HIERARCHY["Jerarquia de Recetas por Lotes (Estandar ISA-88)"]
+        PROC["Procedimiento General: Matriz de 32 Placas Experimentales (Taguchi)"]
+        UNIT_OPS["Operaciones de Proceso por Tina:<br>1. Desengrase Alcalino (450W @ 80-95 C)<br>2. Decapado Alcalino (Na3PO4 450W @ 80-95 C)<br>3. Celda Hull Zincado Acido (18W + VCSS 0-3.5A)<br>4. Niquelado sobre Zinc (450W @ 30-40 C)"]
+        PHASES["Fases de Control Automatizado:<br>• Rampa de Calentamiento Soft-Start<br>• Meseta Isotermica Estable (+-0.5 C)<br>• Electrodeposicion DC / Pulsada con Rele ZCS<br>• Monitoreo de Salud de Celda & Faraday<br>• Lavado y Enfriamiento Final"]
+        PROC --> UNIT_OPS --> PHASES
+    end
+
+    subgraph GRAVIMETRIA_FLOW["Flujo Asistido de Gravimetria (Balanza Analitica)"]
+        P_INI["1. Modal de Pesaje Inicial: Registro de P_ini (g con 4 decimales)"]
+        PROCESO_4E["2. Ejecucion Secuencial Automatizada de Etapas 1 a 4"]
+        P_FIN["3. Alarma Industrial y Modal de Pesaje Final: P_fin (g)"]
+        CALC_FARADAY["4. Balances Electroquimicos Inmediatos:<br>• Delta m_real = P_fin - P_ini<br>• m_teo = (Q * M) / (z * F)<br>• Rendimiento Faradaico η% = (Delta m_real / m_teo) * 100<br>• Espesor Medio e = Delta m_real / (rho * A) * 10^4 (um)"]
+        P_INI --> PROCESO_4E --> P_FIN --> CALC_FARADAY
+    end
+
+    subgraph SCADA_FEATURES["Arquitectura Multihilo del SCADA PC (telemetria_gui.py)"]
+        WORKER_THREAD["Hilo Secundario de Adquisicion (Worker Thread)<br>• Endpoint Unificado /data_all (Ruta Rapida 1 s)<br>• Telemetria de Shunts Vs1/Vs2 e I1/I2<br>• Fallback Automatico a Endpoints Individuales"]
+        GUI_THREAD["Hilo Principal Tkinter (GUI 60 FPS)<br>• Perfiles Termicos y Corriente en Vivo<br>• Osciloscopio Virtual & Diagnostico de Celda<br>• Retrato de Fase e_punto(t) vs e(t)"]
+        ERRORS["Metricas de Control e Indices Dinamicos<br>• Error Instantaneo e(t) = SP(t) - PV(t)<br>• Indices IAE e ISE Acumulados"]
+        STORAGE["Generador Cientifico (graficar_datos.py)<br>• CSVs Jerarquicos de Telemetria y Errores<br>• 5 Figuras HD a 300 DPI + Dashboard Ejecutivo"]
+    end
+
+    PHASES --> P_INI
+    WORKER_THREAD <==>|Cola Sincronizada Thread-Safe| GUI_THREAD
+    CALC_FARADAY --> STORAGE
+    GUI_THREAD --> ERRORS
+    ERRORS --> STORAGE

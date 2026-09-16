@@ -1,0 +1,30 @@
+flowchart LR
+    subgraph LAZO_DIGITAL["ESP32 (Lazo Digital Externo Outer Loop @ 2 Hz)"]
+        SP_I["Consigna Deseada (0.00 a 6.60 A)"] --> COND_COMP{"Fuente Activa, !modoPulsado,<br>!phActivo y SP >= 0.10A?"}
+        COND_COMP -- No --> KEEP_DAC["Mantener amplitudDAC = Setpoint"]
+        COND_COMP -- Si --> COMP_ERR["Error: e_I = I_target - I_total"]
+        COMP_ERR --> DEADBAND{"|e_I| > 30 mA?"}
+        DEADBAND -- Si --> DELTA_DAC["deltaDAC = e_I * (4095/6.6) * 0.25<br>Saturacion de Paso: -12 a +12 LSB"]
+        DELTA_DAC --> ADJ_DAC["amplitudDAC = constrain(amplitudDAC + deltaDAC, 0, 4095)"]
+        DEADBAND -- No --> KEEP_DAC
+    end
+
+    ADJ_DAC --> DAC_HW["DAC MCP4725 (I2C 0x60 - 12 bits)"]
+    KEEP_DAC --> DAC_HW
+
+    subgraph POTENCIA_VCSS["Etapa de Potencia VCSS (Lazo Analogico Interno Instantaneo)"]
+        DAC_HW -->|Voltaje 0.00 a 3.30V| OPAMP["OpAmp LM358N (Feedback Negativo)"]
+        OPAMP -->|V_gate| MOSFET["2x MOSFET IRLZ44Z N-Channel (TO-220)"]
+        MOSFET -->|I_celda| CELDA["Celda Hull (Tina 3 Zincado)"]
+        CELDA --> SHUNTS["2x Resistencias Shunt 1.0 Ohm / 10W Ceramicas de Cemento"]
+        SHUNTS -->|V_shunt1 y V_shunt2| OPAMP
+    end
+
+    subgraph ALIMENTACION_ZCS["Linea de Alimentacion +12V VDD"]
+        GPIO_RELE["ESP32 GPIO 20 (Disparo ZCS)"] --> RELE_2CH["Modulo Rele 2CH Optoacoplado<br>(Entradas IN1+IN2 Puenteadas)"]
+        RELE_2CH -->|+12V DC VDD Conmutado sin Arco| CELDA
+    end
+
+    SHUNTS -->|Caidas de Tension| ADC_ADS["ADC ADS1115 (Canales A2 y A3 @ 16-bit)"]
+    ADC_ADS --> CALC_ITOTAL["I_total = (I_shunt1 + I_shunt2) * Factor_Gm"]
+    CALC_ITOTAL --> COMP_ERR

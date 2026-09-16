@@ -1,0 +1,57 @@
+stateDiagram-v2
+    [*] --> Standby: Arranque ESP32-S3 N16R8 (Todo Seguro)
+
+    state Standby {
+        [*] --> Listo: DAC=0V, Rele VDD=Aislado (HIGH), TRIACs=0%
+        Listo --> Standby_Led: Baliza Neopixel Faro Verde / Standby Conectado
+    }
+
+    state Proceso {
+        state "Control Termico (4x PI @ 1 Hz)" as Termico
+        state "Fuente Galvanica VCSS (Lazo PI & ZCS)" as Fuente
+        state "Monitoreo Ambiental (AHT20/BMP280 @ 0.2 Hz)" as Ambiental
+        
+        Termico --> Termico: PI 1000ms + Rampa 200ms
+        
+        state Fuente {
+            [*] --> RampaSoftStart: Rele Energizado (80ms)
+            RampaSoftStart --> InrushBlanking: t >= 500ms (PI_STATE_RAMP)
+            InrushBlanking --> LazoPI_Activo: t >= 800ms (PI_STATE_BLANKING 300ms)
+            LazoPI_Activo --> LazoPI_Enganchado: |error| < 10mA (PI_STATE_LOCKED)
+            LazoPI_Enganchado --> LazoPI_Activo: |error| >= 10mA (Anti-Windup +-0.15A)
+        }
+    }
+
+    state ModuloPH {
+        state "Muestreo Continuo ADS1115 (Canal A1 @ 860 SPS)" as MuestreoPH
+        state "Filtro Mediana-3 + EWMA Adaptativo" as FiltroPH
+    }
+
+    state ModoOTA {
+        state "Corte Inmediato de Actuadores (Fail-Safe)" as ApagadoTotal
+        state "Escritura en Flash 16MB (Particion Dual 3MB)" as FlashUpdate
+    }
+
+    state FailSafeLatch {
+        state "Enclavamiento Fisico Permanente (ISA-18.2)" as LatchActivo
+        state "Rele VDD = Abierto, Nano = 0-0-0-0, DAC = 0V" as HardwareCorte
+        state "Baliza Neopixel = Rojo Estroboscopico (4 Hz)" as BalizaAlerta
+    }
+
+    Standby --> Proceso: Encender Termico o Fuente (Rele Energizado ZCS)
+    Proceso --> Standby: Apagar Termico y Fuente (Rele Aislado ZCS)
+
+    Standby --> ModuloPH: Encender pH (Termico=OFF, Fuente=OFF, Rele=Aislado)
+    ModuloPH --> Standby: Apagar pH
+
+    Proceso --> ModuloPH: Intentar Encender pH -> BLOQUEADO (HTTP 409 Conflict)
+    ModuloPH --> Proceso: Intentar Encender Proceso -> Apaga pH Automaticamente
+
+    Standby --> ModoOTA: Subir firmware .bin (Todo en OFF)
+    Proceso --> ModoOTA: Subir firmware .bin (Apagado Inmediato de Actuadores)
+    ModoOTA --> Standby: Reinicio ESP32 (Firmware Validado)
+
+    Proceso --> FailSafeLatch: Sobrecorriente >3.5A / Sobretemp / Heartbeat Timeout
+    Standby --> FailSafeLatch: Falla Critica de Sensor / Hardware I2C Perdido
+    ModuloPH --> FailSafeLatch: Falla ADC ADS1115
+    FailSafeLatch --> Standby: Reset Exclusivo por Operador (/failsafe_reset)

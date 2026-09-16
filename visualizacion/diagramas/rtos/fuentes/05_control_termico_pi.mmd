@@ -1,0 +1,35 @@
+flowchart TD
+    subgraph RAMPA_ASYNC["Lazo Asincrono de Rampa Suave (Cada 200 ms / 5 Hz)"]
+        T_RAMP["Temporizador 200 ms"] --> CHECK_RAMP{"Canal Activo y Limite < 100%?"}
+        CHECK_RAMP -- Si --> INC_RAMP["limitePotencia += 1.0%"]
+        CHECK_RAMP -- No --> KEEP_RAMP["Mantener limitePotencia"]
+    end
+
+    subgraph LAZO_PI["Lazo de Control PI (Cada 1000 ms / 1 Hz)"]
+        START([Inicio Ciclo 1000 ms]) --> READ_SPI["Leer Termopar MAX6675 via SPI"]
+        READ_SPI --> CHECK_VALID{"Lectura Valida: 0 a 150 C"}
+        CHECK_VALID -- No --> FAILSAFE["FAIL-SAFE: Canal Inactivo, Integral=0, Potencia=0%"]
+        FAILSAFE --> SEND_UART["Enviar 0% al Arduino Nano"]
+        CHECK_VALID -- Si --> CHECK_RUN{"Canal Activo?"}
+        CHECK_RUN -- No --> RESET_INT["Integral = 0, Potencia = 0%"]
+        RESET_INT --> SEND_UART
+        CHECK_RUN -- Si --> CHECK_OVER{"T >= SP + 2.0 C?"}
+        CHECK_OVER -- Si --> ZERO_POT["Potencia Calculada = 0% (Supresion Sobretiro)"]
+        ZERO_POT --> SOFT_RAMP
+        CHECK_OVER -- No --> CALC_ERROR["e = Setpoint - Temperatura"]
+        CALC_ERROR --> CALC_P["P = Kp * e"]
+        CALC_P --> ACC_INT["Integral += e * dt (dt = 1.0 s)"]
+        ACC_INT --> CLAMP_INT{"Anti-Windup Clamping"}
+        CLAMP_INT -- Integral * Ki > 100 --> LIMIT_SUP["Integral = 100.0 / Ki"]
+        CLAMP_INT -- Integral * Ki < 0 --> LIMIT_INF["Integral = 0.0"]
+        CLAMP_INT -- 0 a 100% --> CALC_PI["u_pi = P + Ki * Integral"]
+        LIMIT_SUP --> CALC_PI
+        LIMIT_INF --> CALC_PI
+        CALC_PI --> SOFT_RAMP["Modulacion Rampa: pot = min(u_pi, limitePotencia)"]
+        SOFT_RAMP --> UPDATE_STRUCT["Actualizar struct canal[i].potenciaActual"]
+        UPDATE_STRUCT --> FORMAT_CSV["Formatear trama UART: 'pot0,pot1,pot2,pot3'"]
+        FORMAT_CSV --> SEND_UART
+        SEND_UART --> END_NODE([Fin Ciclo 1000 ms])
+    end
+
+    INC_RAMP -.->|Alimenta Limite| SOFT_RAMP

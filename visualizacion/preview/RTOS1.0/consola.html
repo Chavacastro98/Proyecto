@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Consola de Diagnóstico &middot; FreeRTOS (Preview RTOS 1.0)</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:#0b1120;color:#e2e8f0;min-height:100vh;display:flex;flex-direction:column;padding:16px 14px;}
+    .container{max-width:960px;width:100%;margin:0 auto;display:flex;flex-direction:column;flex:1;}
+
+    /* Hub Nav */
+    .hub-link{display:inline-flex;align-items:center;gap:6px;color:#38bdf8;text-decoration:none;font-size:0.75em;font-weight:700;margin-bottom:12px;padding:4px 12px;background:rgba(56,189,248,0.08);border-radius:8px;border:1px solid rgba(56,189,248,0.2);transition:all 0.2s;}
+    .hub-link:hover{color:#7dd3fc;background:rgba(56,189,248,0.18);transform:translateY(-1px);}
+
+    /* Header Box */
+    .header-box{background:linear-gradient(165deg,rgba(30,41,59,0.95),rgba(15,23,42,0.92));padding:16px 20px;border-radius:18px;border:1px solid rgba(56,189,248,0.12);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;box-shadow:0 8px 30px rgba(0,0,0,0.45);}
+    .title-group{display:flex;align-items:center;gap:14px;}
+    .mac-dots{display:flex;gap:6px;}
+    .mac-dot{width:11px;height:11px;border-radius:50%;}
+    .mac-red{background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,0.5);}
+    .mac-yellow{background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,0.5);}
+    .mac-green{background:#10b981;box-shadow:0 0 6px rgba(16,185,129,0.5);}
+    .nav-back{color:#38bdf8;text-decoration:none;font-weight:700;font-size:0.82em;transition:0.2s;}
+    .nav-back:hover{color:#7dd3fc;}
+    .title-group h2{font-size:1.05em;color:#fff;font-weight:800;letter-spacing:-0.2px;display:flex;align-items:center;gap:8px;}
+
+    /* Actions Toolbar */
+    .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .btn{padding:7px 14px;border-radius:8px;font-size:0.75em;font-weight:700;border:1px solid #334155;background:#1e293b;color:#94a3b8;cursor:pointer;transition:all 0.2s;}
+    .btn:hover{background:#334155;color:#fff;}
+    .btn.active{background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;border-color:#38bdf8;box-shadow:0 2px 8px rgba(37,99,235,0.3);}
+    .status-pill{display:inline-flex;align-items:center;gap:6px;font-size:0.72em;padding:4px 12px;border-radius:20px;background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.3);font-weight:800;letter-spacing:0.3px;}
+
+    /* Terminal Chassis */
+    .term-container{flex:1;background:#020617;border-radius:18px;border:1px solid rgba(56,189,248,0.15);padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;box-shadow:inset 0 4px 24px rgba(0,0,0,0.8);min-height:460px;max-height:calc(100vh - 140px);position:relative;}
+    .term-container::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.3),transparent);}
+
+    /* Log Rows */
+    .log-row{font-size:0.82em;line-height:1.6;display:flex;gap:10px;word-break:break-all;border-bottom:1px solid rgba(255,255,255,0.03);padding-bottom:4px;align-items:baseline;}
+    .log-row:hover{background:rgba(255,255,255,0.02);}
+    .log-time{color:#64748b;min-width:70px;font-weight:600;font-variant-numeric:tabular-nums;}
+    .log-tag{font-weight:800;min-width:80px;padding:1px 6px;border-radius:5px;font-size:0.88em;text-align:center;}
+    .tag-INFO{background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.25);}
+    .tag-WARN{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);}
+    .tag-ERR{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+    .log-msg{color:#f1f5f9;flex:1;}
+
+    @media(max-width:600px){
+      .header-box{flex-direction:column;align-items:flex-start;}
+      .actions{width:100%;justify-content:space-between;}
+    }
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <div style="text-align:left;">
+      <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
+    </div>
+
+    <div class='header-box'>
+      <div class='title-group'>
+        <div class='mac-dots'>
+          <div class='mac-dot mac-red'></div>
+          <div class='mac-dot mac-yellow'></div>
+          <div class='mac-dot mac-green'></div>
+        </div>
+        <a href='index.html' class='nav-back'>&larr; Men&uacute;</a>
+        <h2>Consola de Diagn&oacute;stico</h2>
+      </div>
+      <div class='actions'>
+        <span class='status-pill' id='st-pill'>&#9679; SIMULADOR ACTIVO</span>
+        <button class='btn active' id='btn-scroll' onclick='toggleScroll()'>Auto-Scroll: ON</button>
+        <button class='btn' id='btn-pause' onclick='togglePause()'>Pausar</button>
+        <button class='btn' onclick='clearScreen()'>Limpiar</button>
+      </div>
+    </div>
+
+    <div class='term-container' id='term'></div>
+  </div>
+
+  <script>
+    var autoScroll = true;
+    var pausado = false;
+    var term = document.getElementById('term');
+    var stPill = document.getElementById('st-pill');
+
+    var mockLogs = [
+      { t: 1200, lvl: 0, tag: "SYS", msg: "ESP32-S3 Dual-Core SMP iniciado (FreeRTOS v10.4.3)" },
+      { t: 1450, lvl: 0, tag: "I2C", msg: "Bus Wire inicializado @ 400 kHz (SDA: GPIO 8, SCL: GPIO 9)" },
+      { t: 1680, lvl: 0, tag: "SPI", msg: "Bus HSPI inicializado @ 4 MHz (4x MAX6675 Termopares)" },
+      { t: 2100, lvl: 0, tag: "ADS", msg: "ADS1115 #1 (pH) y #2 (Shunts) detectados y calibrados a 16-bit" },
+      { t: 2500, lvl: 0, tag: "VCSS", msg: "Control de Salida de Corriente VCSS listo: Gm nominal = 2.000 S (Factor: 1.0000x)" },
+      { t: 2800, lvl: 0, tag: "ZCS", msg: "Relé de corte +12V en estado SEGURO / AISLADO" },
+      { t: 3200, lvl: 0, tag: "WIFI", msg: "SoftAP activo: SSID 'Uli' &middot; IP 192.168.4.1" },
+      { t: 3800, lvl: 0, tag: "THRM", msg: "Control térmico PI estabilizado: Limpieza 55°C, Decapado 30°C, Zinc 45°C, Ni 60°C" },
+      { t: 4500, lvl: 0, tag: "WEB", msg: "Servidor HTTP iniciado en puerto 80 (Patrón MVC Modular)" },
+      { t: 5100, lvl: 1, tag: "WARN", msg: "Lazo cerrado VCSS configurado en modo abierto por defecto (compensacionLazoCerrado = false)" },
+      { t: 6000, lvl: 0, tag: "INFO", msg: "Supervisor FreeRTOS en tiempo real ejecutando en Core 1 @ 50 Hz" }
+    ];
+
+    function toggleScroll(){
+      autoScroll = !autoScroll;
+      var btn = document.getElementById('btn-scroll');
+      btn.innerText = 'Auto-Scroll: ' + (autoScroll ? 'ON' : 'OFF');
+      btn.className = autoScroll ? 'btn active' : 'btn';
+    }
+
+    function togglePause(){
+      pausado = !pausado;
+      var btn = document.getElementById('btn-pause');
+      btn.innerText = pausado ? 'Reanudar' : 'Pausar';
+      btn.className = pausado ? 'btn active' : 'btn';
+    }
+
+    function clearScreen(){
+      term.innerHTML = '';
+    }
+
+    function renderLogs(){
+      term.innerHTML = '';
+      mockLogs.forEach(function(l){
+        var row = document.createElement('div');
+        row.className = 'log-row';
+        var lvlClass = (l.lvl === 2) ? 'ERR' : ((l.lvl === 1) ? 'WARN' : 'INFO');
+        var tSec = (l.t / 1000).toFixed(3);
+        row.innerHTML = 
+          "<span class='log-time'>[" + tSec + "s]</span>" +
+          "<span class='log-tag tag-" + lvlClass + "'>" + l.tag + "</span>" +
+          "<span class='log-msg'>" + l.msg + "</span>";
+        term.appendChild(row);
+      });
+      if(autoScroll) term.scrollTop = term.scrollHeight;
+    }
+
+    renderLogs();
+
+    setInterval(function(){
+      if(pausado) return;
+      var lastT = mockLogs[mockLogs.length - 1].t;
+      var newT = lastT + Math.round(1500 + Math.random() * 2000);
+      var msgs = [
+        { lvl: 0, tag: "VCSS", msg: "Muestreo shunts A2/A3: I_Total = 1.502 A (Rama 1: 0.751 A, Rama 2: 0.751 A)" },
+        { lvl: 0, tag: "THRM", msg: "Control PI Tina 3 (Zincado): Temp = 45.02 °C, Potencia = 18%" },
+        { lvl: 0, tag: "BME", msg: "Condiciones ambiente: 24.8 °C, 46% HR, 1014 hPa" },
+        { lvl: 0, tag: "PH", msg: "Electrodo Canal A0: pH 7.02 &middot; Offset: 1.651 V" }
+      ];
+      var chosen = msgs[Math.floor(Math.random() * msgs.length)];
+      mockLogs.push({ t: newT, lvl: chosen.lvl, tag: chosen.tag, msg: chosen.msg });
+      if(mockLogs.length > 50) mockLogs.shift();
+      renderLogs();
+    }, 2500);
+  </script>
+</body>
+</html>

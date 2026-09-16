@@ -1,0 +1,51 @@
+graph LR
+    subgraph ESP32["ESP32-S3 (Nodo Maestro Central @ 240 MHz)"]
+        I2C_CTRL["Controlador I2C Fast-Mode<br>400 kHz (Timeout: 50 ms)<br>SDA=GPIO8 / SCL=GPIO9"]
+        SPI_CTRL["Controlador SPI Read-Only<br>Reloj Compartido (Sin MOSI)<br>SCK=GPIO18 / MISO=GPIO19"]
+        UART_CTRL["Controlador UART2 Asincrono<br>9600 Baud (TX=GPIO17, 3.3V TTL)"]
+        GPIO_CTRL["GPIO Directo ZCS<br>GPIO 20 (Active-LOW)"]
+        WIFI_CTRL["Controlador Wi-Fi 802.11 b/g/n<br>SoftAP 'Uli' + Servidor Web HTTP"]
+    end
+
+    subgraph BUS_I2C["Bus I2C Fast-Mode (GPIO 8 SDA / GPIO 9 SCL)"]
+        ADS["ADC ADS1115 (0x48 @ 860 SPS)<br>• A0: Sonda pH Tina 1 (Zincado)<br>• A1: Sonda pH Tina 2 (Niquelado)<br>• A2: Shunt Rama 1 VCSS (0-3.3V)<br>• A3: Shunt Rama 2 VCSS (0-3.3V)"]
+        DAC["DAC MCP4725 (0x60 @ 12-bit)<br>• Consigna VCSS: 0.00V a 3.30V<br>• Resolucion: 4096 pasos (~0.8 mV)"]
+        AHT["AHT20 (0x38)<br>• Temperatura y Humedad Ambiente"]
+        BMP["BMP280 (0x76/0x77)<br>• Presion Atmosferica Barometrica"]
+    end
+
+    subgraph BUS_SPI["Bus SPI Half-Duplex Read-Only (GPIO 18 SCK / GPIO 19 MISO)"]
+        MAX0["MAX6675 (CS: GPIO 5) -> Tina 1 Desengrase (0-150 C)"]
+        MAX1["MAX6675 (CS: GPIO 4) -> Tina 2 Decapado (0-150 C)"]
+        MAX2["MAX6675 (CS: GPIO 13) -> Tina 3 Celda Hull (0-150 C)"]
+        MAX3["MAX6675 (CS: GPIO 14) -> Tina 4 Niquelado (0-150 C)"]
+    end
+
+    subgraph BUS_UART["Bus Serie UART2 (9600 Baud)"]
+        NANO["Arduino Nano (ATmega328P Pin RX 0)<br>• Trama CSV: 'pot0,pot1,pot2,pot3'<br>• Watchdog de Seguridad (3.0 s)<br>• 4x Opto-TRIACs MOC3021 + BTA24"]
+    end
+
+    subgraph ETAPA_RELE_2CH["Modulo de Rele Optoacoplado de 2 Canales (Puenteado en Paralelo)"]
+        RELE_MOD["Modulo Rele 2CH 5V (Active-LOW)<br>• Entradas IN1 + IN2 Puenteadas a GPIO 20<br>• Rele 1 + Rele 2 conmutan simultaneamente<br>• Contactos COM-NO en paralelo para 10A/30VDC<br>• Protocolo ZCS: Conmutacion a I=0.00A"]
+        VDD_LINE["Linea de Potencia +12V DC<br>Aislamiento Fisico del Anodo de Celda Hull"]
+    end
+
+    subgraph DISTRIBUCION_POTENCIA["Sistema de Alimentacion Hibrido (Pre-Regulador Buck + LDOs TO-220)"]
+        PSU_12V["Fuente Conmutada Unica: 12V / 10A DC"]
+        BUCK_LM2596["Modulo Buck LM2596 con Display<br>Pre-regulador: 12V -> 6.80V DC (Alivio Termico)"]
+        REG_5V["Regulador Lineal LM7805 (TO-220)<br>Post-regulador: 6.80V -> +5V DC (Nano, Rele, LM358)"]
+        REG_3V3["Regulador Lineal LM1117-3.3 (TO-220)<br>+5V -> +3.3V DC (ESP32-S3, Buses I2C y SPI)"]
+        PSU_12V -->|+12V Potencia Anodo| VDD_LINE
+        PSU_12V -->|+12V Vin| BUCK_LM2596
+        BUCK_LM2596 -->|+6.80V Vout| REG_5V
+        REG_5V -->|+5V Vcc| REG_3V3
+    end
+
+    I2C_CTRL --> BUS_I2C
+    SPI_CTRL --> BUS_SPI
+    UART_CTRL --> BUS_UART
+    GPIO_CTRL --> RELE_MOD
+    RELE_MOD --> VDD_LINE
+    REG_3V3 -.->|+3.3V Vdd| ESP32
+    REG_5V -.->|+5V Vcc| NANO
+

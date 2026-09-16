@@ -1,0 +1,28 @@
+sequenceDiagram
+    autonumber
+    participant RedAC as Red Electrica 60 Hz
+    participant Opto4N35 as Detector Cruce por Cero (4N35 / Pin D3 INT1)
+    participant ISR as ISR Hardware (alCruzarPorCero)
+    participant MainLoop as Bucle Principal loop() (Arduino Nano)
+    participant TRIAC as 4x Opto-TRIAC (MOC3021 + BTA24)
+
+    Note over RedAC,TRIAC: Ciclo Nominal de Sincronismo de Fase (Semiciclo = 8333 us)
+    RedAC->>Opto4N35: Paso de la onda senoidal por 0V
+    Opto4N35->>ISR: Flanco RISING en Pin 3 (INT1)
+    Note over ISR: Duracion ISR: ~8 us (Manipulacion Directa PORTD/PORTB)
+    ISR->>ISR: tCruceCero = micros()
+    ISR->>TRIAC: PORTD & PORTB LOW (Apagar todos los Gates instantaneamente)
+    ISR->>ISR: Reiniciar banderas disparado[i] = (retardos_us[i] >= 8100)
+
+    MainLoop->>MainLoop: tTranscurrido = micros() - tCruceCero
+    Note over MainLoop: Evaluar tabla LUT retardos_us[i] (101 puntos RMS)
+    MainLoop->>TRIAC: digitalWrite(GATE_PIN, HIGH) (tTranscurrido >= retardos_us[i])
+    MainLoop->>MainLoop: delayMicroseconds(80 us) (Margen de seguridad de disparo)
+    MainLoop->>TRIAC: digitalWrite(GATE_PIN, LOW)
+    Note over TRIAC: TRIAC enclavado conduciendo hasta el siguiente cruce por cero
+
+    Note over MainLoop,TRIAC: Mecanismo de Seguridad: Perro Guardian (Watchdog UART)
+    alt Si transcurren > 3000 ms sin tramas del ESP32
+        MainLoop->>MainLoop: noInterrupts() - retardos_us = 8333 - interrupts()
+        MainLoop->>TRIAC: PORTD & PORTB LOW (Apagado Total de Emergencia)
+    end

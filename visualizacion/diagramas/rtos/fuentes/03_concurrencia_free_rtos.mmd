@@ -1,0 +1,52 @@
+graph TD
+    subgraph DUAL_CORE["Arquitectura FreeRTOS SMP Dual-Core (ESP32-S3 N16R8 @ 240 MHz)"]
+        subgraph CORE0["Core 0: Pila de Comunicaciones (Prio 2)"]
+            T_WEB["Task_Web (Stack 6144, Prio 2)<br>• Servidor Web HTTP (server.handleClient)<br>• Endpoint Unificado /data_all (-75% Carga)<br>• Enrutador REST MVC y Servidor OTA"]
+        end
+
+        subgraph CORE1["Core 1: Lazos de Control Real-Time y Supervision"]
+            T_SUP["Task_Supervisor (Stack 3072, Prio 6, 50ms)<br>• Monitor Heartbeats (Timeout: 5000 ms)<br>• Baliza Neopixel WS2812 (GPIO 48)<br>• Fail-Safe Latch ISA-18.2<br>• Reporte Periodico Heap/PSRAM/WiFi"]
+            T_TERM["Task_Termico (Stack 4096, Prio 5, 100ms)<br>• Rampa Suave Soft-Start (200 ms, +1%)<br>• 4 Lazos PI Termicos (1000 ms)<br>• Transmision UART2 al Nano ('P0,P1,P2,P3')"]
+            T_FUE["Task_Fuente (Stack 3072, Prio 4, Determinista)<br>• DAC MCP4725 (DC / Pulsado 1-100 Hz)<br>• Soft-Start (500ms) + Inrush Blanking (300ms)<br>• Muestreo ETS 16 Puntos (s_ondaETS)<br>• Conmutacion ZCS Rele GPIO 20"]
+            T_SENS["Task_Sensado (Stack 4096, Prio 3, 20ms Base)<br>• Sensor pH Dedicado Canal A1 (860 SPS, Mediana-3 + EWMA)<br>• Lazo PI Discreto VCSS (2 Hz, Anti-Windup)<br>• Diagnostico Salud Celda (SaludCelda_t)<br>• Sensores Ambientales AHT20/BMP280 (5s)"]
+        end
+    end
+
+    subgraph MUTEX_SYSTEM["Primitivas de Sincronizacion y Exclusion Mutua (FreeRTOS Mutexes)"]
+        MUX_DATA["xDataMutex (Sincronizacion de Estado)<br>• Atomic Snapshot + Copy-Out<br>• Estado PI (pi_st) & Salud Celda<br>• Flash NVS desacoplada fuera de seccion critica"]
+        MUX_I2C["xI2CMutex (Bus I2C Fast-Mode 400 kHz)<br>• ADS1115 (ADC) + MCP4725 (DAC)<br>• AHT20 + BMP280 (Ambiente)"]
+        MUX_SPI["xSPIMutex (Bus SPI Half-Duplex)<br>• Lectura secuencial 4x MAX6675"]
+        MUX_LOG["xLogMutex (RingBuffer RAM)<br>• 64 Entradas de Eventos y Diagnostico"]
+    end
+
+    subgraph HB_SYSTEM["Sistema de Supervision y Perro Guardian (Watchdog)"]
+        HB_ARRAY["s_heartbeats[4]: Termico, Fuente, Sensado, Web"]
+        FS_LATCH["Fail-Safe Latch (g_failsafe_latched)<br>• Desconexion Rele VDD (HIGH)<br>• Nano a '0,0,0,0'<br>• DAC a 0V<br>• Baliza Rojo Estroboscopico (4 Hz)"]
+    end
+
+    subgraph NANO_CONCURRENCIA["Concurrencia y Atomicidad en Arduino Nano (ATmega328P)"]
+        NANO_ISR["alCruzarPorCero() Hardware ISR (INT1 Pin 3)<br>• Ejecucion ultra-rapida en ~8 us<br>• Manipulacion directa de registros PORTD/PORTB"]
+        NANO_MUTEX["noInterrupts() / interrupts()<br>• Lectura/Escritura atomica de retardos uint16_t"]
+        NANO_LOOP["loop() Principal:<br>• UART RX byte a byte + Watchdog 3s + Disparo 80us"]
+    end
+
+    T_WEB <==>|Atomic Snapshot - Lectura Rapida| MUX_DATA
+    T_TERM <==>|Lectura/Escritura Canales| MUX_DATA
+    T_FUE <==>|Lectura/Escritura Consigna DAC| MUX_DATA
+    T_SENS <==>|Escritura pH, Shunts y Diagnostico| MUX_DATA
+
+    T_SENS <==>|Acceso I2C Exclusivo| MUX_I2C
+    T_FUE <==>|Acceso I2C Exclusivo| MUX_I2C
+
+    T_TERM <==>|Acceso SPI Exclusivo| MUX_SPI
+
+    T_TERM -.->|feedHeartbeat_0| HB_ARRAY
+    T_FUE -.->|feedHeartbeat_1| HB_ARRAY
+    T_SENS -.->|feedHeartbeat_2| HB_ARRAY
+    T_WEB -.->|feedHeartbeat_3| HB_ARRAY
+
+    T_SUP ==>|checkHeartbeats 5000ms| HB_ARRAY
+    HB_ARRAY -.->|Inactividad > 5s| FS_LATCH
+    FS_LATCH ==>|Corte Inmediato por Hardware| CORE1
+
+    NANO_LOOP <==>|Atomicidad uint16_t| NANO_MUTEX <==> NANO_ISR

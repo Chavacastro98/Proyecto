@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visor Interactivo de Diagramas Técnicos — Planta de Electrodeposición</title>
+  <!-- Mermaid.js -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <!-- SVG Pan Zoom -->
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <!-- Datos de los Catálogos y Fuentes (Generado Modularmente) -->
+  <script src="catalogos_data.js"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #0b1120;
+      --bg-card: #1e293b;
+      --bg-sidebar: #0f172a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent-green: #10b981;
+      --accent-purple: #a855f7;
+      --border-color: rgba(56, 189, 248, 0.15);
+      --card-bg: rgba(30, 41, 59, 0.5);
+      --card-hover: rgba(30, 41, 59, 0.9);
+      --toolbar-bg: rgba(15, 23, 42, 0.92);
+      --canvas-bg: radial-gradient(circle at 50% 50%, #0f172a 0%, #0b1120 100%);
+    }
+
+    body.light-theme {
+      --bg-dark: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-sidebar: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --accent-green: #059669;
+      --accent-purple: #7c3aed;
+      --border-color: rgba(2, 132, 199, 0.2);
+      --card-bg: #ffffff;
+      --card-hover: #e2e8f0;
+      --toolbar-bg: rgba(241, 245, 249, 0.95);
+      --canvas-bg: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* BARRA LATERAL */
+    .sidebar {
+      width: 380px;
+      min-width: 320px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .sidebar-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--toolbar-bg);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Selector de Suite */
+    .suite-box {
+      padding: 12px 18px;
+      background: rgba(56, 189, 248, 0.05);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .suite-box label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .suite-select {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .suite-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Lista de Diagramas */
+    .diagram-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .diagram-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .diagram-card:hover {
+      background-color: var(--card-hover);
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .diagram-card.active {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.25) 0%, rgba(30, 41, 59, 0.9) 100%);
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.15);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .card-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 170px;
+    }
+
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .card-cat {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Barra Superior */
+    .top-toolbar {
+      height: 64px;
+      background-color: var(--toolbar-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+
+    .toolbar-info h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toolbar-info p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 7px 13px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-theme {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-theme:hover {
+      border-color: var(--primary);
+    }
+
+    .btn-secondary {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    .btn-primary {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    .btn-success {
+      background: #059669;
+      color: #ffffff;
+    }
+    .btn-success:hover {
+      background: #047857;
+    }
+
+    /* Área de Visualización */
+    .viewer-area {
+      flex: 1;
+      position: relative;
+      background: var(--canvas-bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #diagram-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #diagram-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .zoom-controls {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 20;
+    }
+
+    .zoom-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .zoom-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Barra inferior */
+    .footer-desc {
+      background: var(--toolbar-bg);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 20px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Código Mermaid Modal/Tab */
+    #code-view {
+      display: none;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-sidebar);
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 24px;
+      overflow: auto;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body class="light-theme">
+
+  <!-- BARRA LATERAL -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>🔬 Catálogo de Diagramas</h1>
+      <p id="sidebar-subtitle">Planta de Electrodeposición</p>
+    </div>
+
+    <!-- Selector de Arquitectura -->
+    <div class="suite-box">
+      <label for="suite-select">Arquitectura del Sistema:</label>
+      <select id="suite-select" class="suite-select" onchange="cambiarSuite(this.value)">
+        <option value="rtos" selected>⚡ FreeRTOS SMP (RTOS 1.0 - N16R8)</option>
+        <option value="superloop">🔬 Super-Loop (v4.0 - Clásica)</option>
+      </select>
+    </div>
+
+    <div class="diagram-list" id="diagram-list">
+      <!-- Se llena dinámicamente con JS -->
+    </div>
+  </aside>
+
+  <!-- ÁREA PRINCIPAL -->
+  <main class="main-content">
+    <header class="top-toolbar">
+      <div class="toolbar-info">
+        <h2 id="current-title">Cargando diagrama...</h2>
+        <p id="current-badge">Categoría</p>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn btn-theme" id="theme-btn" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+        <button class="btn btn-secondary" onclick="toggleCodeView()">📄 Ver Código Mermaid</button>
+        <button class="btn btn-success" onclick="descargarPNG()">💾 Descargar PNG</button>
+        <button class="btn btn-primary" onclick="descargarSVG()">📐 Descargar SVG</button>
+      </div>
+    </header>
+
+    <div class="viewer-area">
+      <div id="diagram-container"></div>
+      <pre id="code-view"></pre>
+
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()" title="Acercar">+</button>
+        <button class="zoom-btn" onclick="zoomOut()" title="Alejar">-</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Ajustar y Centrar">⟲</button>
+      </div>
+    </div>
+
+    <footer class="footer-desc" id="current-desc">
+      Descripción del diagrama.
+    </footer>
+  </main>
+
+  <script>
+    let currentTheme = 'light'; // 'dark' o 'light'
+    let currentSuite = 'rtos'; // 'rtos' o 'superloop'
+    let currentPanZoom = null;
+    let currentKey = "01_arquitectura_general";
+    let isCodeMode = false;
+
+    // Inicializar Mermaid
+    function initMermaid(themeName) {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: themeName === 'dark' ? 'dark' : 'default',
+        securityLevel: 'loose',
+        fontFamily: 'Inter, system-ui, sans-serif'
+      });
+    }
+
+    initMermaid('light');
+
+    // Alternar tema Claro / Oscuro
+    function toggleTheme() {
+      if (currentTheme === 'dark') {
+        currentTheme = 'light';
+        document.body.classList.add('light-theme');
+        document.getElementById('theme-btn').innerText = '🌙 Modo Oscuro';
+      } else {
+        currentTheme = 'dark';
+        document.body.classList.remove('light-theme');
+        document.getElementById('theme-btn').innerText = '☀️ Modo Claro';
+      }
+      initMermaid(currentTheme);
+      selectDiagram(currentKey);
+    }
+
+    // Cambiar entre Suite Superloop y RTOS
+    function cambiarSuite(nuevaSuite) {
+      if (!SUITES_DIAGRAMAS || !SUITES_DIAGRAMAS[nuevaSuite]) {
+        console.error("Suite no encontrada:", nuevaSuite);
+        return;
+      }
+      currentSuite = nuevaSuite;
+      document.getElementById("suite-select").value = nuevaSuite;
+      
+      const suiteInfo = SUITES_DIAGRAMAS[currentSuite];
+      document.getElementById("sidebar-subtitle").innerText = suiteInfo.nombre;
+
+      // Obtener el primer diagrama de la suite
+      const keys = Object.keys(suiteInfo.diagramas);
+      if (keys.length > 0) {
+        if (!keys.includes(currentKey)) {
+          currentKey = keys[0];
+        }
+      }
+
+      renderList();
+      selectDiagram(currentKey);
+    }
+
+    // Renderizar lista en Sidebar
+    function renderList() {
+      const listEl = document.getElementById("diagram-list");
+      listEl.innerHTML = "";
+
+      const suiteData = SUITES_DIAGRAMAS[currentSuite];
+      if (!suiteData || !suiteData.diagramas) return;
+
+      for (const [key, item] of Object.entries(suiteData.diagramas)) {
+        const card = document.createElement("div");
+        card.className = `diagram-card ${key === currentKey ? 'active' : ''}`;
+        card.onclick = () => selectDiagram(key);
+
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="card-num">${item.num}</span>
+            <span class="card-badge">${item.badge}</span>
+          </div>
+          <div class="card-title">${item.title}</div>
+          <div class="card-cat">${item.cat}</div>
+        `;
+        listEl.appendChild(card);
+      }
+    }
+
+    // Seleccionar y Renderizar Diagrama
+    async function selectDiagram(key) {
+      currentKey = key;
+      const suiteData = SUITES_DIAGRAMAS[currentSuite];
+      if (!suiteData || !suiteData.diagramas) return;
+
+      const item = suiteData.diagramas[key];
+      if (!item) return;
+
+      document.getElementById("current-title").innerText = `[${item.num}] ${item.title}`;
+      document.getElementById("current-badge").innerText = `${suiteData.nombre} • ${item.badge}`;
+      document.getElementById("current-desc").innerText = item.desc;
+      document.getElementById("code-view").innerText = item.code;
+
+      renderList();
+
+      if (isCodeMode) {
+        return;
+      }
+
+      const container = document.getElementById("diagram-container");
+      container.innerHTML = `<div class="mermaid">${item.code}</div>`;
+
+      if (currentPanZoom) {
+        currentPanZoom.destroy();
+        currentPanZoom = null;
+      }
+
+      try {
+        await mermaid.run({
+          nodes: container.querySelectorAll('.mermaid')
+        });
+
+        const svg = container.querySelector('svg');
+        if (svg) {
+          svg.setAttribute('id', 'active-svg');
+          svg.style.width = '100%';
+          svg.style.height = '100%';
+
+          currentPanZoom = svgPanZoom('#active-svg', {
+            zoomEnabled: true,
+            controlIconsEnabled: false,
+            fit: true,
+            center: true,
+            minZoom: 0.2,
+            maxZoom: 5.0
+          });
+        }
+      } catch (err) {
+        console.error("Error al renderizar Mermaid:", err);
+      }
+    }
+
+    function toggleCodeView() {
+      isCodeMode = !isCodeMode;
+      const container = document.getElementById("diagram-container");
+      const codeView = document.getElementById("code-view");
+
+      if (isCodeMode) {
+        container.style.display = "none";
+        codeView.style.display = "block";
+      } else {
+        container.style.display = "flex";
+        codeView.style.display = "none";
+        selectDiagram(currentKey);
+      }
+    }
+
+    function zoomIn() {
+      if (currentPanZoom) currentPanZoom.zoomIn();
+    }
+
+    function zoomOut() {
+      if (currentPanZoom) currentPanZoom.zoomOut();
+    }
+
+    function resetZoom() {
+      if (currentPanZoom) {
+        currentPanZoom.resetZoom();
+        currentPanZoom.center();
+      }
+    }
+
+    function descargarSVG() {
+      const svg = document.querySelector('#diagram-container svg');
+      if (!svg) return;
+      const serializer = new XMLSerializer();
+      const source = serializer.serializeToString(svg);
+      const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentSuite}_${currentKey}_${currentTheme}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function descargarPNG() {
+      const svg = document.querySelector('#diagram-container svg');
+      if (!svg) return;
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        canvas.width = img.width * 2;
+        canvas.height = img.height * 2;
+        ctx.fillStyle = currentTheme === 'dark' ? '#0b1120' : '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+
+        const pngUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = pngUrl;
+        a.download = `${currentSuite}_${currentKey}_${currentTheme}.png`;
+        a.click();
+      };
+      img.src = url;
+    }
+
+    // Arranque inicial
+    window.addEventListener("DOMContentLoaded", () => {
+      cambiarSuite('rtos');
+    });
+  </script>
+</body>
+</html>

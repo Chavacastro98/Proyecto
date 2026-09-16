@@ -1,0 +1,96 @@
+{
+  "suite": "rtos",
+  "version": "RTOS 2.0",
+  "nombre": "Arquitectura FreeRTOS SMP (RTOS 2.0)",
+  "descripcion": "Colección de diagramas de la arquitectura multitarea simétrica (SMP) para ESP32-S3 N16R8, separación física Core 0 (Comunicaciones) y Core 1 (Control determinista), sensor de pH dedicado en Canal A1 del ADS1115 (eliminación de A0, bus I2C al 100% a 860 SPS), persistencia NVS por modo, control PI VCSS con Anti-Inrush y muestreo estroboscópico ETS, mutexes semafóricos, Fail-Safe Latch ISA-18.2, balanza analítica y culombimetría faradaica en Telemetría 2.0.",
+  "diagramas": {
+    "01_arquitectura_general": {
+      "num": "01",
+      "cat": "Arquitectura Global",
+      "title": "Arquitectura General Master-Slave y SCADA (RTOS 2.0)",
+      "badge": "FreeRTOS Dual-Core SMP • N16R8 • RTOS 2.0",
+      "archivo": "01_arquitectura_general.mmd",
+      "desc": "Visión completa de la planta piloto: ESP32-S3 N16R8 (Maestro con FreeRTOS Dual-Core SMP, 16MB Flash, 8MB Octal PSRAM, Servidor Web MVC y endpoint unificado /data_all), Arduino Nano (Esclavo de potencia AC 60Hz con ISR INT1 de ~8µs y LUT en PROGMEM), Estación SCADA en PC (ISA-88 con balanza analítica asistida y culombimetría), Módulo de Relé ZCS en GPIO 20 y Planta de Procesos Químicos con 4 tinas térmicas (Desengrase Alcalino, Decapado Alcalino con Na3PO4, Celda Hull Zincado Ácido y Niquelado sobre Zinc) y sondas analógicas con canal A1 dedicado para pH."
+    },
+    "02_topologia_buses_datos": {
+      "num": "02",
+      "cat": "Comunicaciones & Hardware",
+      "title": "Topología Detallada de Buses y Bloques de Hardware",
+      "badge": "ESP32-S3 N16R8 • I2C 400 kHz • Riel 3.53V",
+      "archivo": "02_topologia_buses_datos.mmd",
+      "desc": "Distribución física y protocolos de hardware del módulo ESP32-S3 N16R8 (16MB Flash, 8MB Octal PSRAM OPI): Bus I2C Fast-Mode a 400 kHz (ADS1115 con Canal A1 dedicado a pH y A2/A3 a Shunts, MCP4725 calibrado a riel 3.53V / 7.06A, AHT20, BMP280), Bus SPI Half-Duplex Read-Only con reloj compartido y 4 líneas CS para MAX6675 (Desengrase Alcalino, Decapado Alcalino, Celda Hull y Niquelado sobre Zinc), Enlace UART2 a 9600 baud con Arduino Nano, Módulo de Relé ZCS en GPIO 20 para aislamiento seguro de +12V VDD, y Baliza Neopixel WS2812 en GPIO 48."
+    },
+    "03_concurrencia_free_rtos": {
+      "num": "03",
+      "cat": "Sistemas Operativos & Concurrencia",
+      "title": "Arquitectura Concurrente FreeRTOS SMP Dual-Core (RTOS 2.0)",
+      "badge": "Dual-Core SMP • 5 Tareas • Mutexes Atómicos",
+      "archivo": "03_concurrencia_free_rtos.mmd",
+      "desc": "Arquitectura FreeRTOS SMP Dual-Core del ESP32-S3 N16R8: Separación física de tareas entre Core 0 (Comunicaciones, Servidor Web, OTA) y Core 1 (Control en Tiempo Real PI, modulación VCSS con Soft-Start y muestreo ETS, adquisición ADS1115 y supervisión). Sincronización libre de deadlocks mediante Mutexes (xDataMutex, xI2CMutex, xSPIMutex, xLogMutex), Watchdog por Heartbeats cruzados (5000 ms), persistencia Flash NVS desacoplada fuera de secciones críticas, y atomicidad por registros directos en Arduino Nano."
+    },
+    "04_interlocks_estados": {
+      "num": "04",
+      "cat": "Seguridad & Decisiones",
+      "title": "Máquina de Estados, Interlocks y Fail-Safe Latch ISA-18.2",
+      "badge": "ISA-18.2 • Fail-Safe Latch • Subestados VCSS",
+      "archivo": "04_interlocks_estados.mmd",
+      "desc": "Protocolo estricto de interlocks y seguridad industrial ISA-18.2: Exclusión mutua química bidireccional entre lazos galvánicos y sondas de pH (bloqueo con HTTP 409 Conflict), parada de emergencia total previa a actualización OTA, submáquina de estados VCSS (PI_STATE_RAMP de 500 ms, PI_STATE_BLANKING de 300 ms y PI_STATE_LOCKED con banda de +-10 mA), y sistema Fail-Safe Latch con corte físico de potencia por sobretemperatura, sobrecorriente (>3.5A), fallo de sensor o pérdida de heartbeat, con rearme exclusivo por operador mediante /failsafe_reset."
+    },
+    "05_control_termico_pi": {
+      "num": "05",
+      "cat": "Control Automático",
+      "title": "Algoritmo y Flujo del Control Térmico PI + Soft-Start",
+      "badge": "PI + Anti-Windup + Soft-Start",
+      "archivo": "05_control_termico_pi.mmd",
+      "desc": "Flujo de cálculo de cada canal térmico: lectura digital MAX6675 por SPI, detección de fallos o desconexión (Fail-Safe a 0%), supresión de sobretiro (T >= SP+2°C), integración con límites Anti-Windup (0-100%), rampa suave de arranque asíncrona (+1% cada 200 ms) y transmisión UART2 hacia el Arduino Nano."
+    },
+    "06_sumidero_corriente_vcss": {
+      "num": "06",
+      "cat": "Control & Potencia DC",
+      "title": "Lazo Cerrado Híbrido VCSS: PI Discreto, Anti-Inrush y Diagnóstico (RTOS 2.0)",
+      "badge": "PI Discreto + Anti-Windup + Blanking @ 2 Hz",
+      "archivo": "06_sumidero_corriente_vcss.mmd",
+      "desc": "Control de corriente galvánica de 0.00 a 3.50 A: Lazo analógico interno de respuesta instantánea (OpAmp LM358N + 2x MOSFETs IRLZ44Z + Shunts 1Ω, Gm=2.0 S) acoplado a un lazo digital externo en ESP32 (@ 2 Hz) con lectura en ADS1115, protección Anti-Inrush con Soft-Start de 500 ms y Blanking Time de 300 ms, compensación PI discreta suave con Anti-Windup (+-0.15 A), banda muerta de +-10 mA, limitador de pendiente de +-4 LSB por ciclo y diagnóstico continuo de salud de celda (CELDA_OK, CELDA_SATURADA, CELDA_DESBALANCE)."
+    },
+    "07_secuencia_zcs_rele": {
+      "num": "07",
+      "cat": "Secuencias de Potencia",
+      "title": "Secuencia de Conmutación ZCS y Soft-Start Anti-Inrush (RTOS 2.0)",
+      "badge": "ZCS + Soft-Start 500ms + Blanking 300ms",
+      "archivo": "07_secuencia_zcs_rele.mmd",
+      "desc": "Protocolo temporal de conmutación sin arco eléctrico en el relé de aislamiento (+12V VDD Celda) con protección anti-inrush de dos fases: Al encender, se anula el DAC a 0V, se cierra el relé y se aguardan 80 ms para extinción de rebotes mecánicos; seguidamente se ejecuta la rampa suave Soft-Start de 500 ms (PI_STATE_RAMP) y el periodo de asentamiento Blanking de 300 ms (PI_STATE_BLANKING) antes de enganchar el PI. Al apagar, se anula el DAC a 0V, se aguardan 30 ms para descarga capacitiva y se abren los contactos a corriente estrictamente nula."
+    },
+    "08_filtro_ph_tri_modo": {
+      "num": "08",
+      "cat": "Instrumentación Analítica",
+      "title": "Filtrado Digital Adaptativo y Sensor de pH Dedicado Canal A1 (RTOS 2.0)",
+      "badge": "Canal A1 Dedicado • Mediana-3 • Flash NVS",
+      "archivo": "08_filtro_ph_tri_modo.mmd",
+      "desc": "Acondicionamiento de señal para electrodo potenciométrico con Canal A1 dedicado en ADS1115 (Canal A0 eliminado, 100% de uso de bus I2C a 860 SPS): acumulador en bloque de 10 muestras (200 ms), filtro no lineal de mediana de 3 elementos para eliminar espigas de TRIACs, cálculo según modo con puntos de calibración en Flash NVS por modo (Modo 0: Nernst teórico con offset calibrado de 1.765V a riel 3.53V, Modo 1: Lineal 2 puntos, Modo 2: Dual-Slope segmentado 3 puntos) y filtro pasabajas adaptativo de 1er orden (alpha=0.30 ante saltos >0.50 pH y alpha=0.08 en régimen estacionario)."
+    },
+    "09_control_triacs_ac60hz": {
+      "num": "09",
+      "cat": "Potencia AC 60Hz",
+      "title": "Control de Fase AC 60 Hz en Arduino Nano con Watchdog",
+      "badge": "Interrupciones INT1 • LUT 101 Pts • Watchdog",
+      "archivo": "09_control_triacs_ac60hz.mmd",
+      "desc": "Control de ángulo de fase a 60 Hz: Interrupción por hardware en INT1 (4N35, duración ~8 µs), reinicio de registros de puerto directos (PORTD y PORTB), conversión no lineal de potencia activa RMS mediante Look-Up Table (0-100% -> 8333-0 µs), pulsos de gate de 80 µs y rama de contingencia Fail-Safe por Watchdog UART (3.0 segundos)."
+    },
+    "10_arquitectura_mvc_web": {
+      "num": "10",
+      "cat": "Arquitectura de Software",
+      "title": "Arquitectura Modular MVC y Enrutador Asíncrono RTOS 2.0",
+      "badge": "Firmware RTOS 2.0 • Desacoplado MVC",
+      "archivo": "10_arquitectura_mvc_web.mmd",
+      "desc": "Patrón Modelo-Vista-Controlador en Core 0 bajo FreeRTOS: Vistas inmutables en memoria Flash PROGMEM (views/), Controladores HTTP desacoplados por dominio (controllers/) y Modelos sincronizados bajo mutexes. Introduce el endpoint unificado /data_all que reduce el tráfico de red en un 75% consolidando temperaturas, shunts individuales (vs1, vs2, i1, i2), estado del PI (pi_st), diagnóstico de salud y ambiente en una sola carga JSON, junto a endpoints de gestión de fuente (/modo_f, /set_comp_f, /cal_vcss, /reset_cal_vcss), calibración pH por modo en NVS, consola de logs en RingBuffer RAM (/logs) y reset de seguridad /failsafe_reset."
+    },
+    "11_supervision_scada_isa88": {
+      "num": "11",
+      "cat": "Supervisión SCADA & Datos",
+      "title": "Supervisión SCADA Telemetría 2.0 (ISA-88) con Gravimetría y Retrato de Fase",
+      "badge": "Telemetría 2.0 • Balanza Analítica • Faraday",
+      "archivo": "11_supervision_scada_isa88.mmd",
+      "desc": "Estructura del software SCADA de escritorio en Python (telemetria2.0): Gestor de recetas por lotes para 32 placas experimentales (diseño Taguchi con Desengrase Alcalino a 90°C, Decapado Alcalino con Na3PO4 a 90°C, Celda Hull Zincado Ácido a 40°C y Niquelado sobre Zinc a 30-40°C), flujo guiado de pesaje analítico con balanza de 4 decimales (P_ini y P_fin), integración culombimétrica instantánea Q = ∫ I dt (Ley de Faraday), cálculo en tiempo real de eficiencia faradaica η% y espesor estimado, retrato de fase en espacio de estados e_punto(t) vs e(t) y generación de figuras científicas HD a 300 DPI."
+    }
+  }
+}

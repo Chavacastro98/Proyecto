@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Galvanoplastia - v3.0 (OTA)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0b1120;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .menu-card {
+            background: linear-gradient(165deg, rgba(30,41,59,0.95), rgba(15,23,42,0.9));
+            padding: 32px 28px;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid rgba(56,189,248,0.1);
+            text-align: center;
+        }
+        .nav-hub {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.78em;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding: 4px 10px;
+            background: rgba(56,189,248,0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(56,189,248,0.15);
+            transition: all 0.2s;
+        }
+        .nav-hub:hover {
+            color: #7dd3fc;
+            background: rgba(56,189,248,0.16);
+            transform: translateY(-1px);
+        }
+        h2 {
+            font-size: 1.4em;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .sub-title {
+            color: #64748b;
+            font-size: 0.82em;
+            font-weight: 600;
+            margin-top: 4px;
+            margin-bottom: 24px;
+        }
+        .env-box {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+            background: rgba(15,23,42,0.6);
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(51,65,85,0.4);
+        }
+        .env-item {
+            font-size: 0.68em;
+            color: #38bdf8;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .env-val {
+            font-size: 1.25em;
+            display: block;
+            color: #f8fafc;
+            font-weight: 800;
+            margin-top: 4px;
+            letter-spacing: -0.5px;
+        }
+        .btn-menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #f1f5f9;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 12px;
+            border: 1px solid rgba(56,189,248,0.12);
+            transition: all 0.25s;
+            font-size: 0.9em;
+        }
+        .btn-menu:hover {
+            border-color: #38bdf8;
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59,130,246,0.25);
+        }
+        .btn-menu .badge {
+            font-size: 0.7em;
+            background: rgba(56,189,248,0.15);
+            color: #38bdf8;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 800;
+        }
+        .sep {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.2), transparent);
+            margin: 18px 0 14px;
+        }
+        .btn-ota {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, rgba(30,41,59,0.7), rgba(15,23,42,0.6));
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 12px;
+            border: 1px solid rgba(251,191,36,0.18);
+            transition: all 0.25s;
+            font-size: 0.85em;
+        }
+        .btn-ota:hover {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, rgba(120,53,15,0.35), rgba(146,64,14,0.25));
+            color: #fcd34d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(251,191,36,0.18);
+        }
+        .btn-ota .badge {
+            font-size: 0.7em;
+            background: rgba(251,191,36,0.15);
+            color: #fbbf24;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 800;
+        }
+        .ver-foot {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(51,65,85,0.3);
+            font-size: 0.72em;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .ver-tag {
+            color: #38bdf8;
+            font-weight: 800;
+        }
+        .sim-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-card">
+        <a href="../index.html" class="nav-hub">&larr; Hub de Versiones (Tesis)</a>
+        <h2>Panel de Control</h2>
+        <div class="sub-title">Tesis de Electrodeposici&oacute;n / Zincado &mdash; Versión 3.0</div>
+        
+        <div class="env-box">
+            <div class="env-item">Temp. Amb.<span class="env-val" id="amb_t">24.5 &deg;C</span></div>
+            <div class="env-item">Humedad<span class="env-val" id="amb_h">48 %</span></div>
+            <div class="env-item">Presi&oacute;n<span class="env-val" id="amb_p">1013.2 hPa</span></div>
+        </div>
+
+        <a href="termico.html" class="btn-menu">
+            <span>Control T&eacute;rmico</span>
+            <span class="badge">4 CANALES</span>
+        </a>
+        <a href="fuente.html" class="btn-menu">
+            <span>Fuente de Corriente</span>
+            <span class="badge">DAC MCP4725</span>
+        </a>
+        <a href="ph.html" class="btn-menu">
+            <span>M&oacute;dulo de pH 2.0</span>
+            <span class="badge" style="background:rgba(34,197,94,0.15);color:#34d399;">DUAL / DEDICADO</span>
+        </a>
+
+        <div class="sep"></div>
+
+        <a href="sensores.html" class="btn-ota" style="border-color:rgba(56,189,248,0.2);">
+            <span>&#128269; Estado de Sensores</span>
+            <span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">DIAG v3.1</span>
+        </a>
+
+        <a href="update.html" class="btn-ota">
+            <span>&#9881; Actualizar Firmware</span>
+            <span class="badge">OTA v3.0</span>
+        </a>
+
+        <div class="ver-foot" style="flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                <span><span class="sim-dot"></span>Modo Simulador Web</span>
+                <span>Firmware <span class="ver-tag" id="fw-v">v3.1.0</span> &middot; ESP32-S3</span>
+            </div>
+            <div style="color:#38bdf8;font-size:0.95em;font-weight:700;text-align:center;background:rgba(56,189,248,0.06);padding:6px 10px;border-radius:8px;border:1px solid rgba(56,189,248,0.12);width:100%;">
+                ⚡ Developed by <b>Salvador&sup2; C</b>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updEnv(){
+            fetch('/data_env')
+                .then(function(r){ return r.json(); })
+                .then(function(d){
+                    document.getElementById('amb_t').innerHTML = d.t + ' &deg;C';
+                    document.getElementById('amb_h').innerText = d.h + ' %';
+                    document.getElementById('amb_p').innerText = d.p + ' hPa';
+                })
+                .catch(function(){
+                    const t = (24.2 + Math.random() * 0.5).toFixed(1);
+                    const h = Math.round(48 + Math.random() * 2);
+                    const p = (1013.0 + Math.random() * 0.4).toFixed(1);
+                    document.getElementById('amb_t').innerHTML = t + ' &deg;C';
+                    document.getElementById('amb_h').innerText = h + ' %';
+                    document.getElementById('amb_p').innerText = p + ' hPa';
+                });
+        }
+        function updVer(){
+            const customVer = localStorage.getItem('sim_firmware_ver') || '3.0.0';
+            document.getElementById('fw-v').innerText = 'v' + customVer;
+        }
+        setInterval(updEnv, 3000); 
+        updEnv();
+        updVer();
+    </script>
+</body>
+</html>

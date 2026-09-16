@@ -1,0 +1,11 @@
+========================================================================
+FICHA TÉCNICA DE RECETA ISA-88 — ENSAYO PLACA #01
+========================================================================
+Fecha y Hora: 2026-09-16 01:23:27
+Ronda / Bloque: Ronda 1
+pH de Referencia Inicial: 2
+Etapa 1 - Limpieza: 240s @ 85°C (0.00 A)
+Etapa 2 - Decapado: 120s @ 85°C (0.00 A)
+Etapa 3 - Zincado: 120s @ 25°C | 1.50 A (DC)
+Etapa 4 - Niquelado Watts: 600s (10 min) @ 30°C | 1.13 A DC (pH ref ~5.5)
+========================================================================

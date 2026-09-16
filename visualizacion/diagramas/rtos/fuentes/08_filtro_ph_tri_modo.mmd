@@ -1,0 +1,46 @@
+flowchart TD
+    subgraph ADQUISICION_DEDICADA["Adquisicion Dedicada en Canal A1 (100% Bus I2C @ 860 SPS)"]
+        SONDA["Electrodo de Vidrio PH-4502C<br>• Conector BNC de Alta Impedancia<br>• Ajuste de Offset a 1.765V (pH 7.00)"]
+        ADS["ADC ADS1115 (Direccion 0x48)<br>• Canal A1 Dedicado a Señal Po (Canal A0 Eliminado)<br>• Modo Continuo @ 860 SPS (Sin Demoras TDM)"]
+        SONDA -->|Voltaje Analogico Po| ADS
+    end
+
+    subgraph PIPELINE["Cadena de Filtrado Digital Determinista en Core 1"]
+        RAW["Lectura ADC ADS1115 Canal A1"]
+        ACC["Acumulador de 10 Muestras Continuas (Bloque 200 ms)"]
+        HIST["Buffer Circular de 3 Muestras Promediadas"]
+        MED3["Filtro no Lineal de Mediana-3: mediana3(h0, h1, h2)<br>(Inmunidad a Ruido EMI y Disparo de TRIACs)"]
+        
+        ADS --> RAW
+        RAW --> ACC
+        ACC --> HIST
+        HIST --> MED3
+        
+        CALC_PH{"Calculo segun Modo de Calibracion NVS"}
+        MED3 --> CALC_PH
+        
+        CALC_PH -- "Modo 0: Teorico Nernst (Offset 1.765V @ 3.53V VDD)" --> PH_M0["pH = 7.0 + (1.765 - V) * 4.242"]
+        CALC_PH -- "Modo 1: Lineal 2 Puntos (pH 7.00 + pH 4.01)" --> PH_M1["pH = 7.0 + (v7 - V) * m_ph"]
+        CALC_PH -- "Modo 2: 3 Puntos Dual-Slope Segmentado" --> CHECK_SEG{"V >= v7?"}
+        
+        CHECK_SEG -- "Si: Zona Acida (pH 4.01 a 7.00)" --> PH_AC["pH = 7.0 + (v7 - V) * mAcida"]
+        CHECK_SEG -- "No: Zona Basica (pH 7.00 a 10.01)" --> PH_BA["pH = 7.0 + (v7 - V) * mBasica"]
+        
+        PH_M0 --> ADAPT_EWMA
+        PH_M1 --> ADAPT_EWMA
+        PH_AC --> ADAPT_EWMA
+        PH_BA --> ADAPT_EWMA
+        
+        ADAPT_EWMA{"Filtro Pasabajas Adaptativo EWMA (1er Orden)"}
+        ADAPT_EWMA -- "Primera Lectura" --> DIRECT["phActual = phNuevo (Bypass Inicial)"]
+        ADAPT_EWMA -- "|phNuevo - phActual| > 0.50" --> FAST_EWMA["alpha = 0.30 (Respuesta Dinamica Agil):<br>ph = ph*0.70 + phNuevo*0.30"]
+        ADAPT_EWMA -- "|phNuevo - phActual| <= 0.50" --> SMOOTH_EWMA["alpha = 0.08 (Maxima Estabilidad Estacionaria):<br>ph = ph*0.92 + phNuevo*0.08"]
+    end
+
+    subgraph SALIDA_DATOS["Publicacion Thread-Safe de Datos"]
+        PUB["Variable de Estado Global phActual<br>Protegida por xDataMutex"]
+        DIRECT --> PUB
+        FAST_EWMA --> PUB
+        SMOOTH_EWMA --> PUB
+        PUB -->|JSON /data_all 10 Hz| SCADA["Telemetria SCADA 2.0 & Web MVC"]
+    end

@@ -1,0 +1,40 @@
+graph TD
+    subgraph ESP32_RAM["Memoria RAM Compartida (ESP32-S3 Dual-Core)"]
+        VAR_TERM["Estructura Canales Termicos<br>• Setpoint (sp) y Temperatura (t)<br>• Integral (I) y Limite Rampa<br>• Potencia Actual (p)<br>• Estado Activo (run)"]
+        VAR_PH["Variables del Modulo pH<br>• Offset V7, V4, V10 (Calibracion)<br>• Pendientes m_ph, mAc, mBa<br>• pH Actual (1 y 2)<br>• Banderas Calibrado y Offset"]
+        VAR_FUE["Variables Fuente VCSS<br>• Setpoint DAC (sp) y Amplitud<br>• Corriente Real Total (i_real)<br>• Shunt 1 y Shunt 2 (A2/A3)<br>• Factor Ganancia Gm<br>• Estado Rele ZCS (2CH)"]
+    end
+
+    subgraph ESP32_MUTEXES["Primitivas de Sincronizacion FreeRTOS (Spinlocks)"]
+        MUX_T["portMUX_TYPE muxTermico"]
+        MUX_P["portMUX_TYPE muxPH"]
+        MUX_F["portMUX_TYPE muxFuente"]
+    end
+
+    subgraph ESP32_HILOS["Hilos y Tareas Asincronas (ESP32-S3)"]
+        LOOP_T["Lazo PI Termico (1000 ms) & Rampa (200 ms)"]
+        LOOP_P["Muestreo pH TDM Mediana-3 (20 ms)"]
+        LOOP_F["Lazo VCSS DAC & Sensado Shunts (500 ms)"]
+        HTTP_T["Controladores HTTP Termico (/set_t, /data_t)"]
+        HTTP_P["Controladores HTTP pH (/ph, /do_cal_ph, /get_ph_dual)"]
+        HTTP_F["Controladores HTTP Fuente (/set_f, /data_f, /cal_vcss)"]
+    end
+
+    subgraph NANO_CONCURRENCIA["Concurrencia y Atomicidad en Arduino Nano (ATmega328P 8-bit)"]
+        NANO_RAM["Variables Volatiles de 16/32 bits<br>• retardos_us[4] (uint16_t)<br>• tCruceCero (unsigned long)"]
+        NANO_ATOMIC["Secciones Criticas de Atomicidad<br>noInterrupts() / interrupts()"]
+        NANO_ISR["ISR Cruce por Cero (alCruzarPorCero)<br>Interrupcion Hardware INT1 Pin 3"]
+        NANO_LOOP["Bucle Principal loop()<br>Recepcion Serie + Watchdog + Disparo Gate"]
+    end
+
+    LOOP_T <==>|portENTER_CRITICAL| MUX_T <==>|portEXIT_CRITICAL| VAR_TERM
+    HTTP_T <==>|portENTER_CRITICAL| MUX_T <==>|portEXIT_CRITICAL| VAR_TERM
+
+    LOOP_P <==>|portENTER_CRITICAL| MUX_P <==>|portEXIT_CRITICAL| VAR_PH
+    HTTP_P <==>|portENTER_CRITICAL| MUX_P <==>|portEXIT_CRITICAL| VAR_PH
+
+    LOOP_F <==>|portENTER_CRITICAL| MUX_F <==>|portEXIT_CRITICAL| VAR_FUE
+    HTTP_F <==>|portENTER_CRITICAL| MUX_F <==>|portEXIT_CRITICAL| VAR_FUE
+
+    NANO_LOOP <==>|noInterrupts| NANO_ATOMIC <==>|interrupts| NANO_RAM
+    NANO_ISR <==>|Lectura / Escritura Directa| NANO_RAM

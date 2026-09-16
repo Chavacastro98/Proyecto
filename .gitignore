@@ -1,0 +1,61 @@
+# =================================================================================
+# .gitignore - Sistema Automatizado de Electrodeposición y Galvanoplastia
+# =================================================================================
+
+# Archivos Comprimidos y Respaldos Manuales
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.bak
+*.txt.bak
+]
+
+# Compilación y Artefactos de Microcontroladores (ESP32-S3 / Arduino)
+build/
+firmware/**/build/
+*.bin
+*.elf
+*.hex
+*.eep
+*.lss
+*.sym
+*.map
+*.d
+
+# Python: Bytecode, Cachés y Entornos Virtuales
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribución y Empaquetado (PyInstaller, setuptools)
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# IDEs, Editores y Sistema Operativo
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Archivos Temporales de Logs
+*.log
