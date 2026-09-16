@@ -61,3 +61,16 @@ Desktop.ini
 *.tmp
 *.csv.tmp
 herramientas/telemetria/experimentos/
+software/telemetria/experimentos/
+
+# Documentos Académicos Confidenciales (Tesis, protocolos, reportes de titulación)
+documentos/academicos/
+
+# Scripts de Prueba y Borradores de Desarrollo (Scratchpad)
+herramientas/scratch/
+
+# Carpetas de Vista Previa Redundantes (la oficial vive en visualizacion/preview/)
+/preview/
+
+# Accesos directos locales de Windows
+*.url
