@@ -1,0 +1,19 @@
+========================================================================
+FICHA TÉCNICA DE RECETA ISA-88 — ENSAYO PLACA #01
+========================================================================
+Fecha y Hora: 2026-09-18 21:47:39
+Ronda / Bloque: Ronda 1
+pH de Referencia Inicial: 2
+Etapa 1 - Limpieza: 240s @ 85°C (0.00 A)
+Etapa 2 - Decapado: 120s @ 85°C (0.00 A)
+Etapa 3 - Zincado: 120s @ 25°C | 1.50 A (DC)
+Etapa 4 - Niquelado Watts: 600s (10 min) @ 30°C | 1.13 A DC (pH ref ~5.5)
+========================================================================
+
+========================================================================
+AUDITORÍA DE INCIDENCIAS Y ACCIDENTES DE SENSORES EN PROCESO
+========================================================================
+Estado Global: ✅ 100% NOMINAL — 0 incidencias registradas durante el ensayo.
+No se detectaron saltos térmicos EMI, desconexiones de sondas MAX6675,
+desbalances en etapas shunt VCSS ni pérdidas de enlace con ESP32.
+========================================================================
