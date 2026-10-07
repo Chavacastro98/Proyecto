@@ -343,6 +343,251 @@
       white-space: nowrap;
     }
 
+    /* Organic Infographic Component */
+    .infographic-wrapper {
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .infographic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .infographic-header h3 {
+      font-size: 1.2rem;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .infographic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .infographic-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+    }
+
+    .info-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 8px 20px -4px rgba(56, 189, 248, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .info-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .info-card-title {
+      font-size: 1.0rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .pin-ribbon-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: #090d16;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+    }
+
+    .pin-ribbon-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-right: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .pin-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+
+    .pin-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .pin-chip.wire-white   { background: rgba(248, 250, 252, 0.12); border-color: #f8fafc; color: #f8fafc; }
+    .pin-chip.wire-white .pin-dot { background: #f8fafc; }
+
+    .pin-chip.wire-black   { background: rgba(51, 65, 85, 0.5); border-color: #64748b; color: #cbd5e1; }
+    .pin-chip.wire-black .pin-dot { background: #1e293b; border: 1px solid #94a3b8; }
+
+    .pin-chip.wire-grey    { background: rgba(148, 163, 184, 0.15); border-color: #94a3b8; color: #e2e8f0; }
+    .pin-chip.wire-grey .pin-dot { background: #94a3b8; }
+
+    .pin-chip.wire-purple  { background: rgba(192, 132, 252, 0.15); border-color: #c084fc; color: #e9d5ff; }
+    .pin-chip.wire-purple .pin-dot { background: #c084fc; }
+
+    .pin-chip.wire-blue    { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #bae6fd; }
+    .pin-chip.wire-blue .pin-dot { background: #38bdf8; }
+
+    .pin-chip.wire-green   { background: rgba(52, 211, 153, 0.15); border-color: #34d399; color: #a7f3d0; }
+    .pin-chip.wire-green .pin-dot { background: #34d399; }
+
+    .pin-chip.wire-yellow  { background: rgba(251, 191, 36, 0.15); border-color: #fbbf24; color: #fef08a; }
+    .pin-chip.wire-yellow .pin-dot { background: #fbbf24; }
+
+    .pin-chip.wire-red     { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5; }
+    .pin-chip.wire-red .pin-dot { background: #ef4444; }
+
+    .info-card-media {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: #060913;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .info-card-media img {
+      width: 130px;
+      height: 95px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      flex-shrink: 0;
+    }
+
+    .info-card-media img:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+    }
+
+    .info-card-media-text {
+      flex: 1;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+
+    .info-card-media-text strong {
+      color: #f1f5f9;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.80rem;
+    }
+
+    .info-table th {
+      background: #111c2e;
+      color: #38bdf8;
+      padding: 6px 10px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .info-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .info-note {
+      background: rgba(56, 189, 248, 0.06);
+      border-left: 3px solid #38bdf8;
+      border-radius: 0 6px 6px 0;
+      padding: 8px 12px;
+      font-size: 0.80rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .info-note.danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-left-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .info-note.success {
+      background: rgba(16, 185, 129, 0.08);
+      border-left-color: #10b981;
+      color: #a7f3d0;
+    }
+
     /* Figures and Images */
     .figure-box {
       background-color: var(--bg-surface);
@@ -480,6 +725,7 @@
     <nav class="sidebar-nav">
       <a href="#arquitectura" class="active">🔌 1. Conectividad & Modos</a>
       <a href="#guia-cableado">⚡ 1.2 Guía de Cableado & Pines</a>
+      <a href="#infografia-pines" style="padding-left:24px;font-size:0.78rem;color:#38bdf8;">📌 1.2.0 Correspondencia 1:1</a>
       <a href="#limites-diseno">⚠️ 1.3 Límites de Diseño & Disclaimers</a>
       <a href="#interfaz-web">🌐 2. Interfaz Web del ESP32 (Móvil / Browser)</a>
       <a href="#interfaz-general">🖥️ 3. Monitor SCADA en Python (Escritorio)</a>
@@ -592,11 +838,461 @@
         a continuación se detalla la distribución exacta de pines, bornes, clemas de tornillos y señales entre todos los módulos del sistema.
       </p>
 
-      <div class="alert alert-warning">
-        <strong>⚡ REGLA DE ORO DE ALIMENTACIÓN Y TIERRA COMÚN:</strong>
-        Todos los niveles de tensión (<strong>+12V DC</strong> de potencia, <strong>+6.80V</strong> del Buck, <strong>+5.0V</strong> del LM7805 y <strong>+3.3V</strong> del LM1117)
-        <strong>deben compartir una única masa común (GND en estrella)</strong> conectada al negativo de la fuente de 12V.
-        Nunca conecte los 5V ni los 12V directamente a los pines del ESP32-S3 (su nivel lógico es estrictamente 3.3V).
+      <!-- MAPA MAESTRO Y PLACA MADRE EN OPERACIÓN VIVA -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap:20px; margin: 20px 0;">
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/01_Placa_Principal_Rotulada.jpg" alt="Mapa Maestro de la Placa Madre" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.2: Mapa maestro de arquitectura de la placa madre: zócalos hembra de microcontroladores (ESP32-S3 y Arduino Nano), cabezal TRIAC de 7 pines, buses SPI/I2C y reguladores.</div>
+        </div>
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/02_Placa_Conectada_Rotulada.jpg" alt="Placa Madre Operativa con Cableado" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.3: Placa madre en operación viva dentro del gabinete con arnés de termopares, ribbon de 7 hilos hacia TRIACs, buses I2C y display activo del Buck LM2596 (6.80V).</div>
+        </div>
+      </div>
+
+      <!-- INFOGRAFÍA INTERACTIVA ORGÁNICA DE CORRESPONDENCIA FÍSICA 1:1 -->
+      <div class="infographic-wrapper" id="infografia-pines">
+        <div class="infographic-header">
+          <h3>📌 Guía Visual Interactiva de Correspondencia Física 1:1 de Pines y Cabezales</h3>
+          <span class="badge badge-primary">Ingeniería de Hardware &amp; Pinout</span>
+        </div>
+        <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:18px;">
+          Para garantizar un ensamble sin errores y evitar inversiones de polaridad o sobretensión accidental, la placa madre fue diseñada de modo que la orientación física frontal de los módulos externos coincida de forma directa y unívoca con sus zócalos y cabezales dedicados:
+        </p>
+
+        <div class="infographic-grid">
+          <!-- TARJETA 1: TERMOPARES MAX6675 -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div>
+                <div class="info-card-title">🌡️ Bus SPI de Termopares MAX6675</div>
+                <div class="info-card-subtitle">4× Tinas de Proceso (Desengrase, Decapado, Celda Hull, Niquelado)</div>
+              </div>
+              <span class="badge badge-success">Alineación Frontal 1:1</span>
+            </div>
+
+            <div class="pin-ribbon-bar">
+              <span class="pin-ribbon-label">Pines:</span>
+              <span class="pin-chip"><span class="pin-dot" style="background:#38bdf8;"></span>SO</span>
+              <span class="pin-chip"><span class="pin-dot" style="background:#fbbf24;"></span>CS</span>
+              <span class="pin-chip"><span class="pin-dot" style="background:#34d399;"></span>CLK</span>
+              <span class="pin-chip wire-red"><span class="pin-dot"></span>VCC</span>
+              <span class="pin-chip wire-black"><span class="pin-dot"></span>GND</span>
+            </div>
+
+            <div class="info-card-media">
+              <img src="imagenes/Planta Fisica/AR0780-Termopar-K-Con-Modulo-Max6675-PINOUT-768x768.jpg" alt="Pinout MAX6675" onclick="openModal(this.src)">
+              <div class="info-card-media-text">
+                <strong>Ensamble Frontal Directo</strong>
+                Al situar el módulo MAX6675 de frente al zócalo hembra de la placa madre, el orden de pines coincide pin a pin (<code>SO - CS - CLK - VCC - GND</code>). Sin cruces de cables.
+              </div>
+            </div>
+
+            <table class="info-table">
+              <thead>
+                <tr>
+                  <th>Pin</th>
+                  <th>Conexión en Placa Madre (ESP32-S3)</th>
+                  <th>Función Técnica &amp; Mapeo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>SO</code></td>
+                  <td>GPIO 19 (Línea MISO Compartida)</td>
+                  <td>Salida serie de 12 bits (resolución 0.25 °C, rango 0 a +1024 °C).</td>
+                </tr>
+                <tr>
+                  <td><code>CS</code></td>
+                  <td>Líneas CS Dedicadas (GPIO 5, 4, 13, 14)</td>
+                  <td>Tina 1 (Limpieza): GPIO 5 | Tina 2 (Decapado): GPIO 4 | Tina 3 (Celda Hull): GPIO 13 | Tina 4 (Niquelado): GPIO 14.</td>
+                </tr>
+                <tr>
+                  <td><code>CLK</code></td>
+                  <td>GPIO 18 (Reloj SPI Compartido)</td>
+                  <td>Señal de sincronismo SPI generada por el ESP32-S3 a 4 MHz.</td>
+                </tr>
+                <tr>
+                  <td><code>VCC</code></td>
+                  <td>Riel +5.0V / +3.3V Filtrado</td>
+                  <td>Alimentación estabilizada con plano de tierra adyacente.</td>
+                </tr>
+                <tr>
+                  <td><code>GND</code></td>
+                  <td>Plano de Masa Común (GND)</td>
+                  <td>Retorno de masa con desacoplo local de alta frecuencia.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="info-note success">
+              <strong>🛡️ Desacoplo de Alta Frecuencia por Hardware:</strong>
+              Debajo de cada uno de los 4 zócalos de termopar se encuentra soldado un <strong>condensador cerámico multicapa de 100 nF (0.1 µF) entre VCC y GND</strong> en la cara inferior de la placa. Este filtro suprime eficazmente el ruido EMI inducido por la conmutación de potencia de los calentadores AC.
+            </div>
+          </div>
+
+          <!-- TARJETA 2: BUS TRIAC RIBBON -->
+          <!-- TARJETA 2: BUS TRIAC RIBBON & MÓDULO POTENCIA AC -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div>
+                <div class="info-card-title">⚡ Cabezal de Bus TRIAC y Módulo de Potencia AC</div>
+                <div class="info-card-subtitle">Potencia AC 120V (4× Canales BTA24-600B + Detector ZCS 120 Hz)</div>
+              </div>
+              <span class="badge badge-primary">Ribbon 7 Hilos + Clemas AC</span>
+            </div>
+
+            <div class="pin-ribbon-bar">
+              <span class="pin-ribbon-label">Placa Madre:</span>
+              <span class="pin-chip wire-white"><span class="pin-dot"></span>1: VCC</span>
+              <span class="pin-chip wire-black"><span class="pin-dot"></span>2: GND</span>
+              <span class="pin-chip wire-grey"><span class="pin-dot"></span>3: ZC</span>
+              <span class="pin-chip wire-purple"><span class="pin-dot"></span>4: CH1</span>
+              <span class="pin-chip wire-blue"><span class="pin-dot"></span>5: CH2</span>
+              <span class="pin-chip wire-green"><span class="pin-dot"></span>6: CH3</span>
+              <span class="pin-chip wire-yellow"><span class="pin-dot"></span>7: CH4</span>
+            </div>
+
+            <div class="pin-ribbon-bar" style="margin-top:4px;">
+              <span class="pin-ribbon-label">Módulo TRIAC:</span>
+              <span class="pin-chip wire-blue"><span class="pin-dot"></span>Cabezal [VCC | GND | ZC]</span>
+              <span class="pin-chip wire-red"><span class="pin-dot"></span>Disparos [1 | 2 | 3 | 4]</span>
+              <span class="pin-chip wire-green"><span class="pin-dot"></span>Entrada [AC]</span>
+              <span class="pin-chip wire-yellow"><span class="pin-dot"></span>Salidas [T1 | T2 | T3 | T4]</span>
+            </div>
+
+            <div class="info-card-media" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>
+                <img src="imagenes/Planta Fisica/COnexion TRIACS .jpg" alt="Conexión TRIACs en Placa Madre" onclick="openModal(this.src)" style="width:100%; height:110px; object-fit:cover;">
+                <div class="info-card-media-text" style="margin-top:4px;">
+                  <strong>Arnés Plano Ribbon 7 Hilos</strong>
+                  Cabezal macho de filas 15–21 de la placa madre con codificación unívoca por colores.
+                </div>
+              </div>
+              <div>
+                <img src="imagenes/Planta Fisica/anotadas/04_Modulo_TRIACS_Rotulado.jpg" alt="Módulo TRIACs Rotulado HUD" onclick="openModal(this.src)" style="width:100%; height:110px; object-fit:cover;">
+                <div class="info-card-media-text" style="margin-top:4px;">
+                  <strong>Módulo TRIACs Rotulado HUD</strong>
+                  🟢 <code>AC</code> (120V) &bull; 🟠 <code>T1..T4</code> &bull; 🔵 <code>VCC|GND|ZC</code> &bull; 🔴 <code>1..4</code> (CH1..CH4).
+                </div>
+              </div>
+            </div>
+
+            <table class="info-table">
+              <thead>
+                <tr>
+                  <th>Pin / Color Ribbon</th>
+                  <th>Placa Madre (Nano)</th>
+                  <th>Borne / Cabezal Módulo TRIAC</th>
+                  <th>Destino y Función de Control</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Pin 1 (Blanco)</code></td>
+                  <td><code>VCC (+5.0V DC)</code></td>
+                  <td>Cabezal Azul Pin 1: <code>VCC</code></td>
+                  <td>Alimentación ánodos optoacopladores MOC3021 y 4N35.</td>
+                </tr>
+                <tr>
+                  <td><code>Pin 2 (Negro)</code></td>
+                  <td><code>GND (0V)</code></td>
+                  <td>Cabezal Azul Pin 2: <code>GND</code></td>
+                  <td>Masa lógica de referencia de control.</td>
+                </tr>
+                <tr>
+                  <td><code>Pin 3 (Gris)</code></td>
+                  <td><code>ZC &rarr; Nano D3 (INT1)</code></td>
+                  <td>Cabezal Azul Pin 3: <code>ZC</code></td>
+                  <td>Pulsos del detector de cruce por cero (120 Hz) para sincronizar disparo.</td>
+                </tr>
+                <tr>
+                  <td><code>Pin 4 (Morado)</code></td>
+                  <td><code>CH1 &larr; Nano D7</code></td>
+                  <td>Cabezal Rojo Pin 1: <code>1 (CH1)</code></td>
+                  <td>Disparo Tina 1 &rarr; Clema Naranja <code>T1</code> (Desengrase Alcalino 450W).</td>
+                </tr>
+                <tr>
+                  <td><code>Pin 5 (Azul)</code></td>
+                  <td><code>CH2 &larr; Nano D8</code></td>
+                  <td>Cabezal Rojo Pin 2: <code>2 (CH2)</code></td>
+                  <td>Disparo Tina 2 &rarr; Clema Naranja <code>T2</code> (Decapado Alcalino 450W).</td>
+                </tr>
+                <tr>
+                  <td><code>Pin 6 (Verde)</code></td>
+                  <td><code>CH3 &larr; Nano D9</code></td>
+                  <td>Cabezal Rojo Pin 3: <code>3 (CH3)</code></td>
+                  <td>Disparo Tina 3 &rarr; Clema Naranja <code>T3</code> (Celda Hull Zincado 18W).</td>
+                </tr>
+                <tr>
+                  <td><code>Pin 7 (Amarillo)</code></td>
+                  <td><code>CH4 &larr; Nano D10</code></td>
+                  <td>Cabezal Rojo Pin 4: <code>4 (CH4)</code></td>
+                  <td>Disparo Tina 4 &rarr; Clema Naranja <code>T4</code> (Niquelado Watts 450W).</td>
+                </tr>
+                <tr>
+                  <td><code>Red 120 VAC</code></td>
+                  <td>Línea y Neutro AC</td>
+                  <td>Clema Verde: <code>AC</code></td>
+                  <td>Entrada de potencia AC hacia puente de diodos y alimentación de calentadores.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="info-note">
+              <strong>🔒 Aislamiento Galvánico Total (5000 Vrms):</strong>
+              Los 4 canales emplean optoacopladores MOC3021 (disparo en fase aleatoria) con redes snubber RC (39 &Omega; / 10 nF) por canal para absorción de transitorios dV/dt. El detector ZCS con optoacoplador 4N35 y puente rectificador entrega interrupciones ultraprecisas al firmware del Nano en &lt;8 &mu;s.
+            </div>
+          </div>
+
+          <!-- TARJETA 3: MÓDULO 2 RELÉS & POWER ZCS -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div>
+                <div class="info-card-title">🔌 Módulo 2 Relés 5V y Cabezal 'Socket Power ZCS'</div>
+                <div class="info-card-subtitle">Conmutación Bipolar de Celda y Bomba Auxiliar (Filas 32–34)</div>
+              </div>
+              <span class="badge badge-warning">Bobina Aislada</span>
+            </div>
+
+            <div class="pin-ribbon-bar">
+              <span class="pin-ribbon-label">Lógica:</span>
+              <span class="pin-chip wire-black"><span class="pin-dot"></span>GND</span>
+              <span class="pin-chip wire-blue"><span class="pin-dot"></span>IN1 (G20)</span>
+              <span class="pin-chip wire-purple"><span class="pin-dot"></span>IN2 (G21)</span>
+              <span class="pin-chip wire-red"><span class="pin-dot"></span>VCC (5V)</span>
+              <span class="pin-ribbon-label" style="margin-left:8px;">Power:</span>
+              <span class="pin-chip wire-red"><span class="pin-dot"></span>5V</span>
+              <span class="pin-chip wire-yellow"><span class="pin-dot"></span>5V Rele</span>
+              <span class="pin-chip wire-black"><span class="pin-dot"></span>5GND</span>
+            </div>
+
+            <div class="info-card-media">
+              <img src="imagenes/Planta Fisica/mod2rele-2.png" alt="Módulo Relé 5V" onclick="openModal(this.src)">
+              <div class="info-card-media-text">
+                <strong>Arquitectura de Doble Dominio</strong>
+                El módulo de relés separa el dominio lógico del microcontrolador del dominio de potencia de bobinas mediante el cabezal macho dedicado <code>Socket Power ZCS</code>.
+              </div>
+            </div>
+
+            <table class="info-table">
+              <thead>
+                <tr>
+                  <th>Dominio / Pin</th>
+                  <th>Conexión Física</th>
+                  <th>Función Técnica &amp; Protección</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Lado Lógico: IN1</code></td>
+                  <td>ESP32-S3 GPIO 20 (PIN_RELE_VCSS)</td>
+                  <td>Control Relé 1: Conmutación de polo positivo de celda electroquímica (activo LOW).</td>
+                </tr>
+                <tr>
+                  <td><code>Lado Lógico: IN2</code></td>
+                  <td>ESP32-S3 GPIO 21 (Auxiliar / Bomba)</td>
+                  <td>Control Relé 2: Conmutación de polo negativo de celda / bomba auxiliar (activo LOW).</td>
+                </tr>
+                <tr>
+                  <td><code>Lado Lógico: VCC / GND</code></td>
+                  <td>ESP32-S3 5V / GND</td>
+                  <td>Alimentación exclusiva de los fotodiodos de entrada en los optoacopladores PC817.</td>
+                </tr>
+                <tr>
+                  <td><code>Power: 5V Rele</code></td>
+                  <td>Socket Power ZCS Pin 2 &rarr; JD-VCC</td>
+                  <td>Alimentación directa de corriente de bobinas (~140 mA por relé).</td>
+                </tr>
+                <tr>
+                  <td><code>Power: 5GND</code></td>
+                  <td>Socket Power ZCS Pin 3 &rarr; Masa Bobina</td>
+                  <td>Retorno inductivo separado para evitar rebote de masa digital.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="info-note danger">
+              <strong>⚠️ REGLA CRÍTICA DE RETIRO DE JUMPER JD-VCC:</strong>
+              En el módulo de relevadores <strong>DEBE RETIRARSE EL JUMPER AZUL JD-VCC / VCC</strong>. La bobina consume corriente inductiva que genera Back-EMF al conmutar; al alimentarla exclusivamente desde <code>5V Rele</code> en el cabezal Socket Power ZCS con masa separada, se anulan por completo los reinicios por microcaídas de tensión (brownout) en el ESP32-S3.
+            </div>
+          </div>
+
+          <!-- TARJETA 4: PH-4502C & ADS1115 -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div>
+                <div class="info-card-title">🧪 Sonda de pH PH-4502C y Conversión I2C</div>
+                <div class="info-card-subtitle">Transmisor BNC Analógico + ADC ADS1115 (16 Bits, 0x48) + DAC MCP4725 (0x60)</div>
+              </div>
+              <span class="badge badge-purple">Filtro RC Dedicado</span>
+            </div>
+
+            <div class="pin-ribbon-bar">
+              <span class="pin-ribbon-label">PH-4502C:</span>
+              <span class="pin-chip wire-grey"><span class="pin-dot"></span>TO</span>
+              <span class="pin-chip wire-grey"><span class="pin-dot"></span>DO</span>
+              <span class="pin-chip wire-blue"><span class="pin-dot"></span>PO (Analog)</span>
+              <span class="pin-chip wire-black"><span class="pin-dot"></span>GNDA</span>
+              <span class="pin-chip wire-black"><span class="pin-dot"></span>GND</span>
+              <span class="pin-chip wire-red"><span class="pin-dot"></span>VCC (5V)</span>
+            </div>
+
+            <div class="info-card-media">
+              <img src="imagenes/Planta Fisica/sensor PH.jpg" alt="Sensor pH PH-4502C" onclick="openModal(this.src)">
+              <div class="info-card-media-text">
+                <strong>Conector BNC y Filtro Pasabajos RC</strong>
+                El bulbo de vidrio conecta por coaxial BNC al módulo transmisor. La señal <code>PO</code> pasa por un filtro pasabajos RC (10 k&Omega; + 10 &mu;F) antes del convertidor ADC ADS1115 de 16 bits.
+              </div>
+            </div>
+
+            <table class="info-table">
+              <thead>
+                <tr>
+                  <th>Señal / Pin</th>
+                  <th>Canal en Placa Madre</th>
+                  <th>Función Técnica &amp; Conversión</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>PO (PH-4502C)</code></td>
+                  <td><code>ADS1115 Canal A1</code> (vía Filtro RC)</td>
+                  <td>Tensión de pH (0 a 5.0V). <i>pH</i> = 7.00 + (<i>V</i><sub><i>pH</i></sub> - <i>V</i><sub>neutral</sub>) / <i>S</i>.</td>
+                </tr>
+                <tr>
+                  <td><code>Tensión Celda</code></td>
+                  <td><code>ADS1115 Canal A0</code> (Divisor 100k/20k)</td>
+                  <td>Monitoreo en tiempo real del voltaje entre ánodo y cátodo (0 a 15.0V).</td>
+                </tr>
+                <tr>
+                  <td><code>Shunts VCSS</code></td>
+                  <td><code>ADS1115 Canales A2 y A3</code></td>
+                  <td>Caída de voltaje en shunts cerámicos (1.0 &Omega; 10W &rarr; Corriente 1.0 V/A por rama).</td>
+                </tr>
+                <tr>
+                  <td><code>DAC MCP4725</code></td>
+                  <td>Salida VOUT &rarr; Consigna <code>VREF</code> VCSS</td>
+                  <td>Consigna analógica continua de corriente (0 a 3.30V &rarr; 0 a 3.30A, resolución 12 bits).</td>
+                </tr>
+                <tr>
+                  <td><code>Bus I2C Maestro</code></td>
+                  <td>ESP32-S3 SCL (GPIO 8) / SDA (GPIO 7)</td>
+                  <td>Bus compartido de instrumentación a 400 kHz con pull-ups de 4.7 k&Omega;.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="info-note">
+              <strong>⚡ Protocolo de Muestreo de pH:</strong>
+              La medición de pH se ejecuta con los relés de celda abiertos (corriente OFF). Esto evita que los intensos gradientes de potencial electroquímico del electrolito polaricen la membrana de vidrio del electrodo (>10<sup>12</sup> &Omega;) o inyecten carga residual en el conversor ADS1115.
+            </div>
+          </div>
+
+          <!-- TARJETA 5: SUMIDERO DE CORRIENTE VCSS Y CABEZALES PLACA MADRE -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div>
+                <div class="info-card-title">⚡ Sumidero VCSS &amp; Cabezales de Placa Madre</div>
+                <div class="info-card-subtitle">Mapeo Inter-Placas: Consigna VREF/AGND, Sensado Shunts A2/A3, y Conmutación Celda</div>
+              </div>
+              <span class="badge badge-primary">Mapeo 1:1 Referenciado</span>
+            </div>
+
+            <div class="pin-ribbon-bar">
+              <span class="pin-ribbon-label">Placa Madre:</span>
+              <span class="pin-chip wire-purple"><span class="pin-dot"></span>Vref | NC | GND</span>
+              <span class="pin-chip wire-yellow"><span class="pin-dot"></span>A2 | A3</span>
+              <span class="pin-chip wire-blue"><span class="pin-dot"></span>VCC | OUT+ | GND</span>
+            </div>
+
+            <div class="pin-ribbon-bar" style="margin-top:4px;">
+              <span class="pin-ribbon-label">Placa VCSS:</span>
+              <span class="pin-chip wire-blue"><span class="pin-dot"></span>Clema 1: GND | AGND</span>
+              <span class="pin-chip wire-yellow"><span class="pin-dot"></span>Clema 2: VREF | VCC</span>
+              <span class="pin-chip wire-green"><span class="pin-dot"></span>Clema 3: VCC | Out Drain</span>
+            </div>
+
+            <div class="info-card-media" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>
+                <img src="imagenes/Planta Fisica/anotadas/07_Detalle_Cabezales_Madre_VCSS.jpg" alt="Cabezales Rotulados en Placa Madre" onclick="openModal(this.src)" style="width:100%; height:110px; object-fit:cover;">
+                <div class="info-card-media-text" style="margin-top:4px;">
+                  <strong>Placa Madre (Cabezales Rotulados HUD)</strong>
+                  🟣 Púrpura: <code>Vref | NC | GND</code> &bull; 🟡 Amarillo: <code>A2 | A3</code> (ADS1115) &bull; 🔵 Azul: <code>VCC | OUT+ | GND</code>.
+                </div>
+              </div>
+              <div>
+                <img src="imagenes/Planta Fisica/anotadas/03_Etapa_VCSS_Rotulada.jpg" alt="Clemas y Etapa VCSS Rotulada" onclick="openModal(this.src)" style="width:100%; height:110px; object-fit:cover;">
+                <div class="info-card-media-text" style="margin-top:4px;">
+                  <strong>Placa VCSS (Circuito Rotulado HUD)</strong>
+                  🔵 Azul: <code>GND | AGND</code> &bull; 🟠 Naranja: <code>VREF | VCC</code> &bull; 🟢 Verde: <code>VCC | Out Drain</code> (hacia celda).
+                </div>
+              </div>
+            </div>
+
+            <table class="info-table">
+              <thead>
+                <tr>
+                  <th>Origen / Borne</th>
+                  <th>Destino Físico</th>
+                  <th>Señal &amp; Función Técnica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Vref (Placa Madre, Púrpura Pin 1)</code></td>
+                  <td><code>Clema 2 VCSS [VREF] (Naranja)</code></td>
+                  <td>Consigna analógica 0.00V a 3.30V (MCP4725 DAC 12 bits) que fija la corriente deseada.</td>
+                </tr>
+                <tr>
+                  <td><code>GND (Placa Madre, Púrpura Pin 3)</code></td>
+                  <td><code>Clema 1 VCSS [AGND] (Azul)</code></td>
+                  <td>Masa analógica limpia (AGND) para evitar caídas parásitas de referencia en consigna.</td>
+                </tr>
+                <tr>
+                  <td><code>NC (Placa Madre, Púrpura Pin 2)</code></td>
+                  <td><em>Sin Conexión (Aislado)</em></td>
+                  <td>Pin de guarda intermedio para maximizar aislamiento entre Vref y GND analógico.</td>
+                </tr>
+                <tr>
+                  <td><code>Header Shunt 1 (VCSS DIY)</code></td>
+                  <td><code>Placa Madre [A2] (Amarillo Pin 1)</code></td>
+                  <td>Caída en Shunt 1 (1.0 &Omega; 10W &rarr; 1.0 V/A) leída por Canal A2 del convertidor ADS1115.</td>
+                </tr>
+                <tr>
+                  <td><code>Header Shunt 2 (VCSS DIY)</code></td>
+                  <td><code>Placa Madre [A3] (Amarillo Pin 2)</code></td>
+                  <td>Caída en Shunt 2 (1.0 &Omega; 10W &rarr; 1.0 V/A) leída por Canal A3 del ADS1115 (balance térmico).</td>
+                </tr>
+                <tr>
+                  <td><code>Riel +12V DC SMPS</code></td>
+                  <td><code>Clema 2 VCSS [VCC] (Naranja)</code></td>
+                  <td>Alimentación VDD del amplificador operacional LM358N (Pin 8) para plena excursión de Gate.</td>
+                </tr>
+                <tr>
+                  <td><code>Clema 3 VCSS [VCC] (Verde)</code></td>
+                  <td><code>Relé 1 COM (Módulo Relés)</code></td>
+                  <td>Riel positivo conmutado (+12V) hacia el ánodo de la celda de electrodeposición.</td>
+                </tr>
+                <tr>
+                  <td><code>Clema 3 VCSS [Out Drain] (Verde)</code></td>
+                  <td><code>Relé 2 COM (Módulo Relés)</code></td>
+                  <td>Retorno catódico hacia Drains en paralelo de MOSFETs IRLZ44N (regulación Low-Side).</td>
+                </tr>
+                <tr>
+                  <td><code>Clema 1 VCSS [GND] (Azul)</code></td>
+                  <td><code>Borne GND Fuente SMPS</code></td>
+                  <td>Retorno de potencia de alta corriente (hasta 3.5A) desde las resistencias de shunt a la fuente.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="info-note success">
+              <strong>🔬 Principio de Sumidero Low-Side y Sensado Balanceado:</strong>
+              Los 2 transistores IRLZ44N operan en paralelo compartiendo la disipación térmica. Cada rama cuenta con su resistencia de shunt de precisión (1.0 &Omega; / 10W). El cable Dupont dual amarillo transmite directamente las tensiones de sensado hacia el cabezal <code>A2 | A3</code> de la placa madre, permitiendo al firmware auditar la corriente total (<i>I</i><sub>total</sub> = <i>I</i><sub>A2</sub> + <i>I</i><sub>A3</sub>) a 860 SPS continuos.
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 1.2.1 DISTRIBUCIÓN DE ALIMENTACIÓN -->
@@ -660,25 +1356,33 @@
         </table>
       </div>
 
-      <!-- 1.2.2 DETALLE DE LA PLACA CASERA VCSS -->
-      <h4 style="color:#e2e8f0; margin-top:24px; margin-bottom:10px;">1.2.2 Placa Casera del Sumidero de Corriente (VCSS PCB DIY)</h4>
+      <!-- 1.2.2 DETALLE DE LA PLACA CASERA VCSS Y CABEZALES DE PLACA MADRE -->
+      <h4 style="color:#e2e8f0; margin-top:24px; margin-bottom:10px;">1.2.2 Placa Casera del Sumidero de Corriente (VCSS PCB DIY) e Interconexión con Placa Madre</h4>
       <p>
-        La placa casera del sumidero de corriente constante alberga el amplificador operacional dual LM358N, los 2 transistores MOSFET IRLZ44N y las 2 resistencias cerámicas de cemento de 10W (1.0 &Omega;).
-        Cuenta con <strong>3 pares de clemas de tornillo</strong> y <strong>2 pines header macho</strong> organizados de la siguiente forma:
+        La placa casera del sumidero analógico de corriente constante alberga el amplificador operacional dual LM358N, los 2 transistores MOSFET de potencia IRLZ44N (montados sobre disipador con aislamiento de mica) y las 2 resistencias cerámicas de cemento de 10W (1.0 &Omega;).
+        Su conexionado se distribuye mediante <strong>3 pares de clemas de tornillo</strong> en la placa VCSS y <strong>3 cabezales dedicados</strong> en la placa madre (referenciados directamente en la serigrafía física):
       </p>
 
       <div class="code-box" style="background:#090d16; border:1px solid #0284c7; padding:18px; border-radius:10px;">
-<pre style="color:#38bdf8; font-weight:700; font-size:0.85rem; line-height:1.45;">
-+---------------------------------------------------------------------------------------------------+
-|                        PLACA CASERA DEL SUMIDERO VCSS (DISTRIBUCIÓN FÍSICA)                       |
-|                                                                                                   |
+<pre style="color:#38bdf8; font-weight:700; font-size:0.84rem; line-height:1.45;">
++===================================================================================================+
+|               INTERCONEXIÓN PLACA MADRE &harr; PLACA CASERA VCSS (DISTRIBUCIÓN REFERENCIADA)         |
++===================================================================================================+
+|  PLACA MADRE (Cabezales Referenciados):                                                           |
+|    🟣 Cabezal Filas 6-8:    [ Vref ]    [ NC ]    [ GND ]   (Consigna Analógica & Tierra Limpia) |
+|    🟡 Cabezal Filas 11-12:  [  A2  ]    [ A3  ]             (Cables Dupont Amarillos a ADS1115)   |
+|    🔵 Cabezal Filas 13-15:  [ VCC  ]    [OUT+]    [ GND ]   (Alimentación Potencia & Retorno)     |
+|                                |                     |                                            |
+|                                |       +-------------+                                            |
+|                                v       v                                                          |
+|  PLACA CASERA VCSS (Clemas Referenciadas):                                                        |
 |    [CLEMA 1: REFERENCIA GND]       [CLEMA 2: CONTROL & POTENCIA]        [CLEMA 3: SALIDAS CELDA]  |
-|       [ GND ]    [ RefGND ]            [ VREF ]      [ VDD ]              [ OUT+ ]    [ OUT- ]    |
-|          |           |                    |             |                    |           |        |
-|      GND Común   GND de Señal        VOUT analógica   +12V SMPS           Hacia COM   Hacia COM   |
-|      del Sistema  del MCP4725         del MCP4725    (Alim. LM358)         Relé 1      Relé 2     |
+|       [ GND ]     [ AGND ]             [ VREF ]      [ VCC ]              [ VCC ]   [ Out Drain ] |
+|          |           ^                    ^             |                    |           ^        |
+|      Retorno Pot   Retorno Limpio     Consigna DAC   +12V SMPS            Hacia COM   Hacia COM   |
+|      Fuente 12V    (Pin 3 Cabezal)   (Pin 1 Cabezal) (Alim. LM358)          Relé 1      Relé 2     |
 |                                                                                                   |
-|                        CIRCUITO ACTIVO: OpAmp LM358N (VCC = +12V VDD)                             |
+|                        CIRCUITO ACTIVO: OpAmp LM358N (Alimentado a +12V VCC)                      |
 |                                                                                                   |
 |             MOSFET Rama 1 (IRLZ44N)                           MOSFET Rama 2 (IRLZ44N)             |
 |          R_Shunt 1 (10W / 1.0 Ohm Blanca)                  R_Shunt 2 (10W / 1.0 Ohm Blanca)       |
@@ -686,10 +1390,10 @@
 |                  [ HEADER SH1 ]                                    [ HEADER SH2 ]                 |
 |                   (Pin Macho)                                       (Pin Macho)                   |
 |                         |                                                 |                       |
-|                         +-------------> Hacia ADS1115 Canal A2 <----------+                       |
-|                         +-------------> Hacia ADS1115 Canal A3 <----------+                       |
-|                         (Indiferente: Ambos miden caídas 0-3.53V de ramas balanceadas)            |
-+---------------------------------------------------------------------------------------------------+
+|                         +---------> Hacia Placa Madre [A2] (Amarillo) ----+                       |
+|                         +---------> Hacia Placa Madre [A3] (Amarillo) ----+                       |
+|                         (Ambos miden caídas 0-3.50V de ramas balanceadas, 1.0 V/A)                |
++===================================================================================================+
 </pre>
       </div>
 
@@ -697,76 +1401,117 @@
         <table>
           <thead>
             <tr>
-              <th>Clema / Conector</th>
-              <th>Nombre del Borne</th>
-              <th>Tipo de Señal</th>
+              <th>Placa &amp; Conector</th>
+              <th>Borne / Pin</th>
+              <th>Color / Código</th>
               <th>Conectado Físicamente a</th>
-              <th>Función en el Circuito</th>
+              <th>Función Técnica &amp; Circuito</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td rowspan="2"><strong>Clema 1 (Par Izquierdo)</strong></td>
+              <td rowspan="2"><strong>Placa VCSS: Clema 1</strong><br><small style="color:#38bdf8;">(Círculo Azul)</small></td>
               <td><code>GND</code></td>
               <td>Masa Potencia</td>
-              <td>Barra de GND común (Negativo de 12V)</td>
-              <td>Retorno de potencia de los shunts hacia la fuente.</td>
+              <td>Borne <code>V- / GND</code> Fuente SMPS 12V</td>
+              <td>Retorno de potencia de alta corriente (hasta 3.5A) desde los shunts hacia la fuente.</td>
             </tr>
             <tr>
-              <td><code>RefGND</code></td>
+              <td><code>AGND</code></td>
               <td>Masa Señal</td>
-              <td>Pin <code>GND</code> del módulo DAC MCP4725</td>
-              <td>Tierra analógica de referencia limpia para evitar caídas de tensión parásitas en la lectura de consigna.</td>
+              <td>Cabezal Púrpura Pin 3 (<code>GND</code>) de Placa Madre</td>
+              <td>Tierra analógica de referencia limpia para desacoplar el DAC de la corriente de retorno.</td>
             </tr>
             <tr>
-              <td rowspan="2"><strong>Clema 2 (Par Central)</strong></td>
+              <td rowspan="2"><strong>Placa VCSS: Clema 2</strong><br><small style="color:#fbbf24;">(Círculo Naranja)</small></td>
               <td><code>VREF</code></td>
               <td>Consigna Analógica</td>
-              <td>Pin <code>VOUT</code> del módulo DAC MCP4725</td>
-              <td>Tensión de referencia analógica (0.00 V a 3.53 V) que fija la corriente deseada (<i>I</i> = <i>V</i><sub>REF</sub> &times; <i>G</i><sub><i>m</i></sub>).</td>
+              <td>Cabezal Púrpura Pin 1 (<code>Vref</code>) de Placa Madre</td>
+              <td>Tensión analógica 0.00V a 3.30V (MCP4725 DAC 12 bits) que fija la corriente deseada.</td>
             </tr>
             <tr>
-              <td><code>VDD</code></td>
+              <td><code>VCC</code></td>
               <td>Alimentación +12V</td>
-              <td>Línea positiva +12V de la fuente SMPS</td>
-              <td>Alimenta el riel de potencia de la celda y el pin V+ (Pin 8) del operacional LM358N para asegurar plena excursión de compuerta (<i>V</i><sub><i>gs</i></sub> &approx; 6&ndash;10 V).</td>
+              <td>Línea positiva +12.0V de la fuente SMPS</td>
+              <td>Alimentación VDD del LM358N (Pin 8) para asegurar tensión de compuerta (<i>V</i><sub><i>gs</i></sub> &approx; 6&ndash;10V).</td>
             </tr>
             <tr>
-              <td rowspan="2"><strong>Clema 3 (Par Derecho)</strong></td>
-              <td><code>OUT+</code></td>
+              <td rowspan="2"><strong>Placa VCSS: Clema 3</strong><br><small style="color:#34d399;">(Círculo Verde)</small></td>
+              <td><code>VCC</code></td>
               <td>Positivo Celda (+12V)</td>
-              <td>Terminal <code>COM</code> del Relé 1 (Módulo de 2 Relés)</td>
-              <td>Puenteado internamente al lado VDD (+12V). Conduce la corriente hacia el ánodo a través del contacto del relé.</td>
+              <td>Terminal <code>COM 1</code> del Módulo de 2 Relés</td>
+              <td>Puenteado internamente a +12V. Al cerrar Relé 1, energiza el ánodo de la celda.</td>
             </tr>
             <tr>
-              <td><code>OUT-</code></td>
-              <td>Retorno Celda (Sumidero)</td>
-              <td>Terminal <code>COM</code> del Relé 2 (Módulo de 2 Relés)</td>
-              <td>Conectado a los Drains de los dos MOSFETs IRLZ44N en paralelo. Es el sumidero que regula la corriente de retorno catódica.</td>
+              <td><code>Out Drain</code></td>
+              <td>Retorno Celda (Low-Side)</td>
+              <td>Terminal <code>COM 2</code> del Módulo de 2 Relés</td>
+              <td>Conectado a los Drains en paralelo de los MOSFETs IRLZ44N para regular la corriente catódica.</td>
             </tr>
             <tr>
-              <td rowspan="2"><strong>Headers Macho (Sensado)</strong></td>
-              <td><code>HEADER SH1</code></td>
-              <td>Caída de Tensión Shunt 1</td>
-              <td>Canal <code>A2</code> del ADC ADS1115 (Pin Macho/Cable Dupont)</td>
-              <td>Tensión analógica <i>V</i><sub><i>s</i>1</sub> = <i>I</i><sub>1</sub> &times; 1.0 &Omega;. Rango 0 a 3.50 V para medición de corriente y carga en 16 bits.</td>
+              <td rowspan="2"><strong>Placa VCSS: Headers SH</strong></td>
+              <td><code>SH1</code></td>
+              <td>Sensado Shunt 1</td>
+              <td>Cabezal Amarillo Pin 1 (<code>A2</code>) de Placa Madre</td>
+              <td>Caída de voltaje en Shunt 1: <i>V</i><sub><i>s</i>1</sub> = <i>I</i><sub>1</sub> &times; 1.0 &Omega; (0&ndash;3.50V hacia ADS1115 A2).</td>
             </tr>
             <tr>
-              <td><code>HEADER SH2</code></td>
-              <td>Caída de Tensión Shunt 2</td>
-              <td>Canal <code>A3</code> del ADC ADS1115 (Pin Macho/Cable Dupont)</td>
-              <td>Tensión analógica <i>V</i><sub><i>s</i>2</sub> = <i>I</i><sub>2</sub> &times; 1.0 &Omega;. Permite auditar el balance térmico entre ambas ramas.</td>
+              <td><code>SH2</code></td>
+              <td>Sensado Shunt 2</td>
+              <td>Cabezal Amarillo Pin 2 (<code>A3</code>) de Placa Madre</td>
+              <td>Caída de voltaje en Shunt 2: <i>V</i><sub><i>s</i>2</sub> = <i>I</i><sub>2</sub> &times; 1.0 &Omega; (0&ndash;3.50V hacia ADS1115 A3).</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Placa Madre: Cabezales</strong><br><small style="color:#c084fc;">(Púrpura, Amarillo, Azul)</small></td>
+              <td><code>Vref | NC | GND</code></td>
+              <td>Cabezal Púrpura (Filas 6–8)</td>
+              <td>Conecta a Clema 2 [VREF] y Clema 1 [AGND]</td>
+              <td>Pin central <code>NC</code> actúa como barrera de aislamiento contra ruido EMI.</td>
+            </tr>
+            <tr>
+              <td><code>A2 | A3</code></td>
+              <td>Cabezal Amarillo (Filas 11–12)</td>
+              <td>Conecta a Headers SH1 y SH2 con cable Dupont</td>
+              <td>Entradas directas a canales A2 y A3 del ADC ADS1115 de 16 bits para sensado de corriente.</td>
+            </tr>
+            <tr>
+              <td><code>VCC | OUT+ | GND</code></td>
+              <td>Cabezal Azul (Filas 13–15)</td>
+              <td>Conexión auxiliar de distribución de potencia</td>
+              <td>Distribución de riel +12V, línea de celda protegida y masa común.</td>
             </tr>
           </tbody>
         </table>
       </div>
 
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:16px; margin: 20px 0;">
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/07_Detalle_Cabezales_Madre_VCSS.jpg" alt="Cabezales Rotulados en Placa Madre" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.4a: Macro detalle de cabezales en placa madre (sector ESP32-S3): 🟣 Púrpura [Vref | NC | GND], 🟡 Amarillo [A2 | A3 hacia ADS1115], 🔵 Azul [VCC | OUT+ | GND] y 🟠 [Socket Power ZCS].</div>
+        </div>
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/03_Etapa_VCSS_Rotulada.jpg" alt="Etapa VCSS Rotulada en Operación" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.4b: Etapa VCSS en operación viva: OpAmp dual LM358N, 2× MOSFETs IRLZ44N con disipador, 2× shunts cerámicos de 10W (1.0 &Omega;), clemas [GND | AGND], [VREF | VCC] y [VCC | Out Drain].</div>
+        </div>
+      </div>
+
       <!-- 1.2.3 MÓDULO DE 2 RELEVADORES 5V (AISLAMIENTO BIPOLAR ZCS) -->
-      <h4 style="color:#e2e8f0; margin-top:24px; margin-bottom:10px;">1.2.3 Módulo de 2 Relevadores 5V (Aislamiento Galvánico Bipolar ZCS)</h4>
+      <h4 style="color:#e2e8f0; margin-top:24px; margin-bottom:10px;">1.2.3 Módulo de 2 Relevadores 5V (Aislamiento Galvánico Bipolar ZCS y Cabezal Power ZCS)</h4>
       <p>
         Para garantizar que la celda electroquímica no tenga bucles de corriente parásita ni degrade la lectura de pH,
-        el módulo de 2 relevadores conmuta <strong>simultáneamente tanto el polo positivo como el polo negativo de la celda</strong>:
+        el módulo de 2 relevadores conmuta <strong>simultáneamente tanto el polo positivo como el polo negativo de la celda</strong>.
+        Asimismo, para blindar los microcontroladores contra transitorios de conmutación inductiva de las bobinas, la alimentación se desacopla mediante el cabezal dedicado <code>Socket Power ZCS</code> de la placa madre:
       </p>
+
+      <div class="info-note danger" style="margin: 18px 0; font-size:0.88rem; padding:14px 18px; border-radius:8px; border-left:4px solid #ef4444; background:rgba(239, 68, 68, 0.08); color:#fca5a5;">
+        <strong style="color:#ffffff; display:block; margin-bottom:6px; font-size:0.94rem;">🔌 REGLA CRÍTICA DE AISLAMIENTO DE BOBINA (JUMPER JD-VCC):</strong>
+        En el módulo de relevadores se <strong>debe retirar físicamente el jumper azul JD-VCC / VCC</strong>.
+        La bobina del relé no se alimenta del riel lógico de 5V del ESP32, sino desde el cabezal macho de 3 pines <code>Socket Power ZCS</code> (filas 32–34 de la placa madre, ubicado entre el Nano y el ESP32):
+        <br><br>
+        • <strong>Pin 1 (5V):</strong> +5V Lógica de control para optoacopladores del módulo.<br>
+        • <strong>Pin 2 (5V Rele):</strong> +5V Alimentación aislada de potencia para las bobinas (terminal JD-VCC).<br>
+        • <strong>Pin 3 (5GND):</strong> Tierra aislada de retorno de bobina (5GND).
+      </div>
 
       <div class="code-box" style="background:#090d16; border:1px solid #10b981; padding:18px; border-radius:10px;">
 <pre style="color:#34d399; font-weight:700; font-size:0.85rem; line-height:1.45;">
@@ -774,11 +1519,15 @@
 |                        MÓDULO DE 2 RELEVADORES 5V (AISLAMIENTO TOTAL BIPOLAR)                     |
 |                                                                                                   |
 |  Control Lógico (Pines de Entrada):                                                               |
-|    • [ VCC ]   ---> Conectado a +5.0V (Salida LM7805)                                             |
-|    • [ GND ]   ---> Conectado a Masa Común (GND)                                                  |
+|    • [ VCC ]   ---> Conectado a +5.0V Lógica (Pin 1 del cabezal Socket Power ZCS)                 |
+|    • [ GND ]   ---> Conectado a Masa Común Digital (GND)                                          |
 |    • [ IN1 ] --+                                                                                  |
-|                +--> Puenteados juntos hacia el GPIO 20 del ESP32-S3 (Disparo ZCS Active-LOW)      |
+|                +--> Conectados al ESP32-S3 (Control de polaridad y habilitación celda)             |
 |    • [ IN2 ] --+                                                                                  |
+|                                                                                                   |
+|  Alimentación Aislada de Bobina (Jumper JD-VCC RETIRADO):                                         |
+|    • [ JD-VCC ] <--- Conectado a pin '5V Rele' (Pin 2 del cabezal Socket Power ZCS)               |
+|    • [ GND ]    <--- Conectado a pin '5GND' (Pin 3 del cabezal Socket Power ZCS)                  |
 |                                                                                                   |
 |  Contactos de Potencia:                                                                           |
 |    RELÉ 1 (Aislamiento Ánodo +12V):                                                               |
@@ -790,9 +1539,9 @@
 |      • [ NO 2 ]  ---> Conecta al CÁTODO / Probeta de ensayo en la Celda                           |
 |                                                                                                   |
 |  COMPORTAMIENTO METROLÓGICO:                                                                      |
-|    • Cuando GPIO 20 = LOW (Fuente Activa): Ambos relés cierran contactos NO; la celda energiza.   |
-|    • Cuando GPIO 20 = HIGH (Fuente Apagada o Muestreo pH): Ambos relés se abren; la cuba química   |
-|      queda 100% flotante, permitiendo lecturas estables del electrodo de vidrio sin corrientes.   |
+|    • Cuando Relés Activos: Ambos relés cierran contactos NO; la celda energiza la electrólisis.  |
+|    • Cuando Relés Inactivos: Ambos relés abren; la cuba química queda 100% flotante galvánicamente|
+|      permitiendo la medición de pH sin interferencias de potencial ni deterioro del bulbo.       |
 +---------------------------------------------------------------------------------------------------+
 </pre>
       </div>
@@ -971,6 +1720,61 @@
         </table>
       </div>
 
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap:18px; margin: 20px 0;">
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/COnexion TRIACS .jpg" alt="Conexión del Arnés Plano TRIAC en Placa Madre" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.5a: Arnés plano ribbon de 7 hilos conectado en el cabezal macho de filas 15–21 de la placa madre, interconectando el esclavo Arduino Nano con el bus de control de fase AC.</div>
+        </div>
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/04_Modulo_TRIACS_Rotulado.jpg" alt="Módulo de 4 Canales TRIAC Rotulado HUD" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.5b: Módulo de potencia de 4 canales TRIAC BTA24-600B (25A) con detector ZCS (120 Hz) y rotulado técnico HUD: 🟢 Entrada [AC 120V], 🟠 Salidas [T1..T4], 🔵 Control [VCC | GND | ZC], 🔴 Disparos [1..4].</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Borne / Cabezal Físico</th>
+              <th>Zona Anotada</th>
+              <th>Tipo de Conector</th>
+              <th>Conectado a</th>
+              <th>Función en el Sistema</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>AC</code></td>
+              <td>🟢 Círculo Verde (Abajo Izq)</td>
+              <td>Clema de tornillo 2P</td>
+              <td>Red 120 VAC (Línea + Neutro)</td>
+              <td>Alimentación de potencia para los calentadores y entrada al puente rectificador del detector ZC.</td>
+            </tr>
+            <tr>
+              <td><code>T1, T2, T3, T4</code></td>
+              <td>🟠 Círculo Naranja (Abajo)</td>
+              <td>4× Clemas de tornillo 2P</td>
+              <td>Calentadores Tinas 1, 2, 3, 4</td>
+              <td>Salidas de fase conmutada para regulación de temperatura por ángulo &alpha; (Desengrase, Decapado, Celda Hull, Níquel).</td>
+            </tr>
+            <tr>
+              <td><code>VCC | GND | ZC</code></td>
+              <td>🔵 Círculo Azul (Arriba Izq)</td>
+              <td>Cabezal macho 3 pines</td>
+              <td>Ribbon Pines 1, 2, 3 (Nano)</td>
+              <td>+5V lógica, masa común, y salida del optoacoplador 4N35 con pulso de sincronización ZC hacia Nano D3 (INT1).</td>
+            </tr>
+            <tr>
+              <td><code>1, 2, 3, 4 (CH1–CH4)</code></td>
+              <td>🔴 Círculo Rojo (Arriba)</td>
+              <td>4× Cabezales macho 2P</td>
+              <td>Ribbon Pines 4, 5, 6, 7 (Nano)</td>
+              <td>Entradas de disparo optoacopladas (MOC3021) excitadas en nivel ALTO desde los pines D7, D8, D9 y D10 del Nano.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- 1.2.6 CONVERSIÓN ANALÓGICA ADS1115 -->
       <h4 style="color:#e2e8f0; margin-top:24px; margin-bottom:10px;">1.2.6 Mapa de Canales del Convertidor ADC ADS1115 (16 Bits - Dirección 0x48)</h4>
       <div class="table-container">
@@ -987,10 +1791,10 @@
           <tbody>
             <tr>
               <td><code>Canal A0</code></td>
-              <td><span style="color:#f87171;">Desacoplado / Erradicado (RTOS 2.0)</span></td>
-              <td>Sin conexión física (Eliminado)</td>
-              <td>0.00 V (Flotante protegido)</td>
-              <td>Erradicado en RTOS 2.0 para suprimir diafonía e inyección de carga multiplexada.</td>
+              <td><span style="color:#94a3b8;">Reserva Analógica Libre</span></td>
+              <td>Sin conexión física (NC)</td>
+              <td>0.00 V</td>
+              <td>Canal libre para expansión futura o desacoplo analógico.</td>
             </tr>
             <tr>
               <td><code>Canal A1</code></td>
@@ -1012,6 +1816,77 @@
               <td><code>HEADER SH2</code> de la placa casera VCSS</td>
               <td>0.00 V a 3.50 V (1.0 V/A)</td>
               <td><i>I</i><sub>2</sub> = <i>V</i><sub><i>s</i>2</sub> / 1.0 &Omega; &nbsp;&rarr;&nbsp; <i>I</i><sub>total</sub> = <i>I</i><sub>1</sub> + <i>I</i><sub>2</sub></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap:20px; margin: 24px 0;">
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/06_Detalle_Buses_Termopares.jpg" alt="Detalle de Zócalos de Termopares MAX6675" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.6: Zócalos hembra SPI para termopares MAX6675: Alineación física directa 1:1 [SO | CS | CLK | VCC | GND] con desacoplo de alta frecuencia por capacitor cerámico de 100 nF soldado entre VCC y GND bajo cada zócalo.</div>
+        </div>
+        <div class="figure-box" style="margin:0;">
+          <img src="imagenes/Planta Fisica/anotadas/05_Detalle_Bus_ADC_I2C.jpg" alt="Detalle de Buses ADC e I2C" onclick="openModal(this.src)">
+          <div class="figure-caption">Figura 1.7: Macro de instrumentación I2C: Convertidor ADC ADS1115 de 16 bits (con 4× filtros pasabajos RC soldados bajo los canales A0–A3), DAC MCP4725 (0–3.53V) y sensor meteorológico AHT20/BMP280.</div>
+        </div>
+      </div>
+
+      <!-- 1.2.7 REGLAS DE ORO DE CORRESPONDENCIA FÍSICA 1:1 -->
+      <h4 style="color:#e2e8f0; margin-top:28px; margin-bottom:12px;">1.2.7 Reglas de Oro de Correspondencia Física 1:1 de Pines y Cabezales</h4>
+      <p>
+        Para asegurar un ensamble sin errores y evitar inversiones de polaridad que puedan destruir los circuitos integrados,
+        la placa madre fue diseñada de modo que la orientación física natural de los módulos coincida directamente con los zócalos hembra y cabezales:
+      </p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Subsistema</th>
+              <th>Módulo / Sensor Externo</th>
+              <th>Cabezal en Placa Madre</th>
+              <th>Orden Exacto de Pines (1:1)</th>
+              <th>Regla de Protección y Desacoplo Físico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Potencia AC</strong></td>
+              <td>Placa 4× TRIACs BTA24-600B</td>
+              <td>Cabezal Macho 7 Pines (Filas 15–21) &rarr; Bornes TRIAC</td>
+              <td><strong>Ribbon:</strong> <code>VCC | GND | ZC | CH1 | CH2 | CH3 | CH4</code><br>
+                  <strong>Módulo:</strong> Cabezal <code>[VCC|GND|ZC]</code> + Disparos <code>[1|2|3|4]</code> + Clema <code>[AC]</code> + Salidas <code>[T1|T2|T3|T4]</code></td>
+              <td>Arnés plano ribbon de 7 hilos. Sincronización ZCS 120 Hz por INT1 (Nano D3); disparo por ángulo &alpha; en D7–D10 para Tinas 1 a 4. Entrada AC 120V protegida con optoacopladores MOC3021 (5000 Vrms).</td>
+            </tr>
+            <tr>
+              <td><strong>Potencia DC (VCSS)</strong></td>
+              <td>Placa Casera VCSS DIY (2× MOSFET IRLZ44N)</td>
+              <td>Cabezales Placa Madre &rarr; Clemas VCSS</td>
+              <td><strong>Placa Madre:</strong> 🟣 <code>[Vref|NC|GND]</code>, 🟡 <code>[A2|A3]</code>, 🔵 <code>[VCC|OUT+|GND]</code><br>
+                  <strong>Placa VCSS:</strong> 🔵 <code>[GND|AGND]</code>, 🟠 <code>[VREF|VCC]</code>, 🟢 <code>[VCC|Out Drain]</code></td>
+              <td>Consigna analógica 0–3.3V (DAC MCP4725) hacia <code>VREF</code> con retorno por <code>AGND</code>. Sensado directo de shunts 10W hacia entradas <code>A2|A3</code> del ADS1115 (1.0 V/A). Regulación Low-Side con MOSFETs en paralelo.</td>
+            </tr>
+            <tr>
+              <td><strong>Termopares SPI</strong></td>
+              <td>4× Módulos MAX6675 Tipo K</td>
+              <td>4× Zócalos Hembra de 5 Pines</td>
+              <td><code>SO | CS | CLK | VCC | GND</code></td>
+              <td>Colocando el módulo de frente al zócalo coinciden 1:1. <strong>Capacitor cerámico de 100 nF soldado entre VCC y GND bajo cada zócalo</strong> para filtrado EMI.</td>
+            </tr>
+            <tr>
+              <td><strong>Conmutación Celda</strong></td>
+              <td>Módulo Relé 2 Canales (5V)</td>
+              <td>Cabezal 'Socket Power ZCS' (Filas 32–34)</td>
+              <td>Lado Bobina: <code>5V | 5V Rele | 5GND</code><br>Lado Lógico: <code>GND | IN1 | IN2 | VCC</code></td>
+              <td><strong>Jumper JD-VCC / VCC retirado obligatoriamente</strong>. Bobina alimentada desde el cabezal aislado para suprimir transitorios inductivos.</td>
+            </tr>
+            <tr>
+              <td><strong>Sensor Electroquímico</strong></td>
+              <td>Módulo PH-4502C + Sonda BNC</td>
+              <td>Zócalo ADC ADS1115 (Canal A1)</td>
+              <td><code>TO | DO | PO | GNDA | GND | VCC</code></td>
+              <td>Pin <code>PO</code> conectado exclusivamente a <strong>Canal A1 del ADS1115 vía Filtro Pasabajos RC dedicado</strong>. Prohibido muestrear con celda encendida.</td>
             </tr>
           </tbody>
         </table>
@@ -2440,8 +3315,8 @@
           <tbody>
             <tr>
               <td><strong>Selector de Metal</strong></td>
-              <td>Opciones: Auto, Zinc (Zn<sup>2+</sup>), Níquel (Ni<sup>2+</sup>)</td>
-              <td>Define la masa molar (<i>M</i>) y electrones transferidos (<i>z</i>). Si usa otro metal (ej. Cobre Cu<sup>2+</sup>), seleccione el que tenga valencia idéntica o edite los coeficientes.</td>
+              <td>Opciones: Auto (según receta), Zinc (Zn<sup>2+</sup>), Níquel (Ni<sup>2+</sup>)</td>
+              <td>Define la masa molar (<i>M</i>) y valencia (<i>z</i>). En modo <strong>Auto</strong>, calcula el modelo bicapa aditivo sumando la carga y masa teórica de Zinc (<i>Eq</i> = 0.33880 mg/C) y Níquel (<i>Eq</i> = 0.30414 mg/C) según las fases ejecutadas.</td>
             </tr>
             <tr>
               <td><strong>Peso Inicial Placa (<i>m</i><sub>0</sub>)</strong></td>
@@ -2456,27 +3331,27 @@
             <tr>
               <td><strong>Área Activa de la Placa (<i>A</i>)</strong></td>
               <td>cm<sup>2</sup></td>
-              <td>Superficie sumergida del cátodo. Valor predeterminado <code>65.0</code> cm<sup>2</sup>. Modifíquelo según el tamaño de su probeta.</td>
+              <td>Superficie sumergida del cátodo. Valor predeterminado <code>65.0</code> cm<sup>2</sup> (Celda Hull estándar). Modifíquelo según el tamaño de su probeta.</td>
             </tr>
             <tr>
               <td><strong>Carga Eléctrica <i>Q</i>(<i>t</i>)</strong></td>
               <td>Coulombs (C)</td>
-              <td>Calculada automáticamente por el software integrando la corriente medida: <i>Q</i> = &int; <i>I</i>(<i>t</i>)<i>dt</i>.</td>
+              <td>Integrada en tiempo real a 10 Hz (&Delta;<i>t</i> = 0.1 s). Se acumula <strong>exclusivamente</strong> durante el conteo activo de etapas galvánicas (con fuente encendida). En modo pulsado, pondera la corriente pico por el ciclo de trabajo: <i>I</i><sub>efectiva</sub> = <i>I</i><sub>pico</sub> &times; (Duty / 100).</td>
             </tr>
             <tr>
               <td><strong>Masa Teórica (<i>m</i><sub>teo</sub>)</strong></td>
-              <td>Gramos (g) o mg</td>
-              <td>Masa teórica de acuerdo a la Ley de Faraday: <i>m</i><sub>teo</sub> = (<i>Q</i> &times; <i>M</i>) / (<i>z</i> &times; <i>F</i>).</td>
+              <td>Miligramos (mg) / Gramos (g)</td>
+              <td>Calculada según la Ley de Faraday: <i>m</i><sub>teo</sub> = (<i>Q</i> &times; <i>M</i>) / (<i>z</i> &times; <i>F</i>) = <i>Q</i> &times; <i>Eq</i>. En recubrimiento bicapa, suma <i>m</i><sub>teo</sub> = <i>m</i><sub>teo,Zn</sub> + <i>m</i><sub>teo,Ni</sub>.</td>
             </tr>
             <tr>
               <td><strong>Rendimiento de Corriente (&eta;)</strong></td>
               <td>Porcentaje (%)</td>
-              <td>Eficiencia de corriente catódica: &eta; = (&Delta;<i>m</i><sub>real</sub> / <i>m</i><sub>teo</sub>) &times; 100%. Valores normales: 90% – 98%.</td>
+              <td>Eficiencia de corriente catódica: &eta; = (&Delta;<i>m</i><sub>real</sub> / <i>m</i><sub>teo</sub>) &times; 100%. Valores normales en baños galvánicos: 90% – 98%.</td>
             </tr>
             <tr>
               <td><strong>Espesor Medio Estimado (<i>e</i>)</strong></td>
               <td>Micrómetros (&mu;m)</td>
-              <td>Espesor promedio de la capa depositada: <i>e</i> = [&Delta;<i>m</i><sub>real</sub> / (<i>A</i> &times; &rho;)] &times; 10<sup>4</sup>.</td>
+              <td>Espesor promedio de la capa depositada: <i>e</i> = [&Delta;<i>m</i><sub>real</sub> / (<i>A</i> &times; &rho;)] &times; 10<sup>4</sup>. En bicapa Zn/Ni, desglosa el espesor individual de cada película considerando las densidades volumétricas (&rho;<sub>Zn</sub> = 7.14 g/cm<sup>3</sup>, &rho;<sub>Ni</sub> = 8.90 g/cm<sup>3</sup>).</td>
             </tr>
             <tr>
               <td><span class="badge-btn">Registrar en Ficha del Ensayo</span></td>
@@ -2500,7 +3375,7 @@
           <strong>📌 ¿Por qué se añade esta imagen?:</strong> Muestra la herramienta analítica interactiva donde se procesan las pesadas de laboratorio (balanza analítica de 4 cifras decimales) y se calcula en tiempo real la cinética de electrodeposición catódica.
         </p>
         <p style="font-size:0.87rem; line-height:1.6; margin-bottom:0;">
-          <strong>📖 Operación práctica:</strong> El usuario selecciona el metal electrodepositado (Zinc Zn<sup>2+</sup> o Níquel Ni<sup>2+</sup>), ingresa peso inicial (<code>42.1524</code> g), peso final (<code>42.1702</code> g) y área de probeta (<code>65.0</code> cm<sup>2</sup>). El software calcula automáticamente la carga eléctrica total (232.6 C), masa teórica (78.79 mg), masa real depositada (17.80 mg), eficiencia de corriente (&eta;%) y espesor medio en micrómetros (0.38 &mu;m). Con el botón <span class="badge-btn">Registrar en Ficha del Ensayo</span>, los resultados se guardan permanentemente en la memoria del lote.
+          <strong>📖 Operación práctica:</strong> El usuario puede mantener el selector en <strong>Auto (según receta)</strong> o forzar Zinc o Níquel individualmente, ingresa peso inicial (<code>42.1524</code> g), peso final (<code>42.1702</code> g) y área de probeta (predeterminado <code>65.0</code> cm<sup>2</sup> para Celda Hull estándar). El SCADA integra la corriente efectiva en vivo durante las fases galvánicas activas, calcula la carga eléctrica total (Coulombs), masa teórica (mg), masa real neta depositada (&Delta;<i>m</i>), eficiencia faradaica (&eta;%) y espesor medio (&mu;m). Con el botón <span class="badge-btn">Registrar en Ficha del Ensayo</span>, los resultados se guardan permanentemente en el archivo de metadatos del lote.
         </p>
       </div>
     </section>
@@ -3625,7 +4500,7 @@ Proyecto/
         <div class="card">
           <h4 style="color:#f472b6; margin-bottom:8px;">5. Subsistema de pH & Fisicoquímica</h4>
           <p style="font-size:0.84rem; line-height:1.5;">
-            • <code>Task_Sensado.h / .cpp</code>: Tarea coordinadora de sensado I2C. Realiza conversión en Canal A1 dedicado para pH a 860 SPS continuo, erradicando el canal A0 y eliminando demoras de multiplexado TDM.<br>
+            • <code>Task_Sensado.h / .cpp</code>: Tarea coordinadora de sensado I2C. Realiza conversión en Canal A1 dedicado para pH a 860 SPS continuo con lectura directa sin demoras de multiplexado TDM.<br>
             • <code>Modulo_PH.h / .cpp</code>: Medición electroquímica de pH. Implementa el filtro digital adaptativo tri-modo (&alpha; = 0.30 en transitorios, &alpha; = 0.08 en régimen estacionario), compensación térmica por ecuación de Nernst y almacenamiento en Flash NVS por modo/etapa química.<br>
             • <code>Controller_PH.h / .cpp</code>: Controlador MVC para <code>/api/ph</code> y <code>/api/ph_cal</code>, gestionando el asistente de calibración en dos puntos (pH 4.01 y 7.00/10.01) y persistiendo offsets y pendientes en particiones NVS.
           </p>
@@ -3794,7 +4669,7 @@ Proyecto/
           </p>
           <ul style="font-size:0.82rem; line-height:1.5; padding-left:18px; color:#cbd5e1;">
             <li><code>VCSS.png</code>: Esquemático del sumidero analógico de corriente en lazo cerrado compuesto por el amplificador operacional LM358N en retroalimentación negativa, transistores MOSFET de nivel lógico IRLZ44N, filtros RC de compuerta y resistencias de sensado de corriente.</li>
-            <li><code>sistema.png</code>: Diagrama eléctrico integral de interconexión. Muestra las barreras de aislamiento galvánico óptico (optoacopladores PC817 para relés, optotransistor 4N35 para cruce por cero y opto-TRIACs MOC3021 para resistencias calefactoras), el conexionado de los buses I2C y SPI, y las líneas serie UART entre microcontroladores.</li>
+            <li><code>sistema.png</code>: Diagrama de bloques funcional de hardware moderno e interconexión eléctrica global. Muestra las barreras de aislamiento galvánico óptico (optoacopladores PC817 para relés, optotransistor 4N35 para cruce por cero ZCS AC y opto-TRIACs MOC3021 para resistencias calefactoras), la topología pseudo-diferencial del sensor de pH PH-4502C hacia el ADS1115 (A1 señal Po vs A0 masa analógica limpia AGND), el módulo de relé ZCS DC en +12V VDD (GPIO 20) y los buses I2C, SPI y UART entre microcontroladores.</li>
           </ul>
         </div>
       </div>

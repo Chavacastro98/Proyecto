@@ -6,7 +6,7 @@
 | **Versión del Documento** | 2.0 |
 | **Fecha de Emisión** | Septiembre 2026 |
 | **Firmware Asociado** | RTOS 2.0.0 (ESP32-S3) + nano.ino (ATmega328P) |
-| **Estado** | 🟡 En desarrollo — Pendiente: fotografías de planta física y sistema de instrumentación |
+| **Estado** | 🟢 Completado — Documentado con 7 infografías técnicas de hardware en ultra-alta resolución y suite interactiva de conexionado 1:1 |
 
 **Sustrato Base:** Probetas de Aleación de Aluminio 6061-T6 (100 mm · 65 mm · 0.8 mm, Área útil sumergida: 1.0 dm²)  
 **Línea de Proceso:** Tren automatizado de 4 tinas de proceso (Desengrase Alcalino → Decapado Alcalino → Celda Hull Zincado Ácido → Niquelado sobre Zinc)  
@@ -410,51 +410,58 @@ El compilador lee el CSV sin pérdida de resolución temporal, calcula derivadas
 
 ## 5. Modelado y Cálculos de Eficiencia de Corriente y Espesor
 
-El software ejecuta en tiempo real los balances de carga eléctrica y peso basados en las Leyes de Faraday:
+El software SCADA ejecuta en tiempo real los balances de carga eléctrica y peso basados en las Leyes de Faraday, adaptándose de forma continua a los parámetros del ensayo:
 
-### 1. Masa Real Depositada (Δ m(real)):
+### 1. Masa Real Depositada (&Delta;m<sub>real</sub>):
+Determinada mediante pesaje único en balanza analítica de precisión (0.0001 g) al inicio y término de la receta completa de 4 etapas:
 ```text
 Δm(real) = P(fin) - P(ini)   [g]
 ```
+> [!NOTE]
+> **Protocolo Metalúrgico de Pesaje:** Siguiendo la metodología estandarizada del laboratorio, la probeta no se seca ni se pesa entre las tinas 3 y 4 para evitar la pasivación u oxidación superficial del zinc antes de la deposición del níquel.
 
-### 2. Carga Eléctrica Total Consumida (Q(total)):
-Obtenida por integración trapezoidal numérica discreta en los registros de corriente del sumidero VCSS (N muestras a intervalo Δ t = 1.0 s):
+### 2. Carga Eléctrica Útil Integrada (Q<sub>total</sub>):
+La culombimetría opera en lazo cerrado verificando el estado real del hardware a través de la telemetría periódica del ESP32:
+* **Condición de Integración:** La carga se integra exclusivamente cuando el cronómetro de la etapa está en ejecución activa (`etapa_corriendo == True`), el relé físico está energizado (`act == 1`) y la tina corresponde a un proceso de electrodeposición (Tina 3: Zincado o Tina 4: Niquelado). En reposo, pausas o etapas previas (1 y 2), la tasa de acumulación es estrictamente cero (&Delta;Q = 0.0 C).
+* **Ponderación por Ciclo de Trabajo en Modo Pulsado:**
 ```text
-Q(total) = ∫₀^(t_total) I(t) dt ≈ Σ [ (Iₖ + Iₖ₋₁) / 2 ] · Δt   [Coulombs, C]
+I(efectiva) = I(pico) · (Duty / 100.0)   [A]
+Q(etapa) = ∫ I(efectiva) dt ≈ Σ [ I(efectiva) · Δt ]   [Coulombs, C]
 ```
+Para una corriente pico de 1.50 A a 10 Hz con 20% de ciclo de trabajo, la corriente promedio efectiva es de 0.30 A, integrando la carga real transferida a la interfaz electroquímica.
 
-### 3. Masa Teórica de Faraday (m(teo)):
+### 3. Modelo Faradaico Aditivo Bicapa (Zn + Ni):
+La masa teórica total se calcula sumando la contribución faradaica de cada metal depositado según su carga individual acumulada:
 ```text
-m(teo) = (Q(total) · M) / (z · F)   [g]
+m(teo_total) = m(teo_Zn) + m(teo_Ni) = (Q_Zn · Eq_Zn) + (Q_Ni · Eq_Ni)   [mg]
 ```
-Donde:
-* M: Peso molecular del metal depositado (Zn = 65.38 g/mol, Ni = 58.69 g/mol).
-* z: Valencia iónica del metal (z = 2 para Zn²⁺ y Ni²⁺).
-* F: Constante de Faraday (96 485.33 C/mol).
+Donde los equivalentes electroquímicos son:
+* **Zinc (Zn²⁺):** M = 65.38 g/mol, z = 2, F = 96 485.33 C/mol &rarr; **Eq<sub>Zn</sub> = 0.33880 mg/C**
+* **Níquel (Ni²⁺):** M = 58.69 g/mol, z = 2, F = 96 485.33 C/mol &rarr; **Eq<sub>Ni</sub> = 0.30414 mg/C**
 
-### 4. Eficiencia de Corriente (η%):
+### 4. Eficiencia Faradaica Global (&eta;%):
 ```text
-η = [ Δm(real) / m(teo) ] · 100%
+η = [ Δm(real) / m(teo_total) ] · 100%
 ```
-*Valores típicos esperados:* 90% a 98% para zincado ácido; 85% a 95% para niquelado. Valores inferiores al 80% indican sobrepotencial con evolución parásita de hidrógeno gas (H₂ \uparrow).
+*Valores típicos esperados:* 85% a 98% en depósitos combinados bien balanceados. Valores inferiores al 80% evidencian sobrepotencial catódico excesivo con desprendimiento parásito de hidrógeno gas (H₂ &uarr;).
 
-### 5. Espesor Medio del Depósito (e):
+### 5. Espesor Estimado de Recubrimiento (e):
+Calculado a partir del área interfacial activa de la probeta sumergida en la Celda Hull (A = 65.0 cm²):
 ```text
-e = [ Δm(real) / (ρ · A) ] · 10⁴   [μm]
+e_Zn = [ m(real_Zn) / (ρ_Zn · A) ] · 10⁴   [μm]   (ρ_Zn = 7.14 g/cm³)
+e_Ni = [ m(real_Ni) / (ρ_Ni · A) ] · 10⁴   [μm]   (ρ_Ni = 8.90 g/cm³)
+e_total = e_Zn + e_Ni   [μm]
 ```
-Donde:
-* ρ: Densidad del metal (ρ_{Zn} = 7.14 g/cm³, ρ_{Ni} = 8.90 g/cm³).
-* A: Área geométrica sumergida de la probeta (A = 100 cm² = 1.0 dm²).
 
 ---
 
 ## 6. Calibración de Instrumentación (pH, Temperatura y Corriente VCSS)
 
-### 6.1 Calibración de Electrodos de pH (Canal A1 Dedicado ADS1115 · RTOS 2.0)
+### 6.1 Calibración de Electrodos de pH (Canal A1 ADS1115)
 
 > [!IMPORTANT]
-> **Arquitectura Metrológica RTOS 2.0 (Canal A1 Dedicado):**  
-> En la versión **RTOS 2.0**, el antiguo Canal A0 fue completamente erradicado de la arquitectura de software y hardware para evitar retrasos por conmutación multiplexada en el convertidor ADS1115. El electrodo potenciométrico de pH opera con dedicación exclusiva en el **Canal A1** con el 100% de uso del bus I2C a **860 SPS**, permitiendo lectura continua e inmunidad a inyecciones de carga. Asimismo, los puntos de calibración se almacenan de manera desacoplada en memoria Flash NVS por modo de operación.
+> **Medición Potenciométrica de pH en Canal A1 (ADS1115):**  
+> El electrodo potenciométrico de pH opera conectado al **Canal A1** del convertidor analógico-digital ADS1115 a **860 SPS**, garantizando lectura continua, alta estabilidad y filtrado digital adaptativo tri-modo (mediana móvil y filtro pasabajas IIR). Los puntos de calibración se almacenan de manera independiente en la memoria Flash NVS por modo químico de operación.
 
 1. Conectar la computadora o dispositivo móvil a la red Wi-Fi emitida por la planta: `Uli` (clave: `12345678`).
 2. Abrir en el navegador la dirección: `http://interfaz.local` (o `http://192.168.4.1`) y entrar a la vista [`ph.html`](http://192.168.4.1/ph.html) (o pestaña de Calibración en Telemetría 2.0).
@@ -659,7 +666,7 @@ Proyecto/
 │   │   │   ├── Controller_Termico.h / .cpp # Endpoints REST térmicos y consignas
 │   │   │   │
 │   │   │   ├── Task_Sensado.h / .cpp      # Coordinador periódico de sensado analógico
-│   │   │   ├── Modulo_PH.h / .cpp         # Sensor de pH DEDICADO Canal A1 (A0 eliminado, 860 SPS, NVS por modo)
+│   │   │   ├── Modulo_PH.h / .cpp         # Sensor de pH DEDICADO en Canal A1 (860 SPS, NVS por modo)
 │   │   │   ├── Controller_PH.h / .cpp     # Endpoints REST de pH y asistente de calibración multipunto NVS
 │   │   │   │
 │   │   │   ├── Modulo_Ambiental.h / .cpp  # Sensado I2C de meteorología de cabina (AHT20 / BMP280)
@@ -745,9 +752,9 @@ El firmware del microcontrolador maestro (ESP32-S3 N16R8) se compone de 40 archi
    * `Task_Termico.h / .cpp`: Tarea en Core 1 que supervisa periódicamente las 4 tinas químicas, calcula las acciones de control PI térmico y envía las tramas de potencia por UART2 al Arduino Nano.
    * `Modulo_Termico.h / .cpp`: Driver SPI multiplexado que conmuta los 4 Chip Selects de los digitalizadores MAX6675, aplica filtrado digital a la temperatura y detecta el bit D₂ (indicador de termopar roto o circuito abierto).
    * `Controller_Termico.h / .cpp`: Controlador MVC para `/set_temp`, permitiendo configurar setpoints y ganancias de control.
-5. **Subsistema de pH y Fisicoquímica (Canal A1 Dedicado · RTOS 2.0):**
-   * `Task_Sensado.h / .cpp`: Planifica secuencialmente lecturas I2C no críticas para evitar la saturación del bus del sistema.
-   * `Modulo_PH.h / .cpp`: Medición potenciométrica en el **Canal A1 DEDICADO del ADS1115** (Canal A0 eliminado, 860 SPS continuos con 100% de dedicación de bus I2C). Aplica el filtro digital adaptativo (α = 0.30 en transitorio, α = 0.08 en reposo) y almacena en Flash NVS los puntos de calibración de manera independiente por modo.
+5. **Subsistema de pH y Fisicoquímica (Canal A1 · RTOS 2.0):**
+   * `Task_Sensado.h / .cpp`: Planifica secuencialmente lecturas I2C para optimizar el bus del sistema.
+   * `Modulo_PH.h / .cpp`: Medición potenciométrica en el **Canal A1 del ADS1115** a 860 SPS continuos. Aplica el filtro digital adaptativo (α = 0.30 en transitorio, α = 0.08 en reposo) y almacena en Flash NVS los puntos de calibración de manera independiente por modo.
    * `Controller_PH.h / .cpp`: Controlador MVC para `/api/ph` y endpoints de calibración NVS por modo, interactuando con el panel de aguja única y voltímetro del módulo PH-4502C.
 6. **Subsistema Ambiental, Supervisión y OTA:**
    * `Modulo_Ambiental.h / .cpp`: Adquisición I2C meteorológica de cabina con los sensores AHT20 (humedad relativa) y BMP280 (presión atmosférica barométrica).
@@ -826,7 +833,11 @@ La carpeta `hardware/` documenta el diseño eléctrico y dimensionamiento de la 
 * **Principio de Operación:** La tensión de consigna del DAC MCP4725 (0 a 3.53 V) se aplica a la entrada no inversora del op-amp. El lazo de retroalimentación negativa fuerza al MOSFET a conducir la corriente exacta que genera una caída en el shunt igual a la consigna, alcanzando una transconductancia total de Gₘ = 2.00 S (rango: 0.00 a 7.06 A teóricos, limitado por firmware a 3.50 A).
 
 #### Diagrama de Interconexión Eléctrica Global ([`sistema.png`](imagenes/sistema.png))
-* **`sistema.png`:** Diagrama de interconexión eléctrica global: aislamiento galvánico óptico (PC817, 4N35, MOC3021), topología de buses I2C y SPI, y enlaces UART entre microcontroladores.
+![Diagrama de Interconexión Eléctrica Global](imagenes/sistema.png)
+* **`sistema.png`:** Diagrama de bloques funcional de hardware moderno e interconexión eléctrica global:
+  * **Módulo ZCS Dual:** Detector de Cruce por Cero AC (Zero-Crossing 60 Hz vía optoacoplador 4N35 conectado a Pin D3 INT1 del Arduino Nano) y Módulo de Relevador ZCS de corte galvánico en +12V VDD (GPIO 20 Active-LOW sincronizado a corriente nula $I = 0.00\text{ A}$ sin arco voltaico).
+  * **Sensado Pseudo-Diferencial de pH:** Acondicionador analógico PH-4502C conectado al ADC ADS1115 (16-bit @ 860 SPS) en topología pseudo-diferencial ($V_{\text{in}}^+ = \text{Po}$ en Canal A1, $V_{\text{ref}}^- = \text{AGND}$ limpia en Canal A0) para máximo rechazo a modo común (CMRR) e inmunidad contra ruidos inducidos por los TRIACs y el sumidero.
+  * **Buses y Control:** Bus I2C Fast-Mode (400 kHz) para ADS1115, MCP4725 y AHT20/BMP280; Bus SPI Read-Only (4 MHz) para 4x módulos MAX6675 con termopares Tipo K; y enlace serie UART2 asíncrono (9600 Baud) entre ESP32-S3 y Arduino Nano con Watchdog de seguridad (3.0 s).
 
 ---
 
@@ -981,18 +992,29 @@ Para maximizar la robustez y facilitar el mantenimiento, la arquitectura física
 #### 1. Módulos Montados en Zócalos Hembra (Extracción Rápida sin Soldador):
 * **Microcontrolador Maestro ESP32-S3 DevKit:** Montado sobre dos tiras de zócalos hembra de 22 pines. Concentra el bus I2C (GPIO 8 SDA, GPIO 9 SCL), el bus SPI (GPIO 18 SCK, GPIO 19 MISO, CS 5, 4, 13, 14), UART2 (GPIO 17 TX) y la baliza Neopixel integrada (GPIO 48).
 * **Microcontrolador Esclavo Arduino Nano (ATmega328P):** Montado sobre zócalos hembra de 15 pines. Recibe interrupción de cruce por cero en Pin D3 (INT1), dispara compuertas TRIAC por Pines D7–D10 y recibe consignas por Pin D0 (RX).
-* **Conversor ADC ADS1115 (16 bits):** Zócalo hembra de 10 pines. Conecta al bus I2C (`0x48`) con Canal A1 dedicado a la sonda de pH (señal Po), Canal A0 para referencia de masa limpia GND2 y canales A2/A3 para shunts de corriente SH1 y SH2.
+* **Conversor ADC ADS1115 (16 bits):** Zócalo hembra de 10 pines. Conecta al bus I2C (`0x48`) con Canal A1 para la sonda de pH (señal Po del módulo PH-4502C), Canales A2 y A3 para los shunts de corriente SH1 y SH2 (1.0 Ω / 10W cada uno), y Canal A0 en reserva analógica libre.
 * **Conversor DAC MCP4725 (12 bits):** Zócalo hembra de 6 pines en bus I2C (`0x60`). Su salida analógica `VOUT` entrega la consigna V(ref) al sumidero VCSS.
 * **Sensor Ambiental AHT20 + BMP280:** Zócalo hembra de 4 pines conectado al riel de 3.3V, GND, SDA y SCL.
 * **4× Módulos MAX6675 (Termopares):** Montados sobre zócalos hembra independientes. Comparten las líneas SCK (GPIO 18), SO (GPIO 19), 3.3V y GND; cada módulo dispone de su línea `CS` dedicada y bornera de tornillo para el termopar Tipo K.
 
-#### 2. Placa Casera del Sumidero VCSS ([`VCSS.png`](imagenes/VCSS.png)):
-Construida en placa de circuito según el diagrama de ingeniería analógica con las siguientes interfaces mecánicas:
-* **Clema 1 (Referencias):** Bornes para `GND` de potencia y `RefGND` del MCP4725 (eliminación de lazos de masa).
-* **Clema 2 (Alimentación y Consigna):** Borne `VDD` (+12V de la fuente SMPS) y borne `VREF` (consigna analógica del DAC).
-* **Clema 3 (Potencia de Celda):** Borne `OUT+` (+12V hacia relé de celda COM 1) y borne `OUT-` (retorno catódico hacia Drains de MOSFETs).
-* **Headers Macho de Sensado SH1 y SH2:** Pines de conexión directa hacia los canales A2 y A3 del ADS1115.
+#### 2. Placa Casera del Sumidero VCSS ([`VCSS.png`](imagenes/VCSS.png)) y Cabezales Asociados:
+Construida en placa de circuito según el diagrama de ingeniería analógica con las siguientes interfaces mecánicas y cabezales dedicados en la placa madre:
+* **Cabezales Dedicados en Placa Madre (Serigrafía Referenciada):**
+  * 🟣 **Cabezal Filas 6–8 `[Vref | NC | GND]`:** Pin 1 entrega la consigna analógica del DAC MCP4725 (`0x60`), Pin 2 es guarda no conectada (`NC`) y Pin 3 es masa analógica limpia (`GND`).
+  * 🟡 **Cabezal Filas 11–12 `[A2 | A3]`:** Conecta mediante arnés Dupont dual amarillo directamente con las entradas A2 y A3 del ADC ADS1115 (`0x48`) para sensar las caídas de tensión en los shunts.
+  * 🔵 **Cabezal Filas 13–15 `[VCC | OUT+ | GND]`:** Distribución auxiliar de riel +12V, línea conmutada de celda y masa común.
+* **Clemas de Tornillo en Placa VCSS (Distribución Referenciada):**
+  * 🔵 **Clema 1 (Referencias):** Borne `GND` (retorno de potencia de shunts a fuente SMPS) y borne `AGND` (masa analógica conectada al pin 3 del cabezal púrpura).
+  * 🟠 **Clema 2 (Consigna y Alimentación):** Borne `VREF` (consigna analógica del DAC conectada al pin 1 del cabezal púrpura) y borne `VCC` (+12V SMPS para alimentar VDD del operacional LM358N en Pin 8).
+  * 🟢 **Clema 3 (Potencia de Celda):** Borne `VCC` (+12V hacia contacto `COM 1` del relé de celda) y borne `Out Drain` (retorno catódico hacia Drains en paralelo de MOSFETs IRLZ44N, vía contacto `COM 2` del relé).
+* **Headers Macho de Sensado SH1 y SH2:** Pines soldados sobre las resistencias cerámicas de cemento de 10W (1.0 Ω) con conexión hacia `A2` y `A3` de la placa madre (1.0 V/A).
 * **Disipador Térmico con Ventilación Forzada:** Los transistores MOSFET IRLZ44N van fijados con pasta térmica y aislante de mica al disipador de aluminio.
+
+#### 3. Módulo de Potencia AC 4× TRIACs BTA24-600B (ZCS):
+* 🟢 **Clema de Entrada `AC` (Círculo Verde):** Bornera de 2 tornillos para Línea y Neutro de 120 VAC hacia puente rectificador del detector ZC.
+* 🟠 **Clemas de Salida `T1, T2, T3, T4` (Círculo Naranja):** 4 borneras de tornillo independientes hacia los calefactores de las tinas (Desengrase T1, Decapado T2, Celda Hull T3, Níquel T4).
+* 🔵 **Cabezal de Control `[VCC | GND | ZC]` (Círculo Azul):** Cabezal de 3 pines para alimentación +5V lógica, masa común y señal ZC (120 Hz) hacia interrupción INT1 (Pin D3) del Arduino Nano.
+* 🔴 **Cabezales de Disparo `[1 | 2 | 3 | 4]` (Círculo Rojo):** 4 cabezales independientes de compuerta optoacoplada (MOC3021) excitados desde los pines D7, D8, D9 y D10 del Arduino Nano.
 
 ---
 
@@ -1017,23 +1039,66 @@ Gracias al diseño modular en zócalos hembra y clemas, cualquier intervención 
 
 ---
 
-### 10.4 Galería Fotográfica de la Planta en Operación
+### 10.4 Galería de Infografías Técnicas de la Planta Física y Conexionado 1:1
 
-> [!NOTE]
-> **Material Fotográfico de Laboratorio (Espacios Reservados):**  
-> En estos apartados se incorporarán las fotografías de la planta física e instrumentación una vez concluido el levantamiento fotográfico del laboratorio.
+A continuación se presentan las **7 infografías técnicas en ultra-alta resolución (4096 px)** generadas directamente sobre la planta física y sus módulos de instrumentación. Este registro gráfico constituye la referencia de ingeniería definitiva para montaje, cableado, diagnóstico y verificación de correspondencia física de pines:
 
-#### 10.4.1 Vista Panorámica de la Planta Piloto
-*📷 Espacio reservado para fotografía panorámica de la estación de trabajo (tren de 4 tinas, computadora SCADA y panel de control).*
+#### 10.4.1 Placa Madre Operativa con Cableado Completo
 
-#### 10.4.2 Gabinete de Instrumentación y Control
-*📷 Espacio reservado para fotografía en detalle del gabinete mostrando la placa ESP32-S3, Arduino Nano, regulador LM2596 indicando 6.80V, módulo de relés y etapa VCSS con shunts cerámicos.*
+![Placa Madre Operativa con Cableado Completo](imagenes/Planta%20Fisica/anotadas/02_Placa_Conectada_Rotulada.jpg)  
+*Figura 10.1: Macro de la placa madre en operación dentro del gabinete. Se observan los cables de alimentación principal desde la SMPS hacia la clema azul, la tensión estabilizada de 6.80V en el display LED del convertidor Buck alimentando los reguladores lineales térmicamente aliviados (LM7805 de 5V y LM1117 de 3.3V), el arnés trenzado de los 4 termopares MAX6675, los buses I2C hacia el ADS1115 y MCP4725, y el arnés plano ribbon de 7 hilos hacia el módulo de TRIACs.*
 
-#### 10.4.3 Tinas de Proceso y Celda Hull
-*📷 Espacio reservado para fotografías de las tinas químicas de 450W y la celda Hull normalizada de 267 mL con electrodos instalados.*
+---
 
-#### 10.4.4 Sondas y Sensores
-*📷 Espacio reservado para fotografías en detalle de los termopares Tipo K y las sondas de pH.*
+#### 10.4.2 Arquitectura de la Placa Madre y Guía Maestra de Correspondencia 1:1
+
+![Mapa Maestro de la Placa Madre](imagenes/Planta%20Fisica/anotadas/01_Placa_Principal_Rotulada.jpg)  
+*Figura 10.2: Mapa maestro de arquitectura de hardware sobre la placa madre (orientación vertical de referencia). Destaca los zócalos hembra del microcontrolador maestro ESP32-S3 (2× 22 pines), zócalos del microcontrolador esclavo Arduino Nano (2× 15 pines), zócalos de los 4 módulos termopar MAX6675 (con capacitores de desacoplo soldados inferiormente), zócalo del ADC ADS1115 (16 bits) con filtros RC dedicados en canales A0–A3, zócalo del DAC MCP4725, zócalo ambiental I2C, cabezal de bus TRIAC de 7 pines y clemas de alimentación con sus respectivos filtros electrolíticos.*
+
+![Guía Maestra de Alineación de Pines 1:1](imagenes/Planta%20Fisica/anotadas/08_Alineacion_Pines_Sensores_Actuadores.jpg)  
+*Figura 10.3: Infografía maestra de correspondencia física 1:1 entre módulos externos y cabezales/zócalos de la placa madre. Ilustra las 4 reglas críticas de ensamblaje: (1) Correspondencia directa del módulo MAX6675 al zócalo SPI [SO | CS | CLK | VCC | GND]; (2) Orden de pines y código de colores del bus ribbon TRIAC [VCC | GND | ZC | CH1 | CH2 | CH3 | CH4]; (3) Arquitectura dividida del módulo de 2 relés con el jumper JD-VCC retirado y bobina alimentada desde el cabezal 'Socket Power ZCS' [5V | 5V Rele | 5GND]; y (4) Conexión analógica del sensor de pH PH-4502C hacia el canal A1 del ADS1115 vía filtro pasabajos RC dedicado.*
+
+---
+
+#### 10.4.3 Etapa de Potencia DC: Sumidero de Corriente VCSS e Interconexión con Placa Madre
+
+![Cabezales Rotulados en Placa Madre](imagenes/Planta%20Fisica/anotadas/07_Detalle_Cabezales_Madre_VCSS.jpg)  
+*Figura 10.4: Macro detalle de cabezales en la placa madre (sector derecho del zócalo ESP32-S3) con rotulado HUD: 🟣 Púrpura `[Vref | NC | GND]` para consigna analógica y masa limpia; 🟡 Amarillo `[A2 | A3]` hacia las entradas de sensado del ADS1115; 🔵 Azul `[VCC | OUT+ | GND]` para distribución de potencia; y 🟠 `[Socket Power ZCS]` para bobinas aisladas de relés.*
+
+![Etapa VCSS Rotulada en Operación](imagenes/Planta%20Fisica/anotadas/03_Etapa_VCSS_Rotulada.jpg)  
+*Figura 10.5: Macro de la etapa del sumidero analógico de corriente constante (VCSS) en operación viva con rotulado técnico HUD. Identifica las clemas 🔵 `[GND | AGND]`, 🟠 `[VREF | VCC]`, 🟢 `[VCC | Out Drain]`, los dos transistores MOSFET IRLZ44N (Q1 y Q2) montados sobre disipador, las 2 resistencias cerámicas de cemento de 10W (1.0 Ω ±5%) como shunts de realimentación (R_SH1 y R_SH2), y el amplificador operacional LM358N.*
+
+---
+
+#### 10.4.4 Etapa de Potencia AC: Módulo de 4 Canales TRIAC y Cruce por Cero (ZCS)
+
+![Arnés Plano Ribbon TRIAC en Placa Madre](imagenes/Planta%20Fisica/COnexion%20TRIACS%20.jpg)  
+*Figura 10.6: Conexión del arnés plano ribbon de 7 hilos en el cabezal macho de filas 15–21 de la placa madre, interconectando el microcontrolador esclavo Arduino Nano con el bus de control de fase AC mediante codificación unívoca por colores.*
+
+![Módulo de 4 Canales TRIAC Rotulado HUD](imagenes/Planta%20Fisica/anotadas/04_Modulo_TRIACS_Rotulado.jpg)  
+*Figura 10.7: Módulo de potencia de 4 canales de corriente alterna (120 VAC) con detector de Cruce por Cero (ZCS) integrado y rotulado técnico HUD: 🟢 Entrada de línea `[AC 120V]`, 🟠 Salidas de potencia `[T1..T4]` hacia calentadores de tinas (TRIACs BTA24-600B de 25A), 🔵 Cabezal de control `[VCC | GND | ZC]` (optoacoplador 4N35 @ 120 Hz), y 🔴 Disparos optoacoplados `[1..4]` (CH1–CH4 gobernados por optoacopladores MOC3021).*
+
+---
+
+#### 10.4.5 Instrumentación y Buses de Sensores (SPI y I2C)
+
+![Detalle de Zócalos de Termopares MAX6675](imagenes/Planta%20Fisica/anotadas/06_Detalle_Buses_Termopares.jpg)  
+*Figura 10.9: Macro de los 4 zócalos hembra SPI para termopares MAX6675. Destaca el desacoplo de alta frecuencia por hardware implementado con condensadores cerámicos multicapa de 100 nF (código 104) soldados directamente entre los terminales VCC y GND en la cara inferior de cada zócalo, suprimiendo transitorios inducidos por las conmutaciones térmicas de los TRIACs.*
+
+![Detalle de Buses ADC e I2C](imagenes/Planta%20Fisica/anotadas/05_Detalle_Bus_ADC_I2C.jpg)  
+*Figura 10.10: Macro de la sección de convertidores I2C y meteorología. En primer plano el conversor analógico a digital ADS1115 (16 bits, I2C 0x48) con sus 4 filtros pasabajos RC soldados bajo los canales A0–A3 (atenuando rizado de conmutación de la fuente SMPS), el convertidor digital a analógico MCP4725 (12 bits, I2C 0x60) encargado de generar la consigna VREF (0 a 3.53V) hacia el sumidero VCSS, y el sensor ambiental dual AHT20/BMP280 para compensación barométrica y meteorológica.*
+
+---
+
+#### 10.4.6 Tabla Maestra de Reglas de Conexionado Físico 1:1
+
+| Subsistema / Módulo | Interfaz en Placa Madre | Orden Exacto de Pines (1:1) | Función Técnica y Regla de Hardware |
+| :--- | :--- | :--- | :--- |
+| **Bus TRIAC (Potencia AC)** | Cabezal Macho 7 Pines (Filas 15–21) &rarr; Bornes Placa TRIAC | **Arnés Ribbon:** `VCC \| GND \| ZC \| CH1 \| CH2 \| CH3 \| CH4`<br>**Placa TRIAC:** Cabezal Azul `[VCC \| GND \| ZC]`, Disparos Rojos `[1 \| 2 \| 3 \| 4]`, Clema Verde `[AC]`, Salidas Naranja `[T1 \| T2 \| T3 \| T4]` | Arnés plano ribbon de 7 hilos:<br>• **VCC (Blanco):** +5V Lógica optos.<br>• **GND (Negro):** Tierra común.<br>• **ZC (Gris):** Cruce por Cero (120 Hz) → Nano INT1 (Pin D3).<br>• **CH1 (Morado):** Gate Tina 1 (Desengrase 450W) → Nano D7 &rarr; Clema `T1`.<br>• **CH2 (Azul):** Gate Tina 2 (Decapado 450W) → Nano D8 &rarr; Clema `T2`.<br>• **CH3 (Verde):** Gate Tina 3 (Celda Hull 18W) → Nano D9 &rarr; Clema `T3`.<br>• **CH4 (Amarillo):** Gate Tina 4 (Niquelado 450W) → Nano D10 &rarr; Clema `T4`.<br>• **AC (Verde):** 120 VAC hacia cargas y puente de sincronización. |
+| **Potencia DC (Sumidero VCSS)** | Cabezales Placa Madre &rarr; Clemas y Headers Placa VCSS | **Placa Madre:**<br>• 🟣 `[Vref \| NC \| GND]` (Filas 6–8)<br>• 🟡 `[A2 \| A3]` (Filas 11–12)<br>• 🔵 `[VCC \| OUT+ \| GND]` (Filas 13–15)<br>**Placa VCSS:**<br>• 🔵 Clema 1: `[GND \| AGND]`<br>• 🟠 Clema 2: `[VREF \| VCC]`<br>• 🟢 Clema 3: `[VCC \| Out Drain]`<br>• Headers: `[SH1 \| SH2]` | **Mapeo Inter-Placas Referenciado:**<br>• `Vref` (Pin 1 Púrpura) &rarr; `VREF` (Clema 2): Consigna analógica continua 0–3.3V (DAC MCP4725 12 bits).<br>• `GND` (Pin 3 Púrpura) &rarr; `AGND` (Clema 1): Masa analógica de referencia desacoplada.<br>• `NC` (Pin 2 Púrpura): Guarda de aislamiento contra ruido EMI.<br>• `A2 \| A3` (Amarillo) &larr; Headers `SH1 \| SH2`: Sensado de shunts 10W (1.0 Ω &rarr; 1.0 V/A) hacia canales A2 y A3 del ADS1115.<br>• `VCC` (Clema 2): +12V SMPS para alimentar VDD del opamp LM358N (Pin 8).<br>• `VCC \| Out Drain` (Clema 3): Salidas de potencia hacia relés de celda COM 1 (+12V ánodo) y COM 2 (retorno catódico regulado por Drains IRLZ44N). |
+| **Termopares K (MAX6675)** | 4× Zócalos Hembra de 5 Pines | `SO \| CS \| CLK \| VCC \| GND` | **Alineación directa 1:1 al colocar el módulo de frente al zócalo**.<br>• **SO:** ESP32-S3 GPIO 19 (MISO compartido).<br>• **CS:** Chip Select dedicado (Tina 1: G5, Tina 2: G4, Tina 3: G13, Tina 4: G14).<br>• **CLK:** ESP32-S3 GPIO 18 (SCK compartido a 4 MHz).<br>• **VCC / GND:** +5.0V/+3.3V / GND con **capacitor cerámico de 100 nF soldado bajo cada zócalo**. |
+| **Módulo Relé 2 Canales (5V)** | Cabezal Macho 3 Pines `Socket Power ZCS` (Filas 32–34) | **Lado Bobina Aislada:** `5V \| 5V Rele \| 5GND`<br>**Lado Control Lógico:** `GND \| IN1 \| IN2 \| VCC` | **Jumper JD-VCC / VCC retirado obligatoriamente**.<br>• Pin 1 (5V): +5V Lógica optos.<br>• Pin 2 (5V Rele): +5V Alimentación bobinas (JD-VCC).<br>• Pin 3 (5GND): Masa aislada de bobina.<br>• Lado Lógico: `IN1` = GPIO 20 (`PIN_RELE_VCSS`), `IN2` = GPIO 21.<br>• *Suprime transitorios inductivos que provocarían reseteos en microcontroladores*. |
+| **Sensor de pH (PH-4502C)** | Cabezal Sensor pH 6 Pines &rarr; Zócalo ADC ADS1115 (Pin A1) | Cabezal Módulo: `TO \| DO \| PO \| GNDA \| GND \| VCC`<br>Destino: `PO` &rarr; ADS1115 Pin `A1` | • Pin `PO` conectado a **Canal A1 del ADS1115 vía Filtro Pasabajos RC dedicado (10 k&Omega; + 10 &mu;F)**.<br>• `GNDA` conectado a AGND de instrumentación.<br>• Prohibido medir pH en vivo durante electrólisis (apertura de relés obligatoria). |
 
 ---
 

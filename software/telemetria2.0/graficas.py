@@ -63,14 +63,16 @@ class GraficasMixin:
         p3, a3, dl3, w3 = calcular_disparo_triac(u3, 18.0)
         p4, a4, dl4, w4 = calcular_disparo_triac(u4, 450.0)
 
+        es_activa = (int(d_f.get("act", 0)) == 1)
         es_pulsado = (int(d_f.get("modo", 0)) == 1)
         duty_val = int(d_f.get("duty", 20))
         freq_val = int(d_f.get("freq", 10))
-        amps_val = float(d_f.get("i_real", d_f.get("amps", 0.0)))
         rele_activo = (d_f.get("rele", 0) == 1)
 
+        # Si la fuente física está apagada (act == 0), la corriente real es 0.0 A
+        amps_val = float(d_f.get("i_real", d_f.get("amps", 0.0))) if es_activa else 0.0
         i_pico = amps_val
-        i_prom = (i_pico * (duty_val / 100.0)) if es_pulsado else amps_val
+        i_prom = (i_pico * (duty_val / 100.0)) if (es_pulsado and es_activa) else (amps_val if es_activa else 0.0)
 
         # Guardar últimos valores para osciloscopio y ventanas hijas
         self.ultimo_u1 = u1
@@ -148,12 +150,12 @@ class GraficasMixin:
         # Tarjeta Culombimétrica Q (Faraday)
         self.card_coulomb.config(text=f"{self.coulombs_total:.1f} C")
 
-        if es_pulsado and amps_val > 0.05:
+        if es_activa and es_pulsado and amps_val > 0.05:
             self.card_amp.config(text=f"{i_pico:.2f}A Pk | {i_prom:.2f}A", fg="#f472b6")
-        elif amps_val > 0.05:
+        elif es_activa and amps_val > 0.05:
             self.card_amp.config(text=f"{amps_val:.2f} A", fg="#22c55e")
         else:
-            self.card_amp.config(text=f"{amps_val:.2f} A", fg="#94a3b8")
+            self.card_amp.config(text="0.00 A", fg="#94a3b8")
 
         self.card_env.config(text=f"{d_env.get('t', '--')}° / {d_env.get('h', '--')}%")
         if hasattr(self, "card_ph"):
@@ -194,7 +196,8 @@ class GraficasMixin:
                         fg="#fbbf24"
                     )
         else:
-            self.lbl_stab_val.config(text=f"En reposo / Etapa {self.etapa_activa_idx + 1} ({amps_val:.2f} A | Q={self.coulombs_total:.1f}C)", fg="#94a3b8")
+            txt_corr = f"{amps_val:.2f} A" if es_activa else "0.00 A"
+            self.lbl_stab_val.config(text=f"En reposo / Etapa {self.etapa_activa_idx + 1} ({txt_corr} | Q={self.coulombs_total:.1f}C)", fg="#94a3b8")
 
         # Buffers
         t_min = t_rel / 60.0

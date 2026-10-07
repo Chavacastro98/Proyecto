@@ -545,17 +545,33 @@ class VentanaFaraday:
                         mask_zn |= np.array(["zinc" in str(x) for x in n_vals])
                         mask_ni |= np.array(["niquel" in str(x) or "watts" in str(x) for x in n_vals])
 
+                    # Ponderación por ciclo de trabajo si la etapa fue pulsada y filtro de fuente activa
+                    if "Fuente_Modo_Pulsado" in df.columns and "Fuente_DutyCycle_Pct" in df.columns:
+                        modo_pul_vals = pd.to_numeric(df["Fuente_Modo_Pulsado"], errors="coerce").fillna(0).values
+                        duty_vals = pd.to_numeric(df["Fuente_DutyCycle_Pct"], errors="coerce").fillna(20.0).values
+                        i_efectiva = np.where(modo_pul_vals == 1, i_vals * (duty_vals / 100.0), i_vals)
+                    else:
+                        i_efectiva = i_vals.copy()
+
+                    if "Fuente_Activa" in df.columns:
+                        act_vals = pd.to_numeric(df["Fuente_Activa"], errors="coerce").fillna(0).values
+                        i_efectiva = np.where(act_vals == 1, i_efectiva, 0.0)
+
                     # Si no hay etapas delimitadas, asignar según corriente
                     if not np.any(mask_zn) and not np.any(mask_ni):
-                        q_tot = float(np.sum(i_vals * dt))
+                        q_tot = float(np.sum(i_efectiva * dt))
                     else:
-                        q_zn = float(np.sum(i_vals[mask_zn] * dt[mask_zn]))
-                        q_ni = float(np.sum(i_vals[mask_ni] * dt[mask_ni]))
+                        q_zn = float(np.sum(i_efectiva[mask_zn] * dt[mask_zn]))
+                        q_ni = float(np.sum(i_efectiva[mask_ni] * dt[mask_ni]))
                         q_tot = q_zn + q_ni
 
                     # Cargar buffers para graficar
                     self.app.buf_t = (t_vals / 60.0).tolist()
-                    self.app.buf_q = np.cumsum(i_vals * dt).tolist()
+                    if "Carga_Acumulada_Coulombs" in df.columns:
+                        s_q = pd.to_numeric(df["Carga_Acumulada_Coulombs"], errors="coerce").fillna(0).values
+                        self.app.buf_q = s_q.tolist()
+                    else:
+                        self.app.buf_q = np.cumsum(i_efectiva * dt).tolist()
                 elif "Carga_Acumulada_Coulombs" in df.columns:
                     s_clean = pd.to_numeric(df["Carga_Acumulada_Coulombs"], errors="coerce").dropna()
                     if not s_clean.empty:

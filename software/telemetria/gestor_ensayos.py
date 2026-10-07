@@ -54,6 +54,9 @@ class GestorEnsayosMixin:
                     "temp_zin": 25 if i <= 8 or (17 <= i <= 24) else 40,
                     "tiem_zin_s": 120 if i % 4 in (1, 2) else 300,
                     "pulsado": 1 if i % 2 == 0 else 0,
+                    "freq": 10,
+                    "duty": 20,
+                    "amp_zin": 1.50,
                     "tiem_niq_s": 600,
                     "tag_filtro": f"pH {2 if i % 2 == 1 else 4} — {25 if i <= 8 or (17 <= i <= 24) else 40}°C"
                 })
@@ -82,6 +85,14 @@ class GestorEnsayosMixin:
                         tiem_niq = row.get("Tiem. Niquelado")
                         tiem_niq_val = 600 if (pd.isna(tiem_niq) or tiem_niq == "") else int(float(tiem_niq))
 
+                        # Parámetros opcionales configurables por columna en el Excel:
+                        f_raw = row.get("Frecuencia") or row.get("Freq") or row.get("Frecuencia_Hz")
+                        freq_val = 10 if (pd.isna(f_raw) or f_raw == "") else int(float(f_raw))
+                        d_raw = row.get("Duty") or row.get("DutyCycle") or row.get("Ciclo de trabajo")
+                        duty_val = 20 if (pd.isna(d_raw) or d_raw == "") else int(float(d_raw))
+                        amp_raw = row.get("Corriente_Zin_A") or row.get("Amps_Zin")
+                        amp_z_val = 1.50 if (pd.isna(amp_raw) or amp_raw == "") else float(amp_raw)
+
                         tag = f"pH {ph_val} — {temp_z_val}°C"
 
                         self.lista_placas.append({
@@ -93,6 +104,9 @@ class GestorEnsayosMixin:
                             "temp_zin": temp_z_val,
                             "tiem_zin_s": tiem_z_val,
                             "pulsado": puls_val,
+                            "freq": freq_val,
+                            "duty": duty_val,
+                            "amp_zin": amp_z_val,
                             "tiem_niq_s": tiem_niq_val,
                             "tag_filtro": tag
                         })
@@ -143,9 +157,13 @@ class GestorEnsayosMixin:
         self.lbl_badge_cond.config(text=f"🧪 pH Ref: {p['ph']}  |  🌡️ Zincado: {p['temp_zin']} °C ({p['tiem_zin_s']}s)")
 
         if p["pulsado"] == 1:
-            self.lbl_badge_zin.config(text="⚡ Zincado: PULSADO 1.50 A @ 10Hz (20% Duty)", fg="#f472b6")
+            f_txt = p.get("freq", 10)
+            d_txt = p.get("duty", 20)
+            a_txt = p.get("amp_zin", 1.50)
+            self.lbl_badge_zin.config(text=f"⚡ Zincado: PULSADO {a_txt:.2f} A @ {f_txt}Hz ({d_txt}% Duty)", fg="#f472b6")
         else:
-            self.lbl_badge_zin.config(text="⚡ Zincado: DC CONTINUO 1.50 A", fg="#34d399")
+            a_txt = p.get("amp_zin", 1.50)
+            self.lbl_badge_zin.config(text=f"⚡ Zincado: DC CONTINUO {a_txt:.2f} A", fg="#34d399")
 
         self.lbl_badge_niq.config(text="⚡ Níquel: DC CONTINUO 1.13 A (600s / 10 min)", fg="#a78bfa")
 
@@ -169,8 +187,9 @@ class GestorEnsayosMixin:
         elif self.etapa_activa_idx == 1:
             return "Decapado Ácido (T2)", p["matizado_s"], 85.0, 0.0, "OFF"
         elif self.etapa_activa_idx == 2:
-            modo = "PULSADO" if p["pulsado"] == 1 else "DC"
-            return "Zincado Químico / Celda (T3)", p["tiem_zin_s"], float(p["temp_zin"]), 1.50, modo
+            modo = "PULSADO" if p.get("pulsado", 0) == 1 else "DC"
+            amp_val = float(p.get("amp_zin", 1.50))
+            return "Zincado Químico / Celda (T3)", p["tiem_zin_s"], float(p["temp_zin"]), amp_val, modo
         else:
             return "Niquelado Watts (T4)", p["tiem_niq_s"], 30.0, 1.13, "DC"
 
@@ -321,11 +340,10 @@ class GestorEnsayosMixin:
                     self.root.after(0, self.destellar_tx)
                 base_url = f"http://{ip}"
                 session = requests.Session()
-                # 1. Apagar fuente en firmware (DAC a 0V, espera descarga y abre relé físico)
+                # 1. Apagar fuente en firmware (DAC a 0V, espera descarga ZCS y abre relé físico)
+                # NOTA: No se envían set_f(a=0) ni modo_f(v=0) para evitar colisiones de hilos
+                # asíncronos y sobreescrituras en NVS que forzaban DC al conmutar etapas pulsadas.
                 session.get(f"{base_url}/act_f?run=0", timeout=1.5)
-                # 2. Amplitud a 0 por seguridad redundante
-                session.get(f"{base_url}/set_f?p=a&v=0", timeout=1.5)
-                session.get(f"{base_url}/modo_f?v=0", timeout=1.5)
 
                 if hasattr(self, 'lbl_hw_sync_status'):
                     self.root.after(0, lambda: self.lbl_hw_sync_status.config(
@@ -392,14 +410,17 @@ class GestorEnsayosMixin:
                     session.get(f"{base_url}/set_f?p=a&v=0", timeout=1.5)
                     session.get(f"{base_url}/modo_f?v=0", timeout=1.5)
                 elif self.etapa_activa_idx == 2:
-                    # Etapa 3 (Zincado): 1.50 A (DAC = 870 @ 7.06A fondo de escala / 3.53V)
-                    dac_val = int((1.50 / 7.06) * 4095.0)
+                    # Etapa 3 (Zincado): Amplitud configurada en placa (o 1.50 A por defecto)
+                    amp_target = float(p.get("amp_zin", 1.50))
+                    dac_val = int((amp_target / 7.06) * 4095.0)
                     es_pulsado = 1 if p.get("pulsado", 0) == 1 else 0
                     session.get(f"{base_url}/modo_f?v={es_pulsado}", timeout=1.5)
                     session.get(f"{base_url}/set_f?p=a&v={dac_val}", timeout=1.5)
                     if es_pulsado:
-                        session.get(f"{base_url}/set_f?p=f&v=10", timeout=1.5)  # 10 Hz
-                        session.get(f"{base_url}/set_f?p=d&v=20", timeout=1.5)  # 20% duty
+                        f_val = int(p.get("freq", 10))
+                        d_val = int(p.get("duty", 20))
+                        session.get(f"{base_url}/set_f?p=f&v={f_val}", timeout=1.5)
+                        session.get(f"{base_url}/set_f?p=d&v={d_val}", timeout=1.5)
                     # SEGURIDAD CRÍTICA: solo suministrar corriente si el operador presionó 'Iniciar Etapa'
                     session.get(f"{base_url}/act_f?run={run_val}", timeout=1.5)
                 elif self.etapa_activa_idx == 3:

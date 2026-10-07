@@ -117,7 +117,7 @@ diagramas/
 | **05** | `05_control_termico_pi` | Control PI 1 Hz + Rampa Soft-Start 5 Hz | Control PI 1 Hz + Rampa Soft-Start 5 Hz (4 reactores químicos con sintonización analítica) |
 | **06** | `06_sumidero_corriente_vcss`| Lazo analógico VCSS + Outer loop digital 2 Hz | **Lazo PI Discreto Anti-Windup (2 Hz)** + Anti-Inrush (Soft-Start 500ms + Blanking 300ms) + Diagnóstico Celda |
 | **07** | `07_secuencia_zcs_rele` | Conmutación ZCS clásica (80/30 ms) | Conmutación ZCS + Rampa Soft-Start (500 ms) + Asentamiento Blanking Time (300 ms) |
-| **08** | `08_filtro_ph_tri_modo` | TDM 25 Hz, Mediana-3, Calibración 3 modos | **Canal A1 Dedicado ADS1115 @ 860 SPS** (A0 eliminado), Offset analógico calibrado, Flash NVS por modo, Filtro Adaptativo |
+| **08** | `08_filtro_ph_tri_modo` | TDM 25 Hz, Mediana-3, Calibración 3 modos | **Canal A1 Dedicado ADS1115 @ 860 SPS**, Offset analógico calibrado, Flash NVS por modo, Filtro Adaptativo |
 | **09** | `09_control_triacs_ac60hz` | Cruce por cero INT1 (~8 µs), LUT 101 pts, Watchdog | Cruce por cero INT1 (~8 µs), LUT 101 pts, Watchdog UART (3.0 s) |
 | **10** | `10_arquitectura_mvc_web` | Patrón MVC en Flash PROGMEM | Patrón MVC en Core 0, `/data_all` integral con shunts y salud, endpoints `/modo_f`, `/set_comp_f`, calibración pH A1 |
 | **11** | `11_supervision_scada_isa88`| Gestor ISA-88 Taguchi, SCADA multihilo, IAE/ISE | Protocolo VUGR: Taguchi 32 placas, Telemetría 2.0, balanza analítica asistida y culombimetría faradaica |

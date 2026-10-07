@@ -393,11 +393,13 @@ class ComunicacionMixin:
 
                 # Extracción robusta de campos v3.1 / v3.5 / RTOS 1.3
                 i_consigna = float(d_f.get("amps", 0.0))
-                i_medida_real = float(d_f.get("i_real", i_consigna))
-                i_shunt1 = float(d_f.get("i1", i_medida_real * 0.5))
-                i_shunt2 = float(d_f.get("i2", i_medida_real * 0.5))
-                v_shunt1 = float(d_f.get("vs1", 0.0))
-                v_shunt2 = float(d_f.get("vs2", 0.0))
+                es_fuente_activa = (int(d_f.get("act", 0)) == 1)
+                # Si la fuente física está apagada (relé ZCS abierto), la corriente real es estrictamente 0.0 A
+                i_medida_real = float(d_f.get("i_real", i_consigna if es_fuente_activa else 0.0)) if es_fuente_activa else 0.0
+                i_shunt1 = float(d_f.get("i1", i_medida_real * 0.5)) if es_fuente_activa else 0.0
+                i_shunt2 = float(d_f.get("i2", i_medida_real * 0.5)) if es_fuente_activa else 0.0
+                v_shunt1 = float(d_f.get("vs1", 0.0)) if es_fuente_activa else 0.0
+                v_shunt2 = float(d_f.get("vs2", 0.0)) if es_fuente_activa else 0.0
                 factor_gm = float(d_f.get("gm", 1.0))
                 comp_activa = int(d_f.get("comp", 0))
                 rele_vdd = int(d_f.get("rele", 0))
@@ -486,13 +488,23 @@ class ComunicacionMixin:
                 self.energia_termica_wh = getattr(self, 'energia_termica_wh', 0.0) + (((w1 + w2 + w3 + w4) * dt) / 3600.0)
 
                 # Integración Culombimétrica Faradaica Q = ∫ I dt con dt real
-                if i_medida_real > 0.005:
-                    self.coulombs_total += i_medida_real * dt
-                    self.coulombs_etapa += i_medida_real * dt
-                    if self.etapa_activa_idx == 2:
-                        self.coulombs_zn = getattr(self, 'coulombs_zn', 0.0) + (i_medida_real * dt)
-                    elif self.etapa_activa_idx == 3:
-                        self.coulombs_ni = getattr(self, 'coulombs_ni', 0.0) + (i_medida_real * dt)
+                # Discriminación estricta por etapa para modelo bicapa Zn + Ni (pesaje único final)
+                # REGLA METROLÓGICA:
+                # 1. Solo integrar si la fuente está activa (act==1) y la etapa en ejecución (etapa_corriendo==True)
+                # 2. Solo integrar en las etapas galvánicas de deposición (Etapa 3 Zincado o Etapa 4 Niquelado)
+                # 3. En modo pulsado, ponderar por el ciclo de trabajo: I_efectiva = I_pico * (Duty / 100.0)
+                es_pulsado = (int(d_f.get("modo", 0)) == 1)
+                duty_pct = float(d_f.get("duty", 20.0))
+
+                if es_fuente_activa and getattr(self, 'etapa_corriendo', False) and self.etapa_activa_idx in (2, 3):
+                    i_efectiva = (i_medida_real * (duty_pct / 100.0)) if es_pulsado else i_medida_real
+                    if i_efectiva > 0.005:
+                        self.coulombs_total += i_efectiva * dt
+                        self.coulombs_etapa += i_efectiva * dt
+                        if self.etapa_activa_idx == 2:
+                            self.coulombs_zn = getattr(self, 'coulombs_zn', 0.0) + (i_efectiva * dt)
+                        elif self.etapa_activa_idx == 3:
+                            self.coulombs_ni = getattr(self, 'coulombs_ni', 0.0) + (i_efectiva * dt)
 
                 m_teo_zn = getattr(self, 'coulombs_zn', 0.0) * 0.33880
                 m_teo_ni = getattr(self, 'coulombs_ni', 0.0) * 0.30414

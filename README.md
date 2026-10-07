@@ -26,14 +26,14 @@ El sistema opera con la versión de producción **RTOS 2.0**, diseñada para gar
 
 ### Nodo Maestro ESP32-S3 (Dual-Core @ 240 MHz, 16 MB Flash, 8 MB PSRAM)
 * **Concurrencia Simétrica FreeRTOS:**
-  * **Core 1 (Tiempo Real Estricto):** Lazos de control térmico PI (1 Hz), modulación analógica de corriente VCSS, muestreo a 860 SPS en ADC ADS1115 con aislamiento Kelvin Ground y máquina de seguridad Fail-Safe (50 Hz).
-  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/get_ph_dual`), servidor de telemetría y actualización OTA.
-* **Medición de pH Pseudo-Diferencial (Canal A1 vs A0 Kelvin Ground):**  
-  Las corrientes de celda de hasta 2.0 A provocan caídas óhmicas en el electrolito. El sistema toma la referencia analógica del líquido por A0 para cancelar el ruido de modo común, aplicando un filtro en cascada: promedio por bloques de 10 muestras, mediana móvil de 3 puntos y filtro pasabajas IIR adaptativo.
-* **Lazo de Corriente VCSS (Single-Writer):**  
-  Arranque por escalón directo hacia el DAC MCP4725 aprovechando la capacitancia de la doble capa electroquímica (Cdl) para suavizar transitorios y garantizar una nucleación homogénea del zinc. Monitoreo en tiempo real de transconductancia (Gm = 2.0 S) con doble shunt y diagnóstico de salud de celda (`SaludCelda_t`).
+  * **Core 1 (Tiempo Real Estricto):** Lazos de control térmico PI (1 Hz), modulación analógica de corriente VCSS, muestreo continuo a 860 SPS en ADC ADS1115 y máquina de seguridad Fail-Safe (50 Hz).
+  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA.
+* **Medición de pH en Canal A1 (ADS1115):**  
+  La señal potenciométrica del módulo PH-4502C se adquiere de forma directa y continua a través del **Canal A1** del convertidor ADS1115 a **860 SPS**. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
+* **Lazo de Corriente VCSS (Sumidero Analógico Gm = 2.00 S):**  
+  Modulación directa por DAC MCP4725 de 12 bits sobre dos ramas MOSFET con dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación térmica combinada, garantizando seguridad industrial contra sobrecalentamiento e incendio en régimen DC y pulsado a 10 Hz). Monitoreo continuo de corriente por rama (A2/A3) y diagnóstico de salud de celda (`SaludCelda_t`).
 * **Secuencia ZCS (Zero-Current Switching):**  
-  Antes de conmutar mecánicamente el relé de aislamiento VDD, el firmware reduce la consigna del DAC a cero, eliminando arcos eléctricos y sobretensiones inductivas.
+  Al detener la fuente o finalizar el cronómetro de la etapa, el firmware reduce la consigna del DAC a 0V, espera 30 ms para disipación de corriente remanente en la celda y abre el relé mecánico de aislamiento de +12V a corriente cero, eliminando arcos eléctricos y desgaste de contactos.
 
 ### Coprocesador de Potencia AC (Arduino Nano ATmega328P @ 16 MHz)
 * Control de fase de 60 Hz para 4 calentadores de inmersión de 450 W.
@@ -41,9 +41,10 @@ El sistema opera con la versión de producción **RTOS 2.0**, diseñada para gar
 * Linealización senoidal trigonométrica de potencia RMS (retardo de compuerta entre 0 y 8333 μs) y watchdog UART para apagado automático en caso de pérdida de enlace con el ESP32.
 
 ### SCADA Telemetría 2.0 (Python / Windows)
-* Control de recetas de ensayo bajo el modelo ISA-88 para la matriz completa de 32 placas experimentales.
-* Integración culombimétrica faradaica continua `Q = ∫ I dt` acoplada con pesaje en balanza analítica (resolución de 0.0001 g) para calcular la eficiencia catódica (η) y el espesor de capa (μm).
-* Motor de exportación científica para generar figuras publication-ready a 300 DPI.
+* **Gestión de Recetas ISA-88 desde Excel:** Carga dinámica de la matriz experimental (`matriz_experimentos.xlsx`) para 32 probetas, con selección automática de tiempos, consignas de temperatura y modos de corriente (DC continuo o Pulsado a 10 Hz / 20% duty cycle, con soporte para columnas personalizadas de frecuencia y ciclo de trabajo).
+* **Culombimetría Faradaica en Lazo Cerrado:** Integración activa únicamente durante la cuenta del cronómetro de etapas galvánicas (`etapa_corriendo == True` y `act == 1`), ponderando por ciclo de trabajo en corriente pulsada (`I_efectiva = I_pico × Duty/100`) y congelando la acumulación al llegar a 00:00 o en pausas.
+* **Modelo Aditivo Bicapa Zn + Ni:** Cálculo de masa teórica total `m_teo = Q_Zn × 0.33880 mg/C + Q_Ni × 0.30414 mg/C` acoplado con pesaje en balanza analítica para determinar la eficiencia catódica global (η%) y los espesores individuales y totales de película (μm).
+* **Motor de Exportación Científica:** Generación de figuras publication-ready a 300 DPI y registro en CSV estructurado con marcas ISA-88 y tiempos muertos de transferencia.
 
 ---
 
@@ -77,7 +78,7 @@ Proyecto/
 │   └── exportar_graficas_offline.py <- Generador de figuras cientificas a 300 DPI
 │
 ├── tests/                     <- Suite de pruebas automatizadas (Pytest)
-│   ├── test_calculos.py       <- Culombimetria de Faraday y linealizacion del TRIAC
+│   ├── test_calculos.py       <- Culombimetria de Faraday, duty cycle y linealizacion del TRIAC
 │   ├── test_interlocks.py     <- Validacion de interlocks ISA-88 y secuencia ZCS
 │   └── test_telemetria_json.py <- Esquemas y contratos JSON entre ESP32 y SCADA
 │
@@ -101,13 +102,13 @@ Proyecto/
 
 ## 4. Aseguramiento de Calidad y Pruebas Automatizadas
 
-El proyecto cuenta con una suite de **22 pruebas unitarias automatizadas** que se ejecutan en menos de 0.05 segundos con `pytest`:
+El proyecto cuenta con una suite de **25 pruebas unitarias automatizadas** que se ejecutan en menos de 0.05 segundos con `pytest`:
 
 ```bash
 python -m pytest -v
 ```
 
-* **Física y Metrología ([tests/test_calculos.py](tests/test_calculos.py)):** Verificación matemática de la masa teórica faradaica, eficiencia catódica, espesor micrométrico y tabla trigonométrica de retardo para el semiciclo de 60 Hz (0 a 8333 μs).
+* **Física y Metrología ([tests/test_calculos.py](tests/test_calculos.py)):** Verificación matemática de la masa teórica faradaica en DC y pulsado ponderado por ciclo de trabajo, inmunidad de integración en reposo, modelo bicapa aditivo Zn+Ni, espesores micrométricos y linealización de retardo TRIAC de 60 Hz (0 a 8333 μs).
 * **Interlocks de Seguridad ([tests/test_interlocks.py](tests/test_interlocks.py)):** Verificación del aislamiento entre electrodo de pH y lazo de corriente, enclavamiento por Fail-Safe, restricciones de calibración y conmutación ZCS.
 * **Contratos de Telemetría ([tests/test_telemetria_json.py](tests/test_telemetria_json.py)):** Validación de rangos del DAC (0 a 4095), transconductancia Gm, resolución de sensores y manejo defensivo ante pérdidas parciales de paquetes.
 * **Pre-Commit Hook (.git/hooks/pre-commit):** Cada commit en Git corre automáticamente la suite completa; si se introduce una regresión matemática o lógica, el commit se detiene.
