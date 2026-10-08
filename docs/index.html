@@ -87,7 +87,156 @@
         Arquitectura modular organizada por bloques de <strong>Nombre + Función</strong>: Entradas y Sensado (Izq.) → Núcleo de Control Maestro/Esclavo (Centro) → Etapa de Potencia y Planta (Der.) → HMI y Supervisión (Abajo).
       </p>
 
-      <div style="text-align: center; position: relative;">
+      <!-- SELECTOR DE VISTA: VECTORIAL HTML5 VS IMAGEN HD -->
+      <div class="arch-toggle-bar">
+        <button class="arch-toggle-btn active" id="btnArchVec" onclick="mostrarVistaArquitectura('vectorial')">
+          <span>📐</span> Diagrama Interactivo Vectorial (HTML5/SVG Nítido)
+        </button>
+        <button class="arch-toggle-btn" id="btnArchImg" onclick="mostrarVistaArquitectura('imagen')">
+          <span>🖼️</span> Renderizado Gráfico Original (HD PNG)
+        </button>
+      </div>
+
+      <!-- VISTA 1: DIAGRAMA VECTORIAL HTML5/SVG INTERACTIVO (100% OFFLINE) -->
+      <div id="vistaArchVectorial" class="arch-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 0.78rem; color: #94a3b8;">
+            💡 <strong>Toca cualquier bloque</strong> para inspeccionar pines, bus de comunicación y especificaciones técnicas:
+          </span>
+          <div style="display: flex; gap: 6px; font-size: 0.68rem; flex-wrap: wrap;">
+            <span class="arch-bus-pill pill-i2c">I²C (400 kHz)</span>
+            <span class="arch-bus-pill pill-spi">SPI (4 MHz)</span>
+            <span class="arch-bus-pill pill-uart">UART2 (9600)</span>
+            <span class="arch-bus-pill pill-zcs">ZCS (60 Hz)</span>
+            <span class="arch-bus-pill pill-pwr">Potencia</span>
+          </div>
+        </div>
+
+        <div class="arch-grid">
+          <!-- COLUMNA 1: SENSADO & ENTRADAS -->
+          <div class="arch-col" style="border-top-color: #38bdf8;">
+            <div class="arch-col-title" style="color: #38bdf8; border-color: #38bdf8;">
+              <span>1. Sensado de Campo</span>
+              <span style="font-size: 0.7rem; opacity: 0.8;">[Entradas]</span>
+            </div>
+
+            <div class="arch-node" id="node-max6675" onclick="seleccionarNodoArch('max6675')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Termopares K (x4)</span>
+                <span class="arch-bus-pill pill-spi">SPI @ 4MHz</span>
+              </div>
+              <span class="arch-node-chip">4x MAX6675 (CS0..CS3)</span>
+              <div class="arch-node-desc">Compensación unión fría en 4 tinas químicas con resolución de 0.25 °C.</div>
+            </div>
+
+            <div class="arch-node" id="node-ads1115" onclick="seleccionarNodoArch('ads1115')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">ADC Sigma-Delta</span>
+                <span class="arch-bus-pill pill-i2c">I²C 0x48</span>
+              </div>
+              <span class="arch-node-chip">ADS1115 (16-Bit PGA)</span>
+              <div class="arch-node-desc">Lectura pseudo-diferencial: A0-A1 para pH y A2-A3 para Shunts VCSS.</div>
+            </div>
+
+            <div class="arch-node" id="node-zcs" onclick="seleccionarNodoArch('zcs')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Zero-Crossing Dual</span>
+                <span class="arch-bus-pill pill-zcs">INT0 / GPIO 20</span>
+              </div>
+              <span class="arch-node-chip">Optoacoplador 4N35</span>
+              <div class="arch-node-desc">Sincronización AC 60Hz y corte DC 12V en V=0 evitando chispas y EMI.</div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: NÚCLEO DE CONTROL MAESTRO/ESCLAVO -->
+          <div class="arch-col" style="border-top-color: #a855f7;">
+            <div class="arch-col-title" style="color: #a855f7; border-color: #a855f7;">
+              <span>2. Núcleo de Control</span>
+              <span style="font-size: 0.7rem; opacity: 0.8;">[Maestro / Esclavo]</span>
+            </div>
+
+            <div class="arch-node active" id="node-esp32" onclick="seleccionarNodoArch('esp32')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Master ESP32-S3</span>
+                <span class="arch-bus-pill pill-wifi">RTOS 2.0</span>
+              </div>
+              <span class="arch-node-chip">Dual Core LX7 (N16R8)</span>
+              <div class="arch-node-desc">Core 0: Web Server, WebSockets y Wi-Fi.<br>Core 1: 4 Lazos PI, VCSS y Máquina ISA-88.</div>
+            </div>
+
+            <div style="text-align: center; color: #a855f7; font-size: 0.75rem; font-family: var(--code-font);">
+              ↕️ Enlace UART2 @ 9600 Baud (Fail-Safe 3s)
+            </div>
+
+            <div class="arch-node" id="node-nano" onclick="seleccionarNodoArch('nano')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Coprocesador Nano</span>
+                <span class="arch-bus-pill pill-uart">UART2 / INT</span>
+              </div>
+              <span class="arch-node-chip">ATmega328P @ 16 MHz</span>
+              <div class="arch-node-desc">Disparo en microsegundos de los 4 canales TRIACs mediante tabla LUT.</div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: POTENCIA Y MODULACIÓN -->
+          <div class="arch-col" style="border-top-color: #f43f5e;">
+            <div class="arch-col-title" style="color: #f43f5e; border-color: #f43f5e;">
+              <span>3. Potencia & Actuación</span>
+              <span style="font-size: 0.7rem; opacity: 0.8;">[Salidas]</span>
+            </div>
+
+            <div class="arch-node" id="node-triacs" onclick="seleccionarNodoArch('triacs')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">TRIACs MDAC4C (4x)</span>
+                <span class="arch-bus-pill pill-pwr">127 VAC / 60Hz</span>
+              </div>
+              <span class="arch-node-chip">BTA24-600B + MOC3021</span>
+              <div class="arch-node-desc">Tiempo proporcional en V=0 hacia Resistencias de 450W en las 4 tinas.</div>
+            </div>
+
+            <div class="arch-node" id="node-vcss" onclick="seleccionarNodoArch('vcss')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Sumidero VCSS</span>
+                <span class="arch-bus-pill pill-pwr">0 a 6.6 A</span>
+              </div>
+              <span class="arch-node-chip">LM358N + 2x IRLZ44Z + DAC</span>
+              <div class="arch-node-desc">Regulación lineal catódica a 2 A/V según nota TI SLAA868A hacia Celda Hull.</div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 4: HMI, SUPERVISIÓN & PLANTA -->
+          <div class="arch-col" style="border-top-color: #10b981;">
+            <div class="arch-col-title" style="color: #10b981; border-color: #10b981;">
+              <span>4. Supervisión & Planta</span>
+              <span style="font-size: 0.7rem; opacity: 0.8;">[HMI & Tinas]</span>
+            </div>
+
+            <div class="arch-node" id="node-scada" onclick="seleccionarNodoArch('scada')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">SCADA PyQt6 / Web</span>
+                <span class="arch-bus-pill pill-wifi">PC & Móvil</span>
+              </div>
+              <span class="arch-node-chip">Python 3.14 + WebSockets</span>
+              <div class="arch-node-desc">Gestor de los 32 ensayos Taguchi, telemetría a 10 Hz y visualización móvil.</div>
+            </div>
+
+            <div class="arch-node" style="border-color: rgba(16, 185, 129, 0.3);">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Planta 4 Tinas UdeG</span>
+                <span class="arch-bus-pill pill-pwr">Electroquímica</span>
+              </div>
+              <span class="arch-node-chip" style="color: #10b981;">Desengrase, Decapado, Níquel y Hull</span>
+              <div class="arch-node-desc">Control térmico cerrado, pH controlado y electrodeposición de recubrimientos.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL DE DETALLE AL TOCAR CUALQUIER NODO -->
+        <div id="archDetailPanel" class="arch-detail-panel"></div>
+      </div>
+
+      <!-- VISTA 2: RENDERIZADO ORIGINAL EN IMAGEN HD -->
+      <div id="vistaArchImagen" style="display: none; text-align: center; position: relative;">
         <img src="assets/sistema.png" alt="Diagrama de Bloques Funcional" id="imgArquitectura" style="width: 100%; max-height: 520px; object-fit: contain; background: #070c16; border-radius: 10px; border: 1px solid var(--card-border); cursor: pointer;" onclick="abrirModal(this.src, 'Diagrama de Arquitectura de Hardware — Alta Resolución')">
         <div style="margin-top: 8px;">
           <button class="tab-btn" onclick="abrirModal('assets/sistema.png', 'Diagrama de Arquitectura de Hardware — Alta Resolución')" style="background: rgba(14, 165, 233, 0.2); border-color: var(--primary); color: #fff;">
@@ -362,7 +511,7 @@
                 </tr>
                 <tr>
                   <td><span class="badge badge-blue">Canal 2</span></td>
-                  <td><strong>Niquelado Watts</strong></td>
+                  <td><strong>Niquelado</strong></td>
                   <td>1.000 L</td>
                   <td>0.0470 m²</td>
                   <td>450 W</td>
@@ -439,15 +588,75 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
       </div>
 
-      <div class="math-card">
-        <div class="math-label">Modulación por Tiempo Proporcional (Zero-Crossing Burst Firing)</div>
-        <div class="math-eq">
-          <span class="m-var">D</span> = 
-          <span class="fraction"><span class="num"><span class="m-var">N</span><span class="m-sub">activos</span></span><span class="den"><span class="m-var">N</span><span class="m-sub">total</span></span></span>
-          = 
-          <span class="fraction"><span class="num"><span class="m-var">t</span><span class="m-sub">on</span></span><span class="den"><span class="m-var">T</span><span class="m-sub">base</span></span></span>
-          <span class="m-sym">⟹</span>
-          <span class="m-var">P</span><span class="m-sub">entregada</span> = <span class="m-var">D</span> · <span class="m-var">P</span><span class="m-sub">nominal</span>
+      <!-- ENLACE FORMAL: TIEMPO PROPORCIONAL <-> FDT -->
+      <div class="math-card" style="border-left: 4px solid var(--amber); margin-top: 18px;">
+        <div class="math-label">🔗 Enlace Formal: Control por Tiempo Proporcional (ZCS) con la Función de Transferencia (FDT)</div>
+        <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+          ¿Cómo se enlaza matemáticamente una señal de control continua generada por el algoritmo PI con un actuador TRIAC que conmuta de forma discreta paquetes de ciclos senoidales en cruce por cero ($V=0$)?
+        </p>
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
+          <div class="info-box" style="margin: 0; background: rgba(15, 23, 42, 0.7); border-left-color: #38bdf8;">
+            <strong style="color: #38bdf8;">1. Modulación por Ciclo de Trabajo Discreto:</strong>
+            <p style="font-size: 0.82rem; color: #cbd5e1; margin-top: 4px;">
+              El lazo PI en el ESP32-S3 calcula en cada instante la potencia de demanda analógica <span style="color: #38bdf8; font-family: monospace;">u(t) ∈ [0, P_max]</span>. El modulador ZCS discretiza esta potencia dentro de una ventana periódica base <span style="color: #38bdf8; font-family: monospace;">T_base = 1.0 s</span> (60 ciclos a 60 Hz):
+            </p>
+            <div class="math-eq" style="font-size: 1.05rem; padding: 6px 0;">
+              <span class="m-var">D</span> = 
+              <span class="fraction"><span class="num"><span class="m-var">u</span>(t)</span><span class="den"><span class="m-var">P</span><span class="m-sub">max</span></span></span> = 
+              <span class="fraction"><span class="num"><span class="m-var">t</span><span class="m-sub">on</span></span><span class="den"><span class="m-var">T</span><span class="m-sub">base</span></span></span> = 
+              <span class="fraction"><span class="num"><span class="m-var">N</span><span class="m-sub">activos</span></span><span class="den"><span class="m-var">N</span><span class="m-sub">total</span></span></span>
+            </div>
+          </div>
+
+          <div class="info-box" style="margin: 0; background: rgba(15, 23, 42, 0.7); border-left-color: #10b981;">
+            <strong style="color: #10b981;">2. El Principio del Filtro Pasa-Bajas Térmico:</strong>
+            <p style="font-size: 0.82rem; color: #cbd5e1; margin-top: 4px;">
+              La constante de tiempo de la tina es enorme frente a la ventana base:
+              <br><strong style="color: #10b981; font-family: monospace;">τ_planta ≈ 1369.7 s ≫ T_base = 1.0 s</strong> (relación &gt; 1300 a 1).
+              El polo térmico <span style="color: #10b981; font-family: monospace;">ω_p = 1/τ_p = 0.00073 rad/s</span> atenúa los armónicos de modulación (<span style="color: #10b981; font-family: monospace;">ω_base = 6.28 rad/s</span>) en:
+            </p>
+            <div class="math-eq" style="font-size: 0.95rem; padding: 6px 0;">
+              |<span class="m-var">G</span>(<span class="m-var">jω</span><span class="m-sub">base</span>)|<span class="m-sub">dB</span> ≈ −20 log<span class="m-sub">10</span>(8600) = <strong style="color: #10b981;">−78.7 dB</strong>
+            </div>
+          </div>
+        </div>
+
+        <p style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 8px;">
+          Debido a esta atenuación masiva, el rizado térmico instantáneo en el baño es microscópico:
+          <span style="color: #fbbf24; font-family: monospace;">ΔT_ripple &lt; (P_max · T_base)/(2 · m · c_p) ≈ 0.05 °C</span>.
+          Por el Teorema del Valor Medio de Fourier, la planta térmica responde <em>exclusivamente al armónico cero (DC)</em> de la potencia inyectada:
+        </p>
+
+        <div class="math-eq" style="font-size: 1.15rem; background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: 8px;">
+          <span style="font-size: 1.2em;">⟨</span><span class="m-var">q̇</span>(t)<span style="font-size: 1.2em;">⟩</span><span class="m-sub">T_base</span> = 
+          <span class="fraction"><span class="num">1</span><span class="den"><span class="m-var">T</span><span class="m-sub">base</span></span></span>
+          <span style="font-size: 1.2em;">∫</span><span class="m-sub">0</span><span class="m-sup">T_base</span> <span class="m-var">q̇</span><span class="m-sub">inst</span>(t) <span class="m-var">dt</span> = 
+          <span class="m-var">D</span> · <span class="m-var">P</span><span class="m-sub">max</span> = <span class="m-var">u</span>(t)
+        </div>
+
+        <div class="info-box info-box-warn" style="font-size: 0.84rem; margin-top: 10px;">
+          <strong style="color: #fbbf24;">3. Retardo Equivalente de Retención (ZOH) en la FDT Total:</strong><br>
+          La retención del ciclo de trabajo durante cada ventana base <span class="m-var">T</span><span class="m-sub">base</span> introduce un desfase en lazo cerrado equivalente a un Retenedor de Orden Cero (ZOH):
+          <span style="color: #fbbf24; font-family: monospace;">G_ZOH(s) = (1 − e^(−s·T_base))/s ≈ e^(−s·T_base/2)</span>, añadiendo exactamente <strong>media ventana de retardo (<span class="m-var">T</span><span class="m-sub">base</span> / 2 = 0.5 s)</strong>.
+          <br>Por lo tanto, la <strong>Función de Transferencia Integral</strong> que acopla el modulador temporal, el actuador TRIAC y la planta térmica es:
+          <div class="math-eq" style="font-size: 1.2rem; margin-top: 8px; color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 10px;">
+            <span class="m-var">G</span><span class="m-sub">total</span>(s) = 
+            <span class="fraction">
+              <span class="num"><span class="m-var">K</span><span class="m-sub">planta</span></span>
+              <span class="den"><span class="m-var">τ</span><span class="m-sub">planta</span> · s + 1</span>
+            </span>
+            · <span class="m-var">e</span><span class="m-sup">−[<span class="m-var">θ</span><span class="m-sub">físico</span> + <span class="fraction"><span class="num"><span class="m-var">T</span><span class="m-sub">base</span></span><span class="den">2</span></span>]·s</span>
+            = 
+            <span class="fraction">
+              <span class="num"><span class="m-var">K</span><span class="m-sub">planta</span></span>
+              <span class="den"><span class="m-var">τ</span><span class="m-sub">planta</span> · s + 1</span>
+            </span>
+            · <span class="m-var">e</span><span class="m-sup">−6.5·s</span>
+          </div>
+          <span style="font-size: 0.78rem; color: #cbd5e1; display: block; text-align: center; margin-top: 4px;">
+            (Para las tinas de 1 L: retardo físico de vaina θ_físico = 6.0 s + retardo de modulación ZOH = 0.5 s ⟹ retardo total = 6.5 s compensado analíticamente en MATLAB).
+          </span>
         </div>
       </div>
 
