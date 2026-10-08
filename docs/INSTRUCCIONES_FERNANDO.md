@@ -94,6 +94,7 @@ showcase_web/
 
 ## 🛠️ 6. Créditos y Responsables de Planta
 
-- **Víctor Ulises Gutiérrez Ramírez:** Tesista / Autor de Metodología y Ensayos DOE (`victor.gutierrez3447@alumnos.udg.mx`)
-- **Salvador Castro Pérez & Fernando Salvador Samayoa Martínez:** Instrumentación, Hardware, Firmware, Control Térmico ZCS, VCSS y SCADA PyQt6 (`salvadorcastroperez@hotmail.com` | `fernando.samayoa@alumnos.udg.mx`)
+- **Víctor Ulises Gutiérrez Ramírez:** Tesista / Autor de Metodología y Ensayos DOE (`victor.gutierrez7221@alumnos.udg.mx` | 📞 3321905415)
+- **Salvador Castro Pérez:** Instrumentación, Hardware, Firmware y Control Térmico (`salvador.castro7435@alumnos.udg.mx`)
+- **Fernando Salvador Samayoa Martínez:** Instrumentación, Firmware y SCADA (`fernando.samayoa0621@alumnos.udg.mx` | Alt: `fsamayoamarinez@gmail.com` | 📞 3311534114)
 - **Dr. Omar Alejandro González Meza & Dr. Norberto Casillas Santana:** Directores de Tesis (Electroquímica UdeG)

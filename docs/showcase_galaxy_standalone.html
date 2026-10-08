@@ -668,7 +668,8 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         <strong>Tesista / Autor Principal (Tesis & Resultados):</strong>
         <span>Víctor Ulises Gutiérrez Ramírez</span>
         <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
-          Tesis, Protocolo Experimental, DOE 2⁵·4 y Conclusiones • <a href="mailto:victor.gutierrez3447@alumnos.udg.mx" style="color: var(--primary);">victor.gutierrez3447@alumnos.udg.mx</a>
+          Tesis, Protocolo Experimental, DOE 2⁵·4 y Conclusiones<br>
+          <a href="mailto:victor.gutierrez7221@alumnos.udg.mx" style="color: var(--primary);">victor.gutierrez7221@alumnos.udg.mx</a> • 📞 3321905415
         </div>
       </div>
 
@@ -677,8 +678,8 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         <span>Salvador Castro Pérez & Fernando Salvador Samayoa Martínez</span>
         <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
           SCADA PyQt6, Hardware, Control Térmico ZCS, Firmware & Telemetría<br>
-          <a href="mailto:salvadorcastroperez@hotmail.com" style="color: var(--emerald);">salvadorcastroperez@hotmail.com</a> | 
-          <a href="mailto:fernando.samayoa@alumnos.udg.mx" style="color: var(--emerald);">fernando.samayoa@alumnos.udg.mx</a>
+          <a href="mailto:salvador.castro7435@alumnos.udg.mx" style="color: var(--emerald);">salvador.castro7435@alumnos.udg.mx</a> (Salvador)<br>
+          <a href="mailto:fernando.samayoa0621@alumnos.udg.mx" style="color: var(--emerald);">fernando.samayoa0621@alumnos.udg.mx</a> • <a href="mailto:fsamayoamarinez@gmail.com" style="color: var(--emerald);">fsamayoamarinez@gmail.com</a> • 📞 3311534114 (Fernando)
         </div>
       </div>
 
@@ -795,22 +796,282 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         </ul>
       </div>
 
-      <!-- MATEMÁTICAS FORMATEADAS EN HTML/CSS NATIVO -->
-      <div class="math-card">
-        <div class="math-label">Modelo Termodinámico de la Planta (Línea de Tinas UdeG)</div>
-        <div class="math-eq">
-          <span class="m-var">ρ</span> · <span class="m-var">V</span> · <span class="m-var">C</span><span class="m-sub">p</span>
-          <span class="fraction"><span class="num">d<span class="m-var">T</span>(t)</span><span class="den">dt</span></span>
-          = <span class="m-var">P</span><span class="m-sub">in</span>(t) − <span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span> · [<span class="m-var">T</span>(t) − <span class="m-var">T</span><span class="m-sub">amb</span>]
+      <!-- ========================================================================= -->
+      <!-- SECCIÓN CIENTÍFICA: MODELADO TÉRMICO Y CONTROL POR FDT (Control_termico.m) -->
+      <!-- ========================================================================= -->
+      <div style="margin: 24px 0 16px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px;">
+        <h3 style="font-size: 1.15rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span>📐</span> Derivación Rigurosa: Del Transporte Continuo al Control por FDT en MATLAB
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+          Fundamentación fisicoquímica y matemática paso a paso: cómo la ecuación diferencial en derivadas parciales de transporte de calor en medio continuo se reduce por <strong>agitación forzada continua y burbujeo</strong> a un modelo de capacitancia concentrada, cómo se obtiene la Función de Transferencia (FDT) con retardo de transporte, y cómo se aplican los parámetros reales en el algoritmo <code style="color: var(--emerald);">hardware/control_matlab/Control_termico.m</code>.
+        </p>
+
+        <!-- PASO 1 -->
+        <div class="math-card" style="border-left: 4px solid #38bdf8;">
+          <div class="math-label">Paso 1: Ecuación General de Transporte de Energía Térmica en Medio Continuo</div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 10px;">
+            A nivel infinitesimal, la distribución espacial y temporal de temperatura en un fluido viscoso e incompresible se describe mediante la ecuación de la energía de Navier-Stokes (conducción + advección + generación interna):
+          </p>
+          <div class="math-eq" style="font-size: 1.15rem; background: rgba(14, 165, 233, 0.05); padding: 12px; border-radius: 8px;">
+            <span class="m-var">ρ</span> · <span class="m-var">c</span><span class="m-sub">p</span>
+            · <span style="font-size: 1.25em;">[</span>
+            <span class="fraction"><span class="num">∂<span class="m-var">T</span></span><span class="den">∂<span class="m-var">t</span></span></span>
+            + <span class="m-var"><b>v</b></span> · <span class="m-sym">∇</span><span class="m-var">T</span>
+            <span style="font-size: 1.25em;">]</span>
+            = <span class="m-var">k</span> · <span class="m-sym">∇</span><span class="m-sup">2</span><span class="m-var">T</span>
+            + <span class="m-var">q̇</span><span class="m-sub">vol</span>
+          </div>
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+            <div>
+              • <strong style="color: #38bdf8;">ρ · c<sub>p</sub> (∂T/∂t):</strong> Acumulación transitoria de calor sensible por unidad de volumen [W/m³].<br>
+              • <strong style="color: #38bdf8;">ρ · c<sub>p</sub> (v · ∇T):</strong> Transporte convectivo neto debido al campo de velocidad vectorial <b>v</b> del fluido [W/m³].
+            </div>
+            <div>
+              • <strong style="color: #38bdf8;">k ∇²T:</strong> Difusión molecular isotrópica por conducción térmica (Ley de Fourier) [W/m³].<br>
+              • <strong style="color: #38bdf8;">q̇<sub>vol</sub>:</strong> Densidad de potencia térmica generada por la resistencia sumergida de 450 W [W/m³].
+            </div>
+          </div>
         </div>
-        <div class="math-eq">
-          <span class="m-var">G</span><span class="m-sub">planta</span>(s) =
-          <span class="fraction">
-            <span class="num"><span class="m-var">K</span><span class="m-sub">planta</span></span>
-            <span class="den"><span class="m-var">τ</span><span class="m-sub">planta</span> · s + 1</span>
-          </span>
-          · <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span>·s</span>
-          <span style="font-size: 0.85em; color: var(--text-muted); margin-left: 10px;">(con Aproximación de Padé Orden 2)</span>
+
+        <!-- PASO 2 -->
+        <div class="math-card" style="border-left: 4px solid var(--amber);">
+          <div class="math-label">Paso 2: Transición al Modelo de Parámetros Concentrados por Agitación y Burbujeo Forzado</div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 10px;">
+            En la línea de electrodeposición, la agitación mecánica continua y el burbujeo de aire comprimido homogenizan el baño químico, induciendo dos simplificaciones físicas fundamentales:
+          </p>
+          <div class="info-box info-box-success" style="font-size: 0.84rem; margin: 8px 0;">
+            <strong>1. Homogeneización Hidrodinámica Espacial (∇T ≈ 0):</strong><br>
+            La agitación turbulenta elimina gradientes térmicos en el seno del líquido en fracciones de segundo: <i>T</i>(<b>r</b>, <i>t</i>) ≡ <i>T</i>(<i>t</i>) ∀ <b>r</b> ∈ <i>V</i>. Por lo tanto, el gradiente espacial es nulo: <span style="color: #10b981; font-family: monospace;">∇T ≈ 0</span>, lo que anula el transporte advectivo (<span style="color: #10b981;"><b>v</b> · ∇T = 0</span>) y la conducción interna neta (<span style="color: #10b981;">∇²T = 0</span>).
+          </div>
+          <div class="info-box info-box-warn" style="font-size: 0.84rem; margin: 8px 0;">
+            <strong>2. Validación Metrológica por Número de Biot (Bi ≪ 0.1):</strong><br>
+            Bajo convección interna forzada, el coeficiente interno es alto, cumpliendo <i>Bi</i> = (<i>h</i><sub>int</sub> · <i>L</i><sub>c</sub>) / <i>k</i> ≪ 0.1. La resistencia térmica interna conductiva es despreciable frente a la disipación convectiva con el exterior, validando matemáticamente el <strong>Modelo de Capacitancia Térmica Concentrada (Lumped System)</strong>.
+          </div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin: 10px 0 6px 0;">
+            Integrando la ecuación diferencial continua en todo el volumen de control <i>V</i> de la tina:
+          </p>
+          <div class="math-eq" style="font-size: 1.05rem; background: rgba(245, 158, 11, 0.05); padding: 10px; border-radius: 8px;">
+            <span class="fraction"><span class="num">d<span class="m-var">T</span></span><span class="den">dt</span></span>
+            · <span style="font-size: 1.2em;">∫</span><span class="m-sub">V</span> <span class="m-var">ρ</span> · <span class="m-var">c</span><span class="m-sub">p</span> <span class="m-var">dV</span>
+            = <span style="font-size: 1.2em;">∫</span><span class="m-sub">V</span> <span class="m-var">q̇</span><span class="m-sub">vol</span> <span class="m-var">dV</span>
+            − <span style="font-size: 1.2em;">∮</span><span class="m-sub">∂V</span> <span class="m-var">q̇</span><span class="m-sub">frontera</span> · <span class="m-var">n̂</span> <span class="m-var">dA</span>
+          </div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin: 8px 0;">
+            Sabiendo que <span class="m-var">m</span> = <span class="m-var">ρ</span> · <span class="m-var">V</span> es la masa total del fluido, la integral de generación volumétrica es la potencia eléctrica neta <span class="m-var">Q̇</span>(t) = <span class="m-var">P</span><span class="m-sub">in</span>(t), y la integral de flujo superficial por la Ley de Enfriamiento de Newton sobre el área activa <span class="m-var">A</span><span class="m-sub">s</span> hacia el ambiente <span class="m-var">T</span><span class="m-sub">∞</span> (o <span class="m-var">T</span><span class="m-sub">amb</span>) es <span class="m-var">h</span> · <span class="m-var">A</span><span class="m-sub">s</span> · [<span class="m-var">T</span>(t) − <span class="m-var">T</span><span class="m-sub">∞</span>], obtenemos exactamente:
+          </p>
+          <div class="math-eq" style="font-size: 1.2rem; background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">
+            <strong style="color: #fbbf24;">
+              <span class="m-var">m</span> · <span class="m-var">c</span><span class="m-sub">p</span>
+              <span class="fraction"><span class="num">d<span class="m-var">T</span></span><span class="den">dt</span></span>
+              = <span class="m-var">Q̇</span>(t) − <span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span> · [<span class="m-var">T</span>(t) − <span class="m-var">T</span><span class="m-sub">∞</span>]
+            </strong>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dark); margin-top: 4px; text-align: center;">
+            *(Para una masa unitaria m = 1.0 kg/L en tinas de 1 Litro, se expresa directamente como c<sub>p</sub> dT/dt = Q̇ − h A<sub>s</sub> (T(t) − T<sub>∞</sub>))*
+          </p>
+        </div>
+
+        <!-- PASO 3 -->
+        <div class="math-card" style="border-left: 4px solid var(--purple);">
+          <div class="math-label">Paso 3: Linealización y Obtención de la Función de Transferencia (FDT) con Retardo Puro</div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 10px;">
+            Para pasar al dominio de Laplace, definimos la variable de desviación térmica respecto a la temperatura de equilibrio ambiental: <span style="color: #c084fc; font-family: monospace;">θ(t) = T(t) − T<sub>∞</sub></span>, cuya derivada es <span style="color: #c084fc; font-family: monospace;">dθ/dt = dT/dt</span>:
+          </p>
+          <div class="math-eq" style="font-size: 1.05rem;">
+            <span class="m-var">m</span> · <span class="m-var">c</span><span class="m-sub">p</span>
+            <span class="fraction"><span class="num">d<span class="m-var">θ</span>(t)</span><span class="den">dt</span></span>
+            + <span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span> · <span class="m-var">θ</span>(t) = <span class="m-var">Q̇</span>(t)
+          </div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin: 8px 0;">
+            Dividiendo toda la ecuación entre las pérdidas convectivas globales (<span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span>), obtenemos la forma canónica de un sistema de primer orden:
+          </p>
+          <div class="math-eq" style="font-size: 1.15rem; background: rgba(168, 85, 247, 0.05); padding: 10px; border-radius: 8px;">
+            <span style="font-size: 1.2em;">[</span>
+            <span class="fraction">
+              <span class="num"><span class="m-var">m</span> · <span class="m-var">c</span><span class="m-sub">p</span></span>
+              <span class="den"><span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span></span>
+            </span>
+            <span style="font-size: 1.2em;">]</span>
+            <span class="fraction"><span class="num">d<span class="m-var">θ</span>(t)</span><span class="den">dt</span></span>
+            + <span class="m-var">θ</span>(t)
+            = 
+            <span style="font-size: 1.2em;">[</span>
+            <span class="fraction">
+              <span class="num">1</span>
+              <span class="den"><span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span></span>
+            </span>
+            <span style="font-size: 1.2em;">]</span>
+            <span class="m-var">Q̇</span>(t)
+          </div>
+          <div class="grid-2" style="margin: 10px 0; font-size: 0.85rem;">
+            <div class="metric-tile" style="text-align: left; padding: 10px 14px;">
+              <span class="metric-label">Constante de Tiempo Térmica (τ<sub>planta</sub>):</span>
+              <div style="font-family: var(--code-font); color: #c084fc; font-size: 1.05rem; margin-top: 4px;">
+                τ<sub>planta</sub> = (m · c<sub>p</sub>) / (h · A<sub>s</sub>) [s]
+              </div>
+            </div>
+            <div class="metric-tile" style="text-align: left; padding: 10px 14px;">
+              <span class="metric-label">Ganancia Estática de Planta (K<sub>planta</sub>):</span>
+              <div style="font-family: var(--code-font); color: #c084fc; font-size: 1.05rem; margin-top: 4px;">
+                K<sub>planta</sub> = 1 / (h · A<sub>s</sub>) [°C/W]
+              </div>
+            </div>
+          </div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin: 8px 0;">
+            Aplicando la Transformada de Laplace con condición inicial nula (<span class="m-var">θ</span>(0) = 0) e incorporando el <strong>retardo puro de transporte térmico</strong> (<span class="m-var">θ</span><span class="m-sub">ret</span>) debido a la inercia de la vaina de acero inoxidable y contacto sensor MAX6675:
+          </p>
+          <div class="math-eq" style="font-size: 1.25rem; background: rgba(168, 85, 247, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.3);">
+            <strong style="color: #c084fc;">
+              <span class="m-var">G</span><span class="m-sub">planta</span>(s) =
+              <span class="fraction">
+                <span class="num"><span class="m-var">Θ</span>(s)</span>
+                <span class="den"><span class="m-var">Q</span>(s)</span>
+              </span>
+              =
+              <span class="fraction">
+                <span class="num"><span class="m-var">K</span><span class="m-sub">planta</span></span>
+                <span class="den"><span class="m-var">τ</span><span class="m-sub">planta</span> · s + 1</span>
+              </span>
+              · <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span><span class="m-sub">ret</span>·s</span>
+            </strong>
+          </div>
+          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 6px;">
+            En MATLAB, el término trascendente <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span><span class="m-sub">ret</span>·s</span> se expande analíticamente mediante la <strong>Aproximación de Padé de Segundo Orden</strong> <code style="color: var(--primary);">pade(exp(-retardo*s), 2)</code>:
+          </p>
+          <div class="math-eq" style="font-size: 0.95rem;">
+            <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span>·s</span> ≈
+            <span class="fraction">
+              <span class="num">1 − <span class="fraction"><span class="num"><span class="m-var">θ</span>·s</span><span class="den">2</span></span> + <span class="fraction"><span class="num"><span class="m-var">θ</span><span class="m-sup">2</span>·s<span class="m-sup">2</span></span><span class="den">12</span></span></span>
+              <span class="den">1 + <span class="fraction"><span class="num"><span class="m-var">θ</span>·s</span><span class="den">2</span></span> + <span class="fraction"><span class="num"><span class="m-var">θ</span><span class="m-sup">2</span>·s<span class="m-sup">2</span></span><span class="den">12</span></span></span>
+            </span>
+          </div>
+        </div>
+
+        <!-- PASO 4 -->
+        <div class="math-card" style="border-left: 4px solid var(--emerald);">
+          <div class="math-label">Paso 4: Aplicación en MATLAB (Control_termico.m) y Sintonización PI Antirruido</div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 12px;">
+            El script <code style="color: var(--emerald); font-weight: bold;">hardware/control_matlab/Control_termico.m</code> ejecuta el procesamiento paramétrico exacto para las 4 tinas de la planta física de la Universidad de Guadalajara:
+          </p>
+
+          <div style="overflow-x: auto; margin-bottom: 14px;">
+            <table class="data-table" style="font-size: 0.82rem; width: 100%;">
+              <thead>
+                <tr>
+                  <th>Canal</th>
+                  <th>Tina de Proceso</th>
+                  <th>Volumen (L)</th>
+                  <th>Área A<sub>s</sub> (m²)</th>
+                  <th>P<sub>max</sub> (W)</th>
+                  <th>Retardo (s)</th>
+                  <th>T<sub>set</sub> (°C)</th>
+                  <th>K<sub>planta</sub> (°C/W)</th>
+                  <th>τ<sub>planta</sub> (s / min)</th>
+                  <th>Control PI (MATLAB)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-blue">Canal 0</span></td>
+                  <td><strong>Desengrase Alcalino</strong></td>
+                  <td>1.000 L</td>
+                  <td>0.0470 m²</td>
+                  <td>450 W</td>
+                  <td>6.0 s</td>
+                  <td><strong style="color: #f43f5e;">90.0 °C</strong></td>
+                  <td>0.3273 °C/W</td>
+                  <td>1369.7 s (22.8 min)</td>
+                  <td><code style="color: #10b981;">Kp=61.33, Ki=0.206, Kd=0</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-blue">Canal 1</span></td>
+                  <td><strong>Decapado Ácido</strong></td>
+                  <td>1.000 L</td>
+                  <td>0.0470 m²</td>
+                  <td>450 W</td>
+                  <td>6.0 s</td>
+                  <td><strong style="color: #f43f5e;">90.0 °C</strong></td>
+                  <td>0.3273 °C/W</td>
+                  <td>1369.7 s (22.8 min)</td>
+                  <td><code style="color: #10b981;">Kp=61.33, Ki=0.206, Kd=0</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-blue">Canal 2</span></td>
+                  <td><strong>Niquelado Watts</strong></td>
+                  <td>1.000 L</td>
+                  <td>0.0470 m²</td>
+                  <td>450 W</td>
+                  <td>6.0 s</td>
+                  <td><strong style="color: #38bdf8;">30.0 °C</strong></td>
+                  <td>0.3273 °C/W</td>
+                  <td>1369.7 s (22.8 min)</td>
+                  <td><code style="color: #10b981;">Kp=61.33, Ki=0.206, Kd=0</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-purple">Canal 3</span></td>
+                  <td><strong>Celda Hull (Zinc Ácido)</strong></td>
+                  <td>0.267 L (trapecio)</td>
+                  <td>0.0210 m²</td>
+                  <td>18 W</td>
+                  <td>3.0 s</td>
+                  <td><strong style="color: #38bdf8;">30.0 °C</strong></td>
+                  <td>0.7326 °C/W</td>
+                  <td>818.5 s (13.6 min)</td>
+                  <td><code style="color: #10b981;">Kp=16.07, Ki=0.074, Kd=0</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-2" style="gap: 12px; margin-top: 10px;">
+            <div class="info-box info-box-success" style="margin: 0;">
+              <strong>Criterio de Sintonización Analítica PI en MATLAB:</strong>
+              <ul style="margin-left: 16px; margin-top: 4px; font-size: 0.82rem; line-height: 1.45;">
+                <li><code style="color: #10b981;">wc = 0.015 rad/s:</code> Frecuencia de cruce de ganancia calibrada para la inercia térmica de baños de 1 L.</li>
+                <li><code style="color: #10b981;">PhaseMargin = 75°:</code> Margen de fase restrictivo enfocado en <em>reference-tracking</em> para garantizar respuesta críticamente amortiguada con <strong>0% sobretiro (Zero Overshoot)</strong>. Evita sobrecalentar y descomponer aditivos electroquímicos costosos.</li>
+                <li><strong style="color: #10b981;">Kd = 0.0000 (Forzado):</strong> La derivada amplifica el ruido eléctrico de la red y el batimiento hidrodinámico en el ADC. Un PI puro proporciona robustez industrial absoluta.</li>
+              </ul>
+            </div>
+
+            <div class="info-box" style="margin: 0; border-left-color: var(--amber); background: rgba(245, 158, 11, 0.05);">
+              <strong>Look-Up Table (LUT) de Linealización TRIAC a 60 Hz:</strong>
+              <p style="font-size: 0.82rem; color: #cbd5e1; margin-top: 4px; line-height: 1.45;">
+                La potencia disipada en una resistencia frente al ángulo de disparo α ∈ [0, π] es altamente no-lineal:
+                <br><span style="color: #fbbf24; font-family: monospace;">P_norm(α) = 1 − (α/π) + sin(2α)/(2π)</span>.<br>
+                El script genera un arreglo <code style="color: #fbbf24;">const uint16_t lut_triac[101]</code> mapeando 0% a 100% de potencia en microsegundos (de 8333 µs a 0 µs tras el cruce por cero), linealizando al 100% la respuesta del actuador de potencia.
+              </p>
+            </div>
+          </div>
+
+          <!-- BLOQUE DE CÓDIGO MATLAB Y C DE CONTROL_TERMICO.M -->
+          <div style="margin-top: 14px; background: #020617; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 6px;">
+              <span style="font-size: 0.78rem; font-family: var(--code-font); color: var(--emerald); font-weight: bold;">
+                💻 hardware/control_matlab/Control_termico.m ➔ Generación de Parámetros de Control
+              </span>
+              <span style="font-size: 0.72rem; color: var(--text-dark);">Ejecución automatizada en MATLAB R2024b</span>
+            </div>
+            <pre style="font-family: var(--code-font); font-size: 0.76rem; color: #94a3b8; overflow-x: auto; line-height: 1.4; margin: 0;"><code><span style="color: #64748b;">% 1. Parámetros de Planta Termodinámica por Tina</span>
+m = tinas(i).volumen * rho_agua; 
+K_planta = 1 / (h_efectivo * tinas(i).A_s); 
+tau_planta = (m * cp_agua) / (h_efectivo * tinas(i).A_s); 
+
+<span style="color: #64748b;">% 2. Modelo dinámico en Laplace con Aproximación de Padé Orden 2</span>
+s = tf('s');
+G_planta = (K_planta / (tau_planta * s + 1)) * pade(exp(-tinas(i).retardo * s), 2);
+
+<span style="color: #64748b;">% 3. Sintonización Analítica PI (Tracking sin Sobretiro)</span>
+wc = 0.015; 
+opciones = pidtuneOptions('DesignFocus', 'reference-tracking', 'PhaseMargin', 75);
+C_pi = pidtune(G_planta, 'PI', wc, opciones);
+
+<span style="color: #64748b;">// 4. Parámetros C Generados para el Firmware del ESP32-S3:</span>
+<span style="color: #38bdf8;">double</span> Kp_0 = 61.3300; <span style="color: #38bdf8;">double</span> Ki_0 = 0.2060; <span style="color: #38bdf8;">double</span> Kd_0 = 0.0000; <span style="color: #64748b;">// Canal 0: Desengrase (90°C)</span>
+<span style="color: #38bdf8;">double</span> Kp_1 = 61.3300; <span style="color: #38bdf8;">double</span> Ki_1 = 0.2060; <span style="color: #38bdf8;">double</span> Kd_1 = 0.0000; <span style="color: #64748b;">// Canal 1: Decapado (90°C)</span>
+<span style="color: #38bdf8;">double</span> Kp_2 = 61.3300; <span style="color: #38bdf8;">double</span> Ki_2 = 0.2060; <span style="color: #38bdf8;">double</span> Kd_2 = 0.0000; <span style="color: #64748b;">// Canal 2: Niquelado (30°C)</span>
+<span style="color: #38bdf8;">double</span> Kp_3 = 16.0700; <span style="color: #38bdf8;">double</span> Ki_3 = 0.0740; <span style="color: #38bdf8;">double</span> Kd_3 = 0.0000; <span style="color: #64748b;">// Canal 3: Celda Hull (30°C)</span></code></pre>
+          </div>
         </div>
       </div>
 
@@ -1714,10 +1975,13 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
           <p style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
             Contacto directo para todo lo concerniente a la tesis de grado, protocolo experimental VUGR, formulación de baños químicos, matriz de diseño de experimentos (DOE 2⁵·4), metalografía y conclusiones electroquímicas.
           </p>
-          <div style="margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px;">
-            <a href="mailto:victor.gutierrez3447@alumnos.udg.mx" style="color: var(--primary); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
-              ✉️ victor.gutierrez3447@alumnos.udg.mx
+          <div style="margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+            <a href="mailto:victor.gutierrez7221@alumnos.udg.mx" style="color: var(--primary); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ victor.gutierrez7221@alumnos.udg.mx
             </a>
+            <span style="color: #38bdf8; font-size: 0.82rem; font-weight: 600;">
+              📞 Tel / WhatsApp: 3321905415
+            </span>
           </div>
         </div>
 
@@ -1729,12 +1993,18 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
             Contacto técnico para arquitectura electrónica, esquemáticos y PCB, firmware ESP32-S3 / Nano, lazos térmicos ZCS por tiempo proporcional, sumidero de corriente VCSS, sensado de pH pseudo-diferencial y SCADA PyQt6.
           </p>
           <div style="margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
-            <a href="mailto:salvadorcastroperez@hotmail.com" style="color: var(--emerald); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
-              ✉️ salvadorcastroperez@hotmail.com
+            <a href="mailto:salvador.castro7435@alumnos.udg.mx" style="color: var(--emerald); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ salvador.castro7435@alumnos.udg.mx (Salvador)
             </a>
-            <a href="mailto:fernando.samayoa@alumnos.udg.mx" style="color: var(--emerald); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
-              ✉️ fernando.samayoa@alumnos.udg.mx
+            <a href="mailto:fernando.samayoa0621@alumnos.udg.mx" style="color: var(--emerald); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ fernando.samayoa0621@alumnos.udg.mx (Fernando)
             </a>
+            <a href="mailto:fsamayoamarinez@gmail.com" style="color: #94a3b8; font-size: 0.80rem; text-decoration: none;">
+              📧 Correo Alt: fsamayoamarinez@gmail.com
+            </a>
+            <span style="color: var(--emerald); font-size: 0.80rem; font-weight: 600;">
+              📞 Tel / WhatsApp Fernando: 3311534114
+            </span>
           </div>
         </div>
 
