@@ -1,9 +1,21 @@
 # Planta Piloto de Electrodeposición y Galvanoplastia
 ### Control Ciberfísico en Tiempo Real (ESP32-S3 RTOS 2.0 + ATmega328P + SCADA PC)
 
-> **Desarrollado y Diseñado por: Salvador² C Dev Team**  
-> *Automatización, Instrumentación Industrial y Control Metrológico de Procesos Electroquímicos.*  
-> *Línea experimental para Zincado Ácido en Celda Hull (267 mL) y Niquelado Electrolítico sobre Sustrato de Aluminio Al 6061-T6.*
+[![Status: WIP](https://img.shields.io/badge/Status-Work%20In%20Progress%20(WIP)-amber?style=for-the-badge&logo=git)](https://github.com/Chavacastro98/Proyecto)
+[![Showcase: Live](https://img.shields.io/badge/Showcase%20Web-GitHub%20Pages-0ea5e9?style=for-the-badge&logo=github)](https://chavacastro98.github.io/Proyecto/)
+[![Tests: 25 Passed](https://img.shields.io/badge/Tests-25%20Passed-10b981?style=for-the-badge&logo=pytest)](tests/)
+[![MCU: ESP32-S3 + Nano](https://img.shields.io/badge/Hardware-ESP32--S3%20%7C%20ATmega328P-8b5cf6?style=for-the-badge)](firmware/)
+
+> [!WARNING]
+> ### 🚧 Repositorio en Desarrollo Activo / Work In Progress (WIP)
+> **Este repositorio se encuentra actualmente en proceso de desarrollo, documentación y reestructuración activa.**  
+> El equipo técnico se encuentra trabajando en:
+> 1. **Elaboración y estandarización del Manual Técnico y Operativo de Laboratorio.**
+> 2. **Consolidación y limpieza estructural de las páginas web públicas (GitHub Pages) y herramientas de despliegue.**
+>
+> 🌐 **Showcase Técnico Interactivo (GitHub Pages):** [https://chavacastro98.github.io/Proyecto/](https://chavacastro98.github.io/Proyecto/)  
+> 📁 **Repositorio Oficial de Código (GitHub):** [https://github.com/Chavacastro98/Proyecto](https://github.com/Chavacastro98/Proyecto)  
+> 📑 **Cartel Científico SMEQ 2026 — Folio CTS-C51:** *Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6.*
 
 ---
 
@@ -11,12 +23,12 @@
 
 La galvanoplastia sobre aluminio es un proceso notoriamente delicado: el aluminio forma espontáneamente una película pasivante de óxido que arruina la adherencia, mientras que los electrolitos ácidos y las altas corrientes de deposición generan ruido electromagnético y caídas de tensión parásitas que desestabilizan cualquier sensor estándar.
 
-Este proyecto resuelve ese reto construyendo una **planta piloto automatizada de 4 tinas**, gobernada por una arquitectura distribuida donde el hardware, el firmware en tiempo real y el software de supervisión en PC trabajan como una sola unidad:
+Este proyecto resuelve ese reto construyendo una **planta piloto automatizada de 3 tinas de tratamiento químico + Celda Hull (267 mL)**, gobernada por una arquitectura distribuida donde el hardware, el firmware en tiempo real y el software de supervisión en PC trabajan como una sola unidad:
 
-1. **Etapa 1 — Desengrase Alcalino (85-90 °C, 240 s):** Limpieza termoquímica superficial con Na3PO4, Na2SiO4 y PEG-400.
+1. **Etapa 1 — Desengrase Alcalino (85-90 °C, 240 s):** Limpieza termoquímica superficial con Na₃PO₄, Na₂SiO₃ y PEG-400.
 2. **Etapa 2 — Decapado y Activación (85-90 °C, 120 s):** Remoción selectiva de alúmina sin atacar el metal base.
-3. **Etapa 3 — Zincado en Celda Hull (25 °C o 40 °C, 120 o 300 s):** Electrodeposición en celda trapezoidal de 267 mL con corriente continua (1.50 A DC) o pulsada (10 Hz / 20% duty cycle) para evaluar el rango de densidad de corriente sobre toda la longitud de la probeta.
-4. **Etapa 4 — Niquelado Electrolítico (30-40 °C, 600 s):** Capa protectora con baño Watt modificado estabilizado con Na2SO4 para prevenir desplazamiento galvánico espontáneo.
+3. **Etapa 3 — Niquelado Electrolítico (30-40 °C, 600 s):** Capa protectora con baño estabilizado para prevenir desplazamiento galvánico espontáneo.
+4. **Etapa 4 — Zincado en Celda Hull (25 °C o 40 °C, 120 o 300 s):** Electrodeposición en celda trapezoidal normalizada de 267 mL con corriente continua (1.50 A DC) o pulsada (10 Hz) para evaluar el rango de densidad de corriente sobre toda la longitud de la probeta.
 
 ---
 
@@ -50,19 +62,25 @@ El sistema opera con la versión de producción **RTOS 2.0**, diseñada para gar
 
 ## 3. Estructura del Repositorio
 
-El árbol de archivos está organizado de manera modular, separando firmware, software de escritorio, ingeniería de hardware y pruebas:
+El árbol de archivos está organizado de manera modular, separando firmware, software de escritorio, ingeniería de hardware, pruebas y despliegue web:
 
 ```text
 Proyecto/
 ├── Iniciar_Sistema.bat        <- Lanzador interactivo principal (doble clic)
 ├── Iniciar_Telemetria_2.0.bat <- Acceso directo a la estacion SCADA en vivo
 ├── launcher.py                <- Panel maestro de inicio en Python (GUI y consola)
-├── README.md                  <- Documentacion tecnica y de arquitectura
+├── README.md                  <- Documentacion tecnica y de arquitectura (WIP)
 ├── AGENTS.md                  <- Estandares de codificacion, estilo y formato
 ├── requirements.txt           <- Dependencias oficiales de Python
 ├── pytest.ini                 <- Configuracion de la suite de pruebas unitarias
 ├── conftest.py                <- Resolucion limpia de rutas para tests
 ├── .gitignore                 <- Reglas de exclusion y proteccion de datos sensibles
+│
+├── docs/                      <- Publicacion web oficial GitHub Pages (Arquitectura modular)
+│   ├── index.html             <- Punto de entrada del Showcase Tecnico e Interactivo
+│   ├── css/                   <- Estilos CSS modulares (tokens, layout, components, responsive)
+│   ├── js/                    <- Modulos de logica JS (app, simuladores, galeria, telemetria)
+│   └── assets/                <- Evidencia fotografica, diagramas e instrumentacion
 │
 ├── firmware/                  <- Codigo fuente de microcontroladores
 │   ├── esp32/
@@ -85,6 +103,9 @@ Proyecto/
 ├── hardware/                  <- Documentacion fisica y electronica
 │   ├── esquemas_y_bom/        <- Lista de materiales (BOM.md) y diagramas de conexion
 │   └── control_matlab/        <- Modelado termico y cinetico en MATLAB
+│
+├── herramientas/              <- Utilidades de automatizacion y soporte CI/CD
+│   └── sincronizar_pages.py   <- Pipeline automatico de empaquetado y despliegue a docs/
 │
 ├── documentos/                <- Documentacion tecnica y manuales de operacion
 │   ├── manuales/              <- Manual interactivo de operacion quimica (HTML y Markdown)
@@ -159,5 +180,31 @@ Genera automáticamente las 8 figuras normalizadas:
 
 ---
 
+## 7. Equipo de Investigación y Contacto
+
+Proyecto de Titulación / Tesis de Licenciatura e Investigación Científica aplicada en Automatización e Ingeniería Electroquímica:
+
+* **Víctor Ulises Gutiérrez Ramírez**  
+  * Correo Institucional: [victor.gutierrez7221@alumnos.udg.mx](mailto:victor.gutierrez7221@alumnos.udg.mx)  
+  * Teléfono Móvil: +52 (33) 2190-5415  
+  * Rol: Desarrollo de Firmware RTOS 2.0, Control Ciberfísico e Instrumentación Electrónica.
+
+* **Salvador Castro Pérez**  
+  * Correo Institucional: [salvador.castro7435@alumnos.udg.mx](mailto:salvador.castro7435@alumnos.udg.mx)  
+  * Rol: Automatización Industrial, Arquitectura SCADA Telemetría 2.0 y Modelado Físico-Matemático.
+
+* **Fernando Salvador Samayoa Martínez**  
+  * Correo Institucional: [fernando.samayoa0621@alumnos.udg.mx](mailto:fernando.samayoa0621@alumnos.udg.mx)  
+  * Correo Alternativo: [fsamayoamarinez@gmail.com](mailto:fsamayoamarinez@gmail.com)  
+  * Teléfono Móvil: +52 (33) 1153-4114  
+  * Rol: Ingeniería Electroquímica, Formulación de Baños y Análisis Gravimétrico/Faradaico.
+
+### Directores y Asesores de Tesis
+* **Dr. Omar Alejandro González Meza** — Profesor Investigador, CUCEI, Universidad de Guadalajara.
+* **Dr. Norberto Casillas Santana** — Profesor Investigador, Departamento de Química, CUCEI, Universidad de Guadalajara.
+
+---
+
 **Salvador² C Dev Team**  
-*Ingeniería de Procesos Electroquímicos, Sistemas Embebidos e Instrumentación Científica.*
+*Ingeniería de Procesos Electroquímicos, Sistemas Embebidos e Instrumentación Científica.*  
+*Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI) — Universidad de Guadalajara.*
