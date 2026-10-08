@@ -1,0 +1,2336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>CTS-C51 | Showcase Técnico de Control In-Operando & Electrodeposición — SMEQ 2026</title>
+  <meta name="description" content="Portal técnico avanzado: Arquitectura ESP32-S3, control térmico ZCS por tiempo proporcional (MATLAB), sumidero VCSS con onda cuadrada a 10 Hz, pH pseudo-diferencial, SCADA PyQt6 e interfaz web embebida.">
+  <meta name="theme-color" content="#070d19">
+
+<style>
+/* ==========================================================================
+   VARIABLES DE DISEÑO & TOKENS GLOBALES
+   Showcase Técnico CTS-C51 | SMEQ 2026
+   ========================================================================== */
+
+:root {
+  --bg: #070d19;
+  --card-bg: rgba(15, 23, 42, 0.90);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --primary: #0ea5e9;
+  --primary-hover: #38bdf8;
+  --primary-glow: rgba(14, 165, 233, 0.22);
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --rose: #f43f5e;
+  --purple: #8b5cf6;
+  --indigo: #6366f1;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dark: #64748b;
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --code-font: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  --math-font: "Cambria Math", "Latin Modern Math", "STIX Two Math", Georgia, serif;
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-main);
+  font-family: var(--font-stack);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
+}
+
+
+/* ==========================================================================
+   LAYOUT, HEADER, TABS, FOOTER Y RESPONSIVIDAD MÓVIL (SAMSUNG GALAXY)
+   ========================================================================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* HEADER & BANNER ACADÉMICO */
+header {
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.badge-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.badge-primary { background: rgba(14, 165, 233, 0.15); color: var(--primary); border-color: rgba(14, 165, 233, 0.35); }
+.badge-amber   { background: rgba(245, 158, 11, 0.15); color: var(--amber); border-color: rgba(245, 158, 11, 0.35); }
+.badge-emerald { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border-color: rgba(16, 185, 129, 0.35); }
+.badge-purple  { background: rgba(139, 92, 246, 0.15); color: var(--purple); border-color: rgba(139, 92, 246, 0.35); }
+
+h1 {
+  font-size: 1.4rem;
+  line-height: 1.35;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+
+/* EQUIPO Y RESPONSABLES DEL PROYECTO */
+.credits-panel {
+  background: rgba(10, 15, 29, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 0.82rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px 18px;
+}
+
+.credit-group strong {
+  color: var(--primary);
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.credit-group span {
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+/* NAVEGACIÓN POR PESTAÑAS (TABS) - OPTIMIZADA TÁCTIL */
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.nav-tabs::-webkit-scrollbar { 
+  display: none; /* Chrome/Safari/Samsung Internet */
+}
+
+.tab-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px; /* Target táctil óptimo */
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.tab-btn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tab-btn.active {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* PANELES DE CONTENIDO */
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.tab-panel.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+footer {
+  text-align: center;
+  padding: 30px 16px;
+  color: var(--text-dark);
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 30px;
+}
+
+footer a { color: var(--primary); text-decoration: none; }
+
+/* MEDIA QUERIES PARA PANTALLAS MÓVILES (SAMSUNG GALAXY & SMARTPHONES) */
+@media (max-width: 768px) {
+  .container { padding: 10px; }
+  header { padding: 16px; border-radius: 12px; }
+  h1 { font-size: 1.18rem; }
+  .subtitle { font-size: 0.85rem; }
+  .credits-panel { grid-template-columns: 1fr; gap: 8px; }
+  .nav-tabs {
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+  .tab-btn {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 6px; }
+  h1 { font-size: 1.08rem; }
+  .badge { font-size: 0.68rem; padding: 3px 8px; }
+}
+
+
+/* ==========================================================================
+   COMPONENTES: CARDS, SLIDERS TÁCTILES, TABLAS, FÓRMULAS, GALERÍAS Y MODAL
+   ========================================================================== */
+
+/* TARJETAS Y CONTENEDORES */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 10px;
+}
+
+.card-title .icon { color: var(--primary); }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+/* CAJAS DE INFORMACIÓN */
+.info-box {
+  background: rgba(30, 41, 59, 0.5);
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.info-box-warn {
+  border-left-color: var(--amber);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.info-box-danger {
+  border-left-color: var(--rose);
+  background: rgba(244, 63, 94, 0.08);
+}
+
+.info-box-success {
+  border-left-color: var(--emerald);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+/* RENDERIZADOR DE ÁLGEBRA Y MATEMÁTICAS NATIVAS (HTML/CSS) */
+.math-card {
+  background: #040812;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.math-label {
+  font-size: 0.72rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.math-eq {
+  font-family: var(--math-font);
+  font-size: 1.15rem;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  line-height: 1.4;
+}
+
+.m-var { font-style: italic; }
+.m-sub { font-size: 0.75em; vertical-align: sub; }
+.m-sup { font-size: 0.75em; vertical-align: super; }
+.m-sym { font-family: var(--font-stack); font-weight: normal; }
+
+.fraction {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+
+.fraction .num {
+  border-bottom: 1.5px solid #38bdf8;
+  padding-bottom: 2px;
+}
+
+.fraction .den {
+  padding-top: 2px;
+}
+
+/* CONTROLES Y SLIDERS ADAPTADOS A PANTALLA TÁCTIL */
+.control-group {
+  margin-bottom: 14px;
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.control-header span:first-child { color: var(--text-muted); }
+.control-header span:last-child { color: var(--primary); font-family: var(--code-font); }
+
+input[type="range"] {
+  width: 100%;
+  height: 10px;
+  background: #1e293b;
+  border-radius: 6px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--primary-glow);
+  transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover,
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+
+/* CANVASES */
+.canvas-container {
+  background: #040812;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  position: relative;
+  margin-top: 10px;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+
+/* TILES DE MÉTRICAS */
+.metric-tile {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: var(--code-font);
+  color: #ffffff;
+  margin-top: 4px;
+}
+
+.metric-label {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* GALERÍA DE IMÁGENES SCADA & WEB */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.gallery-item {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.gallery-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.gallery-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #020617;
+  display: block;
+}
+
+.gallery-desc {
+  padding: 12px;
+}
+
+.gallery-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.gallery-caption {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* MODAL DE INSPECCIÓN HD */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-content {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  max-width: 95vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+}
+
+.modal-header {
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--card-border);
+  background: #090e17;
+}
+
+.modal-header h3 { font-size: 1rem; color: #ffffff; }
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 10px;
+}
+
+.modal-body {
+  padding: 12px;
+  overflow: auto;
+  text-align: center;
+  background: #020617;
+}
+
+.modal-img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* TABLA DOE */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  margin-top: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+th {
+  background: #090e17;
+  color: var(--primary);
+  padding: 10px 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+}
+
+tr:hover td { background: rgba(14, 165, 233, 0.05); }
+
+/* REFERENCIAS */
+.ref-list {
+  list-style: none;
+  counter-reset: ref-counter;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ref-item {
+  position: relative;
+  padding-left: 36px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 10px;
+}
+
+.ref-item::before {
+  counter-increment: ref-counter;
+  content: "[" counter(ref-counter) "]";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: var(--code-font);
+}
+
+.ref-author { font-weight: 700; color: #ffffff; }
+.ref-title { font-style: italic; color: #e2e8f0; }
+.ref-source { color: var(--text-muted); }
+.ref-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(14, 165, 233, 0.15);
+  color: var(--primary);
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .card { padding: 14px; border-radius: 10px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .math-eq { font-size: 0.95rem; }
+  .gallery-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER OFICIAL SMEQ 2026 -->
+  <header>
+    <div class="badge-bar">
+      <span class="badge badge-primary">SMEQ 2026 • CARTEL CTS-C51</span>
+      <span class="badge badge-emerald">CONTROL IN-OPERANDO</span>
+      <span class="badge badge-amber">ESP32-S3 SMP @ 240 MHz</span>
+      <span class="badge badge-purple">ANSI/ISA-88.01</span>
+    </div>
+    <h1>Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6</h1>
+    <p class="subtitle">Diseño de Experimentos Multinivel 2⁵·4, Instrumentación Modular y Supervisión SCADA con Etapa de Potencia Pulsada VCSS y Conmutación ZCS</p>
+
+    <!-- CRÉDITOS Y RESPONSABLES DEL PROYECTO -->
+    <div class="credits-panel">
+      <div class="credit-group">
+        <strong>Tesista / Autor Principal (Tesis & Resultados):</strong>
+        <span>Víctor Ulises Gutiérrez Ramírez</span>
+        <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
+          Tesis, Protocolo Experimental, DOE 2⁵·4 y Conclusiones • <a href="mailto:victor.gutierrez3447@alumnos.udg.mx" style="color: var(--primary);">victor.gutierrez3447@alumnos.udg.mx</a>
+        </div>
+      </div>
+
+      <div class="credit-group">
+        <strong>Instrumentación y Control (Diseño de Planta & Software):</strong>
+        <span>Salvador Castro Pérez & Fernando Salvador Samayoa Martínez</span>
+        <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
+          SCADA PyQt6, Hardware, Control Térmico ZCS, Firmware & Telemetría<br>
+          <a href="mailto:salvadorcastroperez@hotmail.com" style="color: var(--emerald);">salvadorcastroperez@hotmail.com</a> | 
+          <a href="mailto:fernando.samayoa@alumnos.udg.mx" style="color: var(--emerald);">fernando.samayoa@alumnos.udg.mx</a>
+        </div>
+      </div>
+
+      <div class="credit-group">
+        <strong>Directores & Asesores (Línea de Electroquímica UdeG):</strong>
+        <span>Dr. Omar Alejandro González Meza & Dr. Norberto Casillas Santana</span>
+        <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
+          Línea de Investigación en Electroquímica y Recubrimientos (CUCEI)<br>
+          <a href="mailto:Omar.Gonzalez3420@academicos.udg.mx" style="color: var(--purple);">Omar.Gonzalez3420@academicos.udg.mx</a> | 
+          <a href="mailto:norberto.casillas@academicos.udg.mx" style="color: var(--purple);">norberto.casillas@academicos.udg.mx</a>
+        </div>
+      </div>
+
+      <div class="credit-group" style="grid-column: 1 / -1; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 8px;">
+        <strong>Institución & Vinculación Industrial:</strong>
+        <span>Universidad de Guadalajara — CUCEI (Depto. de Química / Depto. de Ing. Electro-Fotónica) & Volta Plating Solutions (Guadalajara, Jal.)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- PESTAÑAS DE NAVEGACIÓN -->
+  <nav class="nav-tabs" id="navTabs">
+    <button class="tab-btn active" data-tab="tab-arquitectura">📐 Arquitectura & Bloques</button>
+    <button class="tab-btn" data-tab="tab-termico">🔥 Módulo Térmico (ZCS & MATLAB)</button>
+    <button class="tab-btn" data-tab="tab-vcss">⚡ Sumidero VCSS & Onda Cuadrada</button>
+    <button class="tab-btn" data-tab="tab-ph">🧪 pH Pseudo-Diferencial</button>
+    <button class="tab-btn" data-tab="tab-scada">🖥️ SCADA & Servidor Web</button>
+    <button class="tab-btn" data-tab="tab-doe">📊 Matriz DOE 2⁵·4 & Ensayos</button>
+    <button class="tab-btn" data-tab="tab-referencias">📚 Referencias & Autores</button>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 1: ARQUITECTURA DE HARDWARE -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel active" id="tab-arquitectura">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">📐</span> Diagrama de Bloques Funcional de Hardware — Arquitectura Integral
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
+        Arquitectura modular organizada por bloques de <strong>Nombre + Función</strong>: Entradas y Sensado (Izq.) → Núcleo de Control Maestro/Esclavo (Centro) → Etapa de Potencia y Planta (Der.) → HMI y Supervisión (Abajo).
+      </p>
+
+      <div style="text-align: center; position: relative;">
+        <img src="assets/sistema.png" alt="Diagrama de Bloques Funcional" id="imgArquitectura" style="width: 100%; max-height: 520px; object-fit: contain; background: #070c16; border-radius: 10px; border: 1px solid var(--card-border); cursor: pointer;" onclick="abrirModal(this.src, 'Diagrama de Arquitectura de Hardware — Alta Resolución')">
+        <div style="margin-top: 8px;">
+          <button class="tab-btn" onclick="abrirModal('assets/sistema.png', 'Diagrama de Arquitectura de Hardware — Alta Resolución')" style="background: rgba(14, 165, 233, 0.2); border-color: var(--primary); color: #fff;">
+            🔍 Ampliar Diagrama en Alta Resolución (HD Modal)
+          </button>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 20px;">
+        <div class="info-box">
+          <strong style="color: var(--primary);">Master: ESP32-S3 N16R8</strong><br>
+          <span style="font-size: 0.8rem; color: #cbd5e1;">
+            • Core 0: Servidor Web asíncrono, WebSockets telemetría, RTOS 2.0.<br>
+            • Core 1: Lazos de control PI, muestreo ADC ADS1115, máquina ISA-88.<br>
+            • Memoria: 512 KB SRAM + 8 MB PSRAM octal + 16 MB Flash.
+          </span>
+        </div>
+        <div class="info-box">
+          <strong style="color: var(--amber);">Dual ZCS (Zero-Crossing)</strong><br>
+          <span style="font-size: 0.8rem; color: #cbd5e1;">
+            • AC 60Hz: Optoacoplador 4N35 detectando cruces de red eléctrica.<br>
+            • DC +12V: Sincronización en GPIO 20 para corte sin arco eléctrico.<br>
+            • Conmutación en <i>V</i> = 0 evitando picos de tensión y ruido EMI.
+          </span>
+        </div>
+        <div class="info-box">
+          <strong style="color: var(--emerald);">Buses de Comunicación</strong><br>
+          <span style="font-size: 0.8rem; color: #cbd5e1;">
+            • I²C Fast-Mode (400 kHz): ADS1115, MCP4725, AHT20, BMP280.<br>
+            • SPI @ 4 MHz: MAX6675 (termopar K compensado en unión fría).<br>
+            • UART2 @ 9600 Baud: Enlace Maestro-Esclavo con tramas binarias.
+          </span>
+        </div>
+      </div>
+
+      <!-- FOTOGRAFÍA FÍSICA: PLACA PRINCIPAL DE PLANTA -->
+      <h3 style="font-size: 1.05rem; color: var(--primary); margin: 26px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
+        Circuito Físico de Planta — Placa Base Principal (PCB Maestro Central)
+      </h3>
+      <div class="gallery-grid" style="grid-template-columns: 1fr;">
+        <div class="gallery-item" onclick="abrirModal('assets/planta_placa_principal.jpg', 'PCB Maestro Central: Microcontrolador ESP32-S3 Dual-Core, zócalo de interconexión con Arduino Nano esclavo, sockets de buses I2C y SPI a 4 MHz, y regletas de bornes industriales')">
+          <img src="assets/planta_placa_principal.jpg" alt="Placa Principal Físico" class="gallery-thumb" style="height: 280px; object-fit: cover;">
+          <div class="gallery-desc">
+            <div class="gallery-title">Placa Principal Integrada (ESP32-S3 + Arduino Nano + Buses de Expansión)</div>
+            <div class="gallery-caption">
+              Distribución de hardware en planta física: Microcontrolador maestro central ESP32-S3 acoplado al coprocesador Arduino Nano, conectores para buses I²C (ADS1115 y MCP4725) y SPI (conversores MAX6675), aisladores ópticos para protección mutua y regletas de bornes industriales para alimentación y señales de campo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 2: MÓDULO TÉRMICO (TIEMPO PROPORCIONAL & MATLAB) -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-termico">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">🔥</span> Control Térmico por Tiempo Proporcional (ZCS) vs. Ángulo de Fase
+      </div>
+
+      <div class="info-box info-box-warn">
+        <strong>Justificación Técnica del Cambio de Estrategia de Disparo:</strong><br>
+        Inicialmente se exploró el control por <em>recorte de ángulo de fase</em> (Phase-Angle Control). Sin embargo, presentó fallas sistemáticas:
+        <ul style="margin-left: 18px; margin-top: 6px; font-size: 0.85rem;">
+          <li><strong>Fallo de Enganche del TRIAC:</strong> Si el pulso de disparo cesa antes de que la corriente alcance la <em>corriente de enganche</em> (Latching Current <i>I</i><sub>L</sub> ≈ 50 mA), el TRIAC se apaga instantáneamente ("misfiring").</li>
+          <li><strong>Ruido EMI Severo sobre el Sensor de pH:</strong> El corte abrupto de la senoide a media tensión genera d<i>i</i>/d<i>t</i> violentos y armónicos de alta frecuencia que se acoplan capacitivamente a la sonda de pH (<i>Z</i><sub>in</sub> &gt; 10<sup>8</sup> Ω), provocando oscilaciones espurias de hasta ±2.0 pH.</li>
+          <li><strong>Solución Adoptada: Tiempo Proporcional (Burst Firing / Cycle Stealing):</strong> Se conmuta la resistencia calefactora únicamente en el cruce por cero (<i>V</i> = 0, d<i>i</i>/d<i>t</i> mínimo). La potencia se modula variando el número de ciclos senoidales completos activos dentro de una ventana base de 1.0 s (60 ciclos a 60 Hz). Cero emisiones EMI y disparo 100% confiable.</li>
+        </ul>
+      </div>
+
+      <!-- MATEMÁTICAS FORMATEADAS EN HTML/CSS NATIVO -->
+      <div class="math-card">
+        <div class="math-label">Modelo Termodinámico de la Planta (Línea de Tinas UdeG)</div>
+        <div class="math-eq">
+          <span class="m-var">ρ</span> · <span class="m-var">V</span> · <span class="m-var">C</span><span class="m-sub">p</span>
+          <span class="fraction"><span class="num">d<span class="m-var">T</span>(t)</span><span class="den">dt</span></span>
+          = <span class="m-var">P</span><span class="m-sub">in</span>(t) − <span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span> · [<span class="m-var">T</span>(t) − <span class="m-var">T</span><span class="m-sub">amb</span>]
+        </div>
+        <div class="math-eq">
+          <span class="m-var">G</span><span class="m-sub">planta</span>(s) =
+          <span class="fraction">
+            <span class="num"><span class="m-var">K</span><span class="m-sub">planta</span></span>
+            <span class="den"><span class="m-var">τ</span><span class="m-sub">planta</span> · s + 1</span>
+          </span>
+          · <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span>·s</span>
+          <span style="font-size: 0.85em; color: var(--text-muted); margin-left: 10px;">(con Aproximación de Padé Orden 2)</span>
+        </div>
+      </div>
+
+      <div class="math-card">
+        <div class="math-label">Modulación por Tiempo Proporcional (Zero-Crossing Burst Firing)</div>
+        <div class="math-eq">
+          <span class="m-var">D</span> = 
+          <span class="fraction"><span class="num"><span class="m-var">N</span><span class="m-sub">activos</span></span><span class="den"><span class="m-var">N</span><span class="m-sub">total</span></span></span>
+          = 
+          <span class="fraction"><span class="num"><span class="m-var">t</span><span class="m-sub">on</span></span><span class="den"><span class="m-var">T</span><span class="m-sub">base</span></span></span>
+          <span class="m-sym">⟹</span>
+          <span class="m-var">P</span><span class="m-sub">entregada</span> = <span class="m-var">D</span> · <span class="m-var">P</span><span class="m-sub">nominal</span>
+        </div>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO ZCS -->
+      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 16px;">
+        <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 0.95rem;">🎛️ Simulador Interactivo: Modulación ZCS a 60 Hz en Tiempo Real</h4>
+        
+        <div class="grid-2">
+          <div>
+            <div class="control-group">
+              <div class="control-header">
+                <span>Ciclo de Trabajo (Salida del PI Térmico):</span>
+                <span id="lblDutyVal">40 %</span>
+              </div>
+              <input type="range" id="rngDuty" min="0" max="100" value="40" oninput="actualizarSimuladorTermico()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Potencia Nominal de la Resistencia (P_max):</span>
+                <span id="lblPotNomVal">450 W</span>
+              </div>
+              <input type="range" id="rngPotNom" min="18" max="1000" step="10" value="450" oninput="actualizarSimuladorTermico()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Ventana Base de Tiempo (T_base):</span>
+                <span id="lblTbaseVal">1.0 s (60 ciclos completos)</span>
+              </div>
+              <input type="range" id="rngTbase" min="1" max="5" value="1" oninput="actualizarSimuladorTermico()">
+            </div>
+          </div>
+
+          <div class="grid-3" style="align-items: center;">
+            <div class="metric-tile">
+              <div class="metric-label">Ciclos Activos</div>
+              <div class="metric-value" id="valCiclosActivos" style="color: var(--emerald);">24 / 60</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-label">Potencia Efectiva</div>
+              <div class="metric-value" id="valPotEfectiva" style="color: var(--primary);">180.0 W</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-label">Ruido EMI</div>
+              <div class="metric-value" style="color: var(--emerald); font-size: 1rem;">0.0 mV (V=0)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="canvasZCS" height="130"></canvas>
+          <div style="font-size: 0.72rem; color: var(--text-dark); margin-top: 6px; text-align: center;">
+            Onda senoidal de 60 Hz modulada: <span style="color: var(--emerald);">■ Ciclos conduciendo en cruce por cero</span> | <span style="color: #475569;">■ Ciclos en reposo (TRIAC apagado)</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px; text-align: center;">
+        <img src="assets/onda_zcs_tiempo_proporcional.jpg" alt="Oscilograma de Tiempo Proporcional" style="width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; border: 1px solid var(--card-border); cursor: pointer;" onclick="abrirModal(this.src, 'Oscilograma Real: Conmutación por Paquetes de Ciclos Completos (Burst Firing)')">
+        <p style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px;">Figura científica: Macro-conmutación en cruce por cero en banco de ensayo de 4 tinas (UdeG, 2026).</p>
+      </div>
+
+      <!-- FOTOGRAFÍAS FÍSICAS: ETAPA TÉRMICA DE PLANTA -->
+      <h3 style="font-size: 1.05rem; color: var(--amber); margin: 26px 0 12px 0; border-left: 3px solid var(--amber); padding-left: 8px;">
+        Circuitos Físicos de Planta — Módulo de Potencia TRIACs, Cableado AC y Buses de Termopares
+      </h3>
+      <div class="gallery-grid">
+        <div class="gallery-item" onclick="abrirModal('assets/planta_modulo_triacs.jpg', 'Módulo de Potencia MDAC4C: 4 Canales de Disparo con TRIACs BTA24 de 25A, Aislamiento Óptico MOC3021 y Detector ZCS 4N35')">
+          <img src="assets/planta_modulo_triacs.jpg" alt="Módulo TRIACs MDAC4C" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Módulo de TRIACs MDAC4C (4 Canales AC)</div>
+            <div class="gallery-caption">Placa de potencia con conmutación en cruce por cero (ZCS) mediante optoacoplador 4N35 y drivers de compuerta MOC3021 con TRIACs BTA24 de 25A / 600V.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/planta_conexion_triacs.jpg', 'Cableado de Salida AC a Resistencias Calefactoras: Distribución de 127 VAC hacia las tinas térmicas de 450W')">
+          <img src="assets/planta_conexion_triacs.jpg" alt="Conexión de Potencia AC" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Cableado Industrial de Potencia AC</div>
+            <div class="gallery-caption">Borneras cerámicas de alta corriente y tendido de cableado protegido hacia las resistencias sumergibles de 450 W en las 4 tinas de tratamiento químico.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/planta_buses_termopares.jpg', 'Módulos Conversores MAX6675: Arnés SPI hacia Termopares Tipo K con compensación de unión fría')">
+          <img src="assets/planta_buses_termopares.jpg" alt="Buses Termopares MAX6675" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Módulos MAX6675 y Buses SPI Térmicos</div>
+            <div class="gallery-caption">Acondicionamiento y compensación de unión fría integrada con resolución de 0.25 °C en bus SPI compartido @ 4 MHz con 4 líneas Chip Select dedicadas para las 4 tinas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 3: SUMIDERO VCSS & ONDA CUADRADA INTERACTIVA -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-vcss">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">⚡</span> Sumidero de Corriente VCSS & Generador de Onda Cuadrada a 10 Hz
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 10px;">
+            El sumidero <strong>VCSS (Voltage-Controlled Current Sink)</strong> controla con precisión sub-milisegundo la corriente catódica hacia la Celda Hull. Utiliza un amplificador operacional en lazo cerrado (LM358N) como <em>amplificador de error</em> pilotando transistores MOSFET (IRLZ44Z) en modo lineal activo, con sensado Kelvin sobre un banco de <strong>2 resistencias de shunt cerámicas de 1.0 Ω (10W) en 2 ramas en paralelo</strong>, logrando una <strong>ganancia de transconductancia global de 2 A/V</strong>.
+          </p>
+
+          <div class="info-box info-box-success" style="margin-bottom: 14px;">
+            <strong>Validación de Topología y Estabilidad (Texas Instruments SLAA868A):</strong><br>
+            Este diseño sigue fielmente las especificaciones del <em>Application Report SLAA868A: "Programmable Low-Side Current Sink Circuit"</em> de Texas Instruments (Satterfield, 2024). Dicho reporte valida formalmente la topología de lazo cerrado DAC + Op-Amp + MOSFET, la compensación de estabilidad mediante resistencia de aislamiento de compuerta <i>R</i><sub>ISO</sub> = 100 Ω (frente a la capacitancia parásita <i>C</i><sub>iss</sub>), y la relación directa de transconductancia gobernada por el resistor de sensado <i>R</i><sub>SET</sub> en el sumidero bajo (low-side).
+          </div>
+
+          <div class="math-card">
+            <div class="math-label">1. Igualación Algebraica: Condición de Operación Estática vs. FDT del Op-Amp</div>
+            <div class="math-eq" style="font-size: 0.95em;">
+              <b>(a) Régimen Estático (DC / Lazo Cerrado):</b>&nbsp;
+              <span class="m-var">V</span><span class="m-sup">+</span> = <span class="m-var">V</span><span class="m-sub">ref</span>, &nbsp;
+              <span class="m-var">V</span><span class="m-sup">−</span> = <span class="m-var">I</span><span class="m-sub">d</span> · <span class="m-var">R</span><span class="m-sub">s</span>
+              &nbsp;<span class="m-sym">⟹</span>&nbsp;
+              <span class="m-var">V</span><span class="m-sub">error</span> = <span class="m-var">V</span><span class="m-sup">+</span> − <span class="m-var">V</span><span class="m-sup">−</span> <span class="m-sym">→</span> 0
+              &nbsp;<span class="m-sym">⟹</span>&nbsp;
+              <strong style="color: #38bdf8;"><span class="m-var">V</span><span class="m-sub">ref</span> = <span class="m-var">I</span><span class="m-sub">d</span> · <span class="m-var">R</span><span class="m-sub">s</span></strong>
+            </div>
+            <div class="math-eq" style="font-size: 0.9em; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px;">
+              <b>(b) Función de Transferencia Dinámica en Laplace T(s):</b>
+            </div>
+            <div class="math-eq" style="font-size: 0.92em;">
+              <span class="m-var">V</span><span class="m-sub">g</span>(s) = <span class="m-var">A</span><span class="m-sub">OL</span>(s) · [<span class="m-var">V</span><span class="m-sub">ref</span>(s) − <span class="m-var">I</span><span class="m-sub">d</span>(s)·<span class="m-var">R</span><span class="m-sub">s</span>], &nbsp;
+              <span class="m-var">I</span><span class="m-sub">d</span>(s) = <span class="m-var">g</span><span class="m-sub">m</span> · [<span class="m-var">V</span><span class="m-sub">g</span>(s) − <span class="m-var">I</span><span class="m-sub">d</span>(s)·<span class="m-var">R</span><span class="m-sub">s</span>]
+            </div>
+            <div class="math-eq" style="font-size: 0.95em;">
+              <span class="m-var">T</span>(s) = 
+              <span class="fraction">
+                <span class="num"><span class="m-var">I</span><span class="m-sub">d</span>(s)</span>
+                <span class="den"><span class="m-var">V</span><span class="m-sub">ref</span>(s)</span>
+              </span>
+              = 
+              <span class="fraction">
+                <span class="num"><span class="fraction"><span class="num">1</span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span></span>
+                <span class="den">1 + <span class="fraction"><span class="num">1 + <span class="m-var">g</span><span class="m-sub">m</span>·<span class="m-var">R</span><span class="m-sub">s</span></span><span class="den"><span class="m-var">g</span><span class="m-sub">m</span>·<span class="m-var">R</span><span class="m-sub">s</span>·<span class="m-var">A</span><span class="m-sub">OL</span>(s)</span></span></span>
+              </span>
+              &nbsp;<span class="m-sym">⟹</span>&nbsp;
+              <span class="fraction"><span class="num">lim</span><span class="den"><span class="m-var">A</span><span class="m-sub">OL</span><span class="m-sym">→∞</span></span></span>
+              <span class="m-var">T</span>(s) = 
+              <span class="fraction"><span class="num">1</span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span>
+              &nbsp;<span class="m-sym">⟹</span>&nbsp;
+              <strong style="color: #38bdf8;"><span class="m-var">V</span><span class="m-sub">ref</span> = <span class="m-var">I</span><span class="m-sub">d</span> · <span class="m-var">R</span><span class="m-sub">s</span></strong>
+            </div>
+          </div>
+
+          <div class="math-card">
+            <div class="math-label">2. Arquitectura de 2 Ramas Shunt en Paralelo (Ganancia de Transconductancia = 2 A/V)</div>
+            <div class="math-eq">
+              <span class="m-var">I</span><span class="m-sub">total</span> = <span class="m-var">I</span><span class="m-sub">rama 1</span> + <span class="m-var">I</span><span class="m-sub">rama 2</span> = 
+              <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">ref</span></span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span> + 
+              <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">ref</span></span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span> = 
+              <span class="fraction"><span class="num">2</span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span> · <span class="m-var">V</span><span class="m-sub">ref</span>
+            </div>
+            <div class="math-eq">
+              Con <span class="m-var">R</span><span class="m-sub">s</span> = 1.0 Ω (10W cada una):
+              &nbsp;
+              <strong style="color: var(--emerald); font-size: 1.15em;"><span class="m-var">I</span><span class="m-sub">total</span> = 2.0 · <span class="m-var">V</span><span class="m-sub">ref</span> [A]</strong>
+              &nbsp;<span class="m-sym">⟹</span>&nbsp;
+              <span class="m-var">G</span><span class="m-sub">m</span> = 2.0 A/V &nbsp;(<span class="m-var">R</span><span class="m-sub">s,eq</span> = 0.5 Ω)
+            </div>
+            <div class="math-eq" style="font-size: 0.9em; color: var(--text-muted);">
+              <span class="m-var">V</span><span class="m-sub">DS</span> = <span class="m-var">V</span><span class="m-sub">fuente</span> − <span class="m-var">V</span><span class="m-sub">celda</span> − 0.5 · <span class="m-var">I</span><span class="m-sub">total</span>,
+              &nbsp;&nbsp;
+              <span class="m-var">P</span><span class="m-sub">shunt, rama</span> = (<span class="m-var">I</span><span class="m-sub">total</span> / 2)<span class="m-sup">2</span> · 1.0 Ω = <span class="fraction"><span class="num"><span class="m-var">I</span><span class="m-sub">total</span><span class="m-sup">2</span></span><span class="den">4</span></span>
+              &nbsp;(&le; 9.0 W @ 6.0 A pico &lt; 10 W nominal)
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <img src="assets/circuito_vcss.png" alt="Esquema VCSS" style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--card-border); background: #030712; padding: 6px; cursor: pointer;" onclick="abrirModal(this.src, 'Circuito Esquemático VCSS: Amplificador de Error Op-Amp LM358N, 2 Ramas MOSFET IRLZ44Z y Shunts Cerámicos de 1 Ω (10W)')">
+          <p style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px;">Topología VCSS de 2 ramas balanceadas: Amplificador de error Op-Amp, MOSFETs en modo lineal y shunts cerámicos de 1 Ω / 10W con ganancia G_m = 2 A/V.</p>
+        </div>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO DE ONDA CUADRADA PULSADA A 10 HZ -->
+      <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--primary); border-radius: 12px; padding: 18px; margin-top: 16px; box-shadow: 0 0 20px var(--primary-glow);">
+        <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+          <span>📈</span> Simulador de Señal de Salida Cuadrada (Tren de Pulsos de Corriente a 10 Hz)
+        </h4>
+
+        <div class="grid-2">
+          <div>
+            <div class="control-group">
+              <div class="control-header">
+                <span>Modo de Operación de la Fuente:</span>
+                <span id="lblModoFuente" style="color: var(--emerald);">Pulsada (10 Hz)</span>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <button type="button" class="tab-btn active" id="btnModoPulsado" onclick="setModoCorriente('pulsada')" style="flex: 1; justify-content: center;">Pulsada (10 Hz)</button>
+                <button type="button" class="tab-btn" id="btnModoDC" onclick="setModoCorriente('dc')" style="flex: 1; justify-content: center;">DC Puro</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Corriente Pico (I_peak):</span>
+                <span id="lblIpeakVal">4.00 A</span>
+              </div>
+              <input type="range" id="rngIpeak" min="0.2" max="7.06" step="0.05" value="4.0" oninput="actualizarOndaCuadrada()">
+            </div>
+
+            <div class="control-group" id="grpDutyPulse">
+              <div class="control-header">
+                <span>Ciclo de Trabajo (Duty Cycle):</span>
+                <span id="lblDutyPulseVal">50 % (t_on = 50 ms)</span>
+              </div>
+              <input type="range" id="rngDutyPulse" min="10" max="90" step="5" value="50" oninput="actualizarOndaCuadrada()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Frecuencia del Tren de Pulsos:</span>
+                <span id="lblFreqPulse">10 Hz (T = 100 ms)</span>
+              </div>
+              <input type="range" id="rngFreqPulse" min="1" max="25" step="1" value="10" oninput="actualizarOndaCuadrada()">
+            </div>
+          </div>
+
+          <div>
+            <div class="grid-3" style="gap: 10px; margin-bottom: 12px;">
+              <div class="metric-tile">
+                <div class="metric-label">Corriente Media</div>
+                <div class="metric-value" id="valIavg" style="color: var(--emerald);">2.00 A</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Tiempo Activo (t_on)</div>
+                <div class="metric-value" id="valTon" style="color: var(--primary);">50.0 ms</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Tiempo Reposo (t_off)</div>
+                <div class="metric-value" id="valToff" style="color: #94a3b8;">50.0 ms</div>
+              </div>
+            </div>
+
+            <!-- CANVAS DINÁMICO DE LA ONDA CUADRADA -->
+            <div class="canvas-container">
+              <canvas id="canvasPulse" height="135"></canvas>
+              <div style="font-size: 0.72rem; color: var(--text-dark); margin-top: 6px; text-align: center;">
+                Forma de onda real: <span style="color: var(--primary); font-weight: bold;">— Pulso de Corriente Catódica</span> | <span style="color: var(--emerald); font-weight: bold;">--- Corriente Media (I_avg)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box info-box-success" style="margin-top: 14px; margin-bottom: 0;">
+          <strong>Ventaja Cinética de la Corriente Pulsada a 10 Hz (Zhang et al., 2019):</strong><br>
+          Durante el tiempo de reposo (<i>t</i><sub>off</sub> = 50 ms), los iones Zn²⁺ difunden hacia la capa límite de difusión de Nernst, eliminando la polarización por concentración y suprimiendo el crecimiento dendrítico. Esto genera un recubrimiento compacto, homogéneo y con adherencia superior sobre el sustrato de Al 6061-T6.
+        </div>
+      </div>
+
+      <!-- CALCULADORA DE DISIPACIÓN TÉRMICA SOA DEL MOSFET -->
+      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 18px;">
+        <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 0.95rem;">🧮 Calculadora de Balance Térmico & Límites SOA del Transistor</h4>
+
+        <div class="grid-2">
+          <div>
+            <div class="control-group">
+              <div class="control-header">
+                <span>Voltaje de Fuente DC (V_fuente):</span>
+                <span id="lblVfuenteVal">12.0 V</span>
+              </div>
+              <input type="range" id="rngVfuente" min="5.0" max="24.0" step="0.5" value="12.0" oninput="actualizarCalculadoraVCSS()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Caída Tensión en Celda (V_celda):</span>
+                <span id="lblVceldaVal">2.8 V</span>
+              </div>
+              <input type="range" id="rngVcelda" min="1.0" max="6.0" step="0.1" value="2.8" oninput="actualizarCalculadoraVCSS()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Resistencia Térmica Disipador (θ_sa):</span>
+                <span id="lblThetaVal">1.2 °C/W</span>
+              </div>
+              <input type="range" id="rngTheta" min="0.4" max="3.5" step="0.1" value="1.2" oninput="actualizarCalculadoraVCSS()">
+            </div>
+          </div>
+
+          <div>
+            <div class="grid-2" style="gap: 10px; margin-bottom: 12px;">
+              <div class="metric-tile">
+                <div class="metric-label">Caída V_DS</div>
+                <div class="metric-value" id="valVds" style="color: #cbd5e1;">6.80 V</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Potencia MOSFET (c/u)</div>
+                <div class="metric-value" id="valPmosfet" style="color: var(--amber);">6.8 W</div>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 2px;" id="valPmosfetTotal">Total 2 ramas: 13.6 W</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Temp. Juntura Tj</div>
+                <div class="metric-value" id="valTj" style="color: var(--emerald);">48.5 °C</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Potencia Shunt (c/u)</div>
+                <div class="metric-value" id="valPshunt" style="color: var(--emerald);">1.0 W</div>
+                <div style="font-size: 0.7rem; color: var(--emerald); margin-top: 2px;">Límite seguro: 10 W</div>
+              </div>
+            </div>
+
+            <div id="boxAlertaSOA" class="info-box info-box-success" style="margin: 0; font-size: 0.82rem;">
+              <strong>Estado SOA: OPERACIÓN SEGURA</strong><br>
+              El transistor opera holgadamente dentro de su Área de Operación Segura (<i>T</i><sub>j</sub> &lt; 90 °C).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOTOGRAFÍA FÍSICA: SUMIDERO VCSS DE PLANTA -->
+      <h3 style="font-size: 1.05rem; color: var(--purple); margin: 26px 0 12px 0; border-left: 3px solid var(--purple); padding-left: 8px;">
+        Circuito Físico de Planta — Etapa de Potencia Lineal VCSS y Banco de Shunts Cerámicos de 10W
+      </h3>
+      <div class="gallery-grid" style="grid-template-columns: 1fr;">
+        <div class="gallery-item" onclick="abrirModal('assets/planta_vcss_potencia.jpg', 'Etapa de Potencia VCSS: Transistores MOSFET de potencia lineal en encapsulado TO-220 sobre disipador de aluminio con convección forzada y banco de shunts cerámicos de 1 Ω / 10W en 2 ramas con ganancia de 2 A/V')">
+          <img src="assets/planta_vcss_potencia.jpg" alt="Potencia VCSS Físico" class="gallery-thumb" style="height: 280px; object-fit: cover;">
+          <div class="gallery-desc">
+            <div class="gallery-title">Etapa de Potencia Lineal VCSS (2 Ramas Balanceadas con Shunts de 1 Ω / 10 W)</div>
+            <div class="gallery-caption">
+              Detalle del módulo físico: Dos transistores MOSFET (IRLZ44Z) montados con mica aislante sobre disipador térmico sobredimensionado con ventilación forzada, y banco de dos resistencias de potencia cerámicas de 1.0 Ω / 10 W con sensado Kelvin en los canales A2 y A3 del ADS1115 (transconductancia G_m = 2 A/V).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 4: SENSADO PSEUDO-DIFERENCIAL & CALIBRACIÓN DE DOBLE PENDIENTE (3 PUNTOS) -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-ph">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">🧪</span> Sensado Pseudo-Diferencial y Calibración de Doble Pendiente de 3 Puntos (pH 4, 7 y 10)
+      </div>
+
+      <div class="info-box info-box-success">
+        <strong>¿Por qué Sensado Pseudo-Diferencial (<i>P</i><sub>o</sub> → A1, <i>AGND</i> → A0)?</strong><br>
+        Durante el proceso electroquímico, corrientes de hasta 7.06 A viajan por el baño electrolítico hacia el cátodo. Estas corrientes inducen caídas óhmicas en las pistas de tierra del chasis. Si el sensor de pH se mide referenciado a masa convencional, el potencial galvánico parásito desplaza la lectura analógica de forma inaceptable. Con la configuración <strong>Pseudo-Diferencial</strong>, el microcontrolador muestrea ambos terminales de la sonda y calcula Δ<i>V</i> = <i>V</i><sub>A1</sub> − <i>V</i><sub>A0</sub>, cancelando el modo común (CMRR &gt; 75 dB) y aislando la medición del ruido galvánico.
+      </div>
+
+      <div class="info-box info-box-warn">
+        <strong>Justificación Metrológica del Modo de Doble Pendiente de 3 Puntos (Bilineal Asimétrico):</strong><br>
+        En la línea de electrodeposición y galvanoplastia, el espectro de pH abarca desde medios fuertemente ácidos (decapado clorhídrico y celda Hull a pH 4.0 – 5.5) hasta medios alcalinos (desengrase a pH 10 – 12).
+        <ul style="margin-left: 18px; margin-top: 6px; font-size: 0.85rem;">
+          <li><strong>Error Alcalino (Error de Sodio):</strong> A pH &gt; 9.0, los iones de sodio (Na<sup>+</sup>) en soluciones salinas compiten con los iones hidronio (H<sup>+</sup>) en la matriz vítrea, provocando una caída aparente en la pendiente de Nernst (subestimación de pH si se extrapola la recta ácida).</li>
+          <li><strong>Potencial de Asimetría de la Membrana:</strong> Las caras interna y externa del bulbo de vidrio presentan potenciales de hidratación disímiles, introduciendo una no-linealidad intrínseca entre los rangos ácido y básico.</li>
+          <li><strong>Algoritmo Bilineal en ESP32-S3 (RTOS 2.0):</strong> El firmware segmenta la curva en dos pendientes asimétricas independientes (<i>m</i><sub>ácida</sub> y <i>m</i><sub>básica</sub>) que coinciden continuamente en el punto isopotencial del Buffer Neutro pH 7.00 (<i>V</i><sub>7</sub>), eliminando errores sistemáticos de hasta ±0.4 unidades de pH.</li>
+        </ul>
+      </div>
+
+      <!-- MATEMÁTICAS FORMATEADAS EN HTML/CSS NATIVO -->
+      <div class="math-card">
+        <div class="math-label">1. Sensibilidad Teórica de Nernst dependiente de Temperatura</div>
+        <div class="math-eq">
+          <span class="m-var">S</span>(<span class="m-var">T</span>) = 
+          <span class="fraction">
+            <span class="num">2.3026 · <span class="m-var">R</span> · (<span class="m-var">T</span><span class="m-sub">°C</span> + 273.15)</span>
+            <span class="den"><span class="m-var">F</span></span>
+          </span>
+          = 0.1984 · (<span class="m-var">T</span><span class="m-sub">°C</span> + 273.15) [mV/pH]
+        </div>
+        <div class="math-eq" style="font-size: 0.9em; color: var(--text-muted);">
+          <span class="m-var">S</span>(25.0 °C) = 59.16 mV/pH,  <span class="m-var">S</span>(30.0 °C) = 60.15 mV/pH,  <span class="m-var">S</span>(90.0 °C) = 72.05 mV/pH
+        </div>
+      </div>
+
+      <div class="math-card">
+        <div class="math-label">2. Modelo Bilineal de Doble Pendiente (Firmware ESP32-S3 RTOS 2.0)</div>
+        <div class="math-eq">
+          <span class="m-var">V</span><sub>med</sub> &ge; <span class="m-var">V</span><sub>7</sub> (Dominio Ácido, pH &le; 7.00):
+          &nbsp;
+          <span class="m-var">m</span><span class="m-sub">ácida</span> = 
+          <span class="fraction">
+            <span class="num">7.00 − 4.01</span>
+            <span class="den"><span class="m-var">V</span><span class="m-sub">4</span> − <span class="m-var">V</span><span class="m-sub">7</span></span>
+          </span>
+          &nbsp;[pH/V]
+          &nbsp;<span class="m-sym">⟹</span>&nbsp;
+          pH = 7.00 − 
+          <span class="fraction">
+            <span class="num"><span class="m-var">V</span><sub>med</sub> − <span class="m-var">V</span><sub>7</sub></span>
+            <span class="den"><span class="m-var">S</span><span class="m-sub">ácida</span></span>
+          </span>
+        </div>
+        <div class="math-eq">
+          <span class="m-var">V</span><sub>med</sub> &lt; <span class="m-var">V</span><sub>7</sub> (Dominio Alcalino, pH &gt; 7.00):
+          &nbsp;
+          <span class="m-var">m</span><span class="m-sub">básica</span> = 
+          <span class="fraction">
+            <span class="num">10.01 − 7.00</span>
+            <span class="den"><span class="m-var">V</span><span class="m-sub">7</span> − <span class="m-var">V</span><span class="m-sub">10</span></span>
+          </span>
+          &nbsp;[pH/V]
+          &nbsp;<span class="m-sym">⟹</span>&nbsp;
+          pH = 7.00 + 
+          <span class="fraction">
+            <span class="num"><span class="m-var">V</span><sub>7</sub> − <span class="m-var">V</span><sub>med</sub></span>
+            <span class="den"><span class="m-var">S</span><span class="m-sub">básica</span></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- CALCULADORA DE CALIBRACIÓN DE 3 PUNTOS INTERACTIVA -->
+      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <h4 style="color: var(--primary); font-size: 0.95rem;">🔬 Calculadora Interactiva: Modo Doble Pendiente de 3 Puntos (Buffers 4.01, 7.00 y 10.01)</h4>
+          <span id="badgeDominioPh" class="badge badge-primary">DOMINIO ÁCIDO (V &ge; V7)</span>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div class="control-group">
+              <div class="control-header">
+                <span>Temperatura de Baño (T):</span>
+                <span id="lblTempPhVal">25.0 °C</span>
+              </div>
+              <input type="range" id="rngTempPh" min="15" max="90" step="1" value="25" oninput="actualizarCalculadoraPh()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Buffer Neutro pH 7.00 (V_7, Vértice):</span>
+                <span id="lblV7Val">1650 mV</span>
+              </div>
+              <input type="range" id="rngV7" min="1400" max="1900" step="5" value="1650" oninput="actualizarCalculadoraPh()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Buffer Ácido pH 4.01 (V_4):</span>
+                <span id="lblV4Val">2030 mV</span>
+              </div>
+              <input type="range" id="rngV4" min="1800" max="2350" step="5" value="2030" oninput="actualizarCalculadoraPh()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Buffer Alcalino pH 10.01 (V_10):</span>
+                <span id="lblV10Val">1270 mV</span>
+              </div>
+              <input type="range" id="rngV10" min="1100" max="1550" step="5" value="1270" oninput="actualizarCalculadoraPh()">
+            </div>
+
+            <div class="control-group" style="border-top: 1px dashed rgba(255, 255, 255, 0.1); padding-top: 10px;">
+              <div class="control-header">
+                <span>Tensión Sonda en Celda Hull (V_med):</span>
+                <span id="lblVinPhVal">1820 mV</span>
+              </div>
+              <input type="range" id="rngVinPh" min="1050" max="2300" step="5" value="1820" oninput="actualizarCalculadoraPh()">
+            </div>
+          </div>
+
+          <div>
+            <div class="metric-tile" style="margin-bottom: 12px; background: rgba(14, 165, 233, 0.08); border-color: rgba(14, 165, 233, 0.35);">
+              <div class="metric-label">pH In-Operando Calculado en Tiempo Real</div>
+              <div class="metric-value" id="valPhCalculado" style="color: #38bdf8; font-size: 2.1rem;">5.66 pH</div>
+            </div>
+
+            <div class="grid-2" style="gap: 10px; margin-bottom: 12px;">
+              <div class="metric-tile">
+                <div class="metric-label">Pendiente Ácida (pH 4–7)</div>
+                <div class="metric-value" id="valPendienteAcida" style="color: var(--primary); font-size: 1.1rem;">63.55 mV/pH</div>
+                <div style="font-size: 0.72rem; color: var(--emerald); margin-top: 2px;" id="valSaludAcida">Salud: 107.4 %</div>
+              </div>
+
+              <div class="metric-tile">
+                <div class="metric-label">Pendiente Alcalina (pH 7–10)</div>
+                <div class="metric-value" id="valPendienteBasica" style="color: var(--purple); font-size: 1.1rem;">56.48 mV/pH</div>
+                <div style="font-size: 0.72rem; color: var(--emerald); margin-top: 2px;" id="valSaludBasica">Salud: 95.5 %</div>
+              </div>
+
+              <div class="metric-tile">
+                <div class="metric-label">Nernst Teórico S(T)</div>
+                <div class="metric-value" id="valPendienteTeorica" style="color: #cbd5e1; font-size: 1.1rem;">59.16 mV/pH</div>
+                <div style="font-size: 0.72rem; color: var(--text-dark); margin-top: 2px;">Referencia @ T</div>
+              </div>
+
+              <div class="metric-tile">
+                <div class="metric-label">Punto Isopotencial V_7</div>
+                <div class="metric-value" id="valOffsetPh" style="color: var(--emerald); font-size: 1.1rem;">1650 mV</div>
+                <div style="font-size: 0.72rem; color: var(--text-dark); margin-top: 2px;">Vértice de Empalme</div>
+              </div>
+            </div>
+
+            <div class="canvas-container">
+              <canvas id="canvasNernst" height="135"></canvas>
+              <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 4px; text-align: center;">
+                <span style="color: #0ea5e9;">■ Segmento Ácido (pH 4–7)</span> | 
+                <span style="color: #a855f7;">■ Segmento Alcalino (pH 7–10)</span> | 
+                <span style="color: #64748b;">--- Nernst Teórico</span> | 
+                <span style="color: #38bdf8;">● Lectura en Vivo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOTOGRAFÍAS FÍSICAS: ADQUISICIÓN ANALÓGICA DE pH Y BORNERAS DE PLANTA -->
+      <h3 style="font-size: 1.05rem; color: var(--emerald); margin: 26px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
+        Circuitos Físicos de Planta — Módulo ADC ADS1115 (Filtros RC) y Borneras Pseudo-Diferenciales (Kelvin AGND)
+      </h3>
+      <div class="gallery-grid">
+        <div class="gallery-item" onclick="abrirModal('assets/planta_bus_adc.jpg', 'Frontend Analógico de Instrumentación: Conversor Delta-Sigma ADS1115 de 16 bits con filtros pasabajas RC antialiasing dedicados para lectura diferencial de pH y DAC MCP4725')">
+          <img src="assets/planta_bus_adc.jpg" alt="Frontend ADC ADS1115 y DAC" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Frontend Analógico: ADC ADS1115 (16-bit) y Filtro RC</div>
+            <div class="gallery-caption">Acondicionamiento sobre la placa física principal: convertidor I2C ADS1115 con red de filtrado pasivo RC en entradas analógicas A0/A1 para supresión de rizado y DAC MCP4725 de referencia.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/planta_sockets_zcs_ph.jpg', 'Borneras Analógicas y Tierra Kelvin: Conexión A1 (Po) y A0 (Kelvin AGND) junto a sockets de sincronismo ZCS')">
+          <img src="assets/planta_sockets_zcs_ph.jpg" alt="Borneras Kelvin y Sockets ZCS" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Borneras Kelvin (AGND) y Cabezales de Conexión</div>
+            <div class="gallery-caption">Pines y cabezales en la placa principal para conexión de señal analógica pseudo-diferencial con aislamiento de ruido galvánico y sincronismo de conmutación ZCS.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 5: SCADA PYQT6 & INTERFAZ WEB EMBEBIDA -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-scada">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">🖥️</span> Supervisión Dual: SCADA PyQt6 Industrial & Servidor Web ESP32-S3
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+        El sistema cuenta con doble arquitectura de visualización: una <strong>Estación SCADA de escritorio</strong> en Python/PyQt6 para telemetría científica a 60 FPS bajo norma ANSI/ISA-88.01, y un <strong>Servidor Web Asíncrono Embebido</strong> en el ESP32-S3 para control in-situ desde cualquier teléfono móvil o laptop vía Wi-Fi.
+      </p>
+
+      <!-- SECCIÓN A: SCADA INDUSTRIAL PYQT6 -->
+      <h3 style="font-size: 1.05rem; color: var(--primary); margin: 20px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
+        1. Estación SCADA Industrial de Escritorio (Python / PyQt6)
+      </h3>
+      <div class="gallery-grid">
+        <div class="gallery-item" onclick="abrirModal('assets/scada_01_principal.jpg', 'SCADA Panel Principal: Telemetría de las 4 Tinas y Variables de Proceso')">
+          <img src="assets/scada_01_principal.jpg" alt="Panel SCADA Principal" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">01. Panel Maestro PyQt6</div>
+            <div class="gallery-caption">Supervisión integral de temperaturas, pH, densidades de corriente y estados de relé.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/scada_02_actuadores.jpg', 'SCADA Actuadores: Monitoreo de Salida de Potencia ZCS y Señales de Disparo')">
+          <img src="assets/scada_02_actuadores.jpg" alt="Actuadores SCADA" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">02. Esfuerzo de Actuadores</div>
+            <div class="gallery-caption">Telemetría de ciclos de disparo de los 4 canales TRIAC y modulación PWM/VCSS.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/scada_03_errores.jpg', 'SCADA Error Tracking: Dinámica de Errores Térmicos e Integrales Anti-Windup')">
+          <img src="assets/scada_03_errores.jpg" alt="Seguimiento de Errores" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">03. Seguimiento de Errores PI</div>
+            <div class="gallery-caption">Curvas transitorias de error de temperatura e(t) = T_set - T(t) en cada tina.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/scada_04_faraday.jpg', 'SCADA Faraday: Integración Culombimétrica y Cálculo de Espesor de Capa')">
+          <img src="assets/scada_04_faraday.jpg" alt="Integrador Faraday" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">04. Culombimetría de Faraday</div>
+            <div class="gallery-caption">Integración en vivo de la carga eléctrica, masa de zinc y espesor depositado en µm.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/metrologia_pulsado_10hz.jpg', 'Metrología VCSS: Tren de Pulsos de 10 Hz con Transición Sub-Milisegundo')">
+          <img src="assets/metrologia_pulsado_10hz.jpg" alt="Metrología Pulsos" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">05. Tren de Pulsos a 10 Hz</div>
+            <div class="gallery-caption">Respuesta dinámica del sumidero VCSS a 10 Hz capturada con osciloscopio digital.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/estados_isa88.jpg', 'Supervisión de Estados ANSI/ISA-88.01 para Control por Lotes')">
+          <img src="assets/estados_isa88.jpg" alt="Estados ISA-88" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">06. Máquina de Estados ISA-88</div>
+            <div class="gallery-caption">Diagrama de transición finita de estados según la norma ANSI/ISA-88.01.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN B: INTERFAZ WEB EMBEBIDA EN ESP32-S3 -->
+      <h3 style="font-size: 1.05rem; color: var(--emerald); margin: 32px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
+        2. Servidor Web Asíncrono Embebido en ESP32-S3 (Acceso Wi-Fi / Móvil)
+      </h3>
+      <div class="gallery-grid">
+        <div class="gallery-item" onclick="abrirModal('assets/web_01_hub.jpg', 'Interfaz Web ESP32: Hub Principal y Selector de Módulos')">
+          <img src="assets/web_01_hub.jpg" alt="Web Hub Principal" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">01. Hub Principal de Navegación</div>
+            <div class="gallery-caption">Portal de inicio servido por el ESP32 para seleccionar módulos de control in-situ.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/web_02_termico.jpg', 'Interfaz Web ESP32: Control Térmico y Ajuste de Setpoints')">
+          <img src="assets/web_02_termico.jpg" alt="Web Térmico" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">02. Control Térmico en Celular</div>
+            <div class="gallery-caption">Monitoreo de termopares y ajuste de consigna de calentamiento para las tinas.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/web_03_fuente_pulsada.jpg', 'Interfaz Web ESP32: Control de Fuente DC y Generador Pulsado a 10 Hz')">
+          <img src="assets/web_03_fuente_pulsada.jpg" alt="Web Fuente Pulsada" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">03. Fuente VCSS Pulsada a 10 Hz</div>
+            <div class="gallery-caption">Ajuste de corriente pico, ciclos de trabajo y encendido de la celda desde el móvil.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/web_04_ph.jpg', 'Interfaz Web ESP32: Calibración y Telemetría de pH')">
+          <img src="assets/web_04_ph.jpg" alt="Web pH" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">04. Calibración y Monitor de pH</div>
+            <div class="gallery-caption">Lectura en tiempo real del electrodo con asistente de calibración en buffers 4 y 7.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/web_05_sensores.jpg', 'Interfaz Web ESP32: Monitoreo Ambiental AHT20 / BMP280')">
+          <img src="assets/web_05_sensores.jpg" alt="Web Sensores" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">05. Sensores Ambientales</div>
+            <div class="gallery-caption">Telemetría de temperatura ambiente, humedad relativa y presión atmosférica.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/web_06_consola.jpg', 'Interfaz Web ESP32: Consola Serial de Diagnóstico Remoto')">
+          <img src="assets/web_06_consola.jpg" alt="Web Consola" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">06. Consola de Diagnóstico</div>
+            <div class="gallery-caption">Terminal de comandos interactivo para depuración de firmware y logs de FreeRTOS.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO FARADAY -->
+      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 28px;">
+        <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 0.95rem;">⚖️ Calculadora Culombimétrica: Ley de Faraday de la Electrodeposición</h4>
+
+        <div class="grid-2">
+          <div>
+            <div class="control-group">
+              <div class="control-header">
+                <span>Corriente Catódica (I):</span>
+                <span id="lblIFaradayVal">2.50 A</span>
+              </div>
+              <input type="range" id="rngIFaraday" min="0.2" max="7.0" step="0.1" value="2.5" oninput="actualizarCalculadoraFaraday()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Tiempo de Inmersión (t):</span>
+                <span id="lblTFaradayVal">3.0 min</span>
+              </div>
+              <input type="range" id="rngTFaraday" min="0.5" max="15.0" step="0.5" value="3.0" oninput="actualizarCalculadoraFaraday()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Área Catódica (A):</span>
+                <span id="lblAreaFaradayVal">50.0 cm²</span>
+              </div>
+              <input type="range" id="rngAreaFaraday" min="10" max="150" step="5" value="50" oninput="actualizarCalculadoraFaraday()">
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <span>Eficiencia de Corriente (η):</span>
+                <span id="lblRendFaradayVal">85 %</span>
+              </div>
+              <input type="range" id="rngRendFaraday" min="50" max="99" step="1" value="85" oninput="actualizarCalculadoraFaraday()">
+            </div>
+          </div>
+
+          <div>
+            <div class="math-card" style="margin-top: 0;">
+              <div class="math-eq" style="font-size: 0.95em;">
+                <span class="m-var">Q</span> = <span class="m-var">I</span> · <span class="m-var">t</span> [C], 
+                <span style="margin-left: 8px;"><span class="m-var">m</span><span class="m-sub">Zn</span> = 
+                <span class="fraction"><span class="num"><span class="m-var">Q</span> · <span class="m-var">M</span><span class="m-sub">Zn</span></span><span class="den"><span class="m-var">n</span> · <span class="m-var">F</span></span></span> · <span class="m-var">η</span></span>
+              </div>
+              <div class="math-eq" style="font-size: 0.95em;">
+                <span class="m-var">Espesor</span> = 
+                <span class="fraction"><span class="num"><span class="m-var">m</span><span class="m-sub">Zn</span></span><span class="den"><span class="m-var">ρ</span><span class="m-sub">Zn</span> · <span class="m-var">A</span></span></span> × 10<sup>4</sup> [µm]
+              </div>
+            </div>
+
+            <div class="grid-3" style="gap: 10px;">
+              <div class="metric-tile">
+                <div class="metric-label">Carga Total Q</div>
+                <div class="metric-value" id="valQFaraday" style="color: var(--primary);">450.0 C</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Masa de Zinc</div>
+                <div class="metric-value" id="valMasaFaraday" style="color: var(--amber);">129.6 mg</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Espesor Teórico</div>
+                <div class="metric-value" id="valEspesorFaraday" style="color: var(--emerald);">3.63 µm</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 6: MATRIZ EXPERIMENTAL DOE 2⁵·4 & ENSAYOS -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-doe">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">📊</span> Matriz de Ensayos DOE Multinivel 2⁵·4 (128 Corridas Experimentales)
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted);">
+        Diseño factorial multinivel implementado en la línea piloto para investigar la adherencia, espesor y morfología cristalina del zincado sobre Aluminio 6061 T-6 con pre-tratamiento de inmersión en zincato ácido (VUGR).
+      </p>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Ensayo</th>
+              <th>pH Baño</th>
+              <th>Densidad Corriente (A/dm²)</th>
+              <th>Forma de Onda</th>
+              <th>Tiempo Zincado (s)</th>
+              <th>Tiempo Matizado (s)</th>
+              <th>Temp. Tina (°C)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>#001</strong></td><td>3.50</td><td>1.50</td><td>DC Puro</td><td>60</td><td>30</td><td>25.0</td></tr>
+            <tr><td><strong>#002</strong></td><td>3.50</td><td>1.50</td><td>DC Puro</td><td>60</td><td>60</td><td>32.0</td></tr>
+            <tr><td><strong>#003</strong></td><td>3.50</td><td>1.50</td><td>Pulsada (10 Hz)</td><td>120</td><td>30</td><td>25.0</td></tr>
+            <tr><td><strong>#004</strong></td><td>3.50</td><td>3.00</td><td>Pulsada (10 Hz)</td><td>120</td><td>60</td><td>32.0</td></tr>
+            <tr><td><strong>#016</strong></td><td>4.20</td><td>2.00</td><td>Pulsada (10 Hz)</td><td>90</td><td>45</td><td>30.0</td></tr>
+            <tr><td><strong>#032</strong></td><td>4.80</td><td>4.00</td><td>Pulsada (10 Hz)</td><td>120</td><td>60</td><td>32.0</td></tr>
+            <tr><td><strong>#064</strong></td><td>5.20</td><td>2.50</td><td>DC Puro</td><td>90</td><td>30</td><td>28.0</td></tr>
+            <tr><td><strong>#128</strong></td><td>5.50</td><td>5.00</td><td>Pulsada (10 Hz)</td><td>180</td><td>90</td><td>35.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 7: REFERENCIAS & CRÉDITOS -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-referencias">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">📚</span> Referencias Científicas, Normativas y Créditos del Equipo
+      </div>
+
+      <div class="info-box">
+        <strong>Base Académica del Proyecto:</strong><br>
+        Protocolo Experimental y Tesis: <em>Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6 mediante Diseño de Experimentos y Control In-Operando</em> (Protocolo VUGR / Reporte Modular 044, UdeG & Volta Plating Solutions, 2026).
+      </div>
+
+      <ul class="ref-list">
+        <li class="ref-item">
+          <span class="ref-author">Volta Plating Solutions.</span> (2026).
+          <span class="ref-title">Servicios de preparación, pasivado y recubrimientos electrolíticos industriales de alta especialidad.</span>
+          <span class="ref-source">Guadalajara, Jalisco, México.</span>
+          <span class="ref-tag">Industria</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Ollard, E. A., & Smith, E. B.</span> (1963).
+          <span class="ref-title">Manual de recubrimientos electrolíticos industriales (2.ª ed.).</span>
+          <span class="ref-source">Compañía Editorial Continental, S. A., México, D.F.</span>
+          <span class="ref-tag">Galvanoplastia</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Azumi, K., Fujishige, Y., Seo, M., et al.</span> (1997).
+          <span class="ref-title">Surface pretreatment effects on Zn deposition in zincate process of aluminum alloy.</span>
+          <span class="ref-source">Journal of the Surface Finishing Society of Japan, 48(10), 1019–1024.</span>
+          <span class="ref-tag">Zincato</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Such, T., Wyszynski, A., & Canning, W.</span> (1965).
+          <span class="ref-title">An Improvement in the Zincate Method for Plating on Aluminum.</span>
+          <span class="ref-source">Plating, 52(10), 1027–1034.</span>
+          <span class="ref-tag">Electroquímica</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Hernández, J., & Suárez, M.</span> (2020).
+          <span class="ref-title">Efecto de la composición química del baño en la microestructura y resistencia a la corrosión de los recubrimientos de zinc por inmersión en caliente: una revisión.</span>
+          <span class="ref-source">Ingenius. Revista de Ciencia y Tecnología, 40–52.</span>
+          <span class="ref-tag">Corrosión</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Zhang, X., Tsay, K., Fahlman, J., & Qu, W.</span> (2019).
+          <span class="ref-title">Zinc morphology change in pulsating current deposition.</span>
+          <span class="ref-source">Journal of Energy Storage, 26, 100966.</span>
+          <span class="ref-tag">Corriente Pulsada</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Mahmud, Z., Gordillo, G., & D’Alkaine, C. V.</span> (2017).
+          <span class="ref-title">Electrodeposición de cinc en medio ácido. Deposición de Zinc UPD en la zona de bajos sobrepotenciales.</span>
+          <span class="ref-source">Facultad de Ciencias Exactas y Naturales, Universidad de Buenos Aires.</span>
+          <span class="ref-tag">Cinética Electroquímica</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Rashid, M. H.</span> (2015).
+          <span class="ref-title">Electrónica de potencia: Circuitos, dispositivos y aplicaciones (4.ª ed.).</span>
+          <span class="ref-source">Pearson Educación. ISBN: 978-607-32-3532-7.</span>
+          <span class="ref-tag">Electrónica de Potencia</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">ON Semiconductor.</span> (2020).
+          <span class="ref-title">Application Note AN-3003: Applications of Zero-Crossing Triac Drivers (MOC3041/4N35 Series).</span>
+          <span class="ref-source">ON Semiconductor Technical Publications.</span>
+          <span class="ref-tag">ZCS / TRIAC</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Infineon Technologies.</span> (2017).
+          <span class="ref-title">Application Note: Linear Mode Operation and Safe Operating Area (SOA) Considerations for Power MOSFETs.</span>
+          <span class="ref-source">Infineon Automotive & Industrial Power Group.</span>
+          <span class="ref-tag">MOSFET Lineal</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Texas Instruments — Satterfield, G.</span> (2024).
+          <span class="ref-title">Application Report SLAA868A: Programmable Low-Side Current Sink Circuit.</span>
+          <span class="ref-source">Texas Instruments Analog Engineer's Circuit Design Series. <a href="https://www.ti.com/lit/an/slaa868a/slaa868a.pdf" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">https://www.ti.com/lit/an/slaa868a/slaa868a.pdf</a></span>
+          <span class="ref-tag">Validación VCSS / TI</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Laboratorio de Electroquímica CUCEI - UdeG.</span> (2026).
+          <span class="ref-title">Control_termico.m: Sintonización analítica de coeficientes PI con modelo Padé de 2.º orden y margen de fase 75°.</span>
+          <span class="ref-source">Repositorio Oficial de Desarrollo de Hardware, Universidad de Guadalajara.</span>
+          <span class="ref-tag">MATLAB</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">ANSI / ISA.</span> (2010).
+          <span class="ref-title">ANSI/ISA-88.01-2010 (IEC 61512-1): Batch Control Part 1: Models and Terminology.</span>
+          <span class="ref-source">International Society of Automation, Research Triangle Park, NC.</span>
+          <span class="ref-tag">Norma ISA-88</span>
+        </li>
+
+        <li class="ref-item">
+          <span class="ref-author">Espressif Systems.</span> (2024).
+          <span class="ref-title">ESP32-S3 Technical Reference Manual (v1.6): Dual-Core Xtensa LX7, MCPWM and Interruption Architecture.</span>
+          <span class="ref-source">Espressif Systems Inc.</span>
+          <span class="ref-tag">Sistemas Embebidos</span>
+        </li>
+      </ul>
+
+      <!-- DIRECTORIO TÉCNICO DE CONTACTO Y RESPONSABILIDADES -->
+      <h3 style="font-size: 1.05rem; color: var(--primary); margin: 28px 0 14px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
+        Directorio Técnico de Contacto y Responsabilidades del Proyecto
+      </h3>
+      <div class="grid-3" style="gap: 14px;">
+        <div class="card" style="margin: 0; background: rgba(10, 15, 29, 0.75);">
+          <strong style="color: var(--primary); font-size: 0.82rem; text-transform: uppercase;">1. Tesis & Resultados Experimentales</strong>
+          <h4 style="color: #ffffff; margin: 6px 0 2px 0; font-size: 0.98rem;">Víctor Ulises Gutiérrez Ramírez</h4>
+          <span style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-bottom: 8px;">Tesista / Autor Principal de la Investigación</span>
+          <p style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
+            Contacto directo para todo lo concerniente a la tesis de grado, protocolo experimental VUGR, formulación de baños químicos, matriz de diseño de experimentos (DOE 2⁵·4), metalografía y conclusiones electroquímicas.
+          </p>
+          <div style="margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px;">
+            <a href="mailto:victor.gutierrez3447@alumnos.udg.mx" style="color: var(--primary); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ victor.gutierrez3447@alumnos.udg.mx
+            </a>
+          </div>
+        </div>
+
+        <div class="card" style="margin: 0; background: rgba(10, 15, 29, 0.75);">
+          <strong style="color: var(--emerald); font-size: 0.82rem; text-transform: uppercase;">2. Instrumentación y Control de Planta</strong>
+          <h4 style="color: #ffffff; margin: 6px 0 2px 0; font-size: 0.95rem;">Salvador Castro Pérez<br>Fernando S. Samayoa Martínez</h4>
+          <span style="font-size: 0.76rem; color: var(--emerald); display: block; margin-bottom: 8px;">Diseño e Implementación de Planta Física</span>
+          <p style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
+            Contacto técnico para arquitectura electrónica, esquemáticos y PCB, firmware ESP32-S3 / Nano, lazos térmicos ZCS por tiempo proporcional, sumidero de corriente VCSS, sensado de pH pseudo-diferencial y SCADA PyQt6.
+          </p>
+          <div style="margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+            <a href="mailto:salvadorcastroperez@hotmail.com" style="color: var(--emerald); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ salvadorcastroperez@hotmail.com
+            </a>
+            <a href="mailto:fernando.samayoa@alumnos.udg.mx" style="color: var(--emerald); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ fernando.samayoa@alumnos.udg.mx
+            </a>
+          </div>
+        </div>
+
+        <div class="card" style="margin: 0; background: rgba(10, 15, 29, 0.75);">
+          <strong style="color: var(--purple); font-size: 0.82rem; text-transform: uppercase;">3. Asesoría & Línea de Investigación</strong>
+          <h4 style="color: #ffffff; margin: 6px 0 2px 0; font-size: 0.95rem;">Dr. Omar A. González Meza<br>Dr. Norberto Casillas Santana</h4>
+          <span style="font-size: 0.76rem; color: var(--purple); display: block; margin-bottom: 8px;">Directores de Tesis (Depto. de Química UdeG)</span>
+          <p style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
+            Línea de investigación institucional en Electroquímica, Tratamientos Superficiales, Protección Anticorrosiva y Cooperación Académica (CUCEI, Universidad de Guadalajara).
+          </p>
+          <div style="margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+            <a href="mailto:Omar.Gonzalez3420@academicos.udg.mx" style="color: var(--purple); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ Omar.Gonzalez3420@academicos.udg.mx
+            </a>
+            <a href="mailto:norberto.casillas@academicos.udg.mx" style="color: var(--purple); font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+              ✉️ norberto.casillas@academicos.udg.mx
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL PARA INSPECCIÓN DE IMÁGENES HD -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modalTitle">Inspección Técnica de Imagen</h3>
+      <button class="modal-close" onclick="cerrarModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <img src="" alt="Vista previa HD" id="modalImg" class="modal-img">
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>XLI Congreso Nacional de la Sociedad Mexicana de Electroquímica (SMEQ 2026)</p>
+  <p>Universidad de Guadalajara — Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI)</p>
+  <p style="margin-top: 6px;">Repositorio de Control & Hardware: <a href="https://chavacastro98.github.io/Proyecto/" target="_blank">chavacastro98.github.io/Proyecto/</a></p>
+</footer>
+
+<script>
+/**
+ * Showcase Técnico CTS-C51 | SMEQ 2026
+ * SIMULADORES FÍSICOS: Control Térmico ZCS, Fuente Pulsada VCSS (SOA) y Faraday
+ */
+
+  // SIMULADOR 1: ZCS TIEMPO PROPORCIONAL
+  // =========================================================================
+  function actualizarSimuladorTermico() {
+    const duty = parseInt(document.getElementById('rngDuty').value, 10);
+    const potNom = parseFloat(document.getElementById('rngPotNom').value);
+    const tbaseSec = parseInt(document.getElementById('rngTbase').value, 10);
+
+    const totalCiclos = tbaseSec * 60;
+    const ciclosActivos = Math.round(totalCiclos * (duty / 100));
+    const potEfectiva = potNom * (duty / 100);
+
+    document.getElementById('lblDutyVal').textContent = duty + ' %';
+    document.getElementById('lblPotNomVal').textContent = potNom.toFixed(0) + ' W';
+    document.getElementById('lblTbaseVal').textContent = tbaseSec.toFixed(1) + ' s (' + totalCiclos + ' ciclos)';
+
+    document.getElementById('valCiclosActivos').textContent = ciclosActivos + ' / ' + totalCiclos;
+    document.getElementById('valPotEfectiva').textContent = potEfectiva.toFixed(1) + ' W';
+
+    dibujarOndaZCS(duty, totalCiclos, ciclosActivos);
+  }
+
+  function dibujarOndaZCS(duty, totalCiclos, ciclosActivos) {
+    const canvas = document.getElementById('canvasZCS');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width = canvas.offsetWidth;
+    const h = canvas.height = 120;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Eje central
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, h / 2);
+    ctx.lineTo(w, h / 2);
+    ctx.stroke();
+
+    const ciclosADibujar = Math.min(totalCiclos, 30);
+    const ratioActivo = duty / 100;
+    const ciclosVerdes = Math.round(ciclosADibujar * ratioActivo);
+    const periodoPx = w / ciclosADibujar;
+
+    for (let c = 0; c < ciclosADibujar; c++) {
+      const esActivo = c < ciclosVerdes;
+      ctx.beginPath();
+      ctx.strokeStyle = esActivo ? '#10b981' : '#334155';
+      ctx.lineWidth = esActivo ? 2 : 1;
+
+      for (let px = 0; px <= periodoPx; px++) {
+        const x = c * periodoPx + px;
+        const angle = (px / periodoPx) * 2 * Math.PI;
+        const y = h / 2 - Math.sin(angle) * (esActivo ? 42 : 10);
+        if (px === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+
+  // =========================================================================
+  // SIMULADOR 2: ONDA CUADRADA PULSADA A 10 HZ & VCSS
+  // =========================================================================
+  let modoCorrienteActual = 'pulsada';
+
+  function setModoCorriente(modo) {
+    modoCorrienteActual = modo;
+    const btnPulsado = document.getElementById('btnModoPulsado');
+    const btnDC = document.getElementById('btnModoDC');
+    const lblModo = document.getElementById('lblModoFuente');
+    const grpDuty = document.getElementById('grpDutyPulse');
+
+    if (modo === 'pulsada') {
+      btnPulsado.classList.add('active');
+      btnDC.classList.remove('active');
+      lblModo.textContent = 'Pulsada (10 Hz)';
+      lblModo.style.color = 'var(--emerald)';
+      grpDuty.style.display = 'block';
+    } else {
+      btnDC.classList.add('active');
+      btnPulsado.classList.remove('active');
+      lblModo.textContent = 'DC Puro (Continuo)';
+      lblModo.style.color = 'var(--primary)';
+      grpDuty.style.display = 'none';
+    }
+    actualizarOndaCuadrada();
+  }
+
+  function actualizarOndaCuadrada() {
+    const Ipeak = parseFloat(document.getElementById('rngIpeak').value);
+    const dutyPercent = parseInt(document.getElementById('rngDutyPulse').value, 10);
+    const freq = parseInt(document.getElementById('rngFreqPulse').value, 10);
+
+    const T_ms = 1000 / freq; // Periodo en ms
+    const dutyRatio = (modoCorrienteActual === 'pulsada') ? (dutyPercent / 100) : 1.0;
+    const Ton_ms = T_ms * dutyRatio;
+    const Toff_ms = T_ms - Ton_ms;
+    const Iavg = Ipeak * dutyRatio;
+
+    document.getElementById('lblIpeakVal').textContent = Ipeak.toFixed(2) + ' A';
+    document.getElementById('lblDutyPulseVal').textContent = dutyPercent + ' % (t_on = ' + Ton_ms.toFixed(1) + ' ms)';
+    document.getElementById('lblFreqPulse').textContent = freq + ' Hz (T = ' + T_ms.toFixed(1) + ' ms)';
+
+    document.getElementById('valIavg').textContent = Iavg.toFixed(2) + ' A';
+    document.getElementById('valTon').textContent = Ton_ms.toFixed(1) + ' ms';
+    document.getElementById('valToff').textContent = (modoCorrienteActual === 'pulsada') ? Toff_ms.toFixed(1) + ' ms' : '0.0 ms';
+
+    dibujarCanvasPulse(Ipeak, Iavg, dutyRatio, freq);
+    actualizarCalculadoraVCSS(Ipeak, Iavg);
+  }
+
+  function dibujarCanvasPulse(Ipeak, Iavg, dutyRatio, freq) {
+    const canvas = document.getElementById('canvasPulse');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width = canvas.offsetWidth;
+    const h = canvas.height = 135;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const padLeft = 40;
+    const padRight = 15;
+    const padTop = 15;
+    const padBottom = 25;
+    const drawW = w - padLeft - padRight;
+    const drawH = h - padTop - padBottom;
+
+    // Cuadrícula y ejes
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padLeft, padTop, drawW, drawH);
+
+    // Eje 0A
+    const y0 = padTop + drawH;
+    const yPeak = padTop + drawH * (1 - Ipeak / 7.5);
+    const yAvg = padTop + drawH * (1 - Iavg / 7.5);
+
+    // Etiquetas de corriente
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px monospace';
+    ctx.fillText(Ipeak.toFixed(1) + 'A', 6, yPeak + 4);
+    ctx.fillText('0.0A', 6, y0 + 3);
+
+    // Línea de Corriente Media I_avg (discontinua verde)
+    ctx.beginPath();
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.moveTo(padLeft, yAvg);
+    ctx.lineTo(padLeft + drawW, yAvg);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Dibujar señal cuadrada (3 ciclos)
+    const ciclos = 3;
+    const periodoPx = drawW / ciclos;
+
+    ctx.beginPath();
+    ctx.strokeStyle = '#0ea5e9';
+    ctx.lineWidth = 2.5;
+
+    let currX = padLeft;
+    ctx.moveTo(currX, y0);
+
+    for (let c = 0; c < ciclos; c++) {
+      const tonPx = periodoPx * dutyRatio;
+      const toffPx = periodoPx * (1 - dutyRatio);
+
+      // Subida
+      ctx.lineTo(currX, yPeak);
+      // Pulso activo
+      currX += tonPx;
+      ctx.lineTo(currX, yPeak);
+      // Bajada
+      ctx.lineTo(currX, y0);
+      // Pulso reposo
+      currX += toffPx;
+      ctx.lineTo(currX, y0);
+    }
+    ctx.stroke();
+
+    // Relleno bajo la curva del pulso
+    ctx.lineTo(padLeft + drawW, y0);
+    ctx.lineTo(padLeft, y0);
+    ctx.fillStyle = 'rgba(14, 165, 233, 0.12)';
+    ctx.fill();
+
+    // Marcador t_on y t_off en el primer ciclo
+    const t1X = padLeft + periodoPx * dutyRatio;
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '9px monospace';
+    ctx.fillText('t_on', padLeft + (periodoPx * dutyRatio)/2 - 10, padTop + 14);
+    if (dutyRatio < 0.95) {
+      ctx.fillStyle = '#64748b';
+      ctx.fillText('t_off', t1X + (periodoPx * (1 - dutyRatio))/2 - 12, y0 - 8);
+    }
+  }
+
+  // CALCULADORA DE BALANCE TÉRMICO VCSS (2 RAMAS CON SHUNT DE 1 Ω / 10W)
+  function actualizarCalculadoraVCSS(IpeakVal, IavgVal) {
+    const Ipeak = IpeakVal !== undefined ? IpeakVal : parseFloat(document.getElementById('rngIpeak').value);
+    const Iavg = IavgVal !== undefined ? IavgVal : (Ipeak * 0.5);
+
+    const Vfuente = parseFloat(document.getElementById('rngVfuente').value);
+    const Vcelda = parseFloat(document.getElementById('rngVcelda').value);
+    const Theta = parseFloat(document.getElementById('rngTheta').value);
+
+    document.getElementById('lblVfuenteVal').textContent = Vfuente.toFixed(1) + ' V';
+    document.getElementById('lblVceldaVal').textContent = Vcelda.toFixed(1) + ' V';
+    document.getElementById('lblThetaVal').textContent = Theta.toFixed(1) + ' °C/W';
+
+    // Topología: 2 ramas en paralelo con shunts cerámicos de 1.0 Ω (10W) cada una
+    const Rshunt_rama = 1.0;
+    const Rshunt_eq = 0.5; // 1.0 Ω || 1.0 Ω
+    const I_rama_peak = Ipeak / 2;
+    const I_rama_avg = Iavg / 2;
+
+    const Vshunt = Ipeak * Rshunt_eq; // Caída sobre el banco de shunts
+    const Vds = Math.max(0, Vfuente - Vcelda - Vshunt);
+
+    // Disipación: 2 MOSFETs IRLZ44Z se reparten equitativamente la corriente
+    const Pmosfet_total = Vds * Iavg;
+    const Pmosfet_rama = Vds * I_rama_avg; // Potencia disipada en cada MOSFET TO-220
+
+    // Disipación en cada resistencia shunt cerámica de 1 Ω (10W)
+    const Pshunt_rama = I_rama_avg * I_rama_avg * Rshunt_rama;
+
+    const Tamb = 25.0;
+    const Theta_jc = 0.7; // TO-220 juntura-a-cápsula
+    const Theta_cs = 0.5; // Grasa térmica aislante mica
+    // El disipador evacúa la potencia total de ambos MOSFETs
+    const Tj = Tamb + Pmosfet_rama * (Theta_jc + Theta_cs) + Pmosfet_total * (Theta / 2);
+
+    document.getElementById('valVds').textContent = Vds.toFixed(2) + ' V';
+    document.getElementById('valPmosfet').textContent = Pmosfet_rama.toFixed(1) + ' W';
+    const elPtotal = document.getElementById('valPmosfetTotal');
+    if (elPtotal) elPtotal.textContent = 'Total 2 ramas: ' + Pmosfet_total.toFixed(1) + ' W';
+    document.getElementById('valTj').textContent = Tj.toFixed(1) + ' °C';
+    document.getElementById('valPshunt').textContent = Pshunt_rama.toFixed(1) + ' W';
+
+    const alertaBox = document.getElementById('boxAlertaSOA');
+    if (Tj > 125 || Pmosfet_rama > 40 || Pshunt_rama > 10) {
+      alertaBox.className = 'info-box info-box-danger';
+      alertaBox.innerHTML = '<strong>PELIGRO DE DESTRUCCIÓN TÉRMICA (SOA / SHUNT EXCEDIDO):</strong><br>La temperatura de unión Tj (' + Tj.toFixed(1) + ' °C) o la potencia en shunt (' + Pshunt_rama.toFixed(1) + ' W > 10 W) superan los límites seguros. Aumenta la ventilación forzada o reduce el voltaje de fuente.';
+    } else if (Tj > 90 || Pmosfet_rama > 25 || Pshunt_rama > 7.5) {
+      alertaBox.className = 'info-box info-box-warn';
+      alertaBox.innerHTML = '<strong>PRECAUCIÓN TÉRMICA:</strong><br>El circuito opera a régimen elevado (Tj = ' + Tj.toFixed(1) + ' °C, P_shunt = ' + Pshunt_rama.toFixed(1) + ' W / 10 W). Se requiere ventilación forzada activa sobre el disipador.';
+    } else {
+      alertaBox.className = 'info-box info-box-success';
+      alertaBox.innerHTML = '<strong>Estado SOA: OPERACIÓN SEGURA (2 RAMAS BALANCEADAS)</strong><br>Ambos transistores operan dentro de su Área de Operación Segura (Tj = ' + Tj.toFixed(1) + ' °C < 90 °C) y los shunts disipan ' + Pshunt_rama.toFixed(1) + ' W por rama (&lt; 10 W nominal).';
+    }
+  }
+
+  // =========================================================================
+  // CALCULADORA 4: CULOMBIMETRÍA DE FARADAY
+  // =========================================================================
+  function actualizarCalculadoraFaraday() {
+    const I = parseFloat(document.getElementById('rngIFaraday').value);
+    const t_min = parseFloat(document.getElementById('rngTFaraday').value);
+    const Area_cm2 = parseFloat(document.getElementById('rngAreaFaraday').value);
+    const Rend = parseFloat(document.getElementById('rngRendFaraday').value) / 100;
+
+    document.getElementById('lblIFaradayVal').textContent = I.toFixed(2) + ' A';
+    document.getElementById('lblTFaradayVal').textContent = t_min.toFixed(1) + ' min';
+    document.getElementById('lblAreaFaradayVal').textContent = Area_cm2.toFixed(1) + ' cm²';
+    document.getElementById('lblRendFaradayVal').textContent = (Rend * 100).toFixed(0) + ' %';
+
+    const t_seg = t_min * 60;
+    const Q = I * t_seg;
+    const M_Zn = 65.38;
+    const n = 2;
+    const F = 96485.3;
+    const rho_Zn = 7.14;
+
+    const m_teorica_g = (Q * M_Zn) / (n * F) * Rend;
+    const m_mg = m_teorica_g * 1000;
+    const volumen_cm3 = m_teorica_g / rho_Zn;
+    const espesor_cm = volumen_cm3 / Area_cm2;
+    const espesor_um = espesor_cm * 10000;
+
+    document.getElementById('valQFaraday').textContent = Q.toFixed(1) + ' C';
+    document.getElementById('valMasaFaraday').textContent = m_mg.toFixed(1) + ' mg';
+    document.getElementById('valEspesorFaraday').textContent = espesor_um.toFixed(2) + ' µm';
+  }
+
+
+/**
+ * Showcase Técnico CTS-C51 | SMEQ 2026
+ * CALIBRACIÓN DE pH: Modelo de Doble Pendiente Asimétrico (3 Puntos Nernst)
+ */
+
+  // CALCULADORA 3: CALIBRACIÓN pH DE DOBLE PENDIENTE (3 PUNTOS ASIMÉTRICOS)
+  // =========================================================================
+  function actualizarCalculadoraPh() {
+    const tempC = parseFloat(document.getElementById('rngTempPh').value);
+    const V7 = parseFloat(document.getElementById('rngV7').value);
+    const V4 = parseFloat(document.getElementById('rngV4').value);
+    const V10 = parseFloat(document.getElementById('rngV10').value);
+    const Vin = parseFloat(document.getElementById('rngVinPh').value);
+
+    document.getElementById('lblTempPhVal').textContent = tempC.toFixed(1) + ' °C';
+    document.getElementById('lblV7Val').textContent = V7.toFixed(0) + ' mV';
+    document.getElementById('lblV4Val').textContent = V4.toFixed(0) + ' mV';
+    document.getElementById('lblV10Val').textContent = V10.toFixed(0) + ' mV';
+    document.getElementById('lblVinPhVal').textContent = Vin.toFixed(0) + ' mV';
+
+    // 1. Sensibilidad y Pendiente Ácida (pH 4.01 a pH 7.00)
+    const deltaV_ac = Math.max(10, V4 - V7);
+    const deltaPh_ac = 7.00 - 4.01; // 2.99 pH
+    const S_acida = deltaV_ac / deltaPh_ac; // mV / pH
+    const m_acida = deltaPh_ac / (deltaV_ac / 1000); // pH / V (RTOS 2.0)
+
+    // 2. Sensibilidad y Pendiente Alcalina (pH 7.00 a pH 10.01)
+    const deltaV_ba = Math.max(10, V7 - V10);
+    const deltaPh_ba = 10.01 - 7.00; // 3.01 pH
+    const S_basica = deltaV_ba / deltaPh_ba; // mV / pH
+    const m_basica = deltaPh_ba / (deltaV_ba / 1000); // pH / V (RTOS 2.0)
+
+    // 3. Sensibilidad Nernst Teórica dependiente de T
+    const Tk = tempC + 273.15;
+    const R = 8.31446;
+    const F = 96485.3;
+    const S_teorica = (2.302585 * R * Tk / F) * 1000; // mV/pH (59.16 mV/pH @ 25°C)
+
+    // 4. Eficiencia y Salud del Electrodo
+    const saludAcida = Math.min(115, Math.max(0, (S_acida / S_teorica) * 100));
+    const saludBasica = Math.min(115, Math.max(0, (S_basica / S_teorica) * 100));
+
+    // 5. Transducción In-Operando según Dominio Ácido vs Alcalino
+    let phCalculado = 7.00;
+    const badge = document.getElementById('badgeDominioPh');
+
+    if (Vin >= V7) {
+      // Zona Ácida (V >= V7 => pH <= 7.00)
+      phCalculado = 7.00 - ((Vin - V7) / S_acida);
+      if (badge) {
+        badge.className = 'badge badge-primary';
+        badge.textContent = 'DOMINIO ÁCIDO (V ≥ V7)';
+      }
+    } else {
+      // Zona Alcalina (V < V7 => pH > 7.00)
+      phCalculado = 7.00 + ((V7 - Vin) / S_basica);
+      if (badge) {
+        badge.className = 'badge badge-purple';
+        badge.textContent = 'DOMINIO ALCALINO (V < V7)';
+      }
+    }
+    phCalculado = Math.max(0.00, Math.min(14.00, phCalculado));
+
+    // Despliegue en interfaz
+    document.getElementById('valPhCalculado').textContent = phCalculado.toFixed(2) + ' pH';
+    document.getElementById('valPendienteAcida').textContent = S_acida.toFixed(2) + ' mV/pH';
+    document.getElementById('valSaludAcida').textContent = 'Salud: ' + saludAcida.toFixed(1) + ' %';
+    document.getElementById('valPendienteBasica').textContent = S_basica.toFixed(2) + ' mV/pH';
+    document.getElementById('valSaludBasica').textContent = 'Salud: ' + saludBasica.toFixed(1) + ' %';
+    document.getElementById('valPendienteTeorica').textContent = S_teorica.toFixed(2) + ' mV/pH';
+    document.getElementById('valOffsetPh').textContent = V7.toFixed(0) + ' mV';
+
+    dibujarCurvaNernst(V4, V7, V10, Vin, phCalculado, S_acida, S_basica, S_teorica);
+  }
+
+  function dibujarCurvaNernst(V4, V7, V10, Vin, phCalc, S_ac, S_ba, S_teor) {
+    const canvas = document.getElementById('canvasNernst');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width = canvas.offsetWidth;
+    const h = canvas.height = 135;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const padLeft = 45;
+    const padRight = 20;
+    const padTop = 15;
+    const padBottom = 22;
+    const drawW = w - padLeft - padRight;
+    const drawH = h - padTop - padBottom;
+
+    const phMin = 1.0, phMax = 13.0;
+    const vMin = 950, vMax = 2450;
+
+    function getX(ph) { return padLeft + ((ph - phMin) / (phMax - phMin)) * drawW; }
+    function getY(v) { return (padTop + drawH) - ((v - vMin) / (vMax - vMin)) * drawH; }
+
+    // Fondo y marco
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padLeft, padTop, drawW, drawH);
+
+    // Retícula y etiquetas de voltaje
+    ctx.fillStyle = '#64748b';
+    ctx.font = '9px monospace';
+    const vSteps = [1100, 1500, 1900, 2300];
+    vSteps.forEach(v => {
+      const y = getY(v);
+      ctx.beginPath();
+      ctx.strokeStyle = '#0f172a';
+      ctx.moveTo(padLeft, y);
+      ctx.lineTo(padLeft + drawW, y);
+      ctx.stroke();
+      ctx.fillText(v + 'm', 8, y + 3);
+    });
+
+    // Líneas verticales para los 3 buffers
+    [4.01, 7.00, 10.01].forEach(ph => {
+      const x = getX(ph);
+      ctx.beginPath();
+      ctx.strokeStyle = '#1e293b';
+      ctx.setLineDash([2, 4]);
+      ctx.moveTo(x, padTop);
+      ctx.lineTo(x, padTop + drawH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillText(ph.toFixed(1), x - 8, h - 6);
+    });
+
+    // 1. Curva Teórica Ideal de Nernst (línea punteada gris)
+    ctx.beginPath();
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.moveTo(getX(2.0), getY(V7 + S_teor * (7.0 - 2.0)));
+    ctx.lineTo(getX(12.0), getY(V7 - S_teor * (12.0 - 7.0)));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Curva Bilineal Real: Segmento Ácido (pH 2.0 a 7.00)
+    ctx.beginPath();
+    ctx.strokeStyle = '#0ea5e9';
+    ctx.lineWidth = 2.5;
+    ctx.moveTo(getX(2.0), getY(V7 + S_ac * (7.00 - 2.0)));
+    ctx.lineTo(getX(7.00), getY(V7));
+    ctx.stroke();
+
+    // 3. Curva Bilineal Real: Segmento Básico (pH 7.00 a 12.0)
+    ctx.beginPath();
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 2.5;
+    ctx.moveTo(getX(7.00), getY(V7));
+    ctx.lineTo(getX(12.0), getY(V7 - S_ba * (12.0 - 7.00)));
+    ctx.stroke();
+
+    // 4. Marcadores de los 3 Buffers
+    // Buffer 4.01 (Ámbar)
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath(); ctx.arc(getX(4.01), getY(V4), 5, 0, 2*Math.PI); ctx.fill();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.stroke();
+
+    // Buffer 7.00 (Esmeralda - Vértice Isopotencial)
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath(); ctx.arc(getX(7.00), getY(V7), 6, 0, 2*Math.PI); ctx.fill();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // Buffer 10.01 (Rosa / Magenta)
+    ctx.fillStyle = '#ec4899';
+    ctx.beginPath(); ctx.arc(getX(10.01), getY(V10), 5, 0, 2*Math.PI); ctx.fill();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.stroke();
+
+    // 5. Marcador de Lectura en Vivo (Cursor Azul Cielo con proyectores)
+    const xLive = getX(phCalc);
+    const yLive = getY(Vin);
+
+    // Líneas de proyección punteadas
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.setLineDash([2, 2]);
+    ctx.moveTo(xLive, padTop + drawH);
+    ctx.lineTo(xLive, yLive);
+    ctx.lineTo(padLeft, yLive);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Punto vivo
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(xLive, yLive, 6, 0, 2*Math.PI); ctx.fill();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  // =========================================================================
+
+/**
+ * Showcase Técnico CTS-C51 | SMEQ 2026
+ * MÓDULO PRINCIPAL: Navegación por pestañas, Lightbox de inspección y Ciclo de vida
+ */
+
+// GESTOR DE PESTAÑAS (TABS)
+const tabs = document.querySelectorAll('.tab-btn');
+const panels = document.querySelectorAll('.tab-panel');
+
+tabs.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-tab');
+    if (!targetId) return;
+
+    tabs.forEach(t => t.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+
+    btn.classList.add('active');
+    const targetPanel = document.getElementById(targetId);
+    if (targetPanel) {
+      targetPanel.classList.add('active');
+      if (typeof actualizarSimuladorTermico === 'function' && targetId === 'tab-termico') actualizarSimuladorTermico();
+      if (typeof actualizarOndaCuadrada === 'function' && targetId === 'tab-vcss') actualizarOndaCuadrada();
+      if (typeof actualizarCalculadoraPh === 'function' && targetId === 'tab-ph') actualizarCalculadoraPh();
+    }
+  });
+});
+
+// MODAL DE IMÁGENES / LIGHTBOX HD
+function abrirModal(src, titulo) {
+  const modal = document.getElementById('modalOverlay');
+  const modalImg = document.getElementById('modalImg');
+  const modalTitle = document.getElementById('modalTitle');
+  if (!modal || !modalImg) return;
+  modalImg.src = src;
+  if (modalTitle) modalTitle.textContent = titulo || 'Inspección en Alta Resolución';
+  modal.classList.add('open');
+}
+
+function cerrarModal(e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close')) return;
+  const modal = document.getElementById('modalOverlay');
+  if (modal) modal.classList.remove('open');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('modalOverlay');
+    if (modal) modal.classList.remove('open');
+  }
+});
+
+// INICIALIZACIÓN GLOBAL
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof actualizarSimuladorTermico === 'function') actualizarSimuladorTermico();
+  if (typeof actualizarOndaCuadrada === 'function') actualizarOndaCuadrada();
+  if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
+  if (typeof actualizarCalculadoraFaraday === 'function') actualizarCalculadoraFaraday();
+});
+
+window.addEventListener('resize', () => {
+  if (typeof actualizarSimuladorTermico === 'function') actualizarSimuladorTermico();
+  if (typeof actualizarOndaCuadrada === 'function') actualizarOndaCuadrada();
+  if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
+});
+
+</script>
+
+</body>
+</html>
