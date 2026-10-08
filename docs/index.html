@@ -960,8 +960,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
 
         <div style="text-align: center;">
-          <img src="assets/circuito_vcss.png" alt="Esquema VCSS" style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--card-border); background: #030712; padding: 6px; cursor: pointer;" onclick="abrirModal(this.src, 'Circuito Esquemático VCSS: Amplificador de Error Op-Amp LM358N, 2 Ramas MOSFET IRLZ44Z y Shunts Cerámicos de 1 Ω (10W)')">
-          <p style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px;">Topología VCSS de 2 ramas balanceadas: Amplificador de error Op-Amp, MOSFETs en modo lineal y shunts cerámicos de 1 Ω / 10W con ganancia G_m = 2 A/V.</p>
+          <img src="assets/circuito_vcss.png" alt="Topología TI SLAA868A" style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--card-border); background: #ffffff; padding: 6px; cursor: pointer;" onclick="abrirModal(this.src, 'Circuito Esquemático Canónico: Topología de Sumidero de Corriente en Lazo Cerrado según Nota de Aplicación Texas Instruments SLAA868A')">
+          <p style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px;">Topología canónica según Texas Instruments SLAA868A: Lazo cerrado DAC + Op-Amp + MOSFET con compensación R_ISO y sensado low-side.</p>
         </div>
       </div>
 
@@ -1135,7 +1135,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           <div class="gallery-desc">
             <div class="gallery-title">Diseño Esquemático TI SLAA868A</div>
             <div class="gallery-caption">
-              Topología analógica del circuito: Lazo cerrado con op-amp LM358, transconductancia lineal de 2 A/V, compensación capacitiva de compuerta R_ISO = 100 Ω y filtrado para conmutación pulsada limpia a 10 Hz.
+              Topología oficial Texas Instruments (SLAA868A): Lazo cerrado con DAC programable, amplificador operacional de error, compensación de compuerta R_ISO = 100 Ω frente a capacitancia parásita C_iss y resistencia de sensado catódico R_SET.
             </div>
           </div>
         </div>
