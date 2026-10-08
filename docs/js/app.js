@@ -116,6 +116,20 @@ const ARCH_NODOS = {
     bus: 'Conmutación por Tiempo Proporcional (Burst Firing) a 60 Hz',
     desc: 'Etapa de potencia de estado sólido para controlar la temperatura de las 4 tinas industriales (Desengrase 90°C, Decapado 90°C, Niquelado 30°C y Celda Hull 30°C). Conmutación de paquetes de ciclos completos en V=0 sin recorte de fase.'
   },
+  rele: {
+    titulo: 'Actuador Electromecánico: Módulo de 2 Relés Songle (5V Optoacoplado)',
+    chip: 'Songle SRD-05VDC-SL-C + Optoacopladores PC817 + Driver NPN',
+    pines: 'Control Lógico IN1/IN2 (GPIO 20/21), Borneras Salida K1/K2 (NA, COM, NC)',
+    bus: 'Control digital TTL @ 5V con Jumper JD-VCC para aislamiento galvánico',
+    desc: 'Actuador electromecánico de alta corriente (10A @ 250VAC / 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS) para anular el arco eléctrico, y conmuta los motores de agitación magnética en las tinas de proceso.'
+  },
+  ph: {
+    titulo: 'Sensor de Acidez: Sonda de Vidrio Combinada + Transmisor PH-4502C',
+    chip: 'Electrodo Combinado Vidrio-Ag/AgCl + Módulo Transmisor PH-4502C',
+    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Filtro RC ➔ ADC ADS1115 (A0/A1)',
+    bus: 'Entrada de Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta',
+    desc: 'Cadena de medición de pH in-operando en baño químico y Celda Hull. Dispone de trimmers multivuelta de compensación analógica de ganancia/offset (1.65V isopotencial) y entrega señal Po acondicionada hacia el ADS1115 en configuración pseudo-diferencial con cancelación de modo común.'
+  },
   scada: {
     titulo: 'Estación de Supervisión SCADA PyQt6 & Servidor Web',
     chip: 'PC Host (Python 3.14 / PyQt6 / pyqtgraph) + WebSockets / HTTP',

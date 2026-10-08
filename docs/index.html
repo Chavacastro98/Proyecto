@@ -22,6 +22,13 @@
       <span class="badge badge-emerald">CONTROL IN-OPERANDO</span>
       <span class="badge badge-amber">ESP32-S3 SMP @ 240 MHz</span>
       <span class="badge badge-purple">ANSI/ISA-88.01</span>
+      <a href="https://github.com/Chavacastro98/Proyecto" target="_blank" rel="noopener noreferrer" class="badge badge-github" title="Abrir Repositorio Oficial en GitHub">
+        <svg height="13" width="13" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: text-bottom;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>GitHub: Chavacastro98/Proyecto</span>
+      </a>
+      <a href="https://chavacastro98.github.io/Proyecto/" target="_blank" rel="noopener noreferrer" class="badge badge-pages" title="Abrir GitHub Pages en Vivo">
+        <span>🌐 GitHub Pages</span>
+      </a>
     </div>
     <h1>Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6</h1>
     <p class="subtitle">Diseño de Experimentos Multinivel 2⁵·4, Instrumentación Modular y Supervisión SCADA con Etapa de Potencia Pulsada VCSS y Conmutación ZCS</p>
@@ -193,6 +200,15 @@
               <div class="arch-node-desc">Compensación unión fría en 4 tinas químicas con resolución de 0.25 °C.</div>
             </div>
 
+            <div class="arch-node" id="node-ph" onclick="seleccionarNodoArch('ph')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Sensor de pH & Po</span>
+                <span class="arch-bus-pill pill-i2c">Po ➔ ADS1115</span>
+              </div>
+              <span class="arch-node-chip">Sonda Vidrio + PH-4502C</span>
+              <div class="arch-node-desc">Electrodo combinado BNC y módulo analógico pseudo-diferencial (>10¹² Ω).</div>
+            </div>
+
             <div class="arch-node" id="node-ads1115" onclick="seleccionarNodoArch('ads1115')">
               <div class="arch-node-header">
                 <span class="arch-node-name">ADC Sigma-Delta</span>
@@ -266,6 +282,15 @@
               <span class="arch-node-chip">LM358N + 2x IRLZ44Z + DAC</span>
               <div class="arch-node-desc">Regulación lineal catódica a 2 A/V según nota TI SLAA868A hacia Celda Hull.</div>
             </div>
+
+            <div class="arch-node" id="node-rele" onclick="seleccionarNodoArch('rele')">
+              <div class="arch-node-header">
+                <span class="arch-node-name">Módulo 2 Relés</span>
+                <span class="arch-bus-pill pill-pwr">12V DC / 10A</span>
+              </div>
+              <span class="arch-node-chip">Songle SRD-05VDC-SL-C</span>
+              <div class="arch-node-desc">Corte anódico de seguridad en V=0 e interlock de agitación magnética.</div>
+            </div>
           </div>
 
           <!-- COLUMNA 4: HMI, SUPERVISIÓN & PLANTA -->
@@ -336,17 +361,37 @@
         </div>
       </div>
 
-      <!-- FOTOGRAFÍA FÍSICA: PLACA PRINCIPAL DE PLANTA -->
+      <!-- FOTOGRAFÍAS FÍSICAS: PLACA PRINCIPAL Y ACTUADORES DE PLANTA -->
       <h3 style="font-size: 1.05rem; color: var(--primary); margin: 26px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
-        Circuito Físico de Planta — Placa Base Principal (PCB Maestro Central)
+        Circuito Físico de Planta — Placa Base Principal, Cableado de Laboratorio y Actuadores Electromecánicos
       </h3>
-      <div class="gallery-grid" style="grid-template-columns: 1fr;">
+      <div class="gallery-grid">
         <div class="gallery-item" onclick="abrirModal('assets/planta_placa_principal.jpg', 'PCB Maestro Central: Microcontrolador ESP32-S3 Dual-Core, zócalo de interconexión con Arduino Nano esclavo, sockets de buses I2C y SPI a 4 MHz, y regletas de bornes industriales')">
-          <img src="assets/planta_placa_principal.jpg" alt="Placa Principal Físico" class="gallery-thumb" style="height: 280px; object-fit: cover;">
+          <img src="assets/planta_placa_principal.jpg" alt="Placa Principal Físico" class="gallery-thumb">
           <div class="gallery-desc">
-            <div class="gallery-title">Placa Principal Integrada (ESP32-S3 + Arduino Nano + Buses de Expansión)</div>
+            <div class="gallery-title">Placa Principal Integrada (ESP32-S3 + Nano + Buses)</div>
             <div class="gallery-caption">
-              Distribución de hardware en planta física: Microcontrolador maestro central ESP32-S3 acoplado al coprocesador Arduino Nano, conectores para buses I²C (ADS1115 y MCP4725) y SPI (conversores MAX6675), aisladores ópticos para protección mutua y regletas de bornes industriales para alimentación y señales de campo.
+              Distribución de hardware en planta física: Microcontrolador maestro central ESP32-S3 acoplado al coprocesador Arduino Nano, conectores para buses I²C (ADS1115 y MCP4725) y SPI (conversores MAX6675), aisladores ópticos y regletas de bornes industriales.
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/modulo_rele_2ch_pinout.png', 'Módulo de 2 Relés Songle SRD-05VDC-SL-C con Aislamiento Optoacoplado: Diagrama Serigrafiado de Salidas (Normal Abierto, Común, Normal Cerrado) y Entradas de Control con Jumper JD-VCC')">
+          <img src="assets/modulo_rele_2ch_pinout.png" alt="Módulo de 2 Relés Songle" class="gallery-thumb gallery-thumb-contain">
+          <div class="gallery-desc">
+            <div class="gallery-title">Actuador Electromecánico: Módulo 2 Relés Songle (5V Optoacoplado)</div>
+            <div class="gallery-caption">
+              Detalle y pinout de conexión: Salidas conmutadas K1 y K2 (Normal Abierto, Común, Normal Cerrado) soportando hasta 10A / 250VAC o 30VDC. Entradas con aislamiento óptico PC817 y puente JD-VCC para desacoplar la masa lógica del ruido inductivo de las bobinas; conmuta el corte anódico de +12V y los motores de agitación.
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/placa_conectada.jpg', 'Banco de Pruebas Físico: Placa Principal Conectada a Fuentes de Alimentación, Arnés de Sensores y Etapas de Potencia en Laboratorio CUCEI')">
+          <img src="assets/placa_conectada.jpg" alt="Placa Conectada en Laboratorio" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Banco Físico en Operación de Laboratorio</div>
+            <div class="gallery-caption">
+              Integración física de la electrónica de control conectada al arnés de sensores de campo, cableado de potencia y etapas de acondicionamiento durante las corridas preliminares en el laboratorio de electroquímica.
             </div>
           </div>
         </div>
@@ -786,9 +831,25 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
       <!-- FOTOGRAFÍAS FÍSICAS: ETAPA TÉRMICA DE PLANTA -->
       <h3 style="font-size: 1.05rem; color: var(--amber); margin: 26px 0 12px 0; border-left: 3px solid var(--amber); padding-left: 8px;">
-        Circuitos Físicos de Planta — Módulo de Potencia TRIACs, Cableado AC y Buses de Termopares
+        Circuitos Físicos de Planta — Módulo de Potencia TRIACs, Cableado AC, Sensores Térmicos y Dinámica Experimental
       </h3>
       <div class="gallery-grid">
+        <div class="gallery-item" onclick="abrirModal('assets/sensor_max6675_termopar.png', 'Sensor de Campo: Termopar Tipo K con Rosca M6 en Acero Inoxidable, Malla Metálica Blindada y Módulo Amplificador SPI MAX6675 con Compensación de Unión Fría')">
+          <img src="assets/sensor_max6675_termopar.png" alt="Termopar Tipo K y Módulo MAX6675" class="gallery-thumb gallery-thumb-contain">
+          <div class="gallery-desc">
+            <div class="gallery-title">Sensor de Campo: Termopar Tipo K + MAX6675</div>
+            <div class="gallery-caption">Sonda industrial de inmersión en acero inoxidable con rosca métrica M6, cable trenzado apantallado y terminales de horquilla. Módulo MAX6675 con conversor A/D de 12 bits (0.25 °C), compensación de unión fría y bus SPI.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/perfil_tinas_temperatura.jpg', 'Curvas Experimentales de Temperatura en las 4 Tinas de Tratamiento: Desengrase (90 °C), Decapado (90 °C), Niquelado (30 °C) y Celda Hull (30 °C) con Cero Sobretiro (0% OS)')">
+          <img src="assets/perfil_tinas_temperatura.jpg" alt="Perfiles de Temperatura en 4 Tinas" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Perfiles Térmicos Experimentales (4 Tinas)</div>
+            <div class="gallery-caption">Respuesta dinámica en lazo cerrado PI: Calentamiento y regulación precisa sin sobretiro (0% OS), validando el retardo Padé de 6.5 s y el margen de fase de 75° sintonizado analíticamente en MATLAB.</div>
+          </div>
+        </div>
+
         <div class="gallery-item" onclick="abrirModal('assets/planta_modulo_triacs.jpg', 'Módulo de Potencia MDAC4C: 4 Canales de Disparo con TRIACs BTA24 de 25A, Aislamiento Óptico MOC3021 y Detector ZCS 4N35')">
           <img src="assets/planta_modulo_triacs.jpg" alt="Módulo TRIACs MDAC4C" class="gallery-thumb">
           <div class="gallery-desc">
@@ -1041,17 +1102,37 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
       </div>
 
-      <!-- FOTOGRAFÍA FÍSICA: SUMIDERO VCSS DE PLANTA -->
+      <!-- FOTOGRAFÍAS FÍSICAS: SUMIDERO VCSS DE PLANTA -->
       <h3 style="font-size: 1.05rem; color: var(--purple); margin: 26px 0 12px 0; border-left: 3px solid var(--purple); padding-left: 8px;">
-        Circuito Físico de Planta — Etapa de Potencia Lineal VCSS y Banco de Shunts Cerámicos de 10W
+        Circuito Físico de Planta — Etapa de Potencia Lineal VCSS, Gabinete y Topología Esquemática
       </h3>
-      <div class="gallery-grid" style="grid-template-columns: 1fr;">
+      <div class="gallery-grid">
         <div class="gallery-item" onclick="abrirModal('assets/planta_vcss_potencia.jpg', 'Etapa de Potencia VCSS: Transistores MOSFET de potencia lineal en encapsulado TO-220 sobre disipador de aluminio con convección forzada y banco de shunts cerámicos de 1 Ω / 10W en 2 ramas con ganancia de 2 A/V')">
-          <img src="assets/planta_vcss_potencia.jpg" alt="Potencia VCSS Físico" class="gallery-thumb" style="height: 280px; object-fit: cover;">
+          <img src="assets/planta_vcss_potencia.jpg" alt="Potencia VCSS Físico" class="gallery-thumb">
           <div class="gallery-desc">
-            <div class="gallery-title">Etapa de Potencia Lineal VCSS (2 Ramas Balanceadas con Shunts de 1 Ω / 10 W)</div>
+            <div class="gallery-title">Etapa de Potencia Lineal VCSS (2 Ramas Shunts 1 Ω / 10 W)</div>
             <div class="gallery-caption">
-              Detalle del módulo físico: Dos transistores MOSFET (IRLZ44Z) montados con mica aislante sobre disipador térmico sobredimensionado con ventilación forzada, y banco de dos resistencias de potencia cerámicas de 1.0 Ω / 10 W con sensado Kelvin en los canales A2 y A3 del ADS1115 (transconductancia G_m = 2 A/V).
+              Detalle del módulo físico: Dos transistores MOSFET IRLZ44Z en disipador con ventilación forzada y dos resistencias cerámicas de 1.0 Ω / 10 W con sensado Kelvin hacia el ADS1115 (Gm = 2 A/V).
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/vcss_placa.jpg', 'Módulo VCSS Físico Ensamblado en Gabinete de Instrumentación: Borneras de Potencia, Conexión a Celda Hull y Cableado de Control')">
+          <img src="assets/vcss_placa.jpg" alt="Módulo VCSS en Gabinete" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Tarjeta VCSS Ensamblada en Gabinete</div>
+            <div class="gallery-caption">
+              Montaje industrial de la tarjeta sumidero lineal con sus bornes de alta corriente, conexión directa hacia el cátodo de la celda de electrodeposición y línea de tierra Kelvin aislada.
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/circuito_vcss.png', 'Circuito Esquemático de Precisión y Distribución PCB: Diseño de Sumidero de Corriente en Lazo Cerrado según Nota de Aplicación Texas Instruments SLAA868A')">
+          <img src="assets/circuito_vcss.png" alt="Esquemático VCSS TI SLAA868A" class="gallery-thumb gallery-thumb-contain">
+          <div class="gallery-desc">
+            <div class="gallery-title">Diseño Esquemático TI SLAA868A</div>
+            <div class="gallery-caption">
+              Topología analógica del circuito: Lazo cerrado con op-amp LM358, transconductancia lineal de 2 A/V, compensación capacitiva de compuerta R_ISO = 100 Ω y filtrado para conmutación pulsada limpia a 10 Hz.
             </div>
           </div>
         </div>
@@ -1232,22 +1313,38 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
       <!-- FOTOGRAFÍAS FÍSICAS: ADQUISICIÓN ANALÓGICA DE pH Y BORNERAS DE PLANTA -->
       <h3 style="font-size: 1.05rem; color: var(--emerald); margin: 26px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
-        Circuitos Físicos de Planta — Módulo ADC ADS1115 (Filtros RC) y Borneras Pseudo-Diferenciales (Kelvin AGND)
+        Circuitos Físicos de Planta — Sonda de Vidrio de pH, Módulo Transmisor PH-4502C, ADC y Calibración
       </h3>
       <div class="gallery-grid">
+        <div class="gallery-item" onclick="abrirModal('assets/sensor_ph4502c_sonda.png', 'Sensor de pH de Precisión: Sonda de Vidrio Combinada con Conector Coaxial BNC y Módulo Acondicionador Analógico PH-4502C con Potenciómetros Multivuelta de Calibración')">
+          <img src="assets/sensor_ph4502c_sonda.png" alt="Sonda de Vidrio y Módulo PH-4502C" class="gallery-thumb gallery-thumb-contain">
+          <div class="gallery-desc">
+            <div class="gallery-title">Sensor de pH: Sonda Vidrio + PH-4502C</div>
+            <div class="gallery-caption">Electrodo combinado de vidrio sensible a iones H⁺ con referencia KCl y cable apantallado BNC. Tarjeta PH-4502C con entrada de ultra-alta impedancia (>10¹² Ω), trimmers de ajuste y salida analógica Po hacia el ADS1115.</div>
+          </div>
+        </div>
+
+        <div class="gallery-item" onclick="abrirModal('assets/scada_05_ph.jpg', 'Módulo SCADA de Calibración de pH por Software: Calibración en 3 Puntos (Buffer 4.01, 7.00, 10.01) con Diagnóstico de Salud Nernst y Monitoreo Gráfico')">
+          <img src="assets/scada_05_ph.jpg" alt="Calibración de pH en SCADA" class="gallery-thumb">
+          <div class="gallery-desc">
+            <div class="gallery-title">Calibración de pH en SCADA (3 Puntos)</div>
+            <div class="gallery-caption">Panel de supervisión para calibración en buffers estándar: Cálculo de pendientes ácida y alcalina, punto isopotencial de empalme a 1.65V y diagnóstico del estado químico del bulbo de vidrio.</div>
+          </div>
+        </div>
+
         <div class="gallery-item" onclick="abrirModal('assets/planta_bus_adc.jpg', 'Frontend Analógico de Instrumentación: Conversor Delta-Sigma ADS1115 de 16 bits con filtros pasabajas RC antialiasing dedicados para lectura diferencial de pH y DAC MCP4725')">
           <img src="assets/planta_bus_adc.jpg" alt="Frontend ADC ADS1115 y DAC" class="gallery-thumb">
           <div class="gallery-desc">
-            <div class="gallery-title">Frontend Analógico: ADC ADS1115 (16-bit) y Filtro RC</div>
-            <div class="gallery-caption">Acondicionamiento sobre la placa física principal: convertidor I2C ADS1115 con red de filtrado pasivo RC en entradas analógicas A0/A1 para supresión de rizado y DAC MCP4725 de referencia.</div>
+            <div class="gallery-title">Frontend Analógico: ADC ADS1115 y Filtro RC</div>
+            <div class="gallery-caption">Acondicionamiento en placa física principal: convertidor I2C ADS1115 con red de filtrado pasivo RC en entradas A0/A1 para supresión de rizado y DAC MCP4725 de referencia.</div>
           </div>
         </div>
 
         <div class="gallery-item" onclick="abrirModal('assets/planta_sockets_zcs_ph.jpg', 'Borneras Analógicas y Tierra Kelvin: Conexión A1 (Po) y A0 (Kelvin AGND) junto a sockets de sincronismo ZCS')">
           <img src="assets/planta_sockets_zcs_ph.jpg" alt="Borneras Kelvin y Sockets ZCS" class="gallery-thumb">
           <div class="gallery-desc">
-            <div class="gallery-title">Borneras Kelvin (AGND) y Cabezales de Conexión</div>
-            <div class="gallery-caption">Pines y cabezales en la placa principal para conexión de señal analógica pseudo-diferencial con aislamiento de ruido galvánico y sincronismo de conmutación ZCS.</div>
+            <div class="gallery-title">Borneras Kelvin (AGND) y Sockets ZCS</div>
+            <div class="gallery-caption">Pines y cabezales en placa principal para conexión analógica pseudo-diferencial con aislamiento de ruido galvánico y sincronismo de conmutación en cruce por cero.</div>
           </div>
         </div>
       </div>
@@ -1609,6 +1706,66 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         Protocolo Experimental y Tesis: <em>Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6 mediante Diseño de Experimentos y Control In-Operando</em> (Protocolo VUGR / Reporte Modular 044, UdeG & Volta Plating Solutions, 2026).
       </div>
 
+      <!-- ACCESO A REPOSITORIO OFICIAL Y DESPLIEGUE EN LÍNEA -->
+      <h3 style="font-size: 1.05rem; color: #38bdf8; margin: 24px 0 14px 0; border-left: 3px solid #38bdf8; padding-left: 8px;">
+        Acceso al Repositorio Oficial y Despliegue en Línea
+      </h3>
+      <div class="grid-2" style="gap: 16px; margin-bottom: 24px;">
+        <!-- CARD REPOSITORIO GITHUB -->
+        <div class="repo-card" style="border-left: 4px solid #38bdf8;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">
+                CÓDIGO FUENTE & DISEÑO
+              </span>
+              <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--code-font);">rama: main</span>
+            </div>
+            <h4 style="color: #ffffff; margin: 0 0 6px 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+              <svg height="20" width="20" viewBox="0 0 16 16" fill="#38bdf8"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              Repositorio Oficial de GitHub
+            </h4>
+            <p style="font-size: 0.83rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+              Acceso libre y versionado al repositorio central del proyecto. Contiene el código fuente completo en C++ (firmware ESP32-S3 FreeRTOS y Arduino Nano), software SCADA PyQt6 en Python, modelos de simulación y sintonización analítica en MATLAB (<code style="color: var(--primary);">Control_termico.m</code>), esquemáticos electrónicos, diseño de experimentos DoE 2⁵·4 y datos crudos CSV de los 32 ensayos experimentales.
+            </p>
+            <div class="code-snippet">
+              <span>git clone https://github.com/Chavacastro98/Proyecto.git</span>
+            </div>
+          </div>
+          <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="https://github.com/Chavacastro98/Proyecto" target="_blank" rel="noopener noreferrer" class="repo-btn repo-btn-primary" style="flex: 1;">
+              <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              <span>Abrir Repositorio Oficial (GitHub)</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD GITHUB PAGES -->
+        <div class="repo-card" style="border-left: 4px solid #10b981;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);">
+                PORTAL INTERACTIVO EN LÍNEA
+              </span>
+              <span style="font-size: 0.72rem; color: #10b981; font-family: var(--code-font);">HTTP / SSL</span>
+            </div>
+            <h4 style="color: #ffffff; margin: 0 0 6px 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+              <span>🌐</span> Despliegue Público (GitHub Pages)
+            </h4>
+            <p style="font-size: 0.83rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+              Página web interactiva vinculada al código QR del cartel científico SMEQ 2026. Permite visualizar en cualquier navegador web o smartphone (con soporte táctil y modo offline para Galaxy S26 Ultra) los modelos interactivos, oscilograma de conmutación ZCS, calculadora SOA del MOSFET, balance de pH y matriz factorial DoE.
+            </p>
+            <div class="code-snippet">
+              <span style="color: #10b981;">https://chavacastro98.github.io/Proyecto/</span>
+            </div>
+          </div>
+          <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="https://chavacastro98.github.io/Proyecto/" target="_blank" rel="noopener noreferrer" class="repo-btn repo-btn-secondary" style="flex: 1; border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
+              <span>🚀 Abrir Portal GitHub Pages</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <ul class="ref-list">
         <li class="ref-item">
           <span class="ref-author">Volta Plating Solutions.</span> (2026).
@@ -1792,7 +1949,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 <footer>
   <p>XLI Congreso Nacional de la Sociedad Mexicana de Electroquímica (SMEQ 2026)</p>
   <p>Universidad de Guadalajara — Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI)</p>
-  <p style="margin-top: 6px;">Repositorio de Control & Hardware: <a href="https://chavacastro98.github.io/Proyecto/" target="_blank">chavacastro98.github.io/Proyecto/</a></p>
+  <p style="margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 0.84rem;">
+    <a href="https://github.com/Chavacastro98/Proyecto" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+      <svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      Repositorio Oficial (GitHub): Chavacastro98/Proyecto
+    </a>
+    <span style="color: #64748b;">•</span>
+    <a href="https://chavacastro98.github.io/Proyecto/" target="_blank" rel="noopener noreferrer" style="color: #10b981; text-decoration: underline; font-weight: 600;">
+      🌐 Portal Web Interactivo (GitHub Pages)
+    </a>
+  </p>
 </footer>
 
   <script src="js/simuladores.js"></script>

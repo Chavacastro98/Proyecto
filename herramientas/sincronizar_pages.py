@@ -75,6 +75,8 @@ def sincronizar():
                     if file.endswith(('.zip', '.tmp')):
                         continue
                     full_p = os.path.join(root, file)
+                    rel_p = os.path.relpath(full_p, src_dir)
+                    zipf.write(full_p, arcname=rel_p)
     except Exception as e:
         print(f"[AVISO] Error actualizando zip: {e}")
 
