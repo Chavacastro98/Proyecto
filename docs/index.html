@@ -1027,9 +1027,12 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
             <!-- CANVAS DINÁMICO DE LA ONDA CUADRADA -->
             <div class="canvas-container">
-              <canvas id="canvasPulse" height="135"></canvas>
-              <div style="font-size: 0.72rem; color: var(--text-dark); margin-top: 6px; text-align: center;">
-                Forma de onda real: <span style="color: var(--primary); font-weight: bold;">— Pulso de Corriente Catódica</span> | <span style="color: var(--emerald); font-weight: bold;">--- Corriente Media (I_avg)</span>
+              <canvas id="canvasPulse" height="145"></canvas>
+              <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 6px; text-align: center;">
+                Oscilograma en tiempo real (Ventana de 1.0 s): 
+                <span style="color: var(--primary); font-weight: bold;">— Pulso Catódico</span> | 
+                <span style="color: var(--emerald); font-weight: bold;">--- Corriente Media (I_avg)</span> • 
+                <span style="color: #38bdf8;">La cantidad de pulsos en pantalla escala dinámicamente según la frecuencia en Hz (1 a 25 pulsos/s).</span>
               </div>
             </div>
           </div>
