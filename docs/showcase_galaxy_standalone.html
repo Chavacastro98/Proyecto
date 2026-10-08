@@ -854,6 +854,70 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
     </div>
   </header>
 
+  <!-- ========================================================================= -->
+  <!-- RESUMEN EJECUTIVO: DEFINICIÓN DEL SISTEMA Y OBJETIVOS DE TESIS -->
+  <!-- ========================================================================= -->
+  <section class="card" style="margin-top: 16px; margin-bottom: 22px; border-left: 4px solid var(--primary); background: rgba(10, 16, 31, 0.85); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
+      <div>
+        <div style="font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
+          Plataforma de Investigación & Desarrollo Tecnológico (CUCEI — Universidad de Guadalajara)
+        </div>
+        <h2 style="font-size: 1.25rem; color: #ffffff; margin: 4px 0 0 0; font-weight: 700;">
+          Sistema CTS-C51: Instrumentación In-Operando y Control Automatizado para Electrodeposición
+        </h2>
+      </div>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span class="badge badge-primary">Tesis de Grado</span>
+        <span class="badge badge-emerald">32 Ensayos DoE 2⁵·4</span>
+        <span class="badge badge-amber">Trazabilidad Metrológica</span>
+      </div>
+    </div>
+
+    <p style="font-size: 0.90rem; color: #cbd5e1; line-height: 1.55; margin-bottom: 14px;">
+      El <strong>Sistema CTS-C51</strong> es una estación de instrumentación, control automático y adquisición de datos en tiempo real desarrollada a la medida para la <strong>experimentación de la tesis de licenciatura en electroquímica</strong>. Su propósito central es resolver las limitaciones de reproducibilidad en bancos de galvanoplastia manuales, proporcionando un entorno rigurosamente controlado para la síntesis de recubrimientos protectores de zinc sobre sustratos de aluminio aeronáutico 6061 T-6.
+    </p>
+
+    <!-- CUADRÍCULA DE OBJETIVOS ESPECÍFICOS -->
+    <div class="grid-2" style="gap: 14px;">
+      <!-- OBJETIVO 1: CONTROL DE PARÁMETROS -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 14px;">
+        <h4 style="font-size: 0.92rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span>🎯</span> Objetivo 1: Control de Parámetros Críticos de Proceso
+        </h4>
+        <ul style="margin-left: 18px; font-size: 0.83rem; color: #cbd5e1; line-height: 1.5;">
+          <li style="margin-bottom: 6px;">
+            <strong style="color: #ffffff;">Temperatura Multicanal:</strong> Regulación en lazo cerrado PI en 4 tinas (Desengrase a 90 °C, Decapado a 90 °C, Niquelado a 30 °C y Celda Hull a 30 °C) mediante conmutación en cruce por cero (ZCS a 60 Hz), garantizando <em>cero sobretiro (0% OS)</em> para evitar degradación de reactivos y cero interferencia electromagnética (EMI).
+          </li>
+          <li style="margin-bottom: 6px;">
+            <strong style="color: #ffffff;">Balance Químico de pH:</strong> Adquisición continua y estabilizada de pH con acondicionamiento analógico pseudo-diferencial de alta impedancia (&gt;10⁸ Ω) y filtrado digital de mediana móvil a 25 Hz para controlar la acidez del electrolito.
+          </li>
+          <li>
+            <strong style="color: #ffffff;">Densidad de Corriente Catódica:</strong> Modulación precisa de corriente (0 a 6.6 A) hacia la probeta de zincado mediante un sumidero VCSS a 2 A/V, permitiendo corriente directa continua o pulsada a 10 Hz para refinar el grano cristalino del depósito.
+          </li>
+        </ul>
+      </div>
+
+      <!-- OBJETIVO 2: ADQUISICIÓN Y TRAZABILIDAD -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; padding: 14px;">
+        <h4 style="font-size: 0.92rem; color: #10b981; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span>📈</span> Objetivo 2: Adquisición de Datos y Trazabilidad Metrológica
+        </h4>
+        <ul style="margin-left: 18px; font-size: 0.83rem; color: #cbd5e1; line-height: 1.5;">
+          <li style="margin-bottom: 6px;">
+            <strong style="color: #ffffff;">Adquisición Determinística a Alta Velocidad:</strong> Telemetría continua a 10 Hz (SCADA) y muestreo de sensores a 25 Hz respaldado por el núcleo dual del ESP32-S3 y bus I²C Fast-Mode a 400 kHz.
+          </li>
+          <li style="margin-bottom: 6px;">
+            <strong style="color: #ffffff;">Trazabilidad Experimental de 32 Ensayos DoE:</strong> Cada ensayo del diseño factorial multinivel 2⁵·4 cuenta con registro inmutable, identificación única (ID de corrida Taguchi), tiempo de inmersión y cálculo de carga total culombimétrica en Coulombs.
+          </li>
+          <li>
+            <strong style="color: #ffffff;">Exportación y Validación de Datos (CSV):</strong> Almacenamiento continuo con buffer protegido en archivos CSV estandarizados y cálculo en tiempo real de índices de desempeño IAE / ISE para validación estadística de la tesis.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- PESTAÑAS DE NAVEGACIÓN -->
   <nav class="nav-tabs" id="navTabs">
     <button class="tab-btn active" data-tab="tab-arquitectura">📐 Arquitectura & Bloques</button>
@@ -2096,6 +2160,115 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           <div class="gallery-desc">
             <div class="gallery-title">06. Consola de Diagnóstico</div>
             <div class="gallery-caption">Terminal de comandos interactivo para depuración de firmware y logs de FreeRTOS.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SECCIÓN 3: ARQUITECTURA DEL SERVIDOR WEB, MENSAJERÍA JSON Y ARCHIVOS CSV -->
+      <!-- ========================================================================= -->
+      <div style="margin: 32px 0 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 24px;">
+        <h3 style="font-size: 1.15rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span>🌐</span> Arquitectura del Servidor Web, Mensajería JSON / REST y Trazabilidad en CSV
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px;">
+          Desglose de la capa de software y conectividad: cómo el microcontrolador ESP32-S3 sirve la interfaz web en tiempo real sin interferir en los lazos de control de planta, la estructura de los payloads JSON transmitidos por WebSockets / REST, y el flujo determinístico de almacenamiento y lectura de archivos CSV para la trazabilidad de los 32 ensayos Taguchi de la tesis.
+        </p>
+
+        <div class="grid-3" style="gap: 14px; margin-bottom: 16px;">
+          <!-- CARD A: SERVIDOR WEB ASÍNCRONO -->
+          <div class="card" style="margin: 0; background: rgba(15, 23, 42, 0.85); border-top: 3px solid var(--primary);">
+            <div style="font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">
+              A. Servidor Web Asíncrono
+            </div>
+            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">ESPAsyncWebServer & Dual-Core</h4>
+            <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
+              Implementado mediante la librería <code style="color: #38bdf8;">ESPAsyncWebServer</code> desacoplada bajo <strong>FreeRTOS SMP</strong>:
+            </p>
+            <ul style="margin-left: 14px; font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
+              <li><strong style="color: #cbd5e1;">Core 0 (Networking):</strong> Maneja la pila TCP/IP, servidor HTTP en puerto 80, servidor DNS para portal cautivo y WebSockets concurrentes.</li>
+              <li><strong style="color: #cbd5e1;">Core 1 (Control Crítico):</strong> Ejecuta de forma determinística a 1 Hz los 4 lazos PI térmicos y a 25 Hz el muestreo ADC/VCSS sin interrupciones ni jitter por tráfico de red.</li>
+              <li><strong style="color: #cbd5e1;">Wi-Fi SoftAP Autónomo:</strong> Emite la red local <code style="color: #38bdf8;">SSID: Uli</code> (IP: <code style="color: #38bdf8;">192.168.4.1</code>) o se conecta a la LAN del laboratorio vía mDNS (<code style="color: #38bdf8;">http://interfaz.local</code>).</li>
+            </ul>
+          </div>
+
+          <!-- CARD B: PROTOCOLO JSON / REST -->
+          <div class="card" style="margin: 0; background: rgba(15, 23, 42, 0.85); border-top: 3px solid var(--emerald);">
+            <div style="font-size: 0.74rem; font-weight: 700; color: var(--emerald); text-transform: uppercase;">
+              B. Esquema de Mensajería JSON
+            </div>
+            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">REST API & WebSockets a 10 Hz</h4>
+            <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
+              La comunicación entre el cliente web (teléfono/laptop) y el microcontrolador utiliza payloads JSON estructurados:
+            </p>
+            <ul style="margin-left: 14px; font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
+              <li><strong style="color: #cbd5e1;">GET /api/telemetria:</strong> Retorna temperaturas actuales de las 4 tinas, pH con compensación de temperatura, corriente VCSS, estados de bombas y alarmas.</li>
+              <li><strong style="color: #cbd5e1;">POST /api/setpoints:</strong> Envía nuevas consignas de temperatura (<i>T</i><sub>set</sub>) y corriente (<i>I</i><sub>set</sub>) parseadas mediante <code style="color: #10b981;">ArduinoJson 6/7</code>.</li>
+              <li><strong style="color: #cbd5e1;">WebSocket (/ws):</strong> Transmisión dúplex en streaming a 10 FPS con latencia &lt; 20 ms para graficación continua sin refresco de página.</li>
+            </ul>
+          </div>
+
+          <!-- CARD C: ESCRITURA Y LECTURA CSV -->
+          <div class="card" style="margin: 0; background: rgba(15, 23, 42, 0.85); border-top: 3px solid var(--amber);">
+            <div style="font-size: 0.74rem; font-weight: 700; color: var(--amber); text-transform: uppercase;">
+              C. Adquisición & Archivos CSV
+            </div>
+            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">Trazabilidad In-Operando</h4>
+            <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
+              Registro experimental metrológico para los 32 ensayos Taguchi de la tesis:
+            </p>
+            <ul style="margin-left: 14px; font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
+              <li><strong style="color: #cbd5e1;">Escritura en Streaming:</strong> Hilo en segundo plano (<code style="color: #fbbf24;">QThread</code>) en el SCADA PyQt6 que escribe en buffer con volcado <code style="color: #fbbf24;">flush()</code> continuo a disco duro.</li>
+              <li><strong style="color: #cbd5e1;">Estampado Temporal ISO-8601:</strong> Cada fila registra fecha, microsegundo, corrida DoE, variables de proceso y métricas de error IAE/ISE.</li>
+              <li><strong style="color: #cbd5e1;">Lectura y Post-Proceso:</strong> Módulo analítico en Python que lee los CSV, genera reportes gráficos a 300 DPI y exporta matrices a Minitab y OriginLab.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- DETALLE TÉCNICO EXPANDIDO: ESTRUCTURA JSON Y FORMATO CSV -->
+        <div class="grid-2" style="gap: 14px;">
+          <!-- BLOQUE JSON REAL -->
+          <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 4px;">
+              <span style="font-size: 0.76rem; font-family: var(--code-font); color: var(--emerald); font-weight: bold;">
+                📄 Payload JSON: GET /api/telemetria (10 Hz)
+              </span>
+              <span style="font-size: 0.70rem; color: var(--text-dark);">ArduinoJson v7 / UTF-8</span>
+            </div>
+            <pre style="font-family: var(--code-font); font-size: 0.74rem; color: #cbd5e1; overflow-x: auto; line-height: 1.35; margin: 0;"><code>{
+  <span style="color: #38bdf8;">"timestamp"</span>: 1775649200,
+  <span style="color: #38bdf8;">"ensayo_id"</span>: <span style="color: #fbbf24;">"DOE_RUN_07"</span>,
+  <span style="color: #38bdf8;">"tinas"</span>: [
+    {<span style="color: #38bdf8;">"id"</span>: 0, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Desengrase"</span>, <span style="color: #38bdf8;">"temp_c"</span>: 89.85, <span style="color: #38bdf8;">"set_c"</span>: 90.0, <span style="color: #38bdf8;">"duty"</span>: 28},
+    {<span style="color: #38bdf8;">"id"</span>: 1, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Decapado"</span>,   <span style="color: #38bdf8;">"temp_c"</span>: 89.90, <span style="color: #38bdf8;">"set_c"</span>: 90.0, <span style="color: #38bdf8;">"duty"</span>: 31},
+    {<span style="color: #38bdf8;">"id"</span>: 2, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Niquelado"</span>,  <span style="color: #38bdf8;">"temp_c"</span>: 30.05, <span style="color: #38bdf8;">"set_c"</span>: 30.0, <span style="color: #38bdf8;">"duty"</span>: 12},
+    {<span style="color: #38bdf8;">"id"</span>: 3, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Celda Hull"</span>, <span style="color: #38bdf8;">"temp_c"</span>: 30.00, <span style="color: #38bdf8;">"set_c"</span>: 30.0, <span style="color: #38bdf8;">"duty"</span>: 18}
+  ],
+  <span style="color: #38bdf8;">"ph_celda"</span>: {<span style="color: #38bdf8;">"valor"</span>: 4.52, <span style="color: #38bdf8;">"adc_mv"</span>: 1984.2, <span style="color: #38bdf8;">"calibrado"</span>: true},
+  <span style="color: #38bdf8;">"vcss"</span>: {<span style="color: #38bdf8;">"corriente_a"</span>: 2.50, <span style="color: #38bdf8;">"voltaje_v"</span>: 11.85, <span style="color: #38bdf8;">"modo"</span>: <span style="color: #fbbf24;">"PULSADO_10HZ"</span>},
+  <span style="color: #38bdf8;">"estado_isa88"</span>: <span style="color: #10b981;">"EXECUTION"</span>,
+  <span style="color: #38bdf8;">"seguridad"</span>: {<span style="color: #38bdf8;">"interlock_ok"</span>: true, <span style="color: #38bdf8;">"rele_anodo"</span>: 1}
+}</code></pre>
+          </div>
+
+          <!-- BLOQUE CSV REAL -->
+          <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 4px;">
+              <span style="font-size: 0.76rem; font-family: var(--code-font); color: var(--amber); font-weight: bold;">
+                📊 Estructura de Registro CSV: ensayo_taguchi_run07.csv
+              </span>
+              <span style="font-size: 0.70rem; color: var(--text-dark);">Escritura continua PyQt6 / Buffer flush()</span>
+            </div>
+            <pre style="font-family: var(--code-font); font-size: 0.73rem; color: #cbd5e1; overflow-x: auto; line-height: 1.35; margin: 0;"><code><span style="color: #64748b;"># Cabecera estándar de trazabilidad metrológica:</span>
+<span style="color: #38bdf8;">Timestamp_ISO,Ensayo_ID,T_Desengrase,T_Decapado,T_Niquel,T_Hull,pH_Medido,I_VCSS_A,V_Celda_V,Estado_Agit,IAE_Term,ISE_Term</span>
+2026-10-08T10:14:00.100Z,DOE_RUN_07,89.82,89.88,29.95,29.98,4.52,2.49,11.84,ON,0.18,0.03
+2026-10-08T10:14:00.200Z,DOE_RUN_07,89.83,89.89,29.97,29.99,4.52,2.50,11.85,ON,0.17,0.03
+2026-10-08T10:14:00.300Z,DOE_RUN_07,89.85,89.90,30.00,30.00,4.52,2.50,11.85,ON,0.15,0.02
+2026-10-08T10:14:00.400Z,DOE_RUN_07,89.87,89.91,30.02,30.01,4.51,2.51,11.86,ON,0.13,0.02
+... [Muestreo a 10 Hz continuo durante los 180 s de cada corrida experimental] ...</code></pre>
+            <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 8px; line-height: 1.4;">
+              📌 <strong>Beneficio para la Tesis:</strong> Permite realizar el análisis de varianza (ANOVA) en Minitab con datos 100% reproducibles, demostrando que las variaciones en adherencia o brillo del recubrimiento se deben a los factores del DoE (densidad de corriente, tiempo, aditivos) y no a perturbaciones térmicas o deriva de pH.
+            </div>
           </div>
         </div>
       </div>
