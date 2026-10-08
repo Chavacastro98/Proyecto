@@ -142,40 +142,36 @@ h1 {
   line-height: 1.4;
 }
 
-/* NAVEGACIÓN POR PESTAÑAS (TABS) - OPTIMIZADA TÁCTIL */
+/* NAVEGACIÓN POR PESTAÑAS (TABS) - DOBLE FILA / RESPONSIVA SIN SCROLL HORIZONTAL */
 .nav-tabs {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  margin-bottom: 20px;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
-
-.nav-tabs::-webkit-scrollbar { 
-  display: none; /* Chrome/Safari/Samsung Internet */
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+  justify-content: stretch;
 }
 
 .tab-btn {
+  flex: 1 1 calc(25% - 8px);
+  min-width: 180px;
   background: rgba(15, 23, 42, 0.7);
   border: 1px solid var(--card-border);
   color: var(--text-muted);
-  padding: 10px 16px;
+  padding: 10px 14px;
   border-radius: 10px;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: 6px;
   min-height: 44px; /* Target táctil óptimo */
   touch-action: manipulation;
   user-select: none;
+  white-space: normal;
 }
 
 .tab-btn:hover {
@@ -223,12 +219,15 @@ footer a { color: var(--primary); text-decoration: none; }
   .subtitle { font-size: 0.85rem; }
   .credits-panel { grid-template-columns: 1fr; gap: 8px; }
   .nav-tabs {
-    gap: 8px;
-    padding-bottom: 6px;
+    gap: 6px;
+    margin-bottom: 16px;
   }
   .tab-btn {
-    padding: 8px 14px;
-    font-size: 0.82rem;
+    flex: 1 1 calc(50% - 6px);
+    min-width: 125px;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    min-height: 42px;
   }
 }
 
@@ -236,7 +235,12 @@ footer a { color: var(--primary); text-decoration: none; }
   .container { padding: 6px; }
   h1 { font-size: 1.08rem; }
   .badge { font-size: 0.68rem; padding: 3px 8px; }
+  .tab-btn {
+    padding: 8px 6px;
+    font-size: 0.74rem;
+  }
 }
+
 
 
 /* ==========================================================================
@@ -2012,12 +2016,12 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </div>
         </div>
 
-        <div class="gallery-item" onclick="abrirModal('assets/vcss_placa.jpg', 'Módulo VCSS Físico Ensamblado en Gabinete de Instrumentación: Borneras de Potencia, Conexión a Celda Hull y Cableado de Control')">
-          <img src="assets/vcss_placa.jpg" alt="Módulo VCSS en Gabinete" class="gallery-thumb">
+        <div class="gallery-item" onclick="abrirModal('assets/metrologia_pulsado_10hz.jpg', 'Metrología de Onda Pulsada a 10 Hz: Captura de Osciloscopio Digital mostrando Tiempos de Subida y Bajada del Sumidero VCSS en Celda Hull')">
+          <img src="assets/metrologia_pulsado_10hz.jpg" alt="Metrología Onda Pulsada 10 Hz" class="gallery-thumb">
           <div class="gallery-desc">
-            <div class="gallery-title">Tarjeta VCSS Ensamblada en Gabinete</div>
+            <div class="gallery-title">Metrología Experimental VCSS (10 Hz)</div>
             <div class="gallery-caption">
-              Montaje industrial de la tarjeta sumidero lineal con sus bornes de alta corriente, conexión directa hacia el cátodo de la celda de electrodeposición y línea de tierra Kelvin aislada.
+              Respuesta temporal capturada en osciloscopio: Conmutación cuadrada limpia a 10 Hz con tiempos de transición &lt; 50 µs, suprimiendo la polarización por concentración en la capa de difusión de Nernst.
             </div>
           </div>
         </div>
