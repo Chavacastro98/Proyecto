@@ -68,32 +68,32 @@ window.addEventListener('resize', () => {
 // CONTROLADOR DEL DIAGRAMA DE ARQUITECTURA VECTORIAL INTERACTIVO
 const ARCH_NODOS = {
   esp32: {
-    titulo: 'Master: ESP32-S3 N16R8 Dual-Core @ 240 MHz',
+    titulo: 'Master: ESP32-S3 N16R8 Dual-Core @ 240 MHz (RTOS 2.0)',
     chip: 'Espressif Systems ESP32-S3-WROOM-1',
     pines: 'Dual Core LX7, 512KB SRAM, 8MB PSRAM Octal, 16MB Flash SPI',
-    bus: 'Coordinador Maestro: I²C Fast-Mode (GPIO 8/9), SPI @ 4MHz (GPIO 10-13), UART2 (GPIO 17)',
-    desc: 'Núcleo central del sistema. Core 0 ejecuta FreeRTOS con servidor HTTP asíncrono, WebSockets para telemetría a 10 Hz y gestión Wi-Fi SoftAP. Core 1 ejecuta en tiempo real determinístico los 4 lazos de control PI térmicos, muestreo ADC, supervisión del sumidero VCSS y la máquina de estados secuencial ISA-88.'
+    bus: 'Coordinador Maestro: I²C Fast-Mode (GPIO 8/9), SPI @ 4MHz (GPIO 18/19/5/4/13/14), UART2 (GPIO 17 TX)',
+    desc: 'Núcleo central del sistema gobernado por FreeRTOS SMP Dual-Core. Core 0 ejecuta la pila de comunicaciones Wi-Fi SoftAP ("Uli"), servidor Web HTTP en puerto 80 con endpoint unificado /data_all a 10 Hz y servicio de actualización remota OTA. Core 1 ejecuta en tiempo real determinístico los 4 lazos de control PI térmicos (1 Hz), modulación analógica de corriente VCSS (Gm = 2.00 S), adquisición continua del sensor de pH en Canal A1 dedicado a 860 SPS y máquina de seguridad Fail-Safe (50 Hz).'
   },
   nano: {
-    titulo: 'Esclavo: Arduino Nano Coprocesador @ 16 MHz',
+    titulo: 'Esclavo de Potencia: Arduino Nano Coprocesador Nano2 @ 16 MHz',
     chip: 'ATmega328P / Microchip',
-    pines: 'D2 (INT0 ZCS), D3-D6 (Gate TRIACs), D1 (TX UART), D0 (RX UART)',
-    bus: 'UART2 Esclavo @ 9600 Baud + Interrupción externa INT0 / INT1',
-    desc: 'Coprocesador dedicado exclusivamente al control de fase y conmutación de los 4 TRIACs de potencia. Descarga al ESP32 de interrupciones críticas de microsegundos de la red eléctrica de 60 Hz e incorpora Watchdog Fail-Safe de 3.0 s por desconexión de bus.'
+    pines: 'D3 (INT1 Cruce por Cero), D7-D10 (Compuertas TRIACs T0-T3), D0 (RX UART @ 9600 bps)',
+    bus: 'UART2 Esclavo @ 9600 Baud + Interrupción externa INT1 (Pin D3 ZCD)',
+    desc: 'Coprocesador dedicado a la modulación de potencia térmica de las 4 tinas mediante Tiempo Proporcional (Burst Firing) a ciclos completos de 60 Hz en ventanas temporales de 3000 ms gobernado por la librería JELDimmer2. Conmuta exclusivamente en cruce por cero, eliminando de raíz las interferencias electromagnéticas (EMI) sobre el electrodo de pH y los termopares. Incluye perro guardián UART de 4000 ms que corta todas las salidas si se interrumpe la comunicación con el ESP32.'
   },
   max6675: {
     titulo: 'Transmisores Térmicos: 4x MAX6675 SPI @ 4 MHz',
     chip: 'Maxim Integrated / Analog Devices MAX6675ISA',
-    pines: 'SCK (GPIO 12), MISO (GPIO 13), CS0-CS3 (GPIO 10, 11, 14, 15)',
+    pines: 'SCK (GPIO 18), MISO (GPIO 19), CS0-CS3 (GPIO 5, 4, 13, 14)',
     bus: 'SPI Compartido @ 4 MHz con 4 líneas Chip-Select dedicadas',
     desc: 'Digitalizadores con compensación de unión fría integrada para 4 termopares tipo K sumergidos en las tinas de Desengrase, Decapado, Niquelado y Celda Hull. Resolución de 0.25 °C con tiempo de conversión de 0.22 s y detección de termopar abierto.'
   },
   ads1115: {
-    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta',
+    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta (Canal A1 pH Dedicado)',
     chip: 'Texas Instruments ADS1115IDGSR (Dirección I²C 0x48)',
-    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canales A0-A1 (pH), A2-A3 (Shunts)',
-    bus: 'I²C Fast-Mode @ 400 kHz con PGA programable (±0.256V a ±6.144V)',
-    desc: 'Digitalizador analógico diferencial de alta resolución. Los canales A0-A1 adquieren la señal analógica del módulo PH-4502C en modo pseudo-diferencial con cancelación de modo común, y los canales A2-A3 leen la caída de tensión en el banco de shunts cerámicos de 1.0 Ω del VCSS.'
+    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canal A1 (pH Dedicado), Canales A2-A3 (Shunts VCSS)',
+    bus: 'I²C Fast-Mode @ 400 kHz con PGA programable (±4.096V) y muestreo continuo a 860 SPS',
+    desc: 'Digitalizador analógico de alta precisión. En RTOS 2.0, el Canal A1 está dedicado exclusivamente a la sonda de pH (módulo PH-4502C) con muestreo continuo a 860 SPS (eliminando tiempos muertos de multiplexación temporal A0/A1). Los canales A2 y A3 monitorean la caída de tensión en el banco de shunts cerámicos de 1.0 Ω / 10W del sumidero VCSS.'
   },
   zcs: {
     titulo: 'Detector de Cruce por Cero Dual (AC 60 Hz / DC 12V)',
@@ -105,37 +105,37 @@ const ARCH_NODOS = {
   vcss: {
     titulo: 'Sumidero Lineal VCSS (Voltage-Controlled Current Sink)',
     chip: 'LM358N (Op-Amp Error) + 2x IRLZ44Z MOSFETs + MCP4725 DAC',
-    pines: 'Consigna DAC MCP4725 (0-3.3V) ➔ Gate MOSFETs ➔ Cátodo Celda Hull',
+    pines: 'Consigna DAC MCP4725 (0-3.53V) ➔ Gate MOSFETs ➔ Cátodo Celda Hull',
     bus: 'Lazo Analógico Ultrarrápido (< 50 µs) + I²C DAC @ 400 kHz',
-    desc: 'Circuito sumidero de precisión diseñado bajo la nota técnica Texas Instruments SLAA868A. Regula la densidad de corriente catódica (0 a 6.6 A) hacia la probeta de zincado en la Celda Hull con transconductancia neta de 2 A/V y compensación capacitiva de compuerta R_ISO = 100 Ω.'
+    desc: 'Circuito sumidero de precisión diseñado bajo la nota técnica Texas Instruments SLAA868A. Regula la densidad de corriente catódica (0 a 3.50 A continuo / pulsado a 10 Hz) hacia la probeta de zincado en la Celda Hull con transconductancia neta de 2.00 A/V y dos shunts cerámicos de 1.0 Ω / 10W.'
   },
   triacs: {
-    titulo: 'Módulo de Potencia TRIACs MDAC4C (4 Canales AC)',
-    chip: '4x TRIACs BTA24-600B (25A / 600V) + 4x Drivers MOC3021',
-    pines: 'Disparos optoacoplados de 5V ➔ Puertas TRIAC ➔ Resistencias 450W',
-    bus: 'Conmutación por Tiempo Proporcional (Burst Firing) a 60 Hz',
-    desc: 'Etapa de potencia de estado sólido para controlar la temperatura de las 4 tinas industriales (Desengrase 90°C, Decapado 90°C, Niquelado 30°C y Celda Hull 30°C). Conmutación de paquetes de ciclos completos en V=0 sin recorte de fase.'
+    titulo: 'Módulo de Potencia TRIACs (4 Canales AC)',
+    chip: '4x TRIACs BTA24-800BW + 4x Drivers MOC3021',
+    pines: 'Disparos optoacoplados de 5V ➔ Puertas TRIAC ➔ Resistencias 450W / 18W',
+    bus: 'Conmutación por Tiempo Proporcional (Burst Firing) a 60 Hz en ventanas de 3000 ms',
+    desc: 'Etapa de potencia de estado sólido de fabricación propia para controlar la temperatura de las 4 tinas (Desengrase 85-90°C, Decapado 85-90°C, Celda Hull 25/40°C y Niquelado 30-35°C). Conmutación de paquetes de ciclos completos en V=0 sin recorte de fase.'
   },
   rele: {
-    titulo: 'Actuador Electromecánico: Módulo de 2 Relés Songle (5V Optoacoplado)',
+    titulo: 'Actuador Electromecánico: Módulo de Relés Songle (5V Optoacoplado)',
     chip: 'Songle SRD-05VDC-SL-C + Optoacopladores PC817 + Driver NPN',
-    pines: 'Control Lógico IN1/IN2 (GPIO 20/21), Borneras Salida K1/K2 (NA, COM, NC)',
-    bus: 'Control digital TTL @ 5V con Jumper JD-VCC para aislamiento galvánico',
-    desc: 'Actuador electromecánico de alta corriente (10A @ 250VAC / 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS) para anular el arco eléctrico, y conmuta los motores de agitación magnética en las tinas de proceso.'
+    pines: 'Control Lógico Relé VCSS (GPIO 20 Active-LOW), Borneras Salida K1/K2',
+    bus: 'Control digital TTL @ 5V con aislamiento galvánico óptico',
+    desc: 'Actuador electromecánico de seguridad (10A @ 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS a corriente nula 0.00 A) para anular el arco voltaico y evitar desgaste de contactos.'
   },
   ph: {
-    titulo: 'Sensor de Acidez: Sonda de Vidrio Combinada + Transmisor PH-4502C',
+    titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Canal A1 Dedicado',
     chip: 'Electrodo Combinado Vidrio-Ag/AgCl + Módulo Transmisor PH-4502C',
-    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Filtro RC ➔ ADC ADS1115 (A0/A1)',
-    bus: 'Entrada de Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta',
-    desc: 'Cadena de medición de pH in-operando en baño químico y Celda Hull. Dispone de trimmers multivuelta de compensación analógica de ganancia/offset (1.65V isopotencial) y entrega señal Po acondicionada hacia el ADS1115 en configuración pseudo-diferencial con cancelación de modo común.'
+    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Canal A1 ADS1115 (860 SPS)',
+    bus: 'Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta + Calibración NVS Tri-Modo',
+    desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. En RTOS 2.0 se conecta directamente al Canal A1 del ADS1115 con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente almacenada en memoria Flash NVS.'
   },
   scada: {
-    titulo: 'Estación de Supervisión SCADA PyQt6 & Servidor Web',
-    chip: 'PC Host (Python 3.14 / PyQt6 / pyqtgraph) + WebSockets / HTTP',
-    pines: 'Puerto COM USB-CDC @ 115200 Baud / Conexión Wi-Fi 802.11 b/g/n',
-    bus: 'Protocolo de Tramas Binarias + REST API JSON',
-    desc: 'Software de supervisión de alto nivel. Gestiona la secuencia automatizada de los 32 ensayos Taguchi (DoE 2⁵·4), registra curvas térmicas y de densidad de corriente a 10 Hz, exporta tablas CSV validadas y permite control remoto desde laptops o smartphones Samsung Galaxy S26 Ultra.'
+    titulo: 'Estación de Supervisión SCADA Telemetría 2.0 (PyQt6 / Python)',
+    chip: 'PC Host (Python 3.9+ / PyQt6 / pyqtgraph) + HTTP REST (/data_all)',
+    pines: 'Wi-Fi SoftAP "Uli" (192.168.4.1) / USB-CDC Serial @ 115200 Baud',
+    bus: 'Protocolo REST JSON (/data_all a 10 Hz) + Polling Asíncrono Resiliente',
+    desc: 'Software SCADA industrial de alto nivel bajo norma ISA-88. Gestiona la matriz experimental para 32 probetas desde Excel, ejecuta culombimetría faradaica en lazo cerrado Q = ∫ I dt, modelo bicapa aditivo Zn+Ni, integración con balanza analítica para cálculo automático del rendimiento catódico η% y espesores en micrómetros, y genera automáticamente el paquete de 8 figuras científicas a 300 DPI.'
   }
 };
 

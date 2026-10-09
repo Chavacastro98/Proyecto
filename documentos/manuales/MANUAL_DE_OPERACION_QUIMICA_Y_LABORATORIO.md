@@ -203,7 +203,7 @@ La estación instrumental cuenta con dos entornos de software complementarios di
 
 > [!TIP]
 > **Autonomía Operativa ante Desconexión o Fallo del SCADA:**  
-> La ejecución de los lazos de control deterministas reside al 100% en el firmware FreeRTOS de los microcontroladores (lazo VCSS en Core 1 del ESP32-S3 y lazo de corte de fase AC en el Arduino Nano). Si la computadora de escritorio se desconecta, el cable se interrumpe, el SCADA se cierra o el sistema operativo Windows se congela a mitad de un ensayo, **la planta continuará regulando la corriente y las temperaturas de forma autónoma sin arruinar el lote químico**. El operador puede supervisar el estado o abortar el ensayo de emergencia en cualquier momento conectándose desde un smartphone o tablet a la red Wi-Fi `Uli` y abriendo `http://192.168.4.1`.
+> La ejecución de los lazos de control deterministas reside al 100% en el firmware FreeRTOS de los microcontroladores (lazo VCSS en Core 1 del ESP32-S3 y lazo de tiempo proporcional AC en el Arduino Nano con Nano2). Si la computadora de escritorio se desconecta, el cable se interrumpe, el SCADA se cierra o el sistema operativo Windows se congela a mitad de un ensayo, **la planta continuará regulando la corriente y las temperaturas de forma autónoma sin arruinar el lote químico**. El operador puede supervisar el estado o abortar el ensayo de emergencia en cualquier momento conectándose desde un smartphone o tablet a la red Wi-Fi `Uli` y abriendo `http://192.168.4.1`.
 
 #### Galería de Pantallas del SCADA en Funcionamiento:
 
@@ -840,8 +840,8 @@ La carpeta `hardware/` documenta el diseño eléctrico y dimensionamiento de la 
 ![Diagrama de Interconexión Eléctrica Global](imagenes/sistema.png)
 * **`sistema.png`:** Diagrama de bloques funcional de hardware moderno e interconexión eléctrica global:
   * **Módulo ZCS Dual:** Detector de Cruce por Cero AC (Zero-Crossing 60 Hz vía optoacoplador 4N35 conectado a Pin D3 INT1 del Arduino Nano) y Módulo de Relevador ZCS de corte galvánico en +12V VDD (GPIO 20 Active-LOW sincronizado a corriente nula $I = 0.00\text{ A}$ sin arco voltaico).
-  * **Sensado Pseudo-Diferencial de pH:** Acondicionador analógico PH-4502C conectado al ADC ADS1115 (16-bit @ 860 SPS) en topología pseudo-diferencial ($V_{\text{in}}^+ = \text{Po}$ en Canal A1, $V_{\text{ref}}^- = \text{AGND}$ limpia en Canal A0) para máximo rechazo a modo común (CMRR) e inmunidad contra ruidos inducidos por los TRIACs y el sumidero.
-  * **Buses y Control:** Bus I2C Fast-Mode (400 kHz) para ADS1115, MCP4725 y AHT20/BMP280; Bus SPI Read-Only (4 MHz) para 4x módulos MAX6675 con termopares Tipo K; y enlace serie UART2 asíncrono (9600 Baud) entre ESP32-S3 y Arduino Nano con Watchdog de seguridad (3.0 s).
+  * **Sensado Dedicado de pH (Canal A1):** Acondicionador analógico PH-4502C conectado al ADC ADS1115 (16-bit @ 860 SPS) a través del Canal A1 dedicado para máximo determinismo y velocidad, con filtrado digital adaptativo IIR y calibración NVS tri-modo, inmune a ruidos gracias a la conmutación ZCS.
+  * **Buses y Control:** Bus I2C Fast-Mode (400 kHz) para ADS1115, MCP4725 y AHT20/BMP280; Bus SPI Read-Only (4 MHz) para 4x módulos MAX6675 con termopares Tipo K; y enlace serie UART2 asíncrono (9600 Baud) entre ESP32-S3 y Arduino Nano con Watchdog de seguridad (4.0 s).
 
 ---
 
@@ -909,12 +909,12 @@ Para compilar, ejecutar o auditar las distintas capas del sistema, se emplean lo
 El proyecto implementa una dualidad fundamentada de métodos tanto en el control físico de potencia como en la supervisión operativa:
 
 #### A. Control de Potencia Térmica AC (Calefacción de Tinas)
-* **Método 1: Recorte de Ángulo de Fase (&alpha;-Firing a 120 Hz) con Co-procesador Arduino Nano (`nano.ino`):**
-  * *Ventajas:* Regulación analógica ultra-fina y continua en cada semiciclo de 8.33 ms. Garantiza una estabilidad de ± 0.2 °C sin oscilaciones en reactores pequeños como la Celda Hull (267 mL).
-  * *Desventajas:* Requiere un microcontrolador esclavo dedicado (Arduino Nano) con interrupción crítica `INT1` para no verse afectado por el jitter de red del ESP32; no puede actualizarse por la interfaz web OTA (exige cable USB físico); genera armónicos de conmutación (ruido EMI/dv/dt) que demandan filtrado RC snubber y optoacoplamiento estricto.
-* **Método 2: Paquetes de Ciclos / Ventana Proporcional de Tiempo (`nano2/` con JELDimmer2 o directo en ESP32):**
-  * *Ventajas:* Conmuta exclusivamente en el cruce por cero de la senoidal (cero ruido electromagnético de alta frecuencia); algoritmo simplificado que podría ejecutarse directamente en el ESP32 sin microcontrolador esclavo, lo que permitiría actualización 100% inalámbrica por OTA.
-  * *Desventajas:* En ventanas de 3 segundos produce variaciones cíclicas de temperatura (oleadas térmicas de ± 1.5 °C) inadmisibles en la Celda Hull de 267 mL (aunque es viable para tinas industriales de 20 a 100 litros con alta inercia térmica).
+* **Método Oficial de Producción: Tiempo Proporcional (Burst Firing ZCS en Ventanas de 3000 ms) con Co-procesador Arduino Nano (`nano2/nano2.ino` + `JELDimmer2`):**
+  * *Ventajas y Justificación Técnica:* Conmuta exclusivamente en los instantes exactos de cruce por cero de la red de 60 Hz ($V = 0$, $di/dt$ mínimo). Esta estrategia **erradica completamente el ruido electromagnético (EMI) y los transitorios de conmutación de alta frecuencia**, protegiendo las mediciones potenciométricas de ultra-alta impedancia del electrodo de pH (PH-4502C, $> 10^{12} \,\Omega$) y la lectura en microvoltios de los termopares MAX6675. Además, cuenta con un perro guardián UART de 4000 ms que desconecta todas las cargas ante pérdida de comunicación.
+  * *Operación en Planta:* La inercia térmica de los baños de 2 a 3 litros y la potencia controlada del cartucho de 18 W en la Celda Hull garantizan una regulación térmica suave sin sobretiros.
+* **Método Histórico / Alternativa de Laboratorio: Recorte de Ángulo de Fase (&alpha;-Firing a 120 Hz) (`nano/nano.ino`):**
+  * *Principio:* Modulación en cada semiciclo mediante retardos de microsegundos gobernados por interrupción `INT1` y tabla LUT de 101 puntos senoidales.
+  * *Razón de su Descarte en Producción:* Aunque ofrece modulación sub-milisegundo, el disparo abrupto a mitad de senoidal genera fuertes frentes de onda $dv/dt$ y radiación EMI que introducían perturbaciones intolerables sobre las lecturas de pH y termopares en el entorno húmedo y galvánico de la planta. Se conserva archivado como referencia comparativa de ingeniería.
 
 #### B. Métodos de Supervisión y Operación (Web Móvil vs SCADA de Escritorio)
 * **Vía Web Móvil (`http://192.168.4.1`):** Cero instalación de software, accesible desde cualquier celular o tablet a pie de reactor, actualización remota del ESP32 por OTA, calibración asistida de pH. Limitada a un buffer circular en memoria RAM y control puntual.
@@ -924,7 +924,7 @@ El proyecto implementa una dualidad fundamentada de métodos tanto en el control
 
 ### 9.11 Mapa de Pines (Pinout) del Hardware
 
-A continuación se detalla la asignación completa de pines GPIO del nodo maestro ESP32-S3 y del nodo esclavo Arduino Nano, extraída directamente de [`config.h`](../../firmware/esp32/RTOS2.0/config.h) y [`nano.ino`](../../firmware/firmware/arduino_nano/nano/nano.ino):
+A continuación se detalla la asignación completa de pines GPIO del nodo maestro ESP32-S3 y del nodo esclavo Arduino Nano, extraída directamente de [`config.h`](../../firmware/esp32/RTOS2.0/config.h) y [`nano2.ino`](../../firmware/arduino_nano/nano2/nano2.ino):
 
 #### ESP32-S3 N16R8 (Nodo Maestro — Control y Comunicaciones)
 
@@ -938,7 +938,7 @@ A continuación se detalla la asignación completa de pines GPIO del nodo maestr
 | **4** | SPI CS1 | SPI (Chip Select) | MAX6675 Tina 1 — Decapado (450W) | Activo en nivel BAJO |
 | **13** | SPI CS2 | SPI (Chip Select) | MAX6675 Tina 2 — Celda Hull (18W) | Activo en nivel BAJO |
 | **14** | SPI CS3 | SPI (Chip Select) | MAX6675 Tina 3 — Niquelado (450W) | Activo en nivel BAJO |
-| **17** | UART2 TX | UART @ 9600 bps | Arduino Nano (Pin D0 RX) | Tramas de potencia 8N1 |
+| **17** | UART2 TX | UART @ 9600 bps | Arduino Nano (Pin D0 RX) | Tramas de potencia CSV ("P0,P1,P2,P3\n") |
 | **20** | Relé VCSS | Digital (Active-LOW) | Relé de aislamiento +12V celda | ZCS: corte sin arco voltaico |
 | **48** | NeoPixel Data | WS2812 (1-Wire) | LED RGB integrado en DevKit | Baliza de estado del Supervisor |
 
@@ -946,25 +946,25 @@ A continuación se detalla la asignación completa de pines GPIO del nodo maestr
 
 | Dirección | Dispositivo | Función | Resolución |
 |:---:|:---|:---|:---:|
-| `0x48` | ADS1115 | ADC 16-bit: pH Canal A1 dedicado (Po) y shunts VCSS (A2/A3) | 16 bits, PGA ±4.096V |
+| `0x48` | ADS1115 | ADC 16-bit: pH Canal A1 dedicado (Po) y shunts VCSS (A2/A3) | 16 bits, PGA ±4.096V @ 860 SPS |
 | `0x60` | MCP4725 | DAC 12-bit: consigna V_{gs} del MOSFET VCSS | 12 bits, Fast Mode |
 | `0x38` | AHT20 | Humedad relativa y temperatura de cabina | ±2% HR, ±0.3°C |
 | `0x76`/`0x77` | BMP280 | Presión barométrica | ±1 hPa |
 
-#### Arduino Nano ATmega328P (Nodo Esclavo — Potencia AC 60 Hz)
+#### Arduino Nano ATmega328P (Nodo Esclavo — Firmware de Producción Nano2 / Tiempo Proporcional)
 
 | Pin | Función | Señal | Dispositivo Conectado | Notas |
 |:---:|:---|:---:|:---|:---|
-| **D0 (RX)** | UART RX | UART @ 9600 bps | ESP32-S3 (GPIO 17 TX) | Recepción de tramas de potencia |
-| **D3 (INT1)** | Cruce por Cero | Interrupción externa | Optoacoplador 4N35 | Disparo a 120 Hz (flancos de subida) |
-| **D7** | Gate TRIAC T0 | Digital (pulso 80 µs) | MOC3021 → BTA24 Tina 0 | PORTD bit 7 |
-| **D8** | Gate TRIAC T1 | Digital (pulso 80 µs) | MOC3021 → BTA24 Tina 1 | PORTB bit 0 |
-| **D9** | Gate TRIAC T2 | Digital (pulso 80 µs) | MOC3021 → BTA24 Tina 2 | PORTB bit 1 |
-| **D10** | Gate TRIAC T3 | Digital (pulso 80 µs) | MOC3021 → BTA24 Tina 3 | PORTB bit 2 |
+| **D0 (RX)** | UART RX | UART @ 9600 bps | ESP32-S3 (GPIO 17 TX) | Recepción de tramas serie `p0,p1,p2,p3\n` |
+| **D3 (INT1)** | Cruce por Cero (ZCD) | Interrupción externa | Optoacoplador 4N35 | Detección ZCS a 60 Hz para conmutación a ciclo completo |
+| **D7** | Gate TRIAC T0 | Digital (JELDimmer2) | MOC3021 → BTA24 Tina 0 (450W Desengrase) | Disparo en V=0 sin armónicos EMI |
+| **D8** | Gate TRIAC T1 | Digital (JELDimmer2) | MOC3021 → BTA24 Tina 1 (450W Decapado) | Disparo en V=0 sin armónicos EMI |
+| **D9** | Gate TRIAC T2 | Digital (JELDimmer2) | MOC3021 → BTA24 Tina 2 (18W Celda Hull) | Disparo en V=0 sin armónicos EMI |
+| **D10** | Gate TRIAC T3 | Digital (JELDimmer2) | MOC3021 → BTA24 Tina 3 (450W Niquelado) | Disparo en V=0 sin armónicos EMI |
 
 > [!IMPORTANT]
-> **Manipulación Directa de Registros PORT:**  
-> El firmware del Nano utiliza operaciones atómicas de bits sobre los registros PORTD y PORTB (`PORTD &= ~0b10000000; PORTB &= ~0b00000111;`) para apagar los 4 TRIACs en exactamente 2 ciclos de CPU (125 ns a 16 MHz), en lugar de 4 llamadas secuenciales a `digitalWrite()` que introducirían \sim 20 μs de jitter acumulado.
+> **Arquitectura Sincrónica JELDimmer2 & Watchdog UART de 4000 ms:**  
+> El firmware `nano2.ino` gestiona la modulación por tiempo proporcional en ventanas deterministas de 3000 ms gobernadas por la librería `JELDimmer2`. Al activar y desactivar los TRIACs únicamente en el paso por cero de la senoide (tensión nula), elimina el ruido electromagnético de alta frecuencia (EMI) sobre el electrodo de pH y los termopares. Si el enlace serie UART2 se interrumpe por más de 4000 ms, el Watchdog interno apaga inmediatamente las 4 compuertas por seguridad industrial.
 
 ---
 
@@ -977,7 +977,7 @@ A continuación se resumen las especificaciones y límites operacionales nominal
 | Parámetro / Subsistema | Especificación Técnica Nominal | Observaciones de Ingeniería |
 | :--- | :--- | :--- |
 | **Alimentación Primaria** | 120 VAC / 60 Hz, entrada directa en 1 paso | Fuente industrial conmutada 12V / 10A DC con fusible interno de protección. |
-| **Calefacción AC (Tinas 1, 2 y 4)** | 3× Resistencias de inmersión de 450 W blindadas en acero inoxidable | Conmutación por ángulo de fase α (TRIACs BTA24-600B + optos MOC3021). |
+| **Calefacción AC (Tinas 1, 2 y 4)** | 3× Resistencias de inmersión de 450 W blindadas en acero inoxidable | Conmutación por Tiempo Proporcional (Burst Firing ZCS a ciclos completos sin recorte de fase, firmware Nano2 + JELDimmer2) para supresión total de ruido EMI. |
 | **Calefacción AC (Tina 3 - Celda Hull)** | 1× Calentador de cartucho de precisión de 18 W (267 mL) | Sintonizado analíticamente sin sobretiro (Kₚ = 16.71, Kᵢ = 0.0239). |
 | **Demanda Eléctrica Máxima Total** | ≈ 1368 W pico (≈ 11.4 A a 120 VAC) | Perfectamente compatible con tomacorrientes estándar de laboratorio (15A). |
 | **Sumidero de Corriente VCSS** | Rango: 0.00 a 3.50 A DC continuo / pulsado a 10 Hz | 2× MOSFETs IRLZ44N en paralelo sobre disipador con ventilador de 12V. |
@@ -1038,7 +1038,7 @@ Gracias al diseño modular en zócalos hembra y clemas, cualquier intervención 
    * Retirar el microcontrolador del zócalo hembra.
    * Programar la placa de repuesto conectándola por USB a la PC de laboratorio:
      * Para ESP32-S3: Abrir `firmware/esp32/RTOS2.0/RTOS2.0.ino` en Arduino IDE y cargar el firmware.
-     * Para Arduino Nano: Abrir `firmware/arduino_nano/nano/nano.ino` y cargar con procesador `ATmega328P (Old Bootloader)`.
+     * Para Arduino Nano: Abrir `firmware/arduino_nano/nano2/nano2.ino` (incluye la librería `JELDimmer2` en la misma carpeta) y cargar con procesador `ATmega328P` (o `Old Bootloader` según el clon).
    * Insertar la nueva placa en los zócalos y reanudar la operación.
 
 ---
@@ -1128,7 +1128,7 @@ A continuación se presentan las **7 infografías técnicas en ultra-alta resolu
 7. **¿Por qué las gráficas en vivo del SCADA muestran 60 segundos mientras que la Suite Científica procesa todo el ensayo?**  
    Para evitar sobrecarga de CPU y congelamiento de la GUI en tiempo real a 10 Hz. La Suite Científica lee el archivo CSV continuo guardado en disco al finalizar el ensayo y procesa la totalidad del experimento en alta resolución.
 8. **¿Dónde se guardan los datos experimentales?**  
-    En `telemetria/experimentos/ensayo_AAAAMMDD_HHMMSS.csv`, compatibles directamente con Excel, OriginLab y MATLAB.
+    En `software/telemetria2.0/experimentos/ensayo_AAAAMMDD_HHMMSS.csv`, compatibles directamente con Excel, OriginLab y MATLAB.
 9. **`app.py` no conecta con el ESP32 (`ConnectionError` o `Timeout`). ¿Qué verificar?**  
     (a) Confirmar que la computadora está conectada a la red Wi-Fi `Uli` emitida por el ESP32. (b) Verificar que la IP `192.168.4.1` responde a `ping`. (c) Desactivar temporalmente el firewall de Windows o agregar una excepción para Python. (d) Si aparece `OSError: [Errno 113] No route to host`, el ESP32 puede estar en reinicio — esperar 5 segundos y reintentar.
 10. **El archivo CSV aparece truncado o corrupto. ¿Cómo recuperar los datos?**  

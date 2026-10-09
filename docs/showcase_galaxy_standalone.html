@@ -1091,20 +1091,20 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
                 <span class="arch-bus-pill pill-wifi">RTOS 2.0</span>
               </div>
               <span class="arch-node-chip">Dual Core LX7 (N16R8)</span>
-              <div class="arch-node-desc">Core 0: Web Server, WebSockets y Wi-Fi.<br>Core 1: 4 Lazos PI, VCSS y Máquina ISA-88.</div>
+              <div class="arch-node-desc">Core 0: Servidor HTTP REST (/data_all), SoftAP y OTA.<br>Core 1: Lazos PI, VCSS (Gm=2.00 S), pH A1 y Fail-Safe.</div>
             </div>
 
             <div style="text-align: center; color: #a855f7; font-size: 0.75rem; font-family: var(--code-font);">
-              ↕️ Enlace UART2 @ 9600 Baud (Fail-Safe 3s)
+              ↕️ Enlace UART2 @ 9600 Baud (Watchdog 4.0s)
             </div>
 
             <div class="arch-node" id="node-nano" onclick="seleccionarNodoArch('nano')">
               <div class="arch-node-header">
-                <span class="arch-node-name">Coprocesador Nano</span>
-                <span class="arch-bus-pill pill-uart">UART2 / INT</span>
+                <span class="arch-node-name">Coprocesador Nano2</span>
+                <span class="arch-bus-pill pill-uart">UART2 / INT1</span>
               </div>
               <span class="arch-node-chip">ATmega328P @ 16 MHz</span>
-              <div class="arch-node-desc">Disparo en microsegundos de los 4 canales TRIACs mediante tabla LUT.</div>
+              <div class="arch-node-desc">Tiempo Proporcional (Burst Firing 3s con JELDimmer2) y cruce por cero D3 (INT1).</div>
             </div>
           </div>
 
@@ -1120,26 +1120,26 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
                 <span class="arch-node-name">TRIACs MDAC4C (4x)</span>
                 <span class="arch-bus-pill pill-pwr">127 VAC / 60Hz</span>
               </div>
-              <span class="arch-node-chip">BTA24-600B + MOC3021</span>
-              <div class="arch-node-desc">Tiempo proporcional en V=0 hacia Resistencias de 450W en las 4 tinas.</div>
+              <span class="arch-node-chip">BTA24-800BW + MOC3021</span>
+              <div class="arch-node-desc">Tiempo proporcional en V=0 hacia Resistencias de 450W / 18W en las 4 tinas.</div>
             </div>
 
             <div class="arch-node" id="node-vcss" onclick="seleccionarNodoArch('vcss')">
               <div class="arch-node-header">
                 <span class="arch-node-name">Sumidero VCSS</span>
-                <span class="arch-bus-pill pill-pwr">0 a 6.6 A</span>
+                <span class="arch-bus-pill pill-pwr">0 a 3.50 A</span>
               </div>
               <span class="arch-node-chip">LM358N + 2x IRLZ44Z + DAC</span>
-              <div class="arch-node-desc">Regulación lineal catódica a 2 A/V según nota TI SLAA868A hacia Celda Hull.</div>
+              <div class="arch-node-desc">Regulación lineal catódica a 2.00 A/V con 2 shunts de 10W hacia Celda Hull.</div>
             </div>
 
             <div class="arch-node" id="node-rele" onclick="seleccionarNodoArch('rele')">
               <div class="arch-node-header">
-                <span class="arch-node-name">Módulo 2 Relés</span>
+                <span class="arch-node-name">Módulo Relés ZCS</span>
                 <span class="arch-bus-pill pill-pwr">12V DC / 10A</span>
               </div>
               <span class="arch-node-chip">Songle SRD-05VDC-SL-C</span>
-              <div class="arch-node-desc">Corte anódico de seguridad en V=0 e interlock de agitación magnética.</div>
+              <div class="arch-node-desc">Corte anódico de seguridad en corriente cero (0.00 A) sin arco eléctrico.</div>
             </div>
           </div>
 
@@ -1152,11 +1152,11 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
 
             <div class="arch-node" id="node-scada" onclick="seleccionarNodoArch('scada')">
               <div class="arch-node-header">
-                <span class="arch-node-name">SCADA PyQt6 / Web</span>
-                <span class="arch-bus-pill pill-wifi">PC & Móvil</span>
+                <span class="arch-node-name">SCADA Telemetría 2.0</span>
+                <span class="arch-bus-pill pill-wifi">PyQt6 / Windows</span>
               </div>
-              <span class="arch-node-chip">Python 3.14 + WebSockets</span>
-              <div class="arch-node-desc">Gestor de los 32 ensayos Taguchi, telemetría a 10 Hz y visualización móvil.</div>
+              <span class="arch-node-chip">Python 3.9+ / REST API</span>
+              <div class="arch-node-desc">Gestor ISA-88 desde Excel, Culombimetría Faradaica, Balanza 4 decimales y 8 figuras a 300 DPI.</div>
             </div>
 
             <div class="arch-node" style="border-color: rgba(16, 185, 129, 0.3);">
@@ -1176,11 +1176,11 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
 
       <div class="grid-3" style="margin-top: 20px;">
         <div class="info-box">
-          <strong style="color: var(--primary);">Master: ESP32-S3 N16R8</strong><br>
+          <strong style="color: var(--primary);">Master: ESP32-S3 N16R8 (RTOS 2.0)</strong><br>
           <span style="font-size: 0.8rem; color: #cbd5e1;">
-            • Core 0: Servidor Web asíncrono, WebSockets telemetría, RTOS 2.0.<br>
-            • Core 1: Lazos de control PI, muestreo ADC ADS1115, máquina ISA-88.<br>
-            • Memoria: 512 KB SRAM + 8 MB PSRAM octal + 16 MB Flash.
+            • Core 0: Servidor HTTP REST (/data_all @ 10 Hz), SoftAP "Uli" y OTA.<br>
+            • Core 1: Lazos PI (1 Hz), sumidero VCSS (Gm=2.00 S), pH A1 (860 SPS) y Fail-Safe.<br>
+            • Memoria: 512 KB SRAM + 8 MB PSRAM octal + 16 MB Flash SPI.
           </span>
         </div>
         <div class="info-box">
@@ -2336,18 +2336,18 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </p>
 
         <div class="grid-3" style="gap: 14px; margin-bottom: 16px;">
-          <!-- CARD A: SERVIDOR WEB ASÍNCRONO -->
+          <!-- CARD A: SERVIDOR WEB EN TIEMPO REAL -->
           <div class="card" style="margin: 0; background: rgba(15, 23, 42, 0.85); border-top: 3px solid var(--primary);">
             <div style="font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">
-              A. Servidor Web Asíncrono
+              A. Servidor Web HTTP Nativo
             </div>
-            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">ESPAsyncWebServer & Dual-Core</h4>
+            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">WebServer & Dual-Core SMP (RTOS 2.0)</h4>
             <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
-              Implementado mediante la librería <code style="color: #38bdf8;">ESPAsyncWebServer</code> desacoplada bajo <strong>FreeRTOS SMP</strong>:
+              Implementado mediante <code style="color: #38bdf8;">WebServer.h</code> en Task_Web desacoplada bajo <strong>FreeRTOS SMP</strong>:
             </p>
             <ul style="margin-left: 14px; font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
-              <li><strong style="color: #cbd5e1;">Core 0 (Networking):</strong> Maneja la pila TCP/IP, servidor HTTP en puerto 80, servidor DNS para portal cautivo y WebSockets concurrentes.</li>
-              <li><strong style="color: #cbd5e1;">Core 1 (Control Crítico):</strong> Ejecuta de forma determinística a 1 Hz los 4 lazos PI térmicos y a 25 Hz el muestreo ADC/VCSS sin interrupciones ni jitter por tráfico de red.</li>
+              <li><strong style="color: #cbd5e1;">Core 0 (Networking):</strong> Maneja la pila TCP/IP, servidor HTTP en puerto 80, SoftAP autónomo y servicio de actualización remota de firmware OTA.</li>
+              <li><strong style="color: #cbd5e1;">Core 1 (Control Crítico):</strong> Ejecuta determinísticamente los lazos PI térmicos (1 Hz), modulación analógica VCSS ($G_m = 2.00\text{ S}$), adquisición ADC A1 a 860 SPS y Fail-Safe (50 Hz).</li>
               <li><strong style="color: #cbd5e1;">Wi-Fi SoftAP Autónomo:</strong> Emite la red local <code style="color: #38bdf8;">SSID: Uli</code> (IP: <code style="color: #38bdf8;">192.168.4.1</code>) o se conecta a la LAN del laboratorio vía mDNS (<code style="color: #38bdf8;">http://interfaz.local</code>).</li>
             </ul>
           </div>
@@ -2357,14 +2357,14 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             <div style="font-size: 0.74rem; font-weight: 700; color: var(--emerald); text-transform: uppercase;">
               B. Esquema de Mensajería JSON
             </div>
-            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">REST API & WebSockets a 10 Hz</h4>
+            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">REST API & Telemetría Unificada a 10 Hz</h4>
             <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
-              La comunicación entre el cliente web (teléfono/laptop) y el microcontrolador utiliza payloads JSON estructurados:
+              La comunicación entre el SCADA Telemetría 2.0 (o navegadores) y el ESP32 utiliza payloads REST estructurados:
             </p>
             <ul style="margin-left: 14px; font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
-              <li><strong style="color: #cbd5e1;">GET /api/telemetria:</strong> Retorna temperaturas actuales de las 4 tinas, pH con compensación de temperatura, corriente VCSS, estados de bombas y alarmas.</li>
-              <li><strong style="color: #cbd5e1;">POST /api/setpoints:</strong> Envía nuevas consignas de temperatura (<i>T</i><sub>set</sub>) y corriente (<i>I</i><sub>set</sub>) parseadas mediante <code style="color: #10b981;">ArduinoJson 6/7</code>.</li>
-              <li><strong style="color: #cbd5e1;">WebSocket (/ws):</strong> Transmisión dúplex en streaming a 10 FPS con latencia &lt; 20 ms para graficación continua sin refresco de página.</li>
+              <li><strong style="color: #cbd5e1;">GET /data_all:</strong> Snapshot unificado a 10 Hz que consolida 4 tinas, sumidero VCSS, pH A1, meteorología y Fail-Safe reduciendo el tráfico HTTP en un 75%.</li>
+              <li><strong style="color: #cbd5e1;">POST /set_t, /set_f, /modo_f:</strong> Ajuste directo de setpoints de temperatura, amplitud DAC, frecuencia y ciclo de trabajo de corriente pulsada.</li>
+              <li><strong style="color: #cbd5e1;">POST /do_cal_ph, /failsafe_reset:</strong> Calibración guiada de pH en Canal A1 persistida en NVS Flash y rearme de seguridad industrial.</li>
             </ul>
           </div>
 
@@ -2373,7 +2373,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             <div style="font-size: 0.74rem; font-weight: 700; color: var(--amber); text-transform: uppercase;">
               C. Adquisición & Archivos CSV
             </div>
-            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">Trazabilidad In-Operando</h4>
+            <h4 style="font-size: 0.95rem; color: #ffffff; margin: 4px 0 8px 0;">Trazabilidad In-Operando (SCADA 2.0)</h4>
             <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
               Registro experimental metrológico para los 32 ensayos Taguchi de la tesis:
             </p>
@@ -2391,23 +2391,28 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 4px;">
               <span style="font-size: 0.76rem; font-family: var(--code-font); color: var(--emerald); font-weight: bold;">
-                📄 Payload JSON: GET /api/telemetria (10 Hz)
+                📄 Payload JSON Real: GET /data_all (RTOS 2.0 @ 10 Hz)
               </span>
-              <span style="font-size: 0.70rem; color: var(--text-dark);">ArduinoJson v7 / UTF-8</span>
+              <span style="font-size: 0.70rem; color: var(--text-dark);">FreeRTOS Controller_System / UTF-8</span>
             </div>
             <pre style="font-family: var(--code-font); font-size: 0.74rem; color: #cbd5e1; overflow-x: auto; line-height: 1.35; margin: 0;"><code>{
-  <span style="color: #38bdf8;">"timestamp"</span>: 1775649200,
-  <span style="color: #38bdf8;">"ensayo_id"</span>: <span style="color: #fbbf24;">"DOE_RUN_07"</span>,
-  <span style="color: #38bdf8;">"tinas"</span>: [
-    {<span style="color: #38bdf8;">"id"</span>: 0, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Desengrase"</span>, <span style="color: #38bdf8;">"temp_c"</span>: 89.85, <span style="color: #38bdf8;">"set_c"</span>: 90.0, <span style="color: #38bdf8;">"duty"</span>: 28},
-    {<span style="color: #38bdf8;">"id"</span>: 1, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Decapado"</span>,   <span style="color: #38bdf8;">"temp_c"</span>: 89.90, <span style="color: #38bdf8;">"set_c"</span>: 90.0, <span style="color: #38bdf8;">"duty"</span>: 31},
-    {<span style="color: #38bdf8;">"id"</span>: 2, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Niquelado"</span>,  <span style="color: #38bdf8;">"temp_c"</span>: 30.05, <span style="color: #38bdf8;">"set_c"</span>: 30.0, <span style="color: #38bdf8;">"duty"</span>: 12},
-    {<span style="color: #38bdf8;">"id"</span>: 3, <span style="color: #38bdf8;">"nombre"</span>: <span style="color: #fbbf24;">"Celda Hull"</span>, <span style="color: #38bdf8;">"temp_c"</span>: 30.00, <span style="color: #38bdf8;">"set_c"</span>: 30.0, <span style="color: #38bdf8;">"duty"</span>: 18}
+  <span style="color: #38bdf8;">"t"</span>: [
+    {<span style="color: #38bdf8;">"t"</span>: 89.85, <span style="color: #38bdf8;">"sp"</span>: 90.0, <span style="color: #38bdf8;">"p"</span>: 28, <span style="color: #38bdf8;">"run"</span>: 1},
+    {<span style="color: #38bdf8;">"t"</span>: 89.90, <span style="color: #38bdf8;">"sp"</span>: 90.0, <span style="color: #38bdf8;">"p"</span>: 31, <span style="color: #38bdf8;">"run"</span>: 1},
+    {<span style="color: #38bdf8;">"t"</span>: 25.00, <span style="color: #38bdf8;">"sp"</span>: 25.0, <span style="color: #38bdf8;">"p"</span>: 12, <span style="color: #38bdf8;">"run"</span>: 1},
+    {<span style="color: #38bdf8;">"t"</span>: 34.10, <span style="color: #38bdf8;">"sp"</span>: 35.0, <span style="color: #38bdf8;">"p"</span>: 18, <span style="color: #38bdf8;">"run"</span>: 1}
   ],
-  <span style="color: #38bdf8;">"ph_celda"</span>: {<span style="color: #38bdf8;">"valor"</span>: 4.52, <span style="color: #38bdf8;">"adc_mv"</span>: 1984.2, <span style="color: #38bdf8;">"calibrado"</span>: true},
-  <span style="color: #38bdf8;">"vcss"</span>: {<span style="color: #38bdf8;">"corriente_a"</span>: 2.50, <span style="color: #38bdf8;">"voltaje_v"</span>: 11.85, <span style="color: #38bdf8;">"modo"</span>: <span style="color: #fbbf24;">"PULSADO_10HZ"</span>},
-  <span style="color: #38bdf8;">"estado_isa88"</span>: <span style="color: #10b981;">"EXECUTION"</span>,
-  <span style="color: #38bdf8;">"seguridad"</span>: {<span style="color: #38bdf8;">"interlock_ok"</span>: true, <span style="color: #38bdf8;">"rele_anodo"</span>: 1}
+  <span style="color: #38bdf8;">"f"</span>: {
+    <span style="color: #38bdf8;">"act"</span>: 1, <span style="color: #38bdf8;">"modo"</span>: 1, <span style="color: #38bdf8;">"amp"</span>: 2048, <span style="color: #38bdf8;">"sp"</span>: 2048, <span style="color: #38bdf8;">"freq"</span>: 10, <span style="color: #38bdf8;">"duty"</span>: 20,
+    <span style="color: #38bdf8;">"amps"</span>: 1.50, <span style="color: #38bdf8;">"i_real"</span>: 1.498, <span style="color: #38bdf8;">"i1"</span>: 0.749, <span style="color: #38bdf8;">"i2"</span>: 0.749,
+    <span style="color: #38bdf8;">"vs1"</span>: 0.075, <span style="color: #38bdf8;">"vs2"</span>: 0.075, <span style="color: #38bdf8;">"gm"</span>: 2.0000, <span style="color: #38bdf8;">"comp"</span>: 1, <span style="color: #38bdf8;">"rele"</span>: 1
+  },
+  <span style="color: #38bdf8;">"ph"</span>: {
+    <span style="color: #38bdf8;">"p"</span>: <span style="color: #fbbf24;">"4.52"</span>, <span style="color: #38bdf8;">"v"</span>: <span style="color: #fbbf24;">"1.984"</span>, <span style="color: #38bdf8;">"vs"</span>: <span style="color: #fbbf24;">"2.50"</span>, <span style="color: #38bdf8;">"on"</span>: 1, <span style="color: #38bdf8;">"m"</span>: 2,
+    <span style="color: #38bdf8;">"sl"</span>: <span style="color: #fbbf24;">"98.5"</span>, <span style="color: #38bdf8;">"c"</span>: 1, <span style="color: #38bdf8;">"il"</span>: 0, <span style="color: #38bdf8;">"v7"</span>: <span style="color: #fbbf24;">"1.765"</span>, <span style="color: #38bdf8;">"v4"</span>: <span style="color: #fbbf24;">"2.050"</span>, <span style="color: #38bdf8;">"v10"</span>: <span style="color: #fbbf24;">"1.320"</span>
+  },
+  <span style="color: #38bdf8;">"env"</span>: {<span style="color: #38bdf8;">"t"</span>: <span style="color: #fbbf24;">"24.5"</span>, <span style="color: #38bdf8;">"h"</span>: <span style="color: #fbbf24;">"48"</span>, <span style="color: #38bdf8;">"p"</span>: <span style="color: #fbbf24;">"1013.2"</span>},
+  <span style="color: #38bdf8;">"fs"</span>: {<span style="color: #38bdf8;">"latched"</span>: 0, <span style="color: #38bdf8;">"code"</span>: 0, <span style="color: #38bdf8;">"reason"</span>: <span style="color: #10b981;">"OK"</span>}
 }</code></pre>
           </div>
 
@@ -3423,32 +3428,32 @@ window.addEventListener('resize', () => {
 // CONTROLADOR DEL DIAGRAMA DE ARQUITECTURA VECTORIAL INTERACTIVO
 const ARCH_NODOS = {
   esp32: {
-    titulo: 'Master: ESP32-S3 N16R8 Dual-Core @ 240 MHz',
+    titulo: 'Master: ESP32-S3 N16R8 Dual-Core @ 240 MHz (RTOS 2.0)',
     chip: 'Espressif Systems ESP32-S3-WROOM-1',
     pines: 'Dual Core LX7, 512KB SRAM, 8MB PSRAM Octal, 16MB Flash SPI',
-    bus: 'Coordinador Maestro: I²C Fast-Mode (GPIO 8/9), SPI @ 4MHz (GPIO 10-13), UART2 (GPIO 17)',
-    desc: 'Núcleo central del sistema. Core 0 ejecuta FreeRTOS con servidor HTTP asíncrono, WebSockets para telemetría a 10 Hz y gestión Wi-Fi SoftAP. Core 1 ejecuta en tiempo real determinístico los 4 lazos de control PI térmicos, muestreo ADC, supervisión del sumidero VCSS y la máquina de estados secuencial ISA-88.'
+    bus: 'Coordinador Maestro: I²C Fast-Mode (GPIO 8/9), SPI @ 4MHz (GPIO 18/19/5/4/13/14), UART2 (GPIO 17 TX)',
+    desc: 'Núcleo central del sistema gobernado por FreeRTOS SMP Dual-Core. Core 0 ejecuta la pila de comunicaciones Wi-Fi SoftAP ("Uli"), servidor Web HTTP en puerto 80 con endpoint unificado /data_all a 10 Hz y servicio de actualización remota OTA. Core 1 ejecuta en tiempo real determinístico los 4 lazos de control PI térmicos (1 Hz), modulación analógica de corriente VCSS (Gm = 2.00 S), adquisición continua del sensor de pH en Canal A1 dedicado a 860 SPS y máquina de seguridad Fail-Safe (50 Hz).'
   },
   nano: {
-    titulo: 'Esclavo: Arduino Nano Coprocesador @ 16 MHz',
+    titulo: 'Esclavo de Potencia: Arduino Nano Coprocesador Nano2 @ 16 MHz',
     chip: 'ATmega328P / Microchip',
-    pines: 'D2 (INT0 ZCS), D3-D6 (Gate TRIACs), D1 (TX UART), D0 (RX UART)',
-    bus: 'UART2 Esclavo @ 9600 Baud + Interrupción externa INT0 / INT1',
-    desc: 'Coprocesador dedicado exclusivamente al control de fase y conmutación de los 4 TRIACs de potencia. Descarga al ESP32 de interrupciones críticas de microsegundos de la red eléctrica de 60 Hz e incorpora Watchdog Fail-Safe de 3.0 s por desconexión de bus.'
+    pines: 'D3 (INT1 Cruce por Cero), D7-D10 (Compuertas TRIACs T0-T3), D0 (RX UART @ 9600 bps)',
+    bus: 'UART2 Esclavo @ 9600 Baud + Interrupción externa INT1 (Pin D3 ZCD)',
+    desc: 'Coprocesador dedicado a la modulación de potencia térmica de las 4 tinas mediante Tiempo Proporcional (Burst Firing) a ciclos completos de 60 Hz en ventanas temporales de 3000 ms gobernado por la librería JELDimmer2. Conmuta exclusivamente en cruce por cero, eliminando de raíz las interferencias electromagnéticas (EMI) sobre el electrodo de pH y los termopares. Incluye perro guardián UART de 4000 ms que corta todas las salidas si se interrumpe la comunicación con el ESP32.'
   },
   max6675: {
     titulo: 'Transmisores Térmicos: 4x MAX6675 SPI @ 4 MHz',
     chip: 'Maxim Integrated / Analog Devices MAX6675ISA',
-    pines: 'SCK (GPIO 12), MISO (GPIO 13), CS0-CS3 (GPIO 10, 11, 14, 15)',
+    pines: 'SCK (GPIO 18), MISO (GPIO 19), CS0-CS3 (GPIO 5, 4, 13, 14)',
     bus: 'SPI Compartido @ 4 MHz con 4 líneas Chip-Select dedicadas',
     desc: 'Digitalizadores con compensación de unión fría integrada para 4 termopares tipo K sumergidos en las tinas de Desengrase, Decapado, Niquelado y Celda Hull. Resolución de 0.25 °C con tiempo de conversión de 0.22 s y detección de termopar abierto.'
   },
   ads1115: {
-    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta',
+    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta (Canal A1 pH Dedicado)',
     chip: 'Texas Instruments ADS1115IDGSR (Dirección I²C 0x48)',
-    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canales A0-A1 (pH), A2-A3 (Shunts)',
-    bus: 'I²C Fast-Mode @ 400 kHz con PGA programable (±0.256V a ±6.144V)',
-    desc: 'Digitalizador analógico diferencial de alta resolución. Los canales A0-A1 adquieren la señal analógica del módulo PH-4502C en modo pseudo-diferencial con cancelación de modo común, y los canales A2-A3 leen la caída de tensión en el banco de shunts cerámicos de 1.0 Ω del VCSS.'
+    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canal A1 (pH Dedicado), Canales A2-A3 (Shunts VCSS)',
+    bus: 'I²C Fast-Mode @ 400 kHz con PGA programable (±4.096V) y muestreo continuo a 860 SPS',
+    desc: 'Digitalizador analógico de alta precisión. En RTOS 2.0, el Canal A1 está dedicado exclusivamente a la sonda de pH (módulo PH-4502C) con muestreo continuo a 860 SPS (eliminando tiempos muertos de multiplexación temporal A0/A1). Los canales A2 y A3 monitorean la caída de tensión en el banco de shunts cerámicos de 1.0 Ω / 10W del sumidero VCSS.'
   },
   zcs: {
     titulo: 'Detector de Cruce por Cero Dual (AC 60 Hz / DC 12V)',
@@ -3460,37 +3465,37 @@ const ARCH_NODOS = {
   vcss: {
     titulo: 'Sumidero Lineal VCSS (Voltage-Controlled Current Sink)',
     chip: 'LM358N (Op-Amp Error) + 2x IRLZ44Z MOSFETs + MCP4725 DAC',
-    pines: 'Consigna DAC MCP4725 (0-3.3V) ➔ Gate MOSFETs ➔ Cátodo Celda Hull',
+    pines: 'Consigna DAC MCP4725 (0-3.53V) ➔ Gate MOSFETs ➔ Cátodo Celda Hull',
     bus: 'Lazo Analógico Ultrarrápido (< 50 µs) + I²C DAC @ 400 kHz',
-    desc: 'Circuito sumidero de precisión diseñado bajo la nota técnica Texas Instruments SLAA868A. Regula la densidad de corriente catódica (0 a 6.6 A) hacia la probeta de zincado en la Celda Hull con transconductancia neta de 2 A/V y compensación capacitiva de compuerta R_ISO = 100 Ω.'
+    desc: 'Circuito sumidero de precisión diseñado bajo la nota técnica Texas Instruments SLAA868A. Regula la densidad de corriente catódica (0 a 3.50 A continuo / pulsado a 10 Hz) hacia la probeta de zincado en la Celda Hull con transconductancia neta de 2.00 A/V y dos shunts cerámicos de 1.0 Ω / 10W.'
   },
   triacs: {
-    titulo: 'Módulo de Potencia TRIACs MDAC4C (4 Canales AC)',
-    chip: '4x TRIACs BTA24-600B (25A / 600V) + 4x Drivers MOC3021',
-    pines: 'Disparos optoacoplados de 5V ➔ Puertas TRIAC ➔ Resistencias 450W',
-    bus: 'Conmutación por Tiempo Proporcional (Burst Firing) a 60 Hz',
-    desc: 'Etapa de potencia de estado sólido para controlar la temperatura de las 4 tinas industriales (Desengrase 90°C, Decapado 90°C, Niquelado 30°C y Celda Hull 30°C). Conmutación de paquetes de ciclos completos en V=0 sin recorte de fase.'
+    titulo: 'Módulo de Potencia TRIACs (4 Canales AC)',
+    chip: '4x TRIACs BTA24-800BW + 4x Drivers MOC3021',
+    pines: 'Disparos optoacoplados de 5V ➔ Puertas TRIAC ➔ Resistencias 450W / 18W',
+    bus: 'Conmutación por Tiempo Proporcional (Burst Firing) a 60 Hz en ventanas de 3000 ms',
+    desc: 'Etapa de potencia de estado sólido de fabricación propia para controlar la temperatura de las 4 tinas (Desengrase 85-90°C, Decapado 85-90°C, Celda Hull 25/40°C y Niquelado 30-35°C). Conmutación de paquetes de ciclos completos en V=0 sin recorte de fase.'
   },
   rele: {
-    titulo: 'Actuador Electromecánico: Módulo de 2 Relés Songle (5V Optoacoplado)',
+    titulo: 'Actuador Electromecánico: Módulo de Relés Songle (5V Optoacoplado)',
     chip: 'Songle SRD-05VDC-SL-C + Optoacopladores PC817 + Driver NPN',
-    pines: 'Control Lógico IN1/IN2 (GPIO 20/21), Borneras Salida K1/K2 (NA, COM, NC)',
-    bus: 'Control digital TTL @ 5V con Jumper JD-VCC para aislamiento galvánico',
-    desc: 'Actuador electromecánico de alta corriente (10A @ 250VAC / 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS) para anular el arco eléctrico, y conmuta los motores de agitación magnética en las tinas de proceso.'
+    pines: 'Control Lógico Relé VCSS (GPIO 20 Active-LOW), Borneras Salida K1/K2',
+    bus: 'Control digital TTL @ 5V con aislamiento galvánico óptico',
+    desc: 'Actuador electromecánico de seguridad (10A @ 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS a corriente nula 0.00 A) para anular el arco voltaico y evitar desgaste de contactos.'
   },
   ph: {
-    titulo: 'Sensor de Acidez: Sonda de Vidrio Combinada + Transmisor PH-4502C',
+    titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Canal A1 Dedicado',
     chip: 'Electrodo Combinado Vidrio-Ag/AgCl + Módulo Transmisor PH-4502C',
-    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Filtro RC ➔ ADC ADS1115 (A0/A1)',
-    bus: 'Entrada de Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta',
-    desc: 'Cadena de medición de pH in-operando en baño químico y Celda Hull. Dispone de trimmers multivuelta de compensación analógica de ganancia/offset (1.65V isopotencial) y entrega señal Po acondicionada hacia el ADS1115 en configuración pseudo-diferencial con cancelación de modo común.'
+    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Canal A1 ADS1115 (860 SPS)',
+    bus: 'Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta + Calibración NVS Tri-Modo',
+    desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. En RTOS 2.0 se conecta directamente al Canal A1 del ADS1115 con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente almacenada en memoria Flash NVS.'
   },
   scada: {
-    titulo: 'Estación de Supervisión SCADA PyQt6 & Servidor Web',
-    chip: 'PC Host (Python 3.14 / PyQt6 / pyqtgraph) + WebSockets / HTTP',
-    pines: 'Puerto COM USB-CDC @ 115200 Baud / Conexión Wi-Fi 802.11 b/g/n',
-    bus: 'Protocolo de Tramas Binarias + REST API JSON',
-    desc: 'Software de supervisión de alto nivel. Gestiona la secuencia automatizada de los 32 ensayos Taguchi (DoE 2⁵·4), registra curvas térmicas y de densidad de corriente a 10 Hz, exporta tablas CSV validadas y permite control remoto desde laptops o smartphones Samsung Galaxy S26 Ultra.'
+    titulo: 'Estación de Supervisión SCADA Telemetría 2.0 (PyQt6 / Python)',
+    chip: 'PC Host (Python 3.9+ / PyQt6 / pyqtgraph) + HTTP REST (/data_all)',
+    pines: 'Wi-Fi SoftAP "Uli" (192.168.4.1) / USB-CDC Serial @ 115200 Baud',
+    bus: 'Protocolo REST JSON (/data_all a 10 Hz) + Polling Asíncrono Resiliente',
+    desc: 'Software SCADA industrial de alto nivel bajo norma ISA-88. Gestiona la matriz experimental para 32 probetas desde Excel, ejecuta culombimetría faradaica en lazo cerrado Q = ∫ I dt, modelo bicapa aditivo Zn+Ni, integración con balanza analítica para cálculo automático del rendimiento catódico η% y espesores en micrómetros, y genera automáticamente el paquete de 8 figuras científicas a 300 DPI.'
   }
 };
 

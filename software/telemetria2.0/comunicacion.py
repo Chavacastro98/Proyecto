@@ -353,7 +353,7 @@ class ComunicacionMixin:
                 any_success = False
                 if hasattr(self, 'destellar_tx'):
                     self.root.after(0, self.destellar_tx)
-                # 1. RUTA RÁPIDA OPTIMIZADA: Endpoint unificado /data_all (RTOS 1.0)
+                # 1. RUTA RÁPIDA OPTIMIZADA: Endpoint unificado /data_all (RTOS 2.0)
                 try:
                     r_all = session.get(f"{base_url}/data_all", timeout=0.8)
                     if r_all.status_code == 200:

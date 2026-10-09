@@ -1,24 +1,28 @@
 /**
  * =================================================================================
- * FIRMWARE ALTERNATIVO DEL ARDUINO NANO CON LIBRERÍA JELDimmer2 (nano2.ino)
+ * FIRMWARE DE PRODUCCIÓN DEL ARDUINO NANO — CONTROL DE TRIACS (nano2.ino)
  * =================================================================================
- * Plataforma: Arduino Nano (ATmega328P)
- * Módulo de potencia: Dimmer AC de 4 canales (JEL Electrónica / BTA24-800BW)
+ * Plataforma: Arduino Nano (ATmega328P @ 16 MHz)
+ * Módulo de potencia: Dimmer AC de 4 canales (4x TRIACs BTA24-800BW + MOC3021)
+ * Librería: JELDimmer2 (conmutación por tiempo proporcional a ciclos completos)
  *
  * ¿QUÉ HACE ESTE PROGRAMA?
- * Es una versión alternativa del firmware del Arduino Nano que usa la librería
- * JELDimmer2 (incluida en la misma carpeta del sketch) en lugar de controlar
- * los TRIACs directamente con interrupciones y registros PORT.
+ * Es el firmware oficial y activo de producción para el microcontrolador esclavo
+ * Arduino Nano de la planta piloto de electrodeposición. Recibe porcentajes de
+ * potencia (0-100%) enviados por UART2 desde el nodo maestro ESP32-S3 (RTOS 2.0)
+ * y modula la potencia térmica de las 4 tinas químicas mediante TIEMPO PROPORCIONAL
+ * (Burst Firing) en ventanas temporales fijas de 3000 ms.
  *
- * DIFERENCIA CON nano.ino:
- * En vez de usar control de ángulo de fase (disparo retardado por microsegundos),
- * este firmware usa control de TIEMPO PROPORCIONAL: divide el tiempo en ventanas
- * de 3 segundos y enciende/apaga los TRIACs a ciclos completos (100% o 0%) según
- * el porcentaje de potencia deseado. Es más simple pero produce más fluctuación
- * térmica que el control de fase.
+ * JUSTIFICACIÓN FÍSICA Y DIFERENCIA CON nano.ino (RECORTE DE FASE):
+ * A diferencia del recorte de fase que conmuta a mitad de senoidal generando
+ * transitorios de dv/dt y severo ruido electromagnético (EMI) sobre el electrodo de
+ * pH (PH-4502C) y los termopares MAX6675, este firmware conmuta ÚNICAMENTE en el
+ * cruce por cero (Pin D3 / INT1). Esta estrategia suprime de raíz el ruido EMI,
+ * garantizando lecturas analógicas estables y determinismo total en planta.
  *
- * SEGURIDAD:
- * Si no llegan datos del ESP32 por más de 4 segundos, todas las salidas se apagan.
+ * SEGURIDAD (WATCHDOG UART):
+ * Si no se reciben tramas periódicas del ESP32 durante más de 4000 ms, todas
+ * las compuertas de los TRIACs se apagan inmediatamente a nivel bajo (corte seguro).
  * =================================================================================
  */
 

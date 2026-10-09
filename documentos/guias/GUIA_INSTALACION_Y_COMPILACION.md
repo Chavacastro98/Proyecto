@@ -99,17 +99,26 @@ Haz clic en **Upload** (Subir) para compilar y flashear el firmware.
 
 ---
 
-## ⚡ 4. Compilación y Carga del Arduino Nano (Control de TRIACs)
+## ⚡ 4. Compilación y Carga del Arduino Nano (Control de TRIACs - Firmware Nano2)
 
-El firmware del módulo de potencia se encuentra en **[`firmware/arduino_nano/nano/nano.ino`](../../firmware/arduino_nano/nano/nano.ino)**.
+El firmware oficial de producción para el módulo de potencia se encuentra en **[`firmware/arduino_nano/nano2/nano2.ino`](../../firmware/arduino_nano/nano2/nano2.ino)**.
 
-1. Abre **[`firmware/arduino_nano/nano/nano.ino`](../../firmware/arduino_nano/nano/nano.ino)** en Arduino IDE.
-2. En el menú `Tools`, selecciona:
+1. Abre **[`firmware/arduino_nano/nano2/nano2.ino`](../../firmware/arduino_nano/nano2/nano2.ino)** en Arduino IDE.
+   > **Nota de Librería**: El sketch incluye los archivos de soporte de la librería `JELDimmer2` (`JELDimmer2.h` y `JELDimmer2.cpp`) en la misma carpeta del sketch, por lo que no requiere instalación de dependencias externas en el gestor de librerías.
+2. En el menú `Tools` (Herramientas), selecciona:
    - **Board**: `Arduino Nano`.
    - **Processor**: `ATmega328P` (o `ATmega328P (Old Bootloader)` si el clon utiliza bootloader clásico).
-   - **Port**: Selecciona el puerto COM del Arduino Nano.
+   - **Port**: Selecciona el puerto COM asignado al Arduino Nano.
 3. Haz clic en **Upload** (Subir).
-   > **Nota**: El Arduino Nano no requiere librerías externas; utiliza registros directos AVR y la librería estándar `<Arduino.h>`. Su rutina de cruce por cero corre en ~8 µs bajo interrupción de hardware `INT1`.
+
+### Principio de Operación en Producción (Nano2):
+- **Estrategia**: Control de potencia por **Tiempo Proporcional (Burst Firing)** a ciclos completos de 60 Hz en ventanas temporales de 3000 ms.
+- **Cruce por Cero**: Pin **D3 (INT1)** vía optoacoplador 4N35.
+- **Compuertas de Disparo**: Pines digitales **D7, D8, D9 y D10** hacia optoacopladores MOC3021 y TRIACs BTA24-800BW (Tinas 1, 2, 3 y 4).
+- **Supresión de Ruido EMI**: Conmuta exclusivamente en cruce por cero ($V=0$), eliminando los armónicos de alta frecuencia que perturbaban la sonda de pH (PH-4502C) y los termopares MAX6675.
+- **Perro Guardián UART**: Si se interrumpe la comunicación con el ESP32-S3 por más de 4000 ms, apaga automáticamente todas las compuertas por seguridad.
+
+*(Nota: La variante previa basada en recorte de fase continuo α se conserva en `firmware/arduino_nano/nano/nano.ino` como registro histórico y experimental).*
 
 ---
 

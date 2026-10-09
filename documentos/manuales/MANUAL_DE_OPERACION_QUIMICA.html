@@ -2000,7 +2000,7 @@
           </div>
           <p style="font-size:0.85rem;">
             <strong>Carácter Ilustrativo:</strong> Todas las gráficas, perfiles térmicos, oscilogramas de actuadores, retratos de fase y registros de telemetría incluidos a lo largo de este manual son <strong>estrictamente demostrativos e ilustrativos</strong>.<br><br>
-            <strong>Alcance:</strong> Fueron generadas como bancos sintéticos o corridas de prueba para validar los motores de renderizado vectorial a 300 DPI (<code>telemetria/graficar_datos.py</code> y Tkinter) y modelar didácticamente los fenómenos del sistema (calentamiento, frenado PI, conmutación ZCS y balances de corriente). <strong>No representan ni corresponden a ningún proceso químico, lote industrial ni ensayo experimental real en particular</strong>.<br><br>
+            <strong>Alcance:</strong> Fueron generadas como bancos sintéticos o corridas de prueba para validar los motores de renderizado vectorial a 300 DPI (<code>software/exportar_graficas_offline.py</code> y Tkinter) y modelar didácticamente los fenómenos del sistema (calentamiento, frenado PI, conmutación ZCS y balances de corriente). <strong>No representan ni corresponden a ningún proceso químico, lote industrial ni ensayo experimental real en particular</strong>.<br><br>
             <strong>Operación Real:</strong> Para cada corrida experimental auténtica en el laboratorio, las figuras definitivas de certificación deben generarse a partir de los datos CSV capturados en tiempo real por el equipo.
           </p>
         </div>
@@ -2066,7 +2066,7 @@
               <td>Figuras sintéticas / validación de software</td>
               <td><strong>Uso didáctico y demostrativo</strong></td>
               <td>Asumir erróneamente que son datos de un lote real particular</td>
-              <td>Generar gráficas propias desde el CSV con <code>telemetria/graficar_datos.py</code>.</td>
+              <td>Generar gráficas propias desde el CSV con <code>software/exportar_graficas_offline.py</code>.</td>
             </tr>
           </tbody>
         </table>
@@ -2590,7 +2590,7 @@
         <ol style="font-size:0.84rem; line-height:1.6; padding-left:22px; color:#e2e8f0; margin-bottom:8px;">
           <li><strong>⚠️ SEGURIDAD CRÍTICA:</strong> Desconecte la clavija principal de corriente alterna (110V/220V AC) del gabinete antes de conectar cualquier cable a la computadora para garantizar el aislamiento físico del operador y de la PC.</li>
           <li>Conecte el Arduino Nano a su computadora mediante un cable USB (Mini-B o Type-C según la versión de su placa Nano).</li>
-          <li>Abra el código fuente <code>arduino_nano/nano/nano.ino</code> en <strong>Arduino IDE</strong> (versión 2.x o clásica).</li>
+          <li>Abra el código fuente <code>arduino_nano/nano2/nano2.ino</code> (con <code>JELDimmer2</code>) en <strong>Arduino IDE</strong> (versión 2.x o clásica).</li>
           <li>En el menú <em>Herramientas (Tools)</em>, configure con exactitud:
             <ul style="margin-top:4px; margin-bottom:4px;">
               <li><strong>Placa (Board):</strong> <code>Arduino Nano</code></li>
@@ -2703,7 +2703,7 @@
             <tr>
               <td><strong>Almacenamiento de Datos</strong></td>
               <td>Visualización instantánea en vivo (sin disco duro en el ESP32).</td>
-              <td><strong>Grabación Masiva CSV a 1 Hz</strong> en el disco duro de la PC dentro de <code>telemetria/experimentos/</code>.</td>
+              <td><strong>Grabación Masiva CSV a 1 Hz</strong> en el disco duro de la PC dentro de <code>software/telemetria2.0/experimentos/</code>.</td>
             </tr>
             <tr>
               <td><strong>Cálculos de Faraday</strong></td>
@@ -2768,7 +2768,7 @@
             Si prefieres ejecutar los comandos manualmente desde la terminal en la raíz del proyecto:<br><br>
             <code>pip install -r requirements.txt</code><br><br>
             Y posteriormente lanzar el monitor SCADA con cualquiera de los siguientes comandos:<br><br>
-            <code>python telemetria/app.py</code> &nbsp;o bien&nbsp; <code>python -m telemetria</code>
+            <code>python software/telemetria2.0/app.py</code> &nbsp;o bien&nbsp; <code>python -m telemetria2.0</code> (o <code>Iniciar_Telemetria_2.0.bat</code>)
           </p>
         </div>
       </div>
@@ -2803,7 +2803,7 @@
               <td>&ge; 2.0.0</td>
               <td>Estructuración y análisis de series temporales.</td>
               <td>
-                Ingesta los archivos CSV masivos generados durante los ensayos en <code>telemetria/experimentos/</code>.
+                Ingesta los archivos CSV masivos generados durante los ensayos en <code>software/telemetria2.0/experimentos/</code>.
                 Permite alinear las marcas de tiempo a 1 Hz, calcular medias móviles de temperatura, cómputo de potencias en Watts, balance energético acumulativo en Wh y evaluar índices de error de seguimiento (IAE).
               </td>
             </tr>
@@ -2813,7 +2813,7 @@
               <td>Motor de graficación científica 2D.</td>
               <td>
                 Incrusta los lienzos gráficos interactivos dentro de las ventanas de escritorio mediante <code>FigureCanvasTkAgg</code>.
-                Asimismo, es el motor utilizado por <code>telemetria/graficar_datos.py</code> para renderizar y exportar las 8 figuras científicas multipanel a <strong>300 DPI</strong> listas para tesis y publicaciones.
+                Asimismo, es el motor utilizado por <code>software/exportar_graficas_offline.py</code> para renderizar y exportar las 8 figuras científicas multipanel a <strong>300 DPI</strong> listas para tesis y publicaciones.
               </td>
             </tr>
             <tr>
@@ -3037,7 +3037,7 @@
     <section id="telemetria-controles">
       <h2 class="section-title">📊 5. Pantalla Principal del SCADA y Panel de Control en Tiempo Real</h2>
       <p>
-        El panel principal del software SCADA de escritorio (<code>telemetria/app.py</code>) centraliza la supervisión continua
+        El panel principal del software SCADA de escritorio (<code>software/telemetria2.0/app.py</code>) centraliza la supervisión continua
         a 10 Hz, el control de recetas automatizadas ISA-88 y la visualización gráfica en streaming de las 4 cubas y el sumidero de corriente:
       </p>
 
@@ -3055,7 +3055,7 @@
         <div class="card">
           <h4 style="color:#38bdf8; margin-bottom:8px;">Exportar Gráficas (300 DPI)</h4>
           <p style="font-size:0.85rem;">
-            Ejecuta el compilador científico <code>telemetria/graficar_datos.py</code> sobre el archivo CSV del ensayo activo,
+            Ejecuta el compilador científico <code>software/exportar_graficas_offline.py</code> sobre el archivo CSV del ensayo activo,
             generando la suite completa de figuras de alta definición (300 DPI) para memorias de tesis o reportes de laboratorio.
           </p>
         </div>
@@ -3798,14 +3798,14 @@
       </div>
 
       <!-- 11.1 SCRIPT GRAFICADOR -->
-      <h3 class="subsection-title" id="script-graficador">11.1 Compilador Automatizado de Reportes Científicos (<code>telemetria/graficar_datos.py</code>)</h3>
+      <h3 class="subsection-title" id="script-graficador">11.1 Compilador Automatizado de Reportes Científicos (<code>software/exportar_graficas_offline.py</code>)</h3>
       <p>
         Al concluir cualquier ensayo, el sistema permite compilar la suite gráfica completa de 10 figuras de alta definición (300 DPI)
         listas para impresión, artículos o tesis mediante el comando:
       </p>
 
       <div class="code-block" style="background:#0f172a; padding:12px 16px; border-radius:6px; font-family:monospace; color:#38bdf8; font-size:0.85rem; margin:12px 0;">
-        python telemetria/graficar_datos.py --experimento "telemetria/experimentos/Ensayo_2026-09-12_14-30-00" --dpi 300
+        python software/exportar_graficas_offline.py
       </div>
 
       <p style="font-size:0.88rem; line-height:1.6;">
@@ -4310,8 +4310,9 @@ Proyecto/
 │   │   └── historico/               # Bancos de pruebas y experimentos intermedios
 │   │
 │   └── arduino_nano/                # Nodo Esclavo de Potencia AC 60 Hz (Microchip ATmega328P)
-│       ├── nano/nano.ino            # Firmware de producción: interrupción INT1 (Pin D3 ZCD) y disparo de 4 TRIACs
-│       └── historico/               # Alternativas legadas (Nano Beta, nano2 con JELDimmer2)
+│       ├── nano2/nano2.ino          # ⭐ Firmware de producción: Tiempo Proporcional (Burst Firing 3s con JELDimmer2)
+│       ├── nano/nano.ino            # Variante histórica/alternativa: Recorte de ángulo de fase con LUT
+│       └── historico/               # Prototipos previos (Nano Beta)
 │
 ├── software/                        # 🖥️ Ecosistema SCADA y Análisis Científico en Python
 │   ├── telemetria2.0/               # ⭐ SCADA ACTIVO (Matriz ISA-88, Culombimetría, Balanza analítica, Canal A1)
@@ -4375,20 +4376,19 @@ Proyecto/
               </td>
             </tr>
             <tr>
-              <td><strong><code>arduino_nano/nano/</code></strong></td>
+              <td><strong><code>arduino_nano/nano2/</code></strong></td>
               <td>C++ / Wiring</td>
-              <td>Nodo Esclavo (Conmutación ZCS de Calefacción AC 60 Hz)</td>
+              <td>Nodo Esclavo de Producción (Tiempo Proporcional ZCS AC 60 Hz)</td>
               <td>
-                • <code>nano.ino</code>: Atiende la interrupción externa INT1 (Pin D3) en cada cruce por cero de la red eléctrica, temporiza los retardos de disparo &alpha; de los 4 TRIACs (Pines D7–D10) y recibe tramas de potencia por UART desde el ESP32.
+                • <code>nano2.ino / JELDimmer2</code>: Firmware oficial activo de producción. Modula potencia térmica mediante tiempo proporcional en ventanas de 3000 ms a ciclos completos en cruce por cero (Pin D3 INT1, Gates D7–D10), eliminando de raíz el ruido EMI sobre pH y termopares. Watchdog UART de 4000 ms.
               </td>
             </tr>
             <tr>
-              <td><strong><code>arduino_nano/historico/</code></strong></td>
+              <td><strong><code>arduino_nano/nano/</code></strong></td>
               <td>C++ / Wiring</td>
-              <td>Versiones Legadas y Alternativas de Dimerización</td>
+              <td>Variante Histórica / Alternativa de Laboratorio</td>
               <td>
-                • <code>Nano Beta/Codigo_Nano.ino</code>: Prototipo inicial con retardos bloqueantes en bucle.<br>
-                • <code>nano2/nano2.ino</code>: Alternativa modular basada en <code>JELDimmer2.cpp / .h</code> mediante conmutación por tiempo proporcional (ventanas de 3000 ms a ciclos completos).
+                • <code>nano.ino</code>: Control por recorte de ángulo de fase (&alpha;-Firing a 120 Hz) con LUT senoidal de 101 puntos. Preservado como referencia experimental comparativa.
               </td>
             </tr>
             <tr>
@@ -4585,7 +4585,7 @@ Proyecto/
             Suite analítica para procesamiento posterior de ensayos experimentales:
           </p>
           <ul style="font-size:0.82rem; line-height:1.5; padding-left:18px; color:#cbd5e1;">
-            <li><strong>Importación Automatizada de CSV:</strong> Carga masivamente los archivos de telemetría continua generados por <code>telemetria/experimentos/</code>, detectando marcas temporales y cambios de fase ISA-88.</li>
+            <li><strong>Importación Automatizada de CSV:</strong> Carga masivamente los archivos de telemetría continua generados por <code>software/telemetria2.0/experimentos/</code>, detectando marcas temporales y cambios de fase ISA-88.</li>
             <li><strong>Integración de Carga de Faraday:</strong> Realiza la integración numérica de la corriente continua:
               <br><code>m_teorica = (M / (z · F)) · &int; I(t) dt</code>
               <br>calculando el espesor de capa electrodepositada (&mu;m) y evaluando la eficiencia de corriente (&eta;%) al contrastarlo con la masa gravimétrica final.
@@ -4603,30 +4603,30 @@ Proyecto/
 
       <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));">
         <div class="card">
-          <h4 style="color:#38bdf8; margin-bottom:8px;">⚡ Versión en Producción: <code>arduino_nano/nano/nano.ino</code></h4>
+          <h4 style="color:#38bdf8; margin-bottom:8px;">⚡ Versión en Producción: <code>arduino_nano/nano2/nano2.ino</code></h4>
           <p style="font-size:0.84rem; line-height:1.5;">
-            <strong>Control por Recorte de Ángulo de Fase (&alpha; Firing):</strong>
-            Funciona en lazo determinista guiado por eventos de hardware.
+            <strong>Control por Tiempo Proporcional (Burst Firing con JELDimmer2):</strong>
+            Arquitectura oficial y activa en producción basada en <code>nano2.ino</code>, <code>JELDimmer2.h</code> y <code>JELDimmer2.cpp</code>.
           </p>
           <ul style="font-size:0.82rem; line-height:1.5; padding-left:18px; color:#cbd5e1;">
-            <li><strong>Interrupción Externa INT1:</strong> El pin digital D3 recibe los pulsos de cruce por cero generados por el optoacoplador 4N35 a 120 Hz (cada 8.33 ms). La rutina de interrupción (ISR) reajusta el temporizador de fase.</li>
-            <li><strong>Linealización por LUT de 101 Puntos:</strong> Consulta el arreglo <code>lut_triac</code> para convertir el porcentaje de potencia (0–100%) recibido por UART en el retardo exacto en microsegundos (&alpha; &isin; [0, 8333] &mu;s).</li>
-            <li><strong>Disparo Múltiple en Pines D7–D10:</strong> Envía pulsos de compuerta ultra-cortos de 100 &mu;s a los opto-TRIACs MOC3021, logrando una modulación continua con resolución sub-milisegundo y mínima oscilación térmica.</li>
-            <li><strong>Perro Guardián UART:</strong> Si no recibe tramas <code>&lt;T1,T2,T3,T4&gt;</code> del ESP32 durante más de 3000 ms, apaga automáticamente los 4 canales por seguridad.</li>
+            <li><strong>Conmutación a Ciclos Completos:</strong> Divide el tiempo en ventanas cíclicas deterministas de <strong>3000 ms</strong> (3.0 s). Conmuta los TRIACs al 100% o al 0% durante la fracción proporcional solicitada por el ESP32.</li>
+            <li><strong>Supresión Total de Ruido EMI:</strong> Conmuta exclusivamente en cruce por cero ($V=0$), eliminando los picos abruptos $dv/dt$ que en el recorte de fase causaban perturbaciones electromagnéticas sobre la sonda de pH (PH-4502C) y los termopares MAX6675.</li>
+            <li><strong>Perro Guardián UART (4000 ms):</strong> Si la comunicación serie desde el ESP32 cesa por más de 4000 ms, apaga inmediatamente todas las compuertas de los 4 canales por seguridad física.</li>
+            <li><strong>Pines Asignados:</strong> Pin D3 (INT1 Cruce por Cero), Pines D7–D10 (Compuertas TRIACs T0–T3), Pin D0 RX (UART @ 9600 bps).</li>
           </ul>
         </div>
 
         <div class="card">
-          <h4 style="color:#c084fc; margin-bottom:8px;">🎛️ Alternativa Modular OOP: <code>arduino_nano/historico/nano2/</code></h4>
+          <h4 style="color:#c084fc; margin-bottom:8px;">🎛️ Variante Histórica / Alternativa: <code>arduino_nano/nano/nano.ino</code></h4>
           <p style="font-size:0.84rem; line-height:1.5;">
-            <strong>Control por Tiempo Proporcional (Burst Firing con JELDimmer2):</strong>
-            Arquitectura orientada a objetos basada en los archivos <code>nano2.ino</code>, <code>JELDimmer2.h</code> y <code>JELDimmer2.cpp</code>.
+            <strong>Control por Recorte de Ángulo de Fase (&alpha; Firing):</strong>
+            Diseño analizado en laboratorio conservado como referencia comparativa.
           </p>
           <ul style="font-size:0.82rem; line-height:1.5; padding-left:18px; color:#cbd5e1;">
-            <li><strong>Conmutación a Ciclos Completos:</strong> Divide el tiempo en ventanas cíclicas de <strong>3000 ms</strong> (3.0 segundos). Enciende los TRIACs al 100% o los apaga al 0% durante una fracción proporcional de la ventana.</li>
-            <li><strong>Cero Ruido EMI de Alta Frecuencia:</strong> Al conmutar únicamente en cruces por cero completos (sin recortar la senoidal en ángulos intermedios), no genera interferencia electromagnética de conmutación.</li>
-            <li><strong>Compromiso Físico:</strong> En tinas de gran volumen (1.0 L) la inercia térmica disimula los pulsos de 3 segundos, pero en la <strong>Celda Hull de 267 mL</strong> produce ondulaciones térmicas no despreciables. Por esta razón, se eligió el recorte de fase continuo de <code>nano.ino</code> como firmware definitivo.</li>
-            <li><code>Nano Beta/Codigo_Nano.ino</code>: Prototipo inicial que utilizaba retardos por software (<code>delayMicroseconds</code> en bucle), el cual fue descartado por generar severo jitter temporal y pérdida de tramas serie.</li>
+            <li><strong>Interrupción Externa INT1:</strong> El pin digital D3 recibe los pulsos de cruce por cero generados por el optoacoplador 4N35 a 120 Hz (cada 8.33 ms). La rutina ISR temporiza el disparo.</li>
+            <li><strong>Linealización por LUT de 101 Puntos:</strong> Convierte el porcentaje de potencia en microsegundos de retardo de compuerta (&alpha; &isin; [0, 8333] &mu;s).</li>
+            <li><strong>Motivo de Descarte en Producción:</strong> El encendido abrupto a mitad de senoidal inyectaba ruido electromagnético parásito en los circuitos analógicos de alta impedancia, optándose por el tiempo proporcional ZCS de <code>nano2</code>.</li>
+            <li><code>Nano Beta/Codigo_Nano.ino</code>: Prototipo previo con retardos por software (<code>delayMicroseconds</code>) descartado por jitter temporal.</li>
           </ul>
         </div>
       </div>
@@ -4855,30 +4855,30 @@ Proyecto/
           <thead>
             <tr>
               <th>Criterio Técnico</th>
-              <th>Método 1: Recorte de Ángulo de Fase (&alpha;-Firing)<br><span style="color:#38bdf8;font-size:0.75rem;">(Implementado en Producción: <code>arduino_nano/nano/nano.ino</code>)</span></th>
-              <th>Método 2: Paquetes de Ciclos / Ventana Proporcional (Burst)<br><span style="color:#c084fc;font-size:0.75rem;">(Alternativa OOP: <code>arduino_nano/historico/nano2/</code>)</span></th>
+              <th>Método Oficial: Tiempo Proporcional (Burst Firing ZCS)<br><span style="color:#38bdf8;font-size:0.75rem;">(Implementado en Producción: <code>arduino_nano/nano2/nano2.ino</code>)</span></th>
+              <th>Método Alternativo: Recorte de Ángulo de Fase (&alpha;-Firing)<br><span style="color:#c084fc;font-size:0.75rem;">(Variante Histórica / Laboratorio: <code>arduino_nano/nano/nano.ino</code>)</span></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>Principio Físico</strong></td>
-              <td>Recorta cada semiciclo de la onda senoidal (120 semiciclos/segundo) modulando el retardo de disparo &alpha; de 0 a 8333 &mu;s tras el cruce por cero.</td>
-              <td>Enciende la onda senoidal completa durante un número entero de ciclos y la apaga el resto dentro de una ventana de tiempo (ej. 3.0 segundos).</td>
+              <td>Enciende la onda senoidal completa durante un número entero de ciclos y la apaga el resto dentro de una ventana de tiempo fija de 3.0 segundos en cruce por cero.</td>
+              <td>Recorta cada semiciclo de la onda senoidal modulando el retardo de disparo &alpha; de 0 a 8333 &mu;s tras el cruce por cero.</td>
             </tr>
             <tr>
               <td><strong>Resolución & Dinámica</strong></td>
-              <td><strong>Ultra alta (sub-milisegundo):</strong> Ajusta la entrega de energía 120 veces por segundo de forma continua y suave.</td>
-              <td><strong>Discreta:</strong> Modulación por paquetes de 3 segundos; resolución limitada al periodo de la ventana.</td>
+              <td><strong>Determinista ZCS:</strong> Modulación por paquetes de ciclos completos en ventanas de 3000 ms, perfectamente adaptada a la inercia térmica de baños químicos.</td>
+              <td><strong>Sub-milisegundo:</strong> Ajusta el retardo de compuerta 120 veces por segundo de forma continua.</td>
             </tr>
             <tr>
               <td><strong>Estabilidad Térmica en Celda Hull (267 mL)</strong></td>
-              <td><strong>Excelente (&plusmn;0.2 &deg;C):</strong> No produce oscilaciones perceptibles. Ideal para reactores de muy baja inercia térmica donde una pausa de 1 segundo enfría la disolución.</td>
-              <td><strong>Deficiente (&plusmn;1.5 &deg;C a &plusmn;2.0 &deg;C):</strong> Provoca ciclos visibles de "calentamiento y enfriamiento" (oleadas térmicas) en volúmenes menores a 500 mL.</td>
+              <td><strong>Control térmico robusto (&plusmn;0.5 &deg;C):</strong> Acoplado con los lazos PI de 1 Hz del ESP32 y resistencias dimensionadas, mantiene estabilidad sin derivas.</td>
+              <td><strong>Sensible a ruido:</strong> Aunque ofrece modulación continua, los armónicos dv/dt interferían la lectura de termopares desestabilizando el PI.</td>
             </tr>
             <tr>
               <td><strong>Ruido Electromagnético (EMI / dv/dt)</strong></td>
-              <td><strong>Genera armónicos de conmutación:</strong> El encendido abrupto a mitad de senoidal crea transitorios dv/dt que requieren filtros RC snubber y optoacopladores MOC3021.</td>
-              <td><strong>Cero ruido de alta frecuencia:</strong> Conmuta exclusivamente en el cruce por cero natural (tensión cero), erradicando el ruido electromagnético.</td>
+              <td><strong>Cero ruido de alta frecuencia (ZCS puro):</strong> Conmuta exclusivamente en el cruce por cero natural (tensión cero), erradicando el ruido EMI sobre pH y termopares.</td>
+              <td><strong>Genera armónicos de conmutación:</strong> El encendido abrupto a mitad de senoidal crea transitorios dv/dt que generaban severo acoplamiento electromagnético.</td>
             </tr>
             <tr>
               <td><strong>Hardware & Requerimiento de CPU</strong></td>
@@ -4972,7 +4972,7 @@ Proyecto/
           <p style="font-size:0.85rem; line-height:1.55; color:#cbd5e1;">
             El servidor web y el gestor OTA residen físicamente en el chip ESP32-S3 y escriben sobre su memoria Flash externa de 16 MB.
             El <strong>Arduino Nano (ATmega328P)</strong> es un microcontrolador esclavo independiente que no tiene antena Wi-Fi ni comparte el bus de memoria del ESP32.
-            Su único canal de enlace con el ESP32 es un par de líneas serie UART2 (GPIO 17 TX a D0 RX). Como el ESP32 no cuenta con líneas de control de reset físico (DTR) conectadas al Nano para activar el bootloader STK500, cualquier actualización del código del Nano (<code>arduino_nano/nano/nano.ino</code>) <strong>debe realizarse conectando un cable USB directo a la computadora</strong> mediante Arduino IDE.
+            Su único canal de enlace con el ESP32 es un par de líneas serie UART2 (GPIO 17 TX a D0 RX). Como el ESP32 no cuenta con líneas de control de reset físico (DTR) conectadas al Nano para activar el bootloader STK500, cualquier actualización del código del Nano (<code>arduino_nano/nano2/nano2.ino</code>) <strong>debe realizarse conectando un cable USB directo a la computadora</strong> mediante Arduino IDE.
           </p>
         </div>
 
