@@ -32,7 +32,7 @@ Todas las notas notables de cambios para este proyecto están documentadas en es
 | **Calibración pH NVS** | Volátil / Única | Global | Global | **Persistencia NVS Independiente por Modo** |
 | **Offset Hardware pH** | Doble potenciómetro | Doble potenciómetro | Doble potenciómetro | **Voltímetro y aguja única para PH-4502C** |
 | **Lazo VCSS Blanking** | No | 2000 ms | 2000 ms | **300 ms (Asentamiento ultrarrápido <2.5s)** |
-| **Control de Potencia** | Delay micros | INT1 (~8µs) + LUT | INT1 (~8µs) + LUT + WDT | **INT1 Hardware (~8µs) + LUT PROGMEM + WDT** |
+| **Control de Potencia** | Delay micros | INT1 (~8µs) + LUT | INT1 (~8µs) + LUT + WDT | **Tiempo Proporcional (Nano2 / Burst Firing 3s)** |
 | **SCADA Activo** | telemetria (v3.5) | telemetria (v1.0) | telemetria (v1.3) | **Telemetría 2.0 (`telemetria2.0` / ISA-88)** |
 | **Culombimetría / Balanza**| No | Asistida 4 decimales | Asistida 4 decimales | **Balanza 4 decimales + $Q = \int I dt$ + $\eta\%$** |
 | **Figuras Científicas** | 3 Gráficas (300 DPI) | 5 Figuras (300 DPI) | 5 Figuras (300 DPI) | **8 Figuras HD (300 DPI) Offline / Online** |
@@ -41,7 +41,7 @@ Todas las notas notables de cambios para este proyecto están documentadas en es
 ---
 
 ## 🚀 [RTOS 2.0.0] - Firmware Flagship, Sensor de pH Dedicado en Canal A1 y SCADA Telemetría 2.0 (2026)
-**Ubicación del código:** `firmware/esp32/RTOS2.0/` | **Nano:** `firmware/arduino_nano/nano/` | **Telemetría:** `software/telemetria2.0/` | **Diagramas:** `visualizacion/diagramas/` | **Manual Químico:** `documentos/manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`
+**Ubicación del código:** `firmware/esp32/RTOS2.0/` | **Nano:** `firmware/arduino_nano/nano2/` | **Telemetría:** `software/telemetria2.0/` | **Diagramas:** `visualizacion/diagramas/` | **Manual Químico:** `documentos/manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`
 
 ### 🌟 Added & Enhanced (Sensor de pH Dedicado, Calibración por Modos y SCADA 2.0)
 - **Eliminación Definitiva del Canal A0 de pH y Dedicación Exclusiva del Canal A1**:

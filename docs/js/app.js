@@ -139,25 +139,6 @@ const ARCH_NODOS = {
   }
 };
 
-function mostrarVistaArquitectura(modo) {
-  const btnVec = document.getElementById('btnArchVec');
-  const btnImg = document.getElementById('btnArchImg');
-  const vistaVec = document.getElementById('vistaArchVectorial');
-  const vistaImg = document.getElementById('vistaArchImagen');
-
-  if (modo === 'vectorial') {
-    if (btnVec) btnVec.classList.add('active');
-    if (btnImg) btnImg.classList.remove('active');
-    if (vistaVec) vistaVec.style.display = 'block';
-    if (vistaImg) vistaImg.style.display = 'none';
-  } else {
-    if (btnVec) btnVec.classList.remove('active');
-    if (btnImg) btnImg.classList.add('active');
-    if (vistaVec) vistaVec.style.display = 'none';
-    if (vistaImg) vistaImg.style.display = 'block';
-  }
-}
-
 function seleccionarNodoArch(id) {
   const panel = document.getElementById('archDetailPanel');
   const data = ARCH_NODOS[id];

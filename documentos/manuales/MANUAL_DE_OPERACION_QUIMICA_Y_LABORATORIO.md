@@ -5,7 +5,7 @@
 |:---|:---|
 | **Versión del Documento** | 2.0 |
 | **Fecha de Emisión** | Septiembre 2026 |
-| **Firmware Asociado** | RTOS 2.0.0 (ESP32-S3) + nano.ino (ATmega328P) |
+| **Firmware Asociado** | RTOS 2.0.0 (ESP32-S3) + nano2.ino (ATmega328P Dimmer Tiempo Proporcional) |
 | **Estado** | 🟢 Completado — Documentado con 7 infografías técnicas de hardware en ultra-alta resolución y suite interactiva de conexionado 1:1 |
 
 **Sustrato Base:** Probetas de Aleación de Aluminio 6061-T6 (100 mm · 65 mm · 0.8 mm, Área útil sumergida: 1.0 dm²)  
@@ -687,9 +687,12 @@ Proyecto/
 │   │   └── historico/         # Archivo consolidado de versiones previas (RTOS 1.0 a 1.4 y Super-Loop v3.5/v4.0)
 │   │
 │   └── arduino_nano/          # Nodo Esclavo de Potencia AC 60 Hz (Microchip ATmega328P)
-│       ├── nano/              # Firmware activo en producción:
-│       │   └── nano.ino       # Interrupción INT1 (Pin D3 cruce por cero), LUT 101 puntos, disparo TRIACs y WDT
-│       └── historico/         # Prototipos previos (Nano Beta y nano2 con JELDimmer2)
+│       ├── nano2/             # ⭐ Firmware activo en producción:
+│       │   ├── nano2.ino      # Tiempo proporcional (Burst Firing en ventanas de 3s con JELDimmer2) sobre placa propia
+│       │   ├── JELDimmer2.cpp # Librería de control de compuertas a ciclos completos
+│       │   └── JELDimmer2.h
+│       ├── nano/              # Alternativa previa: Control por recorte de ángulo de fase (LUT 101 puntos, INT1 D3)
+│       └── historico/         # Prototipos previos (Nano Beta)
 │
 ├── software/                  # 📊 APLICACIONES SCADA, TELEMETRÍA Y PROCESAMIENTO
 │   ├── telemetria2.0/         # ⭐ SCADA ACTIVO (Matriz ISA-88, Culombimetría, Balanza analítica, Canal A1)
@@ -723,7 +726,7 @@ Proyecto/
 | :--- | :--- | :--- | :--- |
 | **`firmware/esp32/RTOS2.0/`** | C++ / FreeRTOS SMP | Nodo Maestro: Supervisión, red WiFi, servidor web y control determinista en Core 1. | 40 archivos fuente (`.cpp/.h`) + 6 vistas embebidas en `views/` (Control VCSS, supervisión térmica PI, sensor pH dedicado Canal A1 en ADS1115, NVS por modo y OTA). |
 | **`firmware/esp32/historico/`** | C++ / Wiring | Evolución histórica del firmware. | Versiones Super-Loop (`v3.0`, `v3.5`, `v4.0`) y familia RTOS previa (`RTOS 1.0`, `1.1`, `1.2`, `1.3`, `1.4`). |
-| **`firmware/arduino_nano/nano/`** | C++ / Wiring | Esclavo de Potencia AC: Detección ZCS (INT1) y modulación TRIAC por recorte de fase. | `nano.ino` (interrupción en Pin D3, LUT de 101 elementos a 60 Hz, pulsos de 100 μs en D7–D10 y watchdog UART de 3 s). |
+| **`firmware/arduino_nano/nano2/`** | C++ / Wiring | Esclavo de Potencia AC (Producción): Conmutación TRIAC por Tiempo Proporcional (Burst Firing). | `nano2.ino` con librería `JELDimmer2` (ventanas de 3000 ms, cruce por cero, supresión de EMI y watchdog UART de 4 s sobre placa propia de 4 TRIACs). Variante de recorte de fase en `nano/`. |
 | **`software/telemetria2.0/`** | Python 3.9+ | SCADA Activo: Supervisión en tiempo real, matriz ISA-88, balanza asistida y culombimetría. | Arquitectura modular con soporte nativo para Canal A1 de pH, gestión de recetas Taguchi y exportación de datos. |
 | **`software/exportar_graficas_offline.py`** | Python 3.9+ | Compilador científico offline a 300 DPI. | Generación de la suite completa de hasta 8 figuras editoriales a partir de registros CSV de telemetría. |
 | **`hardware/esquemas_y_bom/`** | Markdown / PNG | Ingeniería eléctrica, lista de materiales y esquemas de conexionado. | `BOM.md` (shunts cerámicos de 10W, relés de potencia con diodos flyback, regulación conmutada Buck LM2596 a 6.80V), esquemas VCSS y de bloques. |
@@ -806,15 +809,16 @@ m = (I · t · M) / (z · F)
 
 La modulación de potencia en corriente alterna (110V/220V a 60 Hz) se delega a un microcontrolador esclavo ATmega328P. En `arduino_nano/` se conservan tanto el firmware de producción como arquitecturas alternativas analizadas durante la investigación:
 
-* **Versión de Producción (`firmware/arduino_nano/nano/nano.ino`):**
-  * Emplea **Control por Recorte de Ángulo de Fase (α Firing)** gobernado por la interrupción externa `INT1` (Pin D3) a 120 Hz generada por el optoacoplador 4N35.
-  * Utiliza la tabla de 101 puntos (`lut_triac`) para convertir el porcentaje de potencia en microsegundos exactos de retardo, disparando pulsos de 100\ μs en los pines D7–D10 hacia opto-TRIACs MOC3021.
-  * Incorpora un perro guardián UART que desconecta las salidas si no recibe tramas del ESP32 en 3000 ms. Ofrece modulación suave y resolución sub-milisegundo sin ondulación térmica en la Celda Hull.
-* **Alternativa Modular OOP (`arduino_nano/historico/nano2/`):**
-  * Implementa **Control por Tiempo Proporcional (Burst Firing)** a través de la librería `JELDimmer2.cpp / .h`.
-  * Modula la potencia encendiendo y apagando los TRIACs a ciclos completos de red en ventanas fijas de **3000 ms**.
-  * Si bien elimina el ruido de alta frecuencia por conmutar en cruces por cero limpios, produce oscilaciones térmicas medibles en baños de volumen reducido (como la Celda Hull de 267 mL), motivo por el cual se seleccionó el recorte de fase de `nano.ino` como estándar.
-  * El prototipo `Nano Beta/Codigo_Nano.ino` demostró que utilizar retardos por software (`delayMicroseconds` en bucle) genera severo jitter temporal y pérdida de tramas serie, justificando el uso de interrupciones de hardware.
+* **Versión Activa de Producción (`firmware/arduino_nano/nano2/nano2.ino`):**
+  * Emplea **Control por Tiempo Proporcional (Burst Firing / Ciclos Completos)** gobernado a través de la librería `JELDimmer2.cpp / .h` sobre la **placa de TRIACs de fabricación propia** (4x BTA24-800BW + optoacopladores MOC3021).
+  * Modula la potencia térmica encendiendo y apagando los TRIACs a ciclos completos de la red eléctrica de 60 Hz en ventanas temporales fijas de **3000 ms**, conmutando exclusivamente en cruces por cero.
+  * Suprime de raíz los armónicos de alta frecuencia y el ruido electromagnético (EMI) que el recorte de fase inducía en los lazos analógicos de alta impedancia (sonda de pH PH-4502C y termopares MAX6675).
+  * Incorpora un perro guardián UART (`TIMEOUT_UART_MS = 4000 ms`) que desconecta todas las salidas de potencia si se interrumpe la comunicación serie desde el ESP32.
+* **Variante Alternativa por Recorte de Fase (`firmware/arduino_nano/nano/nano.ino`):**
+  * Implementa **Control por Recorte de Ángulo de Fase (α Firing)** gobernado por interrupción externa `INT1` (Pin D3) a 120 Hz generada por el optoacoplador 4N35.
+  * Utiliza una tabla LUT senoidal de 101 elementos (`lut_triac`) para convertir el porcentaje de potencia en microsegundos de retardo de compuerta (0 a 8333 μs). Se mantiene preservada como diseño de laboratorio y referencia comparativa.
+* **Prototipos Previos (`firmware/arduino_nano/historico/`):**
+  * El prototipo `Nano Beta/Codigo_Nano.ino` demostró que utilizar retardos por software (`delayMicroseconds` en bucle) genera severo jitter temporal y pérdida de tramas serie, justificando el uso de temporización por interrupciones y ventanas deterministas.
 * **Evolución Histórica del Firmware ESP32 (`esp32/`):**
   * `Proyecto_PH_3.0 / 3.5 / 4.0`: Arquitecturas Super-Loop monolíticas que sufrían retrasos de sensado al atender peticiones web HTTP.
   * `RTOS1.0 / 1.1 / 1.2`: Migración a FreeRTOS SMP Dual-Core, incorporación de rampas suaves de corriente y muestreo estroboscópico ETS a 100 Hz.

@@ -652,42 +652,6 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
   box-shadow: inset 0 2px 12px rgba(0,0,0,0.6);
 }
 
-.arch-toggle-bar {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.arch-toggle-btn {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid var(--card-border);
-  color: #94a3b8;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.arch-toggle-btn:hover {
-  color: #ffffff;
-  border-color: var(--primary);
-  background: rgba(14, 165, 233, 0.15);
-}
-
-.arch-toggle-btn.active {
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
-  box-shadow: 0 0 14px rgba(14, 165, 233, 0.4);
-}
-
 .arch-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1054,17 +1018,7 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         Arquitectura modular organizada por bloques de <strong>Nombre + Función</strong>: Entradas y Sensado (Izq.) → Núcleo de Control Maestro/Esclavo (Centro) → Etapa de Potencia y Planta (Der.) → HMI y Supervisión (Abajo).
       </p>
 
-      <!-- SELECTOR DE VISTA: VECTORIAL HTML5 VS IMAGEN HD -->
-      <div class="arch-toggle-bar">
-        <button class="arch-toggle-btn active" id="btnArchVec" onclick="mostrarVistaArquitectura('vectorial')">
-          <span>📐</span> Diagrama Interactivo Vectorial (HTML5/SVG Nítido)
-        </button>
-        <button class="arch-toggle-btn" id="btnArchImg" onclick="mostrarVistaArquitectura('imagen')">
-          <span>🖼️</span> Renderizado Gráfico Original (HD PNG)
-        </button>
-      </div>
-
-      <!-- VISTA 1: DIAGRAMA VECTORIAL HTML5/SVG INTERACTIVO (100% OFFLINE) -->
+      <!-- DIAGRAMA VECTORIAL INTERACTIVO DE ARQUITECTURA -->
       <div id="vistaArchVectorial" class="arch-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <span style="font-size: 0.78rem; color: #94a3b8;">
@@ -1220,16 +1174,6 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         <div id="archDetailPanel" class="arch-detail-panel"></div>
       </div>
 
-      <!-- VISTA 2: RENDERIZADO ORIGINAL EN IMAGEN HD -->
-      <div id="vistaArchImagen" style="display: none; text-align: center; position: relative;">
-        <img src="assets/sistema.png" alt="Diagrama de Bloques Funcional" id="imgArquitectura" style="width: 100%; max-height: 520px; object-fit: contain; background: #070c16; border-radius: 10px; border: 1px solid var(--card-border); cursor: pointer;" onclick="abrirModal(this.src, 'Diagrama de Arquitectura de Hardware — Alta Resolución')">
-        <div style="margin-top: 8px;">
-          <button class="tab-btn" onclick="abrirModal('assets/sistema.png', 'Diagrama de Arquitectura de Hardware — Alta Resolución')" style="background: rgba(14, 165, 233, 0.2); border-color: var(--primary); color: #fff;">
-            🔍 Ampliar Diagrama en Alta Resolución (HD Modal)
-          </button>
-        </div>
-      </div>
-
       <div class="grid-3" style="margin-top: 20px;">
         <div class="info-box">
           <strong style="color: var(--primary);">Master: ESP32-S3 N16R8</strong><br>
@@ -1296,21 +1240,21 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
   </section>
 
   <!-- ========================================================================= -->
-  <!-- TAB 2: MÓDULO TÉRMICO (TIEMPO PROPORCIONAL & MATLAB) -->
+  <!-- TAB 2: MÓDULO TÉRMICO (PROCESO DE MODELADO Y CONTROL ZCS) -->
   <!-- ========================================================================= -->
   <section class="tab-panel" id="tab-termico">
     <div class="card">
       <div class="card-title">
-        <span class="icon">🔥</span> Control Térmico por Tiempo Proporcional (ZCS) vs. Ángulo de Fase
+        <span class="icon">🔥</span> Proceso de Modelado Térmico a Detalle y Control Sincrónico (ZCS & FDT)
       </div>
 
-      <div class="info-box info-box-warn">
-        <strong>Justificación Técnica del Cambio de Estrategia de Disparo:</strong><br>
-        Inicialmente se exploró el control por <em>recorte de ángulo de fase</em> (Phase-Angle Control). Sin embargo, presentó fallas sistemáticas:
+      <div class="info-box info-box-info">
+        <strong>Principio de Operación: Conmutación por Cruce por Cero (ZCS Burst Firing):</strong><br>
+        El control térmico de las 4 tinas de tratamiento opera mediante modulación de tiempo proporcional sincrónica en cruce por cero (Zero-Crossing Switching, 60 Hz). Los fundamentos del acondicionamiento y actuación son:
         <ul style="margin-left: 18px; margin-top: 6px; font-size: 0.85rem;">
-          <li><strong>Fallo de Enganche del TRIAC:</strong> Si el pulso de disparo cesa antes de que la corriente alcance la <em>corriente de enganche</em> (Latching Current <i>I</i><sub>L</sub> ≈ 50 mA), el TRIAC se apaga instantáneamente ("misfiring").</li>
-          <li><strong>Ruido EMI Severo sobre el Sensor de pH:</strong> El corte abrupto de la senoide a media tensión genera d<i>i</i>/d<i>t</i> violentos y armónicos de alta frecuencia que se acoplan capacitivamente a la sonda de pH (<i>Z</i><sub>in</sub> &gt; 10<sup>8</sup> Ω), provocando oscilaciones espurias de hasta ±2.0 pH.</li>
-          <li><strong>Solución Adoptada: Tiempo Proporcional (Burst Firing / Cycle Stealing):</strong> Se conmuta la resistencia calefactora únicamente en el cruce por cero (<i>V</i> = 0, d<i>i</i>/d<i>t</i> mínimo). La potencia se modula variando el número de ciclos senoidales completos activos dentro de una ventana base de 1.0 s (60 ciclos a 60 Hz). Cero emisiones EMI y disparo 100% confiable.</li>
+          <li><strong>Inmunidad contra Ruido Electromagnético (EMI):</strong> Al conmutar los TRIACs exclusivamente en <i>V</i> = 0 (d<i>i</i>/d<i>t</i> mínimo), se elimina el acoplamiento capacitivo de transitorios de alta frecuencia hacia la sonda de pH (<i>Z</i><sub>in</sub> &gt; 10<sup>8</sup> Ω) y las líneas de termopares.</li>
+          <li><strong>Conducción Integral de Ciclos de Red:</strong> La entrega de energía se modula conduciendo semiciclos senoidales completos de 60 Hz, asegurando superar la corriente de enganche (Latching Current <i>I</i><sub>L</sub> ≈ 50 mA) de los TRIACs BTA24-600B en las resistencias calefactoras de 450 W.</li>
+          <li><strong>Modulación Temporal y Supervisión Hardware:</strong> La potencia se dosifica en una ventana temporal base ejecutada por el coprocesador Arduino Nano esclavo mediante interrupción externa (INT0/INT1) con watchdog de seguridad de 4 s ante cualquier pérdida de comunicación con el ESP32-S3.</li>
         </ul>
       </div>
 
@@ -1319,10 +1263,10 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       <!-- ========================================================================= -->
       <div style="margin: 24px 0 16px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px;">
         <h3 style="font-size: 1.15rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <span>📐</span> Derivación Rigurosa: Del Transporte Continuo al Control por FDT en MATLAB
+          <span>📐</span> Proceso de Modelado: Desde la Ecuación de Calor hasta el Controlador
         </h3>
         <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-          Fundamentación fisicoquímica y matemática paso a paso: cómo la ecuación diferencial en derivadas parciales de transporte de calor en medio continuo se reduce por <strong>agitación forzada continua y burbujeo</strong> a un modelo de capacitancia concentrada, cómo se obtiene la Función de Transferencia (FDT) con retardo de transporte, y cómo se aplican los parámetros reales en el algoritmo <code style="color: var(--emerald);">hardware/control_matlab/Control_termico.m</code>.
+          Modelado dinámico de las tinas de tratamiento: reducción del transporte térmico bajo agitación forzada a un sistema de capacitancia concentrada de primer orden con retardo de transporte, y cálculo de las ganancias analíticas del lazo PI en <code style="color: var(--emerald);">hardware/control_matlab/Control_termico.m</code>.
         </p>
 
         <!-- PASO 1 -->
@@ -1595,9 +1539,9 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
       <!-- ENLACE FORMAL: TIEMPO PROPORCIONAL <-> FDT -->
       <div class="math-card" style="border-left: 4px solid var(--amber); margin-top: 18px;">
-        <div class="math-label">🔗 Enlace Formal: Control por Tiempo Proporcional (ZCS) con la Función de Transferencia (FDT)</div>
+        <div class="math-label">🔗 Acoplamiento Dinámico: Control por Tiempo Proporcional (ZCS) con la Función de Transferencia (FDT)</div>
         <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
-          ¿Cómo se enlaza matemáticamente una señal de control continua generada por el algoritmo PI con un actuador TRIAC que conmuta de forma discreta paquetes de ciclos senoidales en cruce por cero ($V=0$)?
+          Acoplamiento analítico entre la señal de control continua $u(t)$ calculada por el algoritmo PI y la conmutación discreta por paquetes de ciclos senoidales en cruce por cero ($V=0$):
         </p>
 
         <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
@@ -2059,7 +2003,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       </div>
 
       <div class="info-box info-box-success">
-        <strong>¿Por qué Sensado Pseudo-Diferencial (<i>P</i><sub>o</sub> → A1, <i>AGND</i> → A0)?</strong><br>
+        <strong>Principio de Sensado Pseudo-Diferencial (<i>P</i><sub>o</sub> → A1, <i>AGND</i> → A0):</strong><br>
         Durante el proceso electroquímico, corrientes de hasta 7.06 A viajan por el baño electrolítico hacia el cátodo. Estas corrientes inducen caídas óhmicas en las pistas de tierra del chasis. Si el sensor de pH se mide referenciado a masa convencional, el potencial galvánico parásito desplaza la lectura analógica de forma inaceptable. Con la configuración <strong>Pseudo-Diferencial</strong>, el microcontrolador muestrea ambos terminales de la sonda y calcula Δ<i>V</i> = <i>V</i><sub>A1</sub> − <i>V</i><sub>A0</sub>, cancelando el modo común (CMRR &gt; 75 dB) y aislando la medición del ruido galvánico.
       </div>
 
@@ -3549,25 +3493,6 @@ const ARCH_NODOS = {
     desc: 'Software de supervisión de alto nivel. Gestiona la secuencia automatizada de los 32 ensayos Taguchi (DoE 2⁵·4), registra curvas térmicas y de densidad de corriente a 10 Hz, exporta tablas CSV validadas y permite control remoto desde laptops o smartphones Samsung Galaxy S26 Ultra.'
   }
 };
-
-function mostrarVistaArquitectura(modo) {
-  const btnVec = document.getElementById('btnArchVec');
-  const btnImg = document.getElementById('btnArchImg');
-  const vistaVec = document.getElementById('vistaArchVectorial');
-  const vistaImg = document.getElementById('vistaArchImagen');
-
-  if (modo === 'vectorial') {
-    if (btnVec) btnVec.classList.add('active');
-    if (btnImg) btnImg.classList.remove('active');
-    if (vistaVec) vistaVec.style.display = 'block';
-    if (vistaImg) vistaImg.style.display = 'none';
-  } else {
-    if (btnVec) btnVec.classList.remove('active');
-    if (btnImg) btnImg.classList.add('active');
-    if (vistaVec) vistaVec.style.display = 'none';
-    if (vistaImg) vistaImg.style.display = 'block';
-  }
-}
 
 function seleccionarNodoArch(id) {
   const panel = document.getElementById('archDetailPanel');

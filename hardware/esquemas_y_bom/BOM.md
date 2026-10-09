@@ -10,8 +10,8 @@ Este documento detalla la lista completa de componentes electrónicos, módulos 
 
 | Cantidad | Componente / Modelo | Descripción | Función en el Proyecto |
 | :---: | :--- | :--- | :--- |
-| 1 | **ESP32-S3-WROOM-1** | Microcontrolador Dual-Core 240MHz, 4MB Flash, Wi-Fi / Bluetooth | **Nodo Maestro**: Servidor Web, Lazo PI Térmico, Maestro I2C/SPI, NVS |
-| 1 | **Arduino Nano (ATmega328P)** | Microcontrolador 16MHz, 32KB Flash | **Nodo Esclavo**: Detección de cruce por cero y disparo de TRIACs |
+| 1 | **ESP32-S3-WROOM-1** | Microcontrolador Dual-Core 240MHz, Wi-Fi / Bluetooth (SoftAP + OTA) | **Nodo Maestro Autónomo**: Servidor Web, Lazo PI Térmico, Control VCSS, NVS y Telemetría. Operación inalámbrica sin cable USB de planta. |
+| 1 | **Arduino Nano (ATmega328P)** | Microcontrolador 16MHz, 32KB Flash | **Nodo Esclavo de Potencia**: Dimmer de 4 canales por Tiempo Proporcional (firmware Nano2) y sincronización ZCS |
 
 ---
 
@@ -67,8 +67,8 @@ La placa casera cuenta con 3 pares de clemas de tornillo y 2 pines header macho 
 | 1 | [**Módulo de 2 Relevadores 5V Optoacoplado**](https://emexbit.com/product/modulo-2-relevadores-5v/) | Bobina 5V DC / Contactos 10A 250VAC / 10A 30VDC (Active-LOW, Optoacopladores PC817, LEDs indicadores) • [Ver en Emexbit](https://emexbit.com/product/modulo-2-relevadores-5v/) | **Aislamiento Galvánico +12V VDD**: Entradas IN1 e IN2 puenteadas a GPIO 20 (ESP32-S3) con contactos COM/NO en paralelo para conmutación ZCS (Zero-Current Switching) de alta corriente y redundancia de conmutación sin arco voltaico |
 | 3 | **Resistencias de Inmersión 450W** | 110V / 220V AC (Blindadas en acero inoxidable) | Calentadores para Tina 1 (Desengrase Alcalino), Tina 2 (Decapado Alcalino), Tina 4 (Niquelado sobre Zinc) |
 | 1 | **Calentador de Celda Hull 18W** | 110V / 220V AC (Cartucho de precisión) | Calentador para Tina 3 (Celda Hull 267 mL - Zincado Ácido) |
-| 4 | **Módulos TRIAC (ej. BTA24 + MOC3021)** | Optoacoplado (MDAC4C) | Conmutación por control de ángulo de fase desde Arduino Nano |
-| 1 | **Detector de Cruce por Cero (Zero-Cross)** | Optoacoplado (4N35 / INT1 Pin 3) | Sincronización de frecuencia de red AC (60 Hz / 8.33 ms) |
+| 1 | **Placa Propia de Potencia TRIAC (4 Canales AC)** | Fabricación propia / circuito con 4x TRIACs BTA24-800BW (TO-220 con disipador) + 4x Optoacopladores MOC3021 (reemplazo de MDAC4C) | Conmutación de potencia para los 4 calentadores mediante control por **Tiempo Proporcional (Burst Firing / ciclo completo)** en ventanas de 3000 ms ejecutadas por Arduino Nano (firmware Nano2 con librería `JELDimmer2`). Suprime armónicos y ruido EMI sobre sensores analógicos |
+| 1 | **Detector de Cruce por Cero (Zero-Cross)** | Optoacoplador 4N35 conectado a pin INT1 (D3) del Arduino Nano | Sincronización con la red eléctrica AC de 60 Hz para conmutación limpia en V = 0 |
 
 ---
 

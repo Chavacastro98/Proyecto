@@ -26,9 +26,9 @@ La galvanoplastia sobre aluminio es un proceso notoriamente delicado: el alumini
 Este proyecto resuelve ese reto construyendo una **planta piloto automatizada de 3 tinas de tratamiento químico + Celda Hull (267 mL)**, gobernada por una arquitectura distribuida donde el hardware, el firmware en tiempo real y el software de supervisión en PC trabajan como una sola unidad:
 
 1. **Etapa 1 — Desengrase Alcalino (85-90 °C, 240 s):** Limpieza termoquímica superficial con Na₃PO₄, Na₂SiO₃ y PEG-400.
-2. **Etapa 2 — Decapado y Activación (85-90 °C, 120 s):** Remoción selectiva de alúmina sin atacar el metal base.
-3. **Etapa 3 — Niquelado Electrolítico (30-40 °C, 600 s):** Capa protectora con baño estabilizado para prevenir desplazamiento galvánico espontáneo.
-4. **Etapa 4 — Zincado en Celda Hull (25 °C o 40 °C, 120 o 300 s):** Electrodeposición en celda trapezoidal normalizada de 267 mL con corriente continua (1.50 A DC) o pulsada (10 Hz) para evaluar el rango de densidad de corriente sobre toda la longitud de la probeta.
+2. **Etapa 2 — Decapado y Activación Alcalina (85-90 °C, 120 s):** Remoción selectiva de la película pasivante de alúmina sin atacar el metal base.
+3. **Etapa 3 — Zincado en Celda Hull (25 °C o 40 °C, 120 o 300 s):** Electrodeposición en celda trapezoidal normalizada de 267 mL con corriente continua (1.50 A DC) o pulsada (10 Hz / 20% duty cycle) para evaluar el gradiente de densidad de corriente sobre toda la longitud de la probeta.
+4. **Etapa 4 — Niquelado Electrolítico sobre Zinc (30-40 °C, 600 s):** Depósito protector final a 1.13 A DC con baño estabilizado para inhibir el desplazamiento galvánico espontáneo sobre el zinc subyacente.
 
 ---
 
@@ -39,7 +39,7 @@ El sistema opera con la versión de producción **RTOS 2.0**, diseñada para gar
 ### Nodo Maestro ESP32-S3 (Dual-Core @ 240 MHz, 16 MB Flash, 8 MB PSRAM)
 * **Concurrencia Simétrica FreeRTOS:**
   * **Core 1 (Tiempo Real Estricto):** Lazos de control térmico PI (1 Hz), modulación analógica de corriente VCSS, muestreo continuo a 860 SPS en ADC ADS1115 y máquina de seguridad Fail-Safe (50 Hz).
-  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA.
+  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA (Over-The-Air) a través del punto de acceso Wi-Fi SoftAP ("Uli"). Esto permite operación totalmente autónoma e inalámbrica, eliminando la conexión de cables USB a la computadora durante los ensayos electroquímicos.
 * **Medición de pH en Canal A1 (ADS1115):**  
   La señal potenciométrica del módulo PH-4502C se adquiere de forma directa y continua a través del **Canal A1** del convertidor ADS1115 a **860 SPS**. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
 * **Lazo de Corriente VCSS (Sumidero Analógico Gm = 2.00 S):**  
@@ -48,15 +48,16 @@ El sistema opera con la versión de producción **RTOS 2.0**, diseñada para gar
   Al detener la fuente o finalizar el cronómetro de la etapa, el firmware reduce la consigna del DAC a 0V, espera 30 ms para disipación de corriente remanente en la celda y abre el relé mecánico de aislamiento de +12V a corriente cero, eliminando arcos eléctricos y desgaste de contactos.
 
 ### Coprocesador de Potencia AC (Arduino Nano ATmega328P @ 16 MHz)
-* Control de fase de 60 Hz para 4 calentadores de inmersión de 450 W.
-* Sincronizado por interrupción externa de cruce por cero (INT1, pin 3).
-* Linealización senoidal trigonométrica de potencia RMS (retardo de compuerta entre 0 y 8333 μs) y watchdog UART para apagado automático en caso de pérdida de enlace con el ESP32.
+* **Módulo de TRIACs de Fabricación Propia:** Etapa de potencia de 4 canales diseñada por el equipo con 4x TRIACs BTA24-800BW y optoacopladores MOC3021, gobernando 3 resistencias de inmersión de 450 W (Tinas 1, 2 y 4) y 1 calentador de cartucho de 18 W (Tina 3 - Celda Hull de 267 mL).
+* **Firmware Nano2 (Tiempo Proporcional / Burst Firing):** Modula la potencia térmica a ciclos completos de 60 Hz en ventanas temporales fijas de 3000 ms mediante la librería `JELDimmer2`, conmutando exclusivamente en cruces por cero. Esta estrategia suprime la interferencia electromagnética (EMI) por conmutación abrupta sobre los sensores de pH y termopares.
+* **Seguridad por Perro Guardián UART:** Si el enlace serie con el ESP32 se interrumpe por más de 4000 ms, el Nano apaga inmediatamente todas las compuertas de los TRIACs.
 
 ### SCADA Telemetría 2.0 (Python / Windows)
 * **Gestión de Recetas ISA-88 desde Excel:** Carga dinámica de la matriz experimental (`matriz_experimentos.xlsx`) para 32 probetas, con selección automática de tiempos, consignas de temperatura y modos de corriente (DC continuo o Pulsado a 10 Hz / 20% duty cycle, con soporte para columnas personalizadas de frecuencia y ciclo de trabajo).
 * **Culombimetría Faradaica en Lazo Cerrado:** Integración activa únicamente durante la cuenta del cronómetro de etapas galvánicas (`etapa_corriendo == True` y `act == 1`), ponderando por ciclo de trabajo en corriente pulsada (`I_efectiva = I_pico × Duty/100`) y congelando la acumulación al llegar a 00:00 o en pausas.
 * **Modelo Aditivo Bicapa Zn + Ni:** Cálculo de masa teórica total `m_teo = Q_Zn × 0.33880 mg/C + Q_Ni × 0.30414 mg/C` acoplado con pesaje en balanza analítica para determinar la eficiencia catódica global (η%) y los espesores individuales y totales de película (μm).
 * **Motor de Exportación Científica:** Generación de figuras publication-ready a 300 DPI y registro en CSV estructurado con marcas ISA-88 y tiempos muertos de transferencia.
+* **Datos Demostrativos y Validación Funcional:** Las curvas y registros CSV incluidos actualmente en el repositorio corresponden a corridas de validación funcional en banco para estandarización del manual operativo y del showcase científico (SMEQ 2026). La campaña experimental formal de 32 probetas completas se encuentra bajo custodia del equipo de investigación de tesis.
 
 ---
 
@@ -87,8 +88,9 @@ Proyecto/
 │   │   ├── RTOS2.0/           <- Firmware de produccion activo (FreeRTOS Dual-Core SMP)
 │   │   └── historico/         <- Registro historico de versiones (RTOS 1.0-1.4 y Superloop)
 │   └── arduino_nano/
-│       ├── nano/              <- Dimmer AC 60Hz activo con control de fase por interrupcion
-│       └── historico/         <- Versiones previas de prueba
+│       ├── nano2/             <- Firmware de calentamiento activo: Tiempo proporcional (Burst Firing 3s)
+│       ├── nano/              <- Variante alternativa con control por recorte de fase (LUT 60Hz)
+│       └── historico/         <- Prototipos previos (Nano Beta)
 │
 ├── software/                  <- Software SCADA y procesamiento en PC
 │   ├── telemetria2.0/         <- SCADA activo (Matriz ISA-88, Faraday, Balanza analitica)
@@ -186,7 +188,6 @@ Proyecto de Titulación / Tesis de Licenciatura e Investigación Científica apl
 
 * **Víctor Ulises Gutiérrez Ramírez**  
   * Correo Institucional: [victor.gutierrez7221@alumnos.udg.mx](mailto:victor.gutierrez7221@alumnos.udg.mx)  
-  * Teléfono Móvil: +52 (33) 2190-5415  
   * Rol: Desarrollo de Firmware RTOS 2.0, Control Ciberfísico e Instrumentación Electrónica.
 
 * **Salvador Castro Pérez**  
@@ -195,8 +196,6 @@ Proyecto de Titulación / Tesis de Licenciatura e Investigación Científica apl
 
 * **Fernando Salvador Samayoa Martínez**  
   * Correo Institucional: [fernando.samayoa0621@alumnos.udg.mx](mailto:fernando.samayoa0621@alumnos.udg.mx)  
-  * Correo Alternativo: [fsamayoamarinez@gmail.com](mailto:fsamayoamarinez@gmail.com)  
-  * Teléfono Móvil: +52 (33) 1153-4114  
   * Rol: Ingeniería Electroquímica, Formulación de Baños y Análisis Gravimétrico/Faradaico.
 
 ### Directores y Asesores de Tesis

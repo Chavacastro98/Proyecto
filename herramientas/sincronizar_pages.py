@@ -50,8 +50,16 @@ def sincronizar():
     except Exception as e:
         print(f"[AVISO] Error regenerando standalone: {e}")
 
-    # 2. Copiar archivos de src_dir a docs_dir
+    # 2. Copiar archivos de src_dir a docs_dir (excluyendo notas internas de instrucciones)
+    EXCLUIR_DOCS = {
+        "INSTRUCCIONES_FERNANDO.md",
+        "GUIA_GALAXY_S26_ULTRA.md",
+        "servidor_showcase.py",
+        "iniciar_servidor.bat",
+    }
     for item in os.listdir(src_dir):
+        if item in EXCLUIR_DOCS:
+            continue
         s = os.path.join(src_dir, item)
         d = os.path.join(docs_dir, item)
         if os.path.isdir(s):
@@ -60,6 +68,15 @@ def sincronizar():
             shutil.copytree(s, d)
         else:
             shutil.copy2(s, d)
+
+    # Limpiar en docs si existían previamente
+    for exc in EXCLUIR_DOCS:
+        p_exc = os.path.join(docs_dir, exc)
+        if os.path.exists(p_exc):
+            try:
+                os.remove(p_exc)
+            except Exception:
+                pass
 
     # 3. Asegurar .nojekyll en docs
     nojekyll_file = os.path.join(docs_dir, ".nojekyll")
