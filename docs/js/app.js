@@ -20,7 +20,10 @@ tabs.forEach(btn => {
     if (targetPanel) {
       targetPanel.classList.add('active');
       if (typeof actualizarSimuladorTermico === 'function' && targetId === 'tab-termico') actualizarSimuladorTermico();
-      if (typeof actualizarOndaCuadrada === 'function' && targetId === 'tab-vcss') actualizarOndaCuadrada();
+      if (typeof actualizarOndaCuadrada === 'function' && targetId === 'tab-vcss') {
+        actualizarOndaCuadrada();
+        if (typeof actualizarCalculadoraVCSS === 'function') actualizarCalculadoraVCSS();
+      }
       if (typeof actualizarCalculadoraPh === 'function' && targetId === 'tab-ph') actualizarCalculadoraPh();
     }
   });
@@ -167,6 +170,7 @@ window.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', () => {
   if (typeof actualizarSimuladorTermico === 'function') actualizarSimuladorTermico();
   if (typeof actualizarOndaCuadrada === 'function') actualizarOndaCuadrada();
+  if (typeof actualizarCalculadoraVCSS === 'function') actualizarCalculadoraVCSS();
   if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
 });
 

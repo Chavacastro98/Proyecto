@@ -1838,6 +1838,148 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
       </div>
 
+      <!-- SECCIÓN 4.1: CURVAS PARAMÉTRICAS DEL MOSFET IRLZ44N, TRANSCONDUCTANCIA gm & LINEALIZACIÓN POR OP-AMP -->
+      <div id="vcss-mosfet-curvas" style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--purple); border-radius: 12px; padding: 18px; margin-top: 18px; box-shadow: 0 0 25px rgba(168, 85, 247, 0.15);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+          <div>
+            <span class="badge badge-purple" style="font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
+              Semiconductor de Potencia en Modo Lineal Activo
+            </span>
+            <h4 style="color: #ffffff; margin: 4px 0 0 0; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+              <span>⚡</span> Curvas de Operación del IRLZ44N, Transconductancia g<sub>m</sub> y Linealización por Op-Amp LM358N
+            </h4>
+          </div>
+          <!-- Selector de Vista: Salida (ID vs VDS) o Transferencia (ID vs VGS & gm) -->
+          <div style="display: inline-flex; background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 3px;">
+            <button id="btnVistaCurvasVds" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vds')" style="background: var(--purple); color: #ffffff; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+              📈 Curvas de Salida (I<sub>D</sub> vs V<sub>DS</sub> & Punto Q)
+            </button>
+            <button id="btnVistaCurvasVgs" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vgs')" style="background: transparent; color: #94a3b8; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+              📊 Transferencia (I<sub>D</sub> vs V<sub>GS</sub> & g<sub>m</sub>)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap: 16px; align-items: start;">
+          <!-- Columna Izquierda: Canvas del Gráfico Paramétrico -->
+          <div>
+            <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px; position: relative;">
+              <canvas id="canvasMosfetCurvas" style="width: 100%; height: 260px; display: block;"></canvas>
+              <!-- Leyenda descriptiva -->
+              <div id="leyendaCurvasMosfet" style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #94a3b8; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                <span>Línea continua cian: Curva V<sub>GS</sub> comandada en tiempo real.</span>
+                <span>Parábola ámbar: Límite de estrangulamiento V<sub>DS,sat</sub>.</span>
+                <span style="color: #10b981; font-weight: 700;">Punto Q: Saturación Lineal OK</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Métricas en Tiempo Real de Operación del MOSFET -->
+          <div>
+            <div class="grid-2" style="gap: 8px; margin-bottom: 10px;">
+              <div class="metric-tile" style="border-left: 3px solid #38bdf8;">
+                <div class="metric-label">Punto Quiescente Q (c/rama)</div>
+                <div class="metric-value" id="valPuntoQ" style="color: #38bdf8; font-size: 1.05rem;">Q(6.80V, 2.00A)</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>DS</sub> sobre drenador | I<sub>D</sub> en el canal</div>
+              </div>
+              <div class="metric-tile" style="border-left: 3px solid #a855f7;">
+                <div class="metric-label">Régimen del Semiconductor</div>
+                <div class="metric-value" id="valRegimenMosfet" style="color: #10b981; font-size: 0.92rem;">SATURACIÓN ACTIVA</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;" id="valSubregimen">Pinch-off V<sub>DS</sub> &ge; V<sub>DS,sat</sub></div>
+              </div>
+              <div class="metric-tile" style="border-left: 3px solid #f59e0b;">
+                <div class="metric-label">V<sub>GS</sub> de Compuerta Requerida</div>
+                <div class="metric-value" id="valVgsReq" style="color: #fbbf24; font-size: 1.05rem;">2.62 V</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>th</sub> = 1.50 V | Sobre-umbral = 1.12 V</div>
+              </div>
+              <div class="metric-tile" style="border-left: 3px solid #10b981;">
+                <div class="metric-label">Transconductancia g<sub>m</sub> (c/rama)</div>
+                <div class="metric-value" id="valGmIntrinseco" style="color: #10b981; font-size: 1.05rem;">3.58 S (A/V)</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;">g<sub>m</sub> = &part;I<sub>D</sub>/&part;V<sub>GS</sub> = &radic;(2K<sub>n</sub>I<sub>D</sub>)</div>
+              </div>
+            </div>
+
+            <!-- Fila informativa de tensión y margen -->
+            <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px; font-size: 0.76rem; color: #cbd5e1; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span>• Tensión Estrangulamiento V<sub>DS,sat</sub> (V<sub>GS</sub> − V<sub>th</sub>):</span>
+                <strong id="valVdsSat" style="color: #38bdf8;">1.12 V</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span>• Margen de Linealidad &Delta;V (V<sub>DS</sub> − V<sub>DS,sat</sub>):</span>
+                <strong id="valMargenVds" style="color: #10b981;">+5.68 V (Óptimo)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span>• Salida Op-Amp V<sub>gate</sub> (V<sub>GS</sub> + V<sub>shunt</sub>):</span>
+                <strong id="valVgateOpamp" style="color: #c084fc;">4.62 V</strong>
+              </div>
+            </div>
+
+            <!-- Caja de Estado / Alerta de Margen Lineal -->
+            <div id="boxAlertaMargenLineal" class="info-box info-box-success" style="margin: 0; font-size: 0.78rem; padding: 8px 12px;">
+              <strong>MODO DE SUMIDERO IDEAL GARANTIZADO:</strong><br>
+              El MOSFET opera en la región plana de saturación activa (alta impedancia dinámica r<sub>o</sub> &approx; &infin;). La corriente I<sub>D</sub> depende únicamente de la consigna analógica comandada y es inmune a fluctuaciones o rizado en la Celda Hull.
+            </div>
+          </div>
+        </div>
+
+        <!-- ACORDEÓN DESPLEGABLE: LA FÍSICA Y MATEMÁTICA DE LINEALIZACIÓN POR OP-AMP -->
+        <div style="margin-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px;">
+          <button type="button" class="math-toggle-btn" onclick="toggleMathCollapsible(this, 'vcss-mosfet-math-details')" style="color: #c084fc;">
+            📖 Ver análisis físico del IRLZ44N: Estrangulamiento de Canal, Dependencia de g<sub>m</sub> y Linealización por LM358N ▾
+          </button>
+          
+          <div id="vcss-mosfet-math-details" class="math-collapsible collapsed" style="margin-top: 12px;">
+            <div class="grid-2" style="gap: 14px; align-items: start;">
+              <!-- Columna 1: Física de Semiconductores del IRLZ44N -->
+              <div class="math-card" style="margin: 0;">
+                <div class="math-step-title" style="color: #38bdf8;">1. Estrangulamiento de Canal (*Pinch-Off*) y Modos de Operación</div>
+                <p style="font-size: 0.80rem; color: #cbd5e1; margin-bottom: 8px;">
+                  El IRLZ44N es un transistor MOSFET de potencia de nivel lógico (*Logic-Level HEXFET*) con umbral bajo (<i>V</i><sub>th</sub> = 1.50 V). Su canal se divide físicamente en dos regímenes:
+                </p>
+                <div class="math-eq" style="font-size: 0.95rem; text-align: left; padding: 8px 12px; margin-bottom: 8px;">
+                  <strong>Región Óhmica / Triodo (V<sub>DS</sub> &lt; V<sub>DS,sat</sub>):</strong><br>
+                  <span class="m-var">I</span><span class="m-sub">D</span> = <span class="m-var">K</span><span class="m-sub">n</span> · [ (<span class="m-var">V</span><span class="m-sub">GS</span> − <span class="m-var">V</span><span class="m-sub">th</span>)·<span class="m-var">V</span><span class="m-sub">DS</span> − <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">DS</span><span class="m-sup">2</span></span><span class="den">2</span></span> ]
+                </div>
+                <div class="math-eq" style="font-size: 0.95rem; text-align: left; padding: 8px 12px; margin-bottom: 8px; background: rgba(16, 185, 129, 0.06); border-left: 3px solid #10b981;">
+                  <strong>Región de Saturación Activa (V<sub>DS</sub> &ge; V<sub>DS,sat</sub> = V<sub>GS</sub> − V<sub>th</sub>):</strong><br>
+                  <span class="m-var">I</span><span class="m-sub">D</span> = <span class="fraction"><span class="num">1</span><span class="den">2</span></span> <span class="m-var">K</span><span class="m-sub">n</span> (<span class="m-var">V</span><span class="m-sub">GS</span> − <span class="m-var">V</span><span class="m-sub">th</span>)<span class="m-sup">2</span> · (1 + <span class="m-sym">&lambda;</span>·<span class="m-var">V</span><span class="m-sub">DS</span>)
+                </div>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  💡 <strong>¿Por qué el sumidero opera en saturación y no en óhmica?</strong> En saturación activa, el canal se estrangula en el extremo del drenador. La corriente se vuelve horizontal (independiente de <i>V</i><sub>DS</sub>), otorgando una resistencia dinámica incremental cuasi-infinita (<i>r</i><sub>o</sub> &approx; 1/(&lambda;<i>I</i><sub>D</sub>) &gt; 100 k&Omega;), lo que define formalmente a una <strong>fuente de corriente ideal</strong>.
+                </p>
+              </div>
+
+              <!-- Columna 2: Transconductancia gm y Linealización con Op-Amp -->
+              <div class="math-card" style="margin: 0;">
+                <div class="math-step-title" style="color: #a855f7;">2. Transconductancia Intrínseca g<sub>m</sub> vs. Linealización Activa por LM358N</div>
+                <p style="font-size: 0.80rem; color: #cbd5e1; margin-bottom: 8px;">
+                  La transconductancia diferencial intrínseca <i>g</i><sub>m</sub> del MOSFET en lazo abierto es la derivada de la corriente respecto a compuerta:
+                </p>
+                <div class="math-eq" style="font-size: 1.05rem; margin-bottom: 8px;">
+                  <span class="m-var">g</span><span class="m-sub">m</span> = <span class="fraction"><span class="num">&part;<span class="m-var">I</span><span class="m-sub">D</span></span><span class="den">&part;<span class="m-var">V</span><span class="m-sub">GS</span></span></span> = <span class="m-var">K</span><span class="m-sub">n</span>(<span class="m-var">V</span><span class="m-sub">GS</span> − <span class="m-var">V</span><span class="m-sub">th</span>) = <strong style="color: #38bdf8;">&radic;(2 · <span class="m-var">K</span><span class="m-sub">n</span> · <span class="m-var">I</span><span class="m-sub">D</span>)</strong>
+                </div>
+                <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 8px;">
+                  En lazo abierto, <i>g</i><sub>m</sub> <strong>no es constante</strong> (varía de 1.26 S a 4.38 S). La respuesta sería cuadrática y altamente distorsionada por temperatura.
+                </p>
+                <div style="background: rgba(2, 6, 23, 0.7); border-radius: 6px; padding: 10px; border: 1px solid rgba(139, 92, 246, 0.35);">
+                  <strong style="color: #c084fc; font-size: 0.82rem;">El Mecanismo de Linealización y Desacoplamiento por el LM358N:</strong>
+                  <ul style="font-size: 0.77rem; color: #cbd5e1; margin: 6px 0 6px 16px; line-height: 1.55; padding: 0;">
+                    <li><strong>Mantenimiento de Saturación Activa:</strong> El circuito garantiza <code>V<sub>DS</sub> &ge; V<sub>GS</sub> − V<sub>th</sub></code>. Al estrangularse el canal, la resistencia dinámica incremental tiende a infinito (<code>r<sub>o</sub> &approx; &infin;</code>), logrando que la corriente <i>I</i><sub>D</sub> quede <strong>totalmente desacoplada de <i>V</i><sub>DS</sub></strong> y no sufra por fluctuaciones de la Celda Hull.</li>
+                    <li><strong>Dependencia Exclusiva de V<sub>GS</sub>:</strong> Como <i>I</i><sub>D</sub> ya no depende de <i>V</i><sub>DS</sub>, responde únicamente a <i>V</i><sub>GS</sub>. El Op-Amp comanda la compuerta a <code>V<sub>gate</sub> = V<sub>S</sub> + V<sub>GS</sub> = V<sub>ref</sub> + V<sub>th</sub> + &radic;(2·I<sub>D</sub>/K<sub>n</sub>) &approx; V<sub>th</sub> + V<sub>ref</sub></code>.</li>
+                    <li><strong>Linealización Rigurosa en Lazo Cerrado:</strong> Al fijar <code>V<sup>&minus;</sup> = V<sup>+</sup> = V<sub>ref</sub></code> sobre el shunt cerámico <i>R</i><sub>s</sub> = 1.0 &Omega;, la no-linealidad cuadrática y la variación de <i>g</i><sub>m</sub> quedan <strong>anuladas por la ganancia de lazo (A<sub>OL</sub> &gt; 100 dB)</strong>.</li>
+                  </ul>
+                  <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
+                    <span style="color: #10b981; font-weight: 700; font-size: 0.84rem;">Transconductancia Neta Lineal del Sistema:</span><br>
+                    <strong style="color: #ffffff; font-size: 0.88rem;">I<sub>total</sub> = 2 · (V<sub>ref</sub> / R<sub>s</sub>) = (2.00 A/V) · V<sub>ref</sub></strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- SECCIÓN 5: FOTOGRAFÍAS FÍSICAS Y DIAGRAMAS DEL SUMIDERO VCSS DE PLANTA -->
       <h3 id="vcss-hardware" style="font-size: 1.05rem; color: var(--purple); margin: 26px 0 12px 0; border-left: 3px solid var(--purple); padding-left: 8px;">
         Circuito Físico de Planta — Etapa de Potencia Lineal VCSS, Gabinete y Topología Esquemática
