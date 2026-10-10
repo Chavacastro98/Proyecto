@@ -118,10 +118,10 @@ flowchart TD
 * **Lazo de Corriente VCSS Reconfigurable (Sumidero Analógico Gm = 2.00 S):**  
   Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44N) mide la corriente en el **Source** mediante dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación combinada), con retorno Kelvin hacia los canales **A2-A3 en modo diferencial** del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
 
-  | Control de Corriente Pulsada (Web Móvil) | Supervisión de Actuadores y Relés (SCADA) |
-  | :---: | :---: |
+  | Control de Corriente Pulsada (Web Móvil) |
+  | :---: |
   | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | 
-  | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo programable.* | *Aislamiento bipolar físico en relé de 2 canales a corriente estrictamente nula (I=0.00A).* |
+  | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo programable.* |
 
 * **Secuencia ZCS con Relé de 2 Canales (Corte Bipolar Simultáneo $+$ y $-$):**  
   Al detener la fuente o finalizar el cronómetro de la etapa, el firmware anula la consigna del DAC a 0V, espera 30 ms para disipación de corriente remanente en la celda y abre el relé mecánico de 2 canales, **cortando simultáneamente tanto la línea positiva (+12V VDD) como la línea negativa de retorno catódico**, dejando la celda 100% aislada flotante y eliminando arcos eléctricos y desgaste de contactos.
