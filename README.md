@@ -259,28 +259,35 @@ Genera automáticamente las 8 figuras normalizadas:
 
 ---
 
-## 7. Equipo de Investigación y Contacto
+## 7. Equipo de Investigación y Desarrollo
 
-Proyecto de Titulación / Tesis de Licenciatura e Investigación Científica aplicada en Automatización e Ingeniería Electroquímica:
+El presente proyecto articula una investigación científica electroquímica aplicada a nivel de licenciatura con la ingeniería de una plataforma ciberfísica e industrial de ensayos:
 
+### 🧪 Investigación Electroquímica & Tesis de Grado ("Planteamiento y Validación Experimental")
 * **Víctor Ulises Gutiérrez Ramírez**  
   * Correo Institucional: [victor.gutierrez7221@alumnos.udg.mx](mailto:victor.gutierrez7221@alumnos.udg.mx)  
-  * Rol: Desarrollo de Firmware RTOS 2.0, Control Ciberfísico e Instrumentación Electrónica.
+  * **Rol y Responsabilidades:** Autor de la Investigación Electroquímica y Tesista de Grado (*planteamiento del problema metalúrgico y requerimientos de experimentación*). Formulación química de baños de electrodeposición y pretratamiento, diseño de experimentos (DOE 2⁵·4 / Taguchi), preparación metalográfica de probetas de Al 6061 T-6, análisis gravimétrico/faradaico y obtención de resultados experimentales.
+
+### ⚙️ Automatización, Instrumentación & Plataforma Ciberfísica (Salvador² C Dev Team / Volta Plating Solutions)
+Equipo de ingeniería desarrollador de la plataforma integral de ensayos ciberfísicos (diseño de planta física, electrónica, firmware, software y control):
 
 * **Salvador Castro Pérez**  
   * Correo Institucional: [salvador.castro7435@alumnos.udg.mx](mailto:salvador.castro7435@alumnos.udg.mx)  
-  * Rol: Automatización Industrial, Arquitectura SCADA Telemetría 2.0 y Modelado Físico-Matemático.
+  * **Rol:** Automatización Industrial, Arquitectura SCADA Telemetría 2.0 (PyQt6 / Web Móvil), Modelado Físico-Matemático Térmico y Supervisión Ciberfísica.
 
 * **Fernando Salvador Samayoa Martínez**  
   * Correo Institucional: [fernando.samayoa0621@alumnos.udg.mx](mailto:fernando.samayoa0621@alumnos.udg.mx)  
-  * Rol: Ingeniería Electroquímica, Formulación de Baños y Análisis Gravimétrico/Faradaico.
+  * Correo Alternativo: [fsamayoamarinez@gmail.com](mailto:fsamayoamarinez@gmail.com)  
+  * **Rol:** Diseño de Hardware e Instrumentación Electrónica, Firmware RTOS 2.0 (ESP32-S3 multitarea) y Nano2 (Burst Firing ZCS), Caracterización del Sumidero VCSS, Sensado (pH pseudo-diferencial, termometría, clima) y Aseguramiento de Calidad (QA).
 
-### Directores y Asesores de Tesis
+*(Desarrollo conjunto de la plataforma de ensayos por Salvador Castro Pérez y Fernando Salvador Samayoa Martínez: sensores, firmware, hardware, modelado térmico, caracterización de la fuente VCSS, módulo relé bipolar ZCS, interfaces UI/UX y control de calidad QA).*
+
+### 🎓 Directores y Asesores de Tesis
 * **Dr. Omar Alejandro González Meza** — Profesor Investigador, CUCEI, Universidad de Guadalajara.
 * **Dr. Norberto Casillas Santana** — Profesor Investigador, Departamento de Química, CUCEI, Universidad de Guadalajara.
 
 ---
 
-**Salvador² C Dev Team**  
-*Ingeniería de Procesos Electroquímicos, Sistemas Embebidos e Instrumentación Científica.*  
+**Salvador² C Dev Team / Volta Plating Solutions**  
+*Ingeniería de Automatización, Sistemas Embebidos, Electrónica de Potencia e Instrumentación Científica.*  
 *Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI) — Universidad de Guadalajara.*
