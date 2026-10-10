@@ -338,55 +338,55 @@
     actualizarCurvasMosfetInteractivo();
   }
 
-  function aplicarPresetMosfet(vdd, rload, itotal) {
+  function aplicarPresetMosfet(vdd, vcarga, itotal) {
     const elVdd = document.getElementById('rngVddMosfet');
-    const elRload = document.getElementById('rngRloadMosfet');
+    const elVload = document.getElementById('rngVloadMosfet');
     const elItotal = document.getElementById('rngItotalMosfet');
     if (elVdd) elVdd.value = vdd;
-    if (elRload) elRload.value = rload;
+    if (elVload) elVload.value = vcarga;
     if (elItotal) elItotal.value = itotal;
     actualizarCurvasMosfetInteractivo();
   }
 
   function actualizarCurvasMosfetInteractivo() {
     const elVdd = document.getElementById('rngVddMosfet');
-    const elRload = document.getElementById('rngRloadMosfet');
+    const elVload = document.getElementById('rngVloadMosfet');
     const elItotal = document.getElementById('rngItotalMosfet');
 
     const Vdd = elVdd ? parseFloat(elVdd.value) : 12.0;
-    const Rload = elRload ? parseFloat(elRload.value) : 5.6;
+    const Vcarga = elVload ? parseFloat(elVload.value) : 5.60;
     const Itotal = elItotal ? parseFloat(elItotal.value) : 1.50;
 
     const I_rama = Itotal / 2;
     const Rs = 1.0;
-    const Vref = I_rama * Rs; // 0.75 V para 1.5 A total
-    const Vcarga = Itotal * Rload; // Caída en Celda Hull
+    const Vref = I_rama * Rs; // 0.75 V para 1.50 A total
     const Vshunt = I_rama * Rs;
     const Vds = Math.max(0, Vdd - Vcarga - Vshunt);
+    const R_aparente = Vcarga / Math.max(0.01, Itotal);
 
     const lblVdd = document.getElementById('lblVddMosfet');
     if (lblVdd) lblVdd.textContent = Vdd.toFixed(1) + ' V';
 
-    const lblRload = document.getElementById('lblRloadMosfet');
-    if (lblRload) lblRload.textContent = Rload.toFixed(1) + ' Ω';
+    const lblVload = document.getElementById('lblVloadMosfet');
+    if (lblVload) lblVload.textContent = Vcarga.toFixed(2) + ' V (R_ap = ' + R_aparente.toFixed(2) + ' Ω)';
 
     const lblItotal = document.getElementById('lblItotalMosfet');
     if (lblItotal) lblItotal.textContent = Itotal.toFixed(2) + ' A (Vref = ' + Vref.toFixed(2) + ' V)';
 
-    actualizarCurvasIRLZ44(I_rama, Vds, Vdd, Rload, Itotal);
+    actualizarCurvasIRLZ44(I_rama, Vds, Vdd, Vcarga, Itotal);
   }
 
-  function actualizarCurvasIRLZ44(I_rama_val, Vds_val, Vdd_val, Rload_val, Itotal_val) {
+  function actualizarCurvasIRLZ44(I_rama_val, Vds_val, Vdd_val, Vcarga_val, Itotal_val) {
     const canvas = document.getElementById('canvasMosfetCurvas');
     if (!canvas) return;
 
     // Obtener parámetros o usar defaults
     const elVdd = document.getElementById('rngVddMosfet');
-    const elRload = document.getElementById('rngRloadMosfet');
+    const elVload = document.getElementById('rngVloadMosfet');
     const elItotal = document.getElementById('rngItotalMosfet');
 
     const Vdd = Vdd_val !== undefined ? Vdd_val : (elVdd ? parseFloat(elVdd.value) : 12.0);
-    const Rload = Rload_val !== undefined ? Rload_val : (elRload ? parseFloat(elRload.value) : 5.6);
+    const Vcarga = Vcarga_val !== undefined ? Vcarga_val : (elVload ? parseFloat(elVload.value) : 5.60);
     const Itotal = Itotal_val !== undefined ? Itotal_val : (elItotal ? parseFloat(elItotal.value) : (I_rama_val ? I_rama_val * 2 : 1.50));
 
     // Constantes del modelo físico IRLZ44N (HEXFET Logic-Level)
@@ -397,9 +397,9 @@
 
     // Cálculos de lazo cerrado con LM358N
     const I_rama = Math.max(0.01, Itotal / 2);
-    const Vcarga = Itotal * Rload;
     const Vshunt = I_rama * Rs; // Vshunt = Vref
     const Vds = Math.max(0, Vdd - Vcarga - Vshunt);
+    const R_aparente = Vcarga / Math.max(0.01, Itotal);
 
     const Vov = Math.sqrt((2 * I_rama) / Kn); // Tensión sobre-umbral Vov = VGS - Vth
     const Vgs_req = Vth + Vov; // Tensión compuerta-surtidor requerida
@@ -416,7 +416,7 @@
     if (elPuntoQ) elPuntoQ.textContent = 'Q(' + Vds.toFixed(2) + 'V, ' + I_rama.toFixed(2) + 'A)';
 
     const elVcarga = document.getElementById('valVcargaMosfet');
-    if (elVcarga) elVcarga.textContent = Vcarga.toFixed(2) + ' V (' + Pcelda_total.toFixed(1) + ' W)';
+    if (elVcarga) elVcarga.textContent = Vcarga.toFixed(2) + ' V (P = ' + Pcelda_total.toFixed(1) + ' W • ' + R_aparente.toFixed(2) + ' Ω)';
 
     const elVgate = document.getElementById('valVgateOpamp');
     if (elVgate) elVgate.textContent = Vgate_opamp.toFixed(2) + ' V';
@@ -449,7 +449,7 @@
       if (elAlertaMargen) {
         elAlertaMargen.className = 'info-box info-box-danger';
         elAlertaMargen.innerHTML = '<strong>PELIGRO: MOSFET EN REGIÓN ÓHMICA (PÉRDIDA DE REGULACIÓN)</strong><br>' +
-                                   'La carga (R<sub>carga</sub> = ' + Rload.toFixed(1) + ' Ω) consume ' + Vcarga.toFixed(2) + ' V de los ' + Vdd.toFixed(1) + ' V de la fuente, dejando solo V<sub>DS</sub> = ' + Vds.toFixed(2) + ' V (&lt; V<sub>DS,sat</sub> = ' + Vds_sat.toFixed(2) + ' V). ' +
+                                   'La celda electroquímica demanda V<sub>carga</sub> = ' + Vcarga.toFixed(2) + ' V de los ' + Vdd.toFixed(1) + ' V de la fuente, dejando solo V<sub>DS</sub> = ' + Vds.toFixed(2) + ' V (&lt; V<sub>DS,sat</sub> = ' + Vds_sat.toFixed(2) + ' V). ' +
                                    'El canal no está estrangulado, el LM358N se satura a rail positivo (+5V) y la corriente ya no se puede sostener en ' + Itotal.toFixed(2) + ' A.';
       }
     } else if (margen_lineal < 0.8) {
@@ -461,7 +461,7 @@
       if (elAlertaMargen) {
         elAlertaMargen.className = 'info-box info-box-warn';
         elAlertaMargen.innerHTML = '<strong>PRECAUCIÓN: MARGEN LINEAL ESTRECHO (ΔV = +' + margen_lineal.toFixed(2) + ' V)</strong><br>' +
-                                   'El transistor opera muy cerca del codo de saturación. Si la celda aumenta su impedancia o la temperatura del baño sube, el MOSFET colapsará a régimen óhmico.';
+                                   'El transistor opera muy cerca del codo de saturación. Si la celda aumenta su potencial o la resistencia del baño sube, el MOSFET colapsará a régimen óhmico.';
       }
     } else {
       if (elRegimen) {
@@ -479,13 +479,13 @@
 
     // Dibujo en Canvas según la vista seleccionada
     if (vistaCurvasMosfet === 'vds') {
-      dibujarCurvasSalidaIRLZ44(canvas, I_rama, Vds, Vgs_req, Vds_sat, Vth, Kn, lambda, Vdd, Rload, Itotal);
+      dibujarCurvasSalidaIRLZ44(canvas, I_rama, Vds, Vgs_req, Vds_sat, Vth, Kn, lambda, Vdd, Vcarga, Itotal);
     } else {
       dibujarTransferenciaIRLZ44(canvas, I_rama, Vds, Vgs_req, gm_intrinseco, Vth, Kn, Vgate_opamp, Vshunt);
     }
   }
 
-  function dibujarCurvasSalidaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, Vds_sat, Vth, Kn, lambda, Vdd, Rload, Itotal) {
+  function dibujarCurvasSalidaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, Vds_sat, Vth, Kn, lambda, Vdd, Vcarga, Itotal) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
     const h = canvas.height = 270;
@@ -500,7 +500,10 @@
     const plotH = h - padTop - padBottom;
 
     const vdd_val = Vdd || 12.0;
-    const rload_val = Rload || 5.6;
+    const vcarga_val = Vcarga !== undefined ? Vcarga : 5.60;
+    const itotal_val = Itotal || (I_Q * 2) || 1.50;
+    const rap_val = vcarga_val / Math.max(0.01, itotal_val);
+
     const maxVds = Math.max(14.0, Math.ceil(vdd_val + 2));
     const maxId = 4.0; // Amperios por rama
 
@@ -608,10 +611,10 @@
       }
     });
 
-    // 4. RECTA DE CARGA DINÁMICA (Load Line)
-    // Ecuación por rama: VDS = VDD - ID * (2*Rload + Rs) -> ID = (VDD - VDS) / (2*Rload + Rs)
+    // 4. RECTA DE CARGA DINÁMICA (Load Line con Celda Hull)
+    // Ecuación: ID = (VDD - VDS) / (2*Rap + Rs)
     const Rs = 1.0;
-    const R_malla = 2 * rload_val + Rs;
+    const R_malla = 2 * rap_val + Rs;
     const Id_max_load = vdd_val / R_malla;
 
     ctx.beginPath();
@@ -627,10 +630,10 @@
     // Rótulo a lo largo de la Recta de Carga
     ctx.fillStyle = '#f43f5e';
     ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
-    const midVds = vdd_val * 0.42;
+    const midVds = vdd_val * 0.45;
     const midId = Math.max(0, (vdd_val - midVds) / R_malla);
     if (midId <= maxId && midVds <= maxVds) {
-      ctx.fillText('Recta de Carga (Rc=' + rload_val.toFixed(1) + 'Ω, VDD=' + vdd_val.toFixed(1) + 'V)', mapX(midVds) + 6, mapY(midId) - 6);
+      ctx.fillText('Recta Carga (Vcarga=' + vcarga_val.toFixed(1) + 'V, Rap=' + rap_val.toFixed(2) + 'Ω)', mapX(midVds) + 6, mapY(midId) - 6);
     }
 
     // 5. Curva del VGS actual gobernado por el Op-Amp (Resaltada en cian brillante)
