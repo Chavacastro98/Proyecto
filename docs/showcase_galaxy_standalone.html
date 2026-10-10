@@ -1300,6 +1300,93 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         </div>
       </div>
 
+      <!-- ========================================================================= -->
+      <!-- SUITE DE DIAGRAMAS MERMAID: ARQUITECTURA CIBERFÍSICA DEL SISTEMA -->
+      <!-- ========================================================================= -->
+      <h3 style="font-size: 1.05rem; color: var(--primary); margin: 28px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <span>📐 Suite de Diagramas de Arquitectura Ciberfísica & Flujo de Señales (Mermaid Engine)</span>
+        <span class="badge badge-primary">12 Diagramas Oficiales RTOS 2.0</span>
+      </h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px;">
+        Modelado formal de la plataforma experimental: topología distribuida con nodo central ESP32-S3, enlace bidireccional Wi-Fi SoftAP hacia Web Móvil y SCADA, bus I²C con ADS1115 diferencial (A0-A1 para pH, A2-A3 para sensado Kelvin de VCSS), buses SPI/UART2 y concurrencia multitarea FreeRTOS SMP. <em>Toca cualquier diagrama para inspeccionarlo en alta resolución</em>.
+      </p>
+
+      <!-- DIAGRAMA MAESTRO DESTACADO: 00 ARQUITECTURA DISTRIBUIDA -->
+      <div style="background: rgba(15, 23, 42, 0.9); border: 2px solid var(--primary); border-radius: 12px; padding: 18px; margin-bottom: 22px; box-shadow: 0 8px 32px rgba(2, 132, 199, 0.18);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
+              Diagrama Maestro [00] • Topología Ciberfísica Principal
+            </div>
+            <h4 style="font-size: 1.15rem; color: #ffffff; margin: 4px 0 0 0;">
+              Arquitectura Distribuida del Sistema CTS-C51 (RTOS 2.0)
+            </h4>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn btn-sm btn-primary" onclick="abrirModal('assets/diagramas/00_arquitectura_distribuida.svg', 'Diagrama Maestro 00: Arquitectura Distribuida del Sistema CTS-C51 (ESP32-S3 Central, Wi-Fi SoftAP, VCSS con ADS1115 A2-A3, pH A0-A1 Diferencial)')">
+              🔍 Inspeccionar en HD
+            </button>
+            <a href="assets/diagramas/00_arquitectura_distribuida.svg" target="_blank" class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); text-decoration: none;">
+              Abrir SVG ↗
+            </a>
+          </div>
+        </div>
+
+        <div style="text-align: center; background: rgba(5, 10, 20, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; cursor: pointer; transition: transform 0.2s;" onclick="abrirModal('assets/diagramas/00_arquitectura_distribuida.svg', 'Diagrama Maestro 00: Arquitectura Distribuida del Sistema CTS-C51')">
+          <img src="assets/diagramas/00_arquitectura_distribuida.svg" alt="Arquitectura Distribuida Mermaid" style="width: 100%; max-height: 520px; object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));">
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 8px;">
+            💡 <em>Haz clic sobre el diagrama para expandir a pantalla completa. Muestra el nodo central ESP32-S3, la capa superior Wi-Fi bidireccional (Web/SCADA), el lazo térmico Nano2/TRIACs y los canales diferenciales del ADC ADS1115 (A0-A1 pH y A2-A3 Shunts VCSS).</em>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUADRÍCULA DE DIAGRAMAS DE ESPECIALIDAD -->
+      <div class="gallery-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
+        <!-- DIAGRAMA 01 -->
+        <div class="gallery-item" onclick="abrirModal('assets/diagramas/01_arquitectura_general.svg', 'Diagrama 01: Arquitectura General Master-Slave y SCADA')">
+          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
+            <img src="assets/diagramas/01_arquitectura_general.svg" alt="Diagrama 01" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          </div>
+          <div class="gallery-desc">
+            <div class="gallery-title">[01] Arquitectura General Master-Slave & SCADA</div>
+            <div class="gallery-caption">FreeRTOS SMP Dual-Core en ESP32-S3 (16MB Flash, 8MB PSRAM), coprocesador Nano2 y enlace bidireccional de telemetría a 10 Hz.</div>
+          </div>
+        </div>
+
+        <!-- DIAGRAMA 02 -->
+        <div class="gallery-item" onclick="abrirModal('assets/diagramas/02_topologia_buses_datos.svg', 'Diagrama 02: Topología Detallada de Buses y Bloques de Hardware')">
+          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
+            <img src="assets/diagramas/02_topologia_buses_datos.svg" alt="Diagrama 02" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          </div>
+          <div class="gallery-desc">
+            <div class="gallery-title">[02] Topología de Buses de Datos & Señales Físicas</div>
+            <div class="gallery-caption">Bus I²C Fast-Mode 400 kHz (ADS1115, MCP4725, AHT20/BMP280), Bus SPI 4 MHz (MAX6675 x4) y enlace serie UART2 a 9600 baud.</div>
+          </div>
+        </div>
+
+        <!-- DIAGRAMA 03 -->
+        <div class="gallery-item" onclick="abrirModal('assets/diagramas/03_concurrencia_free_rtos.svg', 'Diagrama 03: Concurrencia Simétrica FreeRTOS SMP Dual-Core')">
+          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
+            <img src="assets/diagramas/03_concurrencia_free_rtos.svg" alt="Diagrama 03" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          </div>
+          <div class="gallery-desc">
+            <div class="gallery-title">[03] Concurrencia Multitarea FreeRTOS 2.0 (SMP)</div>
+            <div class="gallery-caption">Separación física de tareas: Core 0 (Comunicaciones, Servidor REST y OTA) y Core 1 (Lazos PI térmicos, VCSS analógico, pH @ 860 SPS y Fail-Safe).</div>
+          </div>
+        </div>
+
+        <!-- DIAGRAMA 04 -->
+        <div class="gallery-item" onclick="abrirModal('assets/diagramas/04_interlocks_estados.svg', 'Diagrama 04: Máquina de Estados, Interlocks y Fail-Safe Latch ISA-18.2')">
+          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
+            <img src="assets/diagramas/04_interlocks_estados.svg" alt="Diagrama 04" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          </div>
+          <div class="gallery-desc">
+            <div class="gallery-title">[04] Máquina de Estados & Fail-Safe ISA-18.2</div>
+            <div class="gallery-caption">Interlocks químicos de exclusión mutua, corte físico de potencia por sobretemperatura/sobrecorriente y protocolo de rearme /failsafe_reset.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- FOTOGRAFÍAS FÍSICAS: PLACA PRINCIPAL Y ACTUADORES DE PLANTA -->
       <h3 style="font-size: 1.05rem; color: var(--primary); margin: 26px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
         Circuito Físico de Planta — Placa Base Principal, Cableado de Laboratorio y Actuadores Electromecánicos
@@ -1766,6 +1853,31 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       <div style="margin-top: 16px; text-align: center;">
         <img src="assets/onda_zcs_tiempo_proporcional.jpg" alt="Oscilograma de Tiempo Proporcional" style="width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; border: 1px solid var(--card-border); cursor: pointer;" onclick="abrirModal(this.src, 'Oscilograma Real: Conmutación por Paquetes de Ciclos Completos (Burst Firing)')">
         <p style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px;">Figura científica: Macro-conmutación en cruce por cero en banco de ensayo de 3 tinas + celda Hull (2026).</p>
+      </div>
+
+      <!-- DIAGRAMAS MERMAID: INGENIERÍA TÉRMICA & ZCS -->
+      <div class="grid-2" style="margin-top: 18px; gap: 14px;">
+        <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--amber); font-size: 0.88rem;">[09] Modulación ZCS Burst Firing (Nano2)</strong>
+            <button class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.4);" onclick="abrirModal('assets/diagramas/09_control_triacs_ac60hz.svg', 'Diagrama 09: Modulación por Tiempo Proporcional (Burst Firing ZCS) en Arduino Nano2')">🔍 Ver HD</button>
+          </div>
+          <div style="background: #0b1120; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/09_control_triacs_ac60hz.svg', 'Diagrama 09: Modulación por Tiempo Proporcional (Burst Firing ZCS) en Arduino Nano2')">
+            <img src="assets/diagramas/09_control_triacs_ac60hz.svg" alt="Diagrama ZCS TRIACs" style="width: 100%; max-height: 220px; object-fit: contain;">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Cruce por cero en Pin D3 (INT1), conmutación de ciclos completos de 60 Hz en ventana de 3000 ms y watchdog UART de 4.0 s.</p>
+        </div>
+
+        <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--amber); font-size: 0.88rem;">[05] Algoritmo Térmico PI + Soft-Start</strong>
+            <button class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.4);" onclick="abrirModal('assets/diagramas/05_control_termico_pi.svg', 'Diagrama 05: Algoritmo y Flujo del Control Térmico PI + Soft-Start')">🔍 Ver HD</button>
+          </div>
+          <div style="background: #0b1120; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/05_control_termico_pi.svg', 'Diagrama 05: Algoritmo y Flujo del Control Térmico PI + Soft-Start')">
+            <img src="assets/diagramas/05_control_termico_pi.svg" alt="Diagrama Control PI Térmico" style="width: 100%; max-height: 220px; object-fit: contain;">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Supresión de sobretiro (T >= SP+2°C), integración Anti-Windup (0-100%) y rampa asíncrona de arranque suave.</p>
+        </div>
       </div>
 
       <!-- FOTOGRAFÍAS FÍSICAS: ETAPA TÉRMICA DE PLANTA -->
@@ -2366,6 +2478,31 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </div>
         </div>
       </div>
+
+      <!-- DIAGRAMAS MERMAID: POTENCIA VCSS & SECUENCIA ZCS -->
+      <div class="grid-2" style="margin-top: 20px; gap: 14px;">
+        <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(139, 92, 246, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--purple); font-size: 0.88rem;">[06] Lazo Híbrido VCSS (Gm = 2.00 S)</strong>
+            <button class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(139, 92, 246, 0.15); color: var(--purple); border: 1px solid rgba(139, 92, 246, 0.4);" onclick="abrirModal('assets/diagramas/06_sumidero_corriente_vcss.svg', 'Diagrama 06: Lazo Cerrado Híbrido VCSS, Sensado Kelvin en Shunts A2-A3 y Diagnóstico')">🔍 Ver HD</button>
+          </div>
+          <div style="background: #0b1120; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/06_sumidero_corriente_vcss.svg', 'Diagrama 06: Lazo Cerrado Híbrido VCSS')">
+            <img src="assets/diagramas/06_sumidero_corriente_vcss.svg" alt="Diagrama Lazo VCSS" style="width: 100%; max-height: 220px; object-fit: contain;">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Lazo analógico ultrarrápido con retorno Kelvin en Source hacia ADS1115 Canales A2-A3 diferencial y lazo digital PI discreto con Anti-Inrush.</p>
+        </div>
+
+        <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(139, 92, 246, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--purple); font-size: 0.88rem;">[07] Protocolo ZCS & Relé Bipolar</strong>
+            <button class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(139, 92, 246, 0.15); color: var(--purple); border: 1px solid rgba(139, 92, 246, 0.4);" onclick="abrirModal('assets/diagramas/07_secuencia_zcs_rele.svg', 'Diagrama 07: Secuencia de Conmutación ZCS y Relé Bipolar en Corriente Nula')">🔍 Ver HD</button>
+          </div>
+          <div style="background: #0b1120; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/07_secuencia_zcs_rele.svg', 'Diagrama 07: Secuencia ZCS y Relé Bipolar')">
+            <img src="assets/diagramas/07_secuencia_zcs_rele.svg" alt="Diagrama ZCS Relé Bipolar" style="width: 100%; max-height: 220px; object-fit: contain;">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Corte bipolar simultáneo (+12V ánodo y retorno de cátodo) a corriente nula (I = 0.00 A) con Soft-Start de 500 ms y Blanking de 300 ms.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2699,6 +2836,20 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </div>
         </div>
       </div>
+
+      <!-- DIAGRAMA MERMAID: INSTRUMENTACIÓN DE PH & MODO DIFERENCIAL -->
+      <div style="margin-top: 20px;">
+        <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--emerald); font-size: 0.88rem;">[08] Pipeline de Filtrado Digital & Adquisición Diferencial de pH (Canales A0-A1)</strong>
+            <button class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4);" onclick="abrirModal('assets/diagramas/08_filtro_ph_tri_modo.svg', 'Diagrama 08: Pipeline de Filtro Digital de pH Tri-Modo y Canales A0-A1 Diferencial en ADS1115')">🔍 Ver HD</button>
+          </div>
+          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/08_filtro_ph_tri_modo.svg', 'Diagrama 08: Pipeline de Filtro Digital de pH Tri-Modo')">
+            <img src="assets/diagramas/08_filtro_ph_tri_modo.svg" alt="Diagrama Filtro pH" style="width: 100%; max-height: 280px; object-fit: contain;">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Adquisición pseudo-diferencial en Canales A0-A1 del ADS1115 a 860 SPS (rechazo de modo común galvánico), acumulador por bloques de 10 muestras, filtro de mediana móvil de 3 puntos, cálculo según modo y filtro pasabajas IIR adaptativo.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2768,6 +2919,20 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
       </div>
 
+      <!-- DIAGRAMA MERMAID: SUPERVISIÓN SCADA ISA-88 -->
+      <div style="margin-top: 18px;">
+        <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--primary); font-size: 0.88rem;">[11] Arquitectura de Supervisión SCADA Telemetría 2.0 (ISA-88)</strong>
+            <button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.72rem;" onclick="abrirModal('assets/diagramas/11_supervision_scada_isa88.svg', 'Diagrama 11: Supervisión SCADA ISA-88, Culombimetría de Faraday y Balanza Analítica')">🔍 Ver HD</button>
+          </div>
+          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/11_supervision_scada_isa88.svg', 'Diagrama 11: Supervisión SCADA ISA-88')">
+            <img src="assets/diagramas/11_supervision_scada_isa88.svg" alt="Diagrama SCADA ISA-88" style="width: 100%; max-height: 260px; object-fit: contain;">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Control por lotes de 32 placas experimentales según matriz ISA-88, integración culombimétrica en lazo cerrado Q = ∫ I dt, balanza analítica asistida de 4 decimales y generación de figuras a 300 DPI.</p>
+        </div>
+      </div>
+
       <!-- SECCIÓN B: INTERFAZ WEB EMBEBIDA EN ESP32-S3 -->
       <h3 style="font-size: 1.05rem; color: var(--emerald); margin: 32px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
         2. Servidor Web Asíncrono Embebido en ESP32-S3 (Acceso Wi-Fi / Móvil)
@@ -2832,6 +2997,20 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px;">
           Desglose de la capa de software y conectividad: cómo el microcontrolador ESP32-S3 sirve la interfaz web en tiempo real sin interferir en los lazos de control de planta, la estructura de los payloads JSON transmitidos por WebSockets / REST, y el flujo determinístico de almacenamiento y lectura de archivos CSV para la trazabilidad de los 32 ensayos Taguchi de la tesis.
         </p>
+
+        <!-- DIAGRAMA MERMAID: ARQUITECTURA MVC EN ESP32-S3 -->
+        <div style="margin-bottom: 20px;">
+          <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <strong style="color: var(--emerald); font-size: 0.88rem;">[10] Arquitectura Modular MVC & Enrutador REST /data_all en FreeRTOS Core 0</strong>
+              <button class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4);" onclick="abrirModal('assets/diagramas/10_arquitectura_mvc_web.svg', 'Diagrama 10: Arquitectura Modular MVC y Enrutador Asíncrono RTOS 2.0 en ESP32-S3')">🔍 Ver HD</button>
+            </div>
+            <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;" onclick="abrirModal('assets/diagramas/10_arquitectura_mvc_web.svg', 'Diagrama 10: Arquitectura Modular MVC')">
+              <img src="assets/diagramas/10_arquitectura_mvc_web.svg" alt="Diagrama MVC Firmware" style="width: 100%; max-height: 280px; object-fit: contain;">
+            </div>
+            <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Patrón Modelo-Vista-Controlador en Core 0: Vistas en memoria Flash PROGMEM, controladores desacoplados y endpoint unificado /data_all a 10 Hz que reduce el tráfico de red en un 75%.</p>
+          </div>
+        </div>
 
         <div class="grid-3" style="gap: 14px; margin-bottom: 16px;">
           <!-- CARD A: SERVIDOR WEB EN TIEMPO REAL -->
@@ -4078,11 +4257,11 @@ const ARCH_NODOS = {
     desc: 'Digitalizadores con compensación de unión fría integrada para 4 termopares tipo K sumergidos en las tinas de Desengrase, Decapado, Niquelado y Celda Hull. Resolución de 0.25 °C con tiempo de conversión de 0.22 s y detección de termopar abierto.'
   },
   ads1115: {
-    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta (Canal A1 pH Dedicado)',
+    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta (Canales A0-A1 pH y A2-A3 VCSS)',
     chip: 'Texas Instruments ADS1115IDGSR (Dirección I²C 0x48)',
-    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canal A1 (pH Dedicado), Canales A2-A3 (Shunts VCSS)',
+    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canales A0-A1 (pH Modo Diferencial), Canales A2-A3 (Shunts VCSS Sensado Kelvin)',
     bus: 'I²C Fast-Mode @ 400 kHz con PGA programable (±4.096V) y muestreo continuo a 860 SPS',
-    desc: 'Digitalizador analógico de alta precisión. En RTOS 2.0, el Canal A1 está dedicado exclusivamente a la sonda de pH (módulo PH-4502C) con muestreo continuo a 860 SPS (eliminando tiempos muertos de multiplexación temporal A0/A1). Los canales A2 y A3 monitorean la caída de tensión en el banco de shunts cerámicos de 1.0 Ω / 10W del sumidero VCSS.'
+    desc: 'Digitalizador analógico de alta precisión operando en modo diferencial. Los Canales A0-A1 están configurados en modo pseudo-diferencial dedicados a la sonda de pH (PH-4502C) para anular desplazamientos de potencial galvánico y ruidos de modo común. Los Canales A2-A3 adquieren en modo diferencial la caída Kelvin sobre los shunts cerámicos (0.50 Ω equivalente) del sumidero VCSS para telemetría continua de corriente y diagnóstico de salud de celda.'
   },
   zcs: {
     titulo: 'Detector de Cruce por Cero Dual (AC 60 Hz / DC 12V)',
@@ -4113,11 +4292,11 @@ const ARCH_NODOS = {
     desc: 'Actuador electromecánico de seguridad (10A @ 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS a corriente nula 0.00 A) para anular el arco voltaico y evitar desgaste de contactos.'
   },
   ph: {
-    titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Canal A1 Dedicado',
+    titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Modo Diferencial (A0-A1)',
     chip: 'Electrodo Combinado Vidrio-Ag/AgCl + Módulo Transmisor PH-4502C',
-    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Canal A1 ADS1115 (860 SPS)',
+    pines: 'Conector coaxial BNC ➔ Señal analógica Po vs Vref ➔ Canales A0-A1 Diferencial ADS1115',
     bus: 'Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta + Calibración NVS Tri-Modo',
-    desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. En RTOS 2.0 se conecta directamente al Canal A1 del ADS1115 con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente almacenada en memoria Flash NVS.'
+    desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. Se conecta en modo diferencial entre los Canales A0 y A1 del convertidor ADS1115 a 860 SPS para rechazar bucles de tierra e interferencias galvánicas del baño, con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente persistida en Flash NVS.'
   },
   scada: {
     titulo: 'Estación de Supervisión SCADA Telemetría 2.0 (PyQt6 / Python)',

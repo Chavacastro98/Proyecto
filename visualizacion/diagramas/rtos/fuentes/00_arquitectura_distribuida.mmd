@@ -21,10 +21,11 @@ flowchart TD
     ESP -.->|"GPIO 20 (Active-LOW)<br/>Protocolo ZCS a I=0.00A"| RELE["Modulo Rele 2-Canales (Corte Bipolar)<br/>Aislamiento Fisico Total de Lineas (+) y (-)"]
     RELE <-->|"Corte Bipolar: +12V Anodo y Retorno Catodo"| CELDA["Tinas Electroquimicas Reconfigurables<br/>Tina 3: Celda Hull (Zincado 0-3.50 A)<br/>Tina 4: Niquelado sobre Zinc"]
     CELDA -->|"Retorno de Corriente al Drain"| VCSS
-    VCSS -->|"Shunts en Source -> ADC A2/A3 (I2C 0x48)"| ESP
+    VCSS -->|"Caida Kelvin en Shunts de Source"| ADS_CURRENT["ADC ADS1115 (Canales A2-A3 Diferencial)<br/>Telemetria de Corriente I/V (10 Hz)"]
+    ADS_CURRENT -->|"Bus I2C Fast-Mode (0x48)"| ESP
 
     %% RAMA 3: INSTRUMENTACION PH
-    ELECTRODO["Electrodo Vidrio BNC<br/>PH-4502C"] -->|"Voltaje Po"| ADS_PH["ADC ADS1115 (Canal A1 Dedicado)<br/>Modo Continuo @ 860 SPS"]
+    ELECTRODO["Electrodo Vidrio BNC + PH-4502C<br/>Acondicionamiento Analogico"] -->|"Senal Diferencial Po vs Ref"| ADS_PH["ADC ADS1115 (Canales A0-A1 Diferencial)<br/>Lectura Pseudo-Diferencial @ 860 SPS"]
     ADS_PH -->|"Bus I2C Fast-Mode (0x48)"| ESP
 
     %% RAMA 4: TERMOMETRIA
@@ -47,6 +48,7 @@ flowchart TD
     style VCSS fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
     style RELE fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#f8fafc
     style CELDA fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+    style ADS_CURRENT fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
 
     style ELECTRODO fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#f8fafc
     style ADS_PH fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#f8fafc

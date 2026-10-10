@@ -89,11 +89,11 @@ const ARCH_NODOS = {
     desc: 'Digitalizadores con compensación de unión fría integrada para 4 termopares tipo K sumergidos en las tinas de Desengrase, Decapado, Niquelado y Celda Hull. Resolución de 0.25 °C con tiempo de conversión de 0.22 s y detección de termopar abierto.'
   },
   ads1115: {
-    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta (Canal A1 pH Dedicado)',
+    titulo: 'ADC de Precisión: ADS1115 16-Bit Sigma-Delta (Canales A0-A1 pH y A2-A3 VCSS)',
     chip: 'Texas Instruments ADS1115IDGSR (Dirección I²C 0x48)',
-    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canal A1 (pH Dedicado), Canales A2-A3 (Shunts VCSS)',
+    pines: 'SDA (GPIO 8), SCL (GPIO 9), Canales A0-A1 (pH Modo Diferencial), Canales A2-A3 (Shunts VCSS Sensado Kelvin)',
     bus: 'I²C Fast-Mode @ 400 kHz con PGA programable (±4.096V) y muestreo continuo a 860 SPS',
-    desc: 'Digitalizador analógico de alta precisión. En RTOS 2.0, el Canal A1 está dedicado exclusivamente a la sonda de pH (módulo PH-4502C) con muestreo continuo a 860 SPS (eliminando tiempos muertos de multiplexación temporal A0/A1). Los canales A2 y A3 monitorean la caída de tensión en el banco de shunts cerámicos de 1.0 Ω / 10W del sumidero VCSS.'
+    desc: 'Digitalizador analógico de alta precisión operando en modo diferencial. Los Canales A0-A1 están configurados en modo pseudo-diferencial dedicados a la sonda de pH (PH-4502C) para anular desplazamientos de potencial galvánico y ruidos de modo común. Los Canales A2-A3 adquieren en modo diferencial la caída Kelvin sobre los shunts cerámicos (0.50 Ω equivalente) del sumidero VCSS para telemetría continua de corriente y diagnóstico de salud de celda.'
   },
   zcs: {
     titulo: 'Detector de Cruce por Cero Dual (AC 60 Hz / DC 12V)',
@@ -124,11 +124,11 @@ const ARCH_NODOS = {
     desc: 'Actuador electromecánico de seguridad (10A @ 30VDC). Ejecuta la desconexión física de seguridad del ánodo (+12V DC) sincronizada con cruce por cero (ZCS a corriente nula 0.00 A) para anular el arco voltaico y evitar desgaste de contactos.'
   },
   ph: {
-    titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Canal A1 Dedicado',
+    titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Modo Diferencial (A0-A1)',
     chip: 'Electrodo Combinado Vidrio-Ag/AgCl + Módulo Transmisor PH-4502C',
-    pines: 'Conector coaxial BNC ➔ Salida analógica Po ➔ Canal A1 ADS1115 (860 SPS)',
+    pines: 'Conector coaxial BNC ➔ Señal analógica Po vs Vref ➔ Canales A0-A1 Diferencial ADS1115',
     bus: 'Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta + Calibración NVS Tri-Modo',
-    desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. En RTOS 2.0 se conecta directamente al Canal A1 del ADS1115 con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente almacenada en memoria Flash NVS.'
+    desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. Se conecta en modo diferencial entre los Canales A0 y A1 del convertidor ADS1115 a 860 SPS para rechazar bucles de tierra e interferencias galvánicas del baño, con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente persistida en Flash NVS.'
   },
   scada: {
     titulo: 'Estación de Supervisión SCADA Telemetría 2.0 (PyQt6 / Python)',

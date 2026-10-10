@@ -60,10 +60,11 @@ flowchart TD
     ESP -.->|"GPIO 20 (Active-LOW)<br/>Protocolo ZCS a I=0.00A"| RELE["Modulo Rele 2-Canales (Corte Bipolar)<br/>Aislamiento Fisico Total de Lineas (+) y (-)"]
     RELE <-->|"Corte Bipolar: +12V Anodo y Retorno Catodo"| CELDA["Tinas Electroquimicas Reconfigurables<br/>Tina 3: Celda Hull (Zincado 0-3.50 A)<br/>Tina 4: Niquelado sobre Zinc"]
     CELDA -->|"Retorno de Corriente al Drain"| VCSS
-    VCSS -->|"Shunts en Source -> ADC A2/A3 (I2C 0x48)"| ESP
+    VCSS -->|"Caida Kelvin en Shunts de Source"| ADS_CURRENT["ADC ADS1115 (Canales A2-A3 Diferencial)<br/>Telemetria de Corriente I/V (10 Hz)"]
+    ADS_CURRENT -->|"Bus I2C Fast-Mode (0x48)"| ESP
 
     %% RAMA 3: INSTRUMENTACION PH
-    ELECTRODO["Electrodo Vidrio BNC<br/>PH-4502C"] -->|"Voltaje Po"| ADS_PH["ADC ADS1115 (Canal A1 Dedicado)<br/>Modo Continuo @ 860 SPS"]
+    ELECTRODO["Electrodo Vidrio BNC + PH-4502C<br/>Acondicionamiento Analogico"] -->|"Senal Diferencial Po vs Ref"| ADS_PH["ADC ADS1115 (Canales A0-A1 Diferencial)<br/>Lectura Pseudo-Diferencial @ 860 SPS"]
     ADS_PH -->|"Bus I2C Fast-Mode (0x48)"| ESP
 
     %% RAMA 4: TERMOMETRIA
@@ -86,6 +87,7 @@ flowchart TD
     style VCSS fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
     style RELE fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#f8fafc
     style CELDA fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+    style ADS_CURRENT fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
 
     style ELECTRODO fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#f8fafc
     style ADS_PH fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#f8fafc
@@ -111,14 +113,14 @@ flowchart TD
 * **Concurrencia Simétrica FreeRTOS:**
   * **Core 1 (Tiempo Real Estricto):** Lazos de control térmico PI (1 Hz), modulación analógica de corriente VCSS, muestreo continuo a 860 SPS en ADC ADS1115 y máquina de seguridad Fail-Safe (50 Hz).
   * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA (Over-The-Air) a través del punto de acceso Wi-Fi SoftAP ("Uli"). Esto permite operación totalmente autónoma e inalámbrica, eliminando cables USB hacia la computadora durante los ensayos electroquímicos.
-* **Medición de pH en Canal A1 (ADS1115):**  
-  La señal potenciométrica del módulo PH-4502C se adquiere de forma directa y continua a través del **Canal A1** del convertidor ADS1115 a **860 SPS**. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
+* **Medición de pH en Modo Diferencial (Canales A0-A1, ADS1115):**  
+  La señal potenciométrica del módulo PH-4502C se adquiere en modo diferencial (Canales A0 y A1) a través del convertidor ADS1115 a **860 SPS** para maximizar el rechazo de modo común y eliminar offset galvánico de masa. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
 * **Lazo de Corriente VCSS Reconfigurable (Sumidero Analógico Gm = 2.00 S):**  
-  Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44N) mide la corriente en el **Source** mediante dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación combinada), con retorno hacia los canales A2/A3 del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
+  Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44N) mide la corriente en el **Source** mediante dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación combinada), con retorno Kelvin hacia los canales **A2-A3 en modo diferencial** del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
 
-  | Control de Corriente Pulsada (Web Móvil) | Protocolo Zero-Current Switching (ZCS) |
+  | Control de Corriente Pulsada (Web Móvil) | Supervisión de Actuadores y Relés (SCADA) |
   | :---: | :---: |
-  | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | ![Secuencia ZCS](docs/assets/onda_zcs_tiempo_proporcional.jpg) |
+  | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | ![Supervisión de Actuadores y Relés](docs/assets/scada_02_actuadores.jpg) |
   | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo programable.* | *Aislamiento bipolar físico en relé de 2 canales a corriente estrictamente nula (I=0.00A).* |
 
 * **Secuencia ZCS con Relé de 2 Canales (Corte Bipolar Simultáneo $+$ y $-$):**  
