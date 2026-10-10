@@ -1515,7 +1515,19 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
               = <span class="m-var">Q̇</span>(t) − <span class="m-var">h</span><span class="m-sub">efectivo</span> · <span class="m-var">A</span><span class="m-sub">s</span> · [<span class="m-var">T</span>(t) − <span class="m-var">T</span><span class="m-sub">∞</span>]
             </strong>
           </div>
-          <p style="font-size: 0.78rem; color: var(--text-dark); margin-top: 4px; text-align: center;">
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+            <div>
+              • <strong style="color: #fbbf24;">m · c<sub>p</sub> (dT/dt):</strong> Tasa de acumulación de calor sensible en el volumen de la tina [W].<br>
+              • <strong style="color: #fbbf24;">Q̇(t):</strong> Potencia térmica eléctrica entregada por los calentadores de inmersión (450 W) [W].<br>
+              • <strong style="color: #fbbf24;">m:</strong> Masa total de la solución electrolítica en la tina (m = ρ · V) [kg].
+            </div>
+            <div>
+              • <strong style="color: #fbbf24;">h<sub>efectivo</sub> · A<sub>s</sub>:</strong> Coeficiente global de pérdidas térmicas hacia el ambiente [W/°C].<br>
+              • <strong style="color: #fbbf24;">[T(t) − T<sub>∞</sub>]:</strong> Salto térmico respecto a la temperatura ambiente exterior [°C].<br>
+              • <strong style="color: #fbbf24;">c<sub>p</sub>:</strong> Calor específico del electrolito acuoso (&approx; 4184 J/(kg·°C)) [J/(kg·°C)].
+            </div>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dark); margin-top: 6px; text-align: center;">
             *(Para una masa unitaria m = 1.0 kg/L en tinas de 1 Litro, se expresa directamente como c<sub>p</sub> dT/dt = Q̇ − h A<sub>s</sub> (T(t) − T<sub>∞</sub>))*
           </p>
         </div>
@@ -1584,7 +1596,19 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
               · <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span><span class="m-sub">ret</span>·s</span>
             </strong>
           </div>
-          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 6px;">
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+            <div>
+              • <strong style="color: #c084fc;">G<sub>planta</sub>(s):</strong> Función de transferencia en Laplace entre calor de entrada y temperatura [°C/W].<br>
+              • <strong style="color: #c084fc;">K<sub>planta</sub>:</strong> Ganancia estática térmica en régimen permanente (1 / (h · A<sub>s</sub>)) [°C/W].<br>
+              • <strong style="color: #c084fc;">τ<sub>planta</sub>:</strong> Constante de tiempo térmica dominante del baño (m · c<sub>p</sub> / (h · A<sub>s</sub>)) [s].
+            </div>
+            <div>
+              • <strong style="color: #c084fc;">θ<sub>ret</sub>:</strong> Retardo puro de transporte térmico y difusión en vaina del sensor [s].<br>
+              • <strong style="color: #c084fc;">e<sup>−θ<sub>ret</sub>·s</sup>:</strong> Operador trascendente de tiempo muerto expandido mediante Padé.<br>
+              • <strong style="color: #c084fc;">s:</strong> Variable compleja de frecuencia en el plano de Laplace [rad/s o s⁻¹].
+            </div>
+          </div>
+          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 8px;">
             En MATLAB, el término trascendente <span class="m-var">e</span><span class="m-sup">−<span class="m-var">θ</span><span class="m-sub">ret</span>·s</span> se expande analíticamente mediante la <strong>Aproximación de Padé de Segundo Orden</strong> <code style="color: var(--primary);">pade(exp(-retardo*s), 2)</code>:
           </p>
           <div class="math-eq" style="font-size: 0.95rem;">
@@ -1593,6 +1617,16 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
               <span class="num">1 − <span class="fraction"><span class="num"><span class="m-var">θ</span>·s</span><span class="den">2</span></span> + <span class="fraction"><span class="num"><span class="m-var">θ</span><span class="m-sup">2</span>·s<span class="m-sup">2</span></span><span class="den">12</span></span></span>
               <span class="den">1 + <span class="fraction"><span class="num"><span class="m-var">θ</span>·s</span><span class="den">2</span></span> + <span class="fraction"><span class="num"><span class="m-var">θ</span><span class="m-sup">2</span>·s<span class="m-sup">2</span></span><span class="den">12</span></span></span>
             </span>
+          </div>
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 8px; gap: 10px;">
+            <div>
+              • <strong style="color: #c084fc;">Padé (2º orden):</strong> Aproximación racional bilineal que preserva el retardo de fase &angle; = −θ·ω.<br>
+              • <strong style="color: #c084fc;">Numerador Padé:</strong> Introduce un cero de fase no mínima en el semiplano derecho (RHP).
+            </div>
+            <div>
+              • <strong style="color: #c084fc;">Denominador Padé:</strong> Introduce dos polos estables en el semiplano izquierdo (LHP).<br>
+              • <strong style="color: #c084fc;">Margen de Fase (MF):</strong> Sintonizado en MATLAB para garantizar 75° con cero sobretiro (0% OS).
+            </div>
           </div>
         </div>
 
@@ -1972,6 +2006,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                   &nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;&nbsp;&nbsp;&nbsp;
                   <span class="m-var">V</span><span class="m-sup">−</span> = <span class="m-var">V</span><span class="m-sub">shunt</span> = <span class="m-var">I</span><span class="m-sub">d</span> · <span class="m-var">R</span><span class="m-sub">s</span>
                 </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">V<sup>+</sup>:</strong> Potencial en la entrada no inversora gobernado por el DAC [V].<br>
+                    • <strong style="color: #38bdf8;">V<sub>ref</sub>:</strong> Tensión de consigna analógica comandada (0.00 – 3.00 V) [V].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">V<sup>−</sup> (V<sub>shunt</sub>):</strong> Potencial en la entrada inversora y caída en el shunt [V].<br>
+                    • <strong style="color: #38bdf8;">I<sub>d</sub> · R<sub>s</sub>:</strong> Caída Kelvin debida a la corriente de drenador sobre el shunt (1.0 Ω) [V].
+                  </div>
+                </div>
               </div>
 
               <!-- Paso 1.2 -->
@@ -1987,6 +2031,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                   &nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;
                   <span class="m-var">V</span><span class="m-sup">+</span> = <span class="m-var">V</span><span class="m-sup">−</span>
                 </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">V<sub>error</sub>:</strong> Tensión diferencial de entrada entre terminales (V<sup>+</sup> − V<sup>−</sup>) [V].<br>
+                    • <strong style="color: #38bdf8;">V<sub>g</sub>:</strong> Tensión analógica de compuerta aplicada por el Op-Amp al MOSFET [V].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">A<sub>OL</sub>:</strong> Ganancia en lazo abierto del LM358N (&approx; 10⁵ V/V) [Adimensional].<br>
+                    • <strong style="color: #38bdf8;">V<sup>+</sup> = V<sup>−</sup>:</strong> Cortocircuito virtual garantizado por realimentación negativa [V].
+                  </div>
+                </div>
               </div>
 
               <!-- Paso 1.3 -->
@@ -1999,6 +2053,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                   <strong style="color: #38bdf8;"><span class="m-var">V</span><span class="m-sub">ref</span> = <span class="m-var">I</span><span class="m-sub">d</span> · <span class="m-var">R</span><span class="m-sub">s</span></strong>
                   &nbsp;&nbsp;&nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;&nbsp;&nbsp;
                   <strong style="color: var(--emerald);"><span class="m-var">I</span><span class="m-sub">d</span> = <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">ref</span></span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span></strong>
+                </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #10b981;">I<sub>d</sub>:</strong> Corriente directa continua o pulsada regulada por la rama [A].<br>
+                    • <strong style="color: #10b981;">V<sub>ref</sub>:</strong> Tensión de referencia analógica del DAC MCP4725 a 12 bits [V].
+                  </div>
+                  <div>
+                    • <strong style="color: #10b981;">R<sub>s</sub>:</strong> Resistencia de sensado de corriente en Source (1.0 Ω cerámico, 10 W) [Ω].<br>
+                    • <strong style="color: #10b981;">1 / R<sub>s</sub>:</strong> Transconductancia individual de la rama activa (1.0 A/V) [S = A/V].
+                  </div>
                 </div>
               </div>
             </div>
@@ -2021,6 +2085,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <div class="math-eq" style="font-size: 1.05rem;">
                   <span class="m-var">V</span><span class="m-sub">g</span>(s) = <span class="m-var">A</span><span class="m-sub">OL</span>(s) · [<span class="m-var">V</span><span class="m-sub">ref</span>(s) − <span class="m-var">I</span><span class="m-sub">d</span>(s) · <span class="m-var">R</span><span class="m-sub">s</span>]
                 </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">V<sub>g</sub>(s):</strong> Tensión compleja de compuerta en Laplace entregada al MOSFET [V].<br>
+                    • <strong style="color: #38bdf8;">A<sub>OL</sub>(s):</strong> Ganancia en lazo abierto del Op-Amp con polo dominante interno [V/V].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">V<sub>ref</sub>(s):</strong> Transformada de Laplace de la consigna analógica de entrada [V].<br>
+                    • <strong style="color: #38bdf8;">I<sub>d</sub>(s) · R<sub>s</sub>:</strong> Tensión de realimentación negativa muestreada en el shunt [V].
+                  </div>
+                </div>
               </div>
 
               <!-- Paso 2.2 -->
@@ -2031,6 +2105,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 </div>
                 <div class="math-eq" style="font-size: 1.05rem;">
                   <span class="m-var">I</span><span class="m-sub">d</span>(s) = <span class="m-var">g</span><span class="m-sub">m</span> · [<span class="m-var">V</span><span class="m-sub">g</span>(s) − <span class="m-var">I</span><span class="m-sub">d</span>(s) · <span class="m-var">R</span><span class="m-sub">s</span>]
+                </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">I<sub>d</sub>(s):</strong> Corriente compleja de drenador modulada por el canal [A].<br>
+                    • <strong style="color: #38bdf8;">g<sub>m</sub>:</strong> Transconductancia intrínseca del MOSFET IRLZ44Z (&approx; 15 – 25 S) [S = A/V].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">[V<sub>g</sub>(s) − I<sub>d</sub>(s)·R<sub>s</sub>]:</strong> Tensión efectiva compuerta-surtidor V<sub>GS</sub>(s) [V].<br>
+                    • <strong style="color: #38bdf8;">R<sub>s</sub>:</strong> Resistencia de sensado de corriente en Source (1.0 Ω) [Ω].
+                  </div>
                 </div>
               </div>
 
@@ -2055,6 +2139,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                     <span class="den">1 + <span class="fraction"><span class="num">1 + <span class="m-var">g</span><span class="m-sub">m</span>·<span class="m-var">R</span><span class="m-sub">s</span></span><span class="den"><span class="m-var">g</span><span class="m-sub">m</span>·<span class="m-var">R</span><span class="m-sub">s</span>·<span class="m-var">A</span><span class="m-sub">OL</span>(s)</span></span></span>
                   </span>
                 </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">T(s):</strong> Función de transferencia de lazo cerrado (I<sub>d</sub>/V<sub>ref</sub>) [A/V].<br>
+                    • <strong style="color: #38bdf8;">1 / R<sub>s</sub>:</strong> Ganancia estática nominal ideal de diseño (1.0 A/V) [A/V].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">g<sub>m</sub> · R<sub>s</sub>:</strong> Ganancia intrínseca de bucle local del transistor [Adimensional].<br>
+                    • <strong style="color: #38bdf8;">A<sub>OL</sub>(s):</strong> Ganancia del operacional que reduce a cero el error frente a la carga [V/V].
+                  </div>
+                </div>
               </div>
 
               <!-- Paso 2.4 -->
@@ -2070,84 +2164,14 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                   &nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;
                   <strong style="color: #38bdf8;"><span class="m-var">I</span><span class="m-sub">d</span>(s) = <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">ref</span>(s)</span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span></strong>
                 </div>
-              </div>
-            </div>
-
-            <!-- GLOSARIO DE VARIABLES Y ANÁLISIS DIMENSIONAL BLOQUE 1 -->
-            <div class="math-vars-box">
-              <div class="math-vars-title">
-                <span>📐</span> Variables del Modelo VCSS y Análisis Dimensional
-              </div>
-              <div style="overflow-x: auto;">
-                <table class="math-vars-table">
-                  <thead>
-                    <tr>
-                      <th>Símbolo</th>
-                      <th>Definición Física</th>
-                      <th>Unidad SI</th>
-                      <th>Dimensión Base</th>
-                      <th>Rol en el Sistema</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="math-vars-sym">V<sub>ref</sub></td>
-                      <td>Tensión de referencia analógica comandada</td>
-                      <td class="math-vars-unit">Voltios [V]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                      <td>Salida analógica del DAC MCP4725 / ESP32 (0.00 – 3.00 V)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">I<sub>d</sub></td>
-                      <td>Corriente catódica controlada por rama individual</td>
-                      <td class="math-vars-unit">Amperios [A]</td>
-                      <td class="math-vars-dim">I</td>
-                      <td>Corriente de drenador a través del canal del MOSFET IRLZ44Z</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">R<sub>s</sub></td>
-                      <td>Resistencia de sensado de corriente (Shunt Kelvin)</td>
-                      <td class="math-vars-unit">Ohmios [Ω]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻²</td>
-                      <td>Resistor cerámico de precisión en Source (1.0 Ω ±1%, 10 W)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">V<sub>g</sub></td>
-                      <td>Tensión de compuerta aplicada por el Op-Amp</td>
-                      <td class="math-vars-unit">Voltios [V]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                      <td>Comando de compuerta filtrado por R<sub>ISO</sub> = 100 Ω</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">A<sub>OL</sub>(s)</td>
-                      <td>Ganancia diferencial en lazo abierto del Op-Amp</td>
-                      <td class="math-vars-unit">Adimensional [V/V]</td>
-                      <td class="math-vars-dim">1 (Adimensional)</td>
-                      <td>Ganancia interna del LM358N (&asymp; 100 dB &equiv; 10⁵ V/V en DC)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">g<sub>m</sub></td>
-                      <td>Transconductancia de pequeña señal del MOSFET</td>
-                      <td class="math-vars-unit">Siemens [S = A/V]</td>
-                      <td class="math-vars-dim">M⁻¹·L⁻²·T³·I²</td>
-                      <td>Sensibilidad diferencial del canal: g<sub>m</sub> = &part;I<sub>D</sub> / &part;V<sub>GS</sub> (&asymp; 15 – 25 S)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">T(s)</td>
-                      <td>Función de transferencia de lazo cerrado (I<sub>d</sub>/V<sub>ref</sub>)</td>
-                      <td class="math-vars-unit">Transconductancia [A/V]</td>
-                      <td class="math-vars-dim">M⁻¹·L⁻²·T³·I²</td>
-                      <td>Ganancia estática y dinámica global de la etapa servo</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">V<sub>error</sub></td>
-                      <td>Tensión diferencial entre entradas (V⁺ &minus; V⁻)</td>
-                      <td class="math-vars-unit">Milivoltios [mV]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                      <td>Error que el lazo cerrado anula hacia cero</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">lim A<sub>OL</sub>&rarr;&infin; T(s):</strong> Desacoplo asintótico total respecto a la impedancia de la celda [A/V].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">I<sub>d</sub>(s) = V<sub>ref</sub>(s) / R<sub>s</sub>:</strong> Control determinista puro sin interferencia galvánica [A].
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2171,6 +2195,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 = <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">ref</span></span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span> + <span class="fraction"><span class="num"><span class="m-var">V</span><span class="m-sub">ref</span></span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span>
                 = <span class="fraction"><span class="num">2</span><span class="den"><span class="m-var">R</span><span class="m-sub">s</span></span></span> · <span class="m-var">V</span><span class="m-sub">ref</span>
               </div>
+              <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                <div>
+                  • <strong style="color: #38bdf8;">I<sub>total</sub>:</strong> Corriente catódica global inyectada hacia la probeta en Celda Hull [A].<br>
+                  • <strong style="color: #38bdf8;">I<sub>rama 1</sub>, I<sub>rama 2</sub>:</strong> Corrientes individuales equilibradas en cada MOSFET [A].
+                </div>
+                <div>
+                  • <strong style="color: #38bdf8;">2 / R<sub>s</sub>:</strong> Ganancia combinada de transconductancia de las dos ramas en paralelo [A/V].<br>
+                  • <strong style="color: #38bdf8;">V<sub>ref</sub>:</strong> Tensión analógica de referencia única compartida para ambas ramas [V].
+                </div>
+              </div>
             </div>
 
             <!-- Paso 2.2 -->
@@ -2184,6 +2218,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;&nbsp;&nbsp;
                 <strong style="color: #38bdf8;"><span class="m-var">G</span><span class="m-sub">m</span> = <span class="fraction"><span class="num"><span class="m-var">I</span><span class="m-sub">total</span></span><span class="den"><span class="m-var">V</span><span class="m-sub">ref</span></span></span> = 2.0&nbsp;<span class="fraction"><span class="num">A</span><span class="den">V</span></span></strong>
               </div>
+              <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                <div>
+                  • <strong style="color: #10b981;">G<sub>m</sub>:</strong> Transconductancia global neta de la etapa de potencia VCSS (2.00 S) [S = A/V].<br>
+                  • <strong style="color: #10b981;">R<sub>s,eq</sub>:</strong> Resistencia equivalente en Source (R<sub>s</sub> / 2 = 0.50 Ω con 20 W combinados) [Ω].
+                </div>
+                <div>
+                  • <strong style="color: #10b981;">I<sub>total</sub> (máx):</strong> Corriente máxima de 6.00 A pico con V<sub>ref</sub> = 3.00 V [A].<br>
+                  • <strong style="color: #10b981;">Sensado Kelvin A2-A3:</strong> Caída en R<sub>s,eq</sub> digitalizada en modo diferencial por ADS1115 [V].
+                </div>
+              </div>
             </div>
 
             <!-- Paso 2.3 -->
@@ -2195,6 +2239,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
               <div class="math-eq" style="font-size: 1.05rem;">
                 <span class="m-var">V</span><span class="m-sub">DS</span> = <span class="m-var">V</span><span class="m-sub">fuente</span> − <span class="m-var">V</span><span class="m-sub">celda</span> − <span class="m-var">R</span><span class="m-sub">s,eq</span> · <span class="m-var">I</span><span class="m-sub">total</span>
                 = 12.0&nbsp;V − <span class="m-var">V</span><span class="m-sub">celda</span> − 0.5 · <span class="m-var">I</span><span class="m-sub">total</span>
+              </div>
+              <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                <div>
+                  • <strong style="color: #38bdf8;">V<sub>DS</sub>:</strong> Tensión drenador-surtidor en los MOSFETs IRLZ44Z (&ge; 1.5 V margen lineal) [V].<br>
+                  • <strong style="color: #38bdf8;">V<sub>fuente</sub>:</strong> Tensión de la fuente DC principal de alimentación (+12.0 V DC) [V].
+                </div>
+                <div>
+                  • <strong style="color: #38bdf8;">V<sub>celda</sub>:</strong> Caída de potencial electroquímico ánodo-cátodo en la Celda Hull (2.5 – 5.0 V) [V].<br>
+                  • <strong style="color: #38bdf8;">0.5 · I<sub>total</sub>:</strong> Caída de tensión sobre la resistencia combinada de sensado en Source [V].
+                </div>
               </div>
             </div>
 
@@ -2208,80 +2262,15 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <span class="m-var">P</span><span class="m-sub">shunt, rama</span> = <span style="font-size: 1.1em;">(</span><span class="fraction"><span class="num"><span class="m-var">I</span><span class="m-sub">total</span></span><span class="den">2</span></span><span style="font-size: 1.1em;">)</span><span class="m-sup">2</span> · <span class="m-var">R</span><span class="m-sub">s</span>
                 = <span class="fraction"><span class="num"><span class="m-var">I</span><span class="m-sub">total</span><span class="m-sup">2</span></span><span class="den">4</span></span> · (1.0&nbsp;Ω)
               </div>
-              <div class="math-step-desc" style="margin-top: 6px; color: #10b981;">
-                &bull; A corriente máxima de pico <span class="m-var">I</span><span class="m-sub">total</span> = 6.0 A: &nbsp;
-                <span class="m-var">P</span><span class="m-sub">shunt, rama</span> = (36.0 / 4) · 1.0 = <strong>9.0 W</strong> &le; 9.0 W &lt; <strong>10 W nominal</strong> (Margen seguro sin sobrecalentamiento).
-              </div>
-            </div>
-
-            <!-- GLOSARIO DE VARIABLES Y ANÁLISIS DIMENSIONAL BLOQUE 2 -->
-            <div class="math-vars-box">
-              <div class="math-vars-title">
-                <span>📐</span> Parámetros de la Etapa de Potencia y Análisis Dimensional
-              </div>
-              <div style="overflow-x: auto;">
-                <table class="math-vars-table">
-                  <thead>
-                    <tr>
-                      <th>Símbolo</th>
-                      <th>Definición Física</th>
-                      <th>Unidad SI</th>
-                      <th>Dimensión Base</th>
-                      <th>Rango Operativo / Condición</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="math-vars-sym">I<sub>total</sub></td>
-                      <td>Corriente catódica total regulada hacia la celda</td>
-                      <td class="math-vars-unit">Amperios [A]</td>
-                      <td class="math-vars-dim">I</td>
-                      <td>0.00 A a 6.00 A (Resolución DAC &asymp; 1.46 mA)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">G<sub>m</sub></td>
-                      <td>Transconductancia global de la etapa VCSS</td>
-                      <td class="math-vars-unit">Amperios/Voltio [A/V]</td>
-                      <td class="math-vars-dim">M⁻¹·L⁻²·T³·I²</td>
-                      <td>Exactamente 2.00 A/V (2 ramas en paralelo)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">R<sub>s,eq</sub></td>
-                      <td>Resistencia equivalente del banco de shunts</td>
-                      <td class="math-vars-unit">Ohmios [Ω]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻²</td>
-                      <td>R<sub>s</sub> / 2 = 0.50 Ω</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">V<sub>DS</sub></td>
-                      <td>Caída de tensión drenador-surtidor en los MOSFETs</td>
-                      <td class="math-vars-unit">Voltios [V]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                      <td>Mínimo &ge; 1.5 V para asegurar zona de saturación activa</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">V<sub>fuente</sub></td>
-                      <td>Tensión de la fuente DC de potencia no regulada</td>
-                      <td class="math-vars-unit">Voltios [V]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                      <td>+12.0 V DC (&plusmn;5% bajo carga plena)</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">V<sub>celda</sub></td>
-                      <td>Caída electroquímica ánodo-cátodo (Celda Hull)</td>
-                      <td class="math-vars-unit">Voltios [V]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                      <td>2.5 V a 5.0 V según densidad de corriente y electrolito</td>
-                    </tr>
-                    <tr>
-                      <td class="math-vars-sym">P<sub>shunt, rama</sub></td>
-                      <td>Potencia térmica disipada en cada resistor de sensado</td>
-                      <td class="math-vars-unit">Vatios [W]</td>
-                      <td class="math-vars-dim">M·L²·T⁻³</td>
-                      <td>0.0 W a 9.0 W pico (&lt; 10 W nominal de cada resistor)</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                <div>
+                  • <strong style="color: #10b981;">P<sub>shunt, rama</sub>:</strong> Potencia térmica disipada en cada resistor cerámico individual [W].<br>
+                  • <strong style="color: #10b981;">I<sub>total</sub> / 2:</strong> Corriente simétrica distribuida por cada rama del circuito sumidero [A].
+                </div>
+                <div>
+                  • <strong style="color: #10b981;">Potencia Pico (6.0 A):</strong> (36.0 / 4) · 1.0 = <strong>9.0 W</strong> &lt; <strong>10 W nominal</strong> (Margen seguro).<br>
+                  • <strong style="color: #10b981;">Disipación Total (2 Shunts):</strong> 9.0 W + 9.0 W = 18.0 W &le; 20 W nominal combinados [W].
+                </div>
               </div>
             </div>
           </div>
@@ -2547,58 +2536,20 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             </span>
             = 0.1984 · (<span class="m-var">T</span><span class="m-sub">°C</span> + 273.15)&nbsp;<span class="fraction"><span class="num">mV</span><span class="den">pH</span></span>
           </div>
-          <div class="math-step-desc" style="margin-top: 6px; color: #38bdf8;">
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+            <div>
+              • <strong style="color: #38bdf8;">S(T):</strong> Pendiente de sensibilidad de Nernst dependiente de la temperatura [mV/pH].<br>
+              • <strong style="color: #38bdf8;">R:</strong> Constante universal de los gases ideales (8.31446 J/(mol·K)) [J/(mol·K)].<br>
+              • <strong style="color: #38bdf8;">2.3026:</strong> Factor de conversión de logaritmo natural (ln) a logaritmo decimal (log₁₀) [Adimensional].
+            </div>
+            <div>
+              • <strong style="color: #38bdf8;">T<sub>°C</sub> + 273.15:</strong> Temperatura absoluta del electrolito en escala Kelvin [K].<br>
+              • <strong style="color: #38bdf8;">F:</strong> Constante de Faraday (96,485.33 C/mol de electrones) [C/mol].<br>
+              • <strong style="color: #38bdf8;">0.1984:</strong> Factor electroquímico condensado (2.3026 · R / F) [mV/(pH·K)].
+            </div>
+          </div>
+          <div class="math-step-desc" style="margin-top: 8px; color: #38bdf8;">
             &bull; Valores de referencia: <span class="m-var">S</span>(25.0 °C) = <strong>59.16 mV/pH</strong>, &nbsp;<span class="m-var">S</span>(30.0 °C) = <strong>60.15 mV/pH</strong>, &nbsp;<span class="m-var">S</span>(90.0 °C) = <strong>72.05 mV/pH</strong> (Desengrase).
-          </div>
-        </div>
-
-        <!-- GLOSARIO NERNST -->
-        <div class="math-vars-box">
-          <div class="math-vars-title">
-            <span>📐</span> Constantes y Variables de la Ecuación de Nernst
-          </div>
-          <div style="overflow-x: auto;">
-            <table class="math-vars-table">
-              <thead>
-                <tr>
-                  <th>Símbolo</th>
-                  <th>Definición Física</th>
-                  <th>Valor / Unidad SI</th>
-                  <th>Dimensión Base</th>
-                  <th>Significado en el Proceso</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="math-vars-sym">R</td>
-                  <td>Constante universal de los gases ideales</td>
-                  <td class="math-vars-unit">8.31446 [J / (mol·K)]</td>
-                  <td class="math-vars-dim">M·L²·T⁻²·N⁻¹·Θ⁻¹</td>
-                  <td>Constante termodinámica fundamental</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">F</td>
-                  <td>Constante electroquímica de Faraday</td>
-                  <td class="math-vars-unit">96485.33 [C / mol]</td>
-                  <td class="math-vars-dim">I·T·N⁻¹</td>
-                  <td>Carga eléctrica contenida en un mol de electrones</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">T<sub>°C</sub></td>
-                  <td>Temperatura medida de la solución en la tina</td>
-                  <td class="math-vars-unit">Grados Celsius [°C]</td>
-                  <td class="math-vars-dim">Θ (Temperatura)</td>
-                  <td>Leída en tiempo real por termopares y compensada por firmware</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">S(T)</td>
-                  <td>Pendiente de sensibilidad de Nernst</td>
-                  <td class="math-vars-unit">Milivoltios / pH [mV/pH]</td>
-                  <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                  <td>Variación del potencial de electrodo por cada cambio de 1.0 pH</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -2626,6 +2577,18 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             &nbsp;&nbsp;&nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;&nbsp;&nbsp;
             <strong style="color: #38bdf8;">pH = 7.00 − <span class="fraction"><span class="num"><span class="m-var">V</span><sub>med</sub> − <span class="m-var">V</span><sub>7</sub></span><span class="den"><span class="m-var">S</span><span class="m-sub">ácida</span></span></span></strong>
           </div>
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+            <div>
+              • <strong style="color: #38bdf8;">m<sub>ácida</sub>:</strong> Pendiente de conversión analógica en tramo ácido (pH 4.01 a 7.00) [pH/V].<br>
+              • <strong style="color: #38bdf8;">V<sub>med</sub>:</strong> Potencial eléctrico analógico diferencial muestreado por ADS1115 (A1−A0) [V].<br>
+              • <strong style="color: #38bdf8;">V<sub>7</sub>:</strong> Tensión analógica calibrada en el punto isopotencial neutro (Buffer pH 7.00) [V].
+            </div>
+            <div>
+              • <strong style="color: #38bdf8;">V<sub>4</sub>:</strong> Tensión analógica leída durante calibración en Buffer patrón ácido pH 4.01 [V].<br>
+              • <strong style="color: #38bdf8;">S<sub>ácida</sub>:</strong> Sensibilidad experimental en el cuadrante ácido (1/m<sub>ácida</sub> ≈ (V₄ − V₇) / 2.99) [V/pH].<br>
+              • <strong style="color: #38bdf8;">pH:</strong> Valor final de acidez calculado y compensado térmicamente en ESP32 [pH].
+            </div>
+          </div>
         </div>
 
         <!-- Paso 2.2: Dominio Alcalino -->
@@ -2644,62 +2607,17 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             &nbsp;&nbsp;&nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;&nbsp;&nbsp;
             <strong style="color: #c084fc;">pH = 7.00 + <span class="fraction"><span class="num"><span class="m-var">V</span><sub>7</sub> − <span class="m-var">V</span><sub>med</sub></span><span class="den"><span class="m-var">S</span><span class="m-sub">básica</span></span></span></strong>
           </div>
-        </div>
-
-        <!-- GLOSARIO BILINEAL -->
-        <div class="math-vars-box">
-          <div class="math-vars-title">
-            <span>📐</span> Parámetros del Algoritmo Bilineal de Calibración
-          </div>
-          <div style="overflow-x: auto;">
-            <table class="math-vars-table">
-              <thead>
-                <tr>
-                  <th>Símbolo</th>
-                  <th>Definición Física</th>
-                  <th>Unidad SI</th>
-                  <th>Dimensión Base</th>
-                  <th>Valores Típicos en ADC ADS1115</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="math-vars-sym">V<sub>med</sub></td>
-                  <td>Tensión analógica leída en electrodo de vidrio</td>
-                  <td class="math-vars-unit">Voltios [V]</td>
-                  <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                  <td>Tensión diferencial filtrada (0.50 V – 3.00 V)</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">V<sub>7</sub></td>
-                  <td>Punto isopotencial en Buffer neutro pH 7.00</td>
-                  <td class="math-vars-unit">Voltios [V]</td>
-                  <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                  <td>Calibrado típicamente en ≈ 1.500 V (Offset isopotencial)</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">V<sub>4</sub></td>
-                  <td>Tensión leída en solución Buffer ácido pH 4.01</td>
-                  <td class="math-vars-unit">Voltios [V]</td>
-                  <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                  <td>Típicamente ≈ 1.677 V (ΔV ≈ +177 mV respecto a V<sub>7</sub>)</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">V<sub>10</sub></td>
-                  <td>Tensión leída en solución Buffer alcalino pH 10.01</td>
-                  <td class="math-vars-unit">Voltios [V]</td>
-                  <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                  <td>Típicamente ≈ 1.322 V (ΔV ≈ -178 mV respecto a V<sub>7</sub>)</td>
-                </tr>
-                <tr>
-                  <td class="math-vars-sym">S<sub>ácida</sub>, S<sub>básica</sub></td>
-                  <td>Sensibilidades empíricas calibradas por tramo</td>
-                  <td class="math-vars-unit">Voltios / pH [V/pH]</td>
-                  <td class="math-vars-dim">M·L²·T⁻³·I⁻¹</td>
-                  <td>Pendientes de calibración guardadas en memoria NVS de ESP32</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+            <div>
+              • <strong style="color: #c084fc;">m<sub>básica</sub>:</strong> Pendiente de conversión en tramo alcalino (pH 7.00 a 10.01) [pH/V].<br>
+              • <strong style="color: #c084fc;">V<sub>med</sub>:</strong> Tensión diferencial leída en la sonda (&lt; V₇ en medio básico) [V].<br>
+              • <strong style="color: #c084fc;">V<sub>7</sub>:</strong> Tensión de referencia en el punto isopotencial (Buffer pH 7.00) [V].
+            </div>
+            <div>
+              • <strong style="color: #c084fc;">V<sub>10</sub>:</strong> Tensión analógica calibrada en Buffer alcalino patrón pH 10.01 [V].<br>
+              • <strong style="color: #c084fc;">S<sub>básica</sub>:</strong> Sensibilidad en cuadrante alcalino (compensa el error de sodio Na⁺) [V/pH].<br>
+              • <strong style="color: #c084fc;">pH:</strong> Nivel de alcalinidad en tinas de desengrase o lavados calculado en RTOS [pH].
+            </div>
           </div>
         </div>
       </div>
@@ -3167,6 +3085,16 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <div class="math-eq" style="font-size: 1.05rem;">
                   <span class="m-var">Q</span> = <span class="m-var">I</span> · <span class="m-var">t</span>&nbsp;[C = A·s]
                 </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">Q:</strong> Carga eléctrica neta transferida al cátodo durante la electrodeposición [C = A·s].<br>
+                    • <strong style="color: #38bdf8;">I:</strong> Corriente eléctrica catódica constante regulada por el sumidero VCCS (0.00 – 6.00 A) [A].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">t:</strong> Tiempo total de galvanoplastia temporizado por firmware y SCADA [s].<br>
+                    • <strong style="color: #38bdf8;">A·s:</strong> Amperio-segundo, unidad equivalente fundamental al Culombio en el SI [C].
+                  </div>
+                </div>
               </div>
 
               <!-- Paso 2 -->
@@ -3184,6 +3112,18 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                     </span>
                     · <span class="m-var">η</span>&nbsp;[g]
                   </strong>
+                </div>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #38bdf8;">m<sub>Zn</sub>:</strong> Masa teórica neta de zinc metálico reducido en el sustrato de Al 6061 [g].<br>
+                    • <strong style="color: #38bdf8;">Q:</strong> Carga eléctrica total transferida calculada en el Paso 1 [C].<br>
+                    • <strong style="color: #38bdf8;">M<sub>Zn</sub>:</strong> Masa molar atómica del zinc metálico (65.38 g/mol) [g/mol].
+                  </div>
+                  <div>
+                    • <strong style="color: #38bdf8;">n:</strong> Valencia en semirreacción Zn²⁺ + 2e⁻ &rarr; Zn⁰ (n = 2 eq/mol) [Adimensional].<br>
+                    • <strong style="color: #38bdf8;">F:</strong> Constante electroquímica de Faraday (96,485.33 C/mol) [C/mol].<br>
+                    • <strong style="color: #38bdf8;">η:</strong> Eficiencia faradaica catódica real del baño ácido (80% – 95%) [Adimensional / %].
+                  </div>
                 </div>
               </div>
 
@@ -3203,97 +3143,17 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                     × 10<sup>4</sup>&nbsp;[µm]
                   </strong>
                 </div>
-              </div>
-
-              <!-- GLOSARIO FARADAY -->
-              <div class="math-vars-box">
-                <div class="math-vars-title">
-                  <span>📐</span> Glosario de Variables y Análisis Dimensional
-                </div>
-                <div style="overflow-x: auto;">
-                  <table class="math-vars-table">
-                    <thead>
-                      <tr>
-                        <th>Símbolo</th>
-                        <th>Magnitud Física</th>
-                        <th>Unidad SI</th>
-                        <th>Dimensión</th>
-                        <th>Constante / Parámetro</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="math-vars-sym">Q</td>
-                        <td>Carga eléctrica total neta</td>
-                        <td class="math-vars-unit">Coulombs [C]</td>
-                        <td class="math-vars-dim">I·T</td>
-                        <td>Calculada por integración temporal de I(t)</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">I</td>
-                        <td>Corriente catódica regulada (VCSS)</td>
-                        <td class="math-vars-unit">Amperios [A]</td>
-                        <td class="math-vars-dim">I</td>
-                        <td>Comandada por SCADA (0.00 – 6.00 A)</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">t</td>
-                        <td>Tiempo de permanencia en baño</td>
-                        <td class="math-vars-unit">Segundos [s]</td>
-                        <td class="math-vars-dim">T</td>
-                        <td>Temporizado según matriz DOE</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">m<sub>Zn</sub></td>
-                        <td>Masa de zinc reducida en sustrato</td>
-                        <td class="math-vars-unit">Gramos [g]</td>
-                        <td class="math-vars-dim">M</td>
-                        <td>Correlacionada con pesada analítica gravimétrica</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">M<sub>Zn</sub></td>
-                        <td>Masa molar atómica del zinc</td>
-                        <td class="math-vars-unit">g / mol</td>
-                        <td class="math-vars-dim">M·N⁻¹</td>
-                        <td>65.38 g/mol (Constante atómica)</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">n</td>
-                        <td>Número de electrones de valencia</td>
-                        <td class="math-vars-unit">eq / mol</td>
-                        <td class="math-vars-dim">1 (Adimensional)</td>
-                        <td>2 (Reacción Zn²⁺ + 2e⁻ &rarr; Zn⁰)</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">F</td>
-                        <td>Constante de Faraday</td>
-                        <td class="math-vars-unit">C / mol</td>
-                        <td class="math-vars-dim">I·T·N⁻¹</td>
-                        <td>96485.33 C/mol</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">η</td>
-                        <td>Eficiencia de corriente faradaica</td>
-                        <td class="math-vars-unit">Porcentaje [%]</td>
-                        <td class="math-vars-dim">1 (Adimensional)</td>
-                        <td>Típicamente 80% – 95% en baño ácido</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">ρ<sub>Zn</sub></td>
-                        <td>Densidad volumétrica del zinc metálico</td>
-                        <td class="math-vars-unit">g / cm³</td>
-                        <td class="math-vars-dim">M·L⁻³</td>
-                        <td>7.14 g/cm³ (a 25 °C)</td>
-                      </tr>
-                      <tr>
-                        <td class="math-vars-sym">A</td>
-                        <td>Área superficial sumergida del cátodo</td>
-                        <td class="math-vars-unit">Centímetros cuadrados [cm²]</td>
-                        <td class="math-vars-dim">L²</td>
-                        <td>Área de la probeta de Al 6061 T-6 expuesta al baño</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div class="grid-2" style="font-size: 0.80rem; color: #94a3b8; margin-top: 10px; gap: 10px;">
+                  <div>
+                    • <strong style="color: #10b981;">Espesor:</strong> Espesor teórico medio del recubrimiento galvánico [µm].<br>
+                    • <strong style="color: #10b981;">m<sub>Zn</sub>:</strong> Masa reducida de zinc calculada por las leyes de Faraday en el Paso 2 [g].<br>
+                    • <strong style="color: #10b981;">ρ<sub>Zn</sub>:</strong> Densidad volumétrica del zinc metálico a temperatura ambiente (7.14 g/cm³) [g/cm³].
+                  </div>
+                  <div>
+                    • <strong style="color: #10b981;">A:</strong> Área superficial activa sumergida del sustrato cátodo (probeta Al 6061) [cm²].<br>
+                    • <strong style="color: #10b981;">10<sup>4</sup>:</strong> Factor de conversión métrico de centímetros a micrómetros (1 cm = 10,000 µm) [µm/cm].<br>
+                    • <strong style="color: #10b981;">m<sub>Zn</sub> / (ρ<sub>Zn</sub> · A):</strong> Altura de capa equivalente en centímetros [cm].
+                  </div>
                 </div>
               </div>
             </div>
