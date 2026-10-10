@@ -560,17 +560,20 @@ canvas {
 }
 
 .gallery-item {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(15, 23, 42, 0.85);
   border: 1px solid var(--card-border);
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .gallery-item:hover {
   transform: translateY(-4px);
-  border-color: var(--primary);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 28px rgba(2, 132, 199, 0.22);
 }
 
 .gallery-thumb {
@@ -581,12 +584,41 @@ canvas {
   display: block;
 }
 
-.gallery-desc {
+.diagram-thumb-box {
+  background: radial-gradient(circle at center, #0c152a 0%, #030712 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding: 12px;
+  text-align: center;
+  height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.diagram-thumb-box img {
+  max-height: 165px;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+}
+
+.gallery-item:hover .diagram-thumb-box img {
+  transform: scale(1.04);
+}
+
+.gallery-desc {
+  padding: 12px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .gallery-title {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 4px;
@@ -595,50 +627,57 @@ canvas {
 .gallery-caption {
   font-size: 0.78rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
-/* MODAL DE INSPECCIÓN HD */
+/* MODAL DE INSPECCIÓN HD CON ZOOM Y PAN INTERACTIVO */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(3, 7, 18, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(3, 7, 18, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  padding: 16px;
+  padding: 12px;
 }
 
 .modal-overlay.open { display: flex; }
 
 .modal-content {
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #0b1329;
+  border: 1px solid rgba(56, 189, 248, 0.3);
   border-radius: 14px;
-  max-width: 95vw;
-  max-height: 92vh;
+  width: 96vw;
+  max-width: 1440px;
+  height: 94vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.15);
 }
 
 .modal-header {
-  padding: 14px 18px;
+  padding: 10px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--card-border);
-  background: #090e17;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #070e1e;
+  gap: 12px;
 }
 
-.modal-header h3 { font-size: 1rem; color: #ffffff; }
+.modal-header h3 {
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0;
+}
 
 .modal-close {
   background: transparent;
@@ -647,21 +686,41 @@ canvas {
   font-size: 1.6rem;
   cursor: pointer;
   line-height: 1;
-  padding: 4px 10px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  color: #ffffff;
+  background: rgba(239, 68, 68, 0.2);
 }
 
 .modal-body {
-  padding: 12px;
-  overflow: auto;
+  padding: 0;
+  overflow: hidden;
   text-align: center;
-  background: #020617;
+  background: radial-gradient(circle at center, #070e1e 0%, #020617 100%);
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
 .modal-img {
   max-width: 100%;
-  max-height: 80vh;
+  max-height: 100%;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 4px;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+  cursor: grab;
+}
+
+.modal-img:active {
+  cursor: grabbing;
 }
 
 /* TABLA DOE */
@@ -1312,30 +1371,63 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       </p>
 
       <!-- DIAGRAMA MAESTRO DESTACADO: 00 ARQUITECTURA DISTRIBUIDA -->
-      <div style="background: rgba(15, 23, 42, 0.9); border: 2px solid var(--primary); border-radius: 12px; padding: 18px; margin-bottom: 22px; box-shadow: 0 8px 32px rgba(2, 132, 199, 0.18);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
+      <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--primary); border-radius: 14px; padding: 18px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(2, 132, 199, 0.22);">
+        <!-- Encabezado con selector de vista -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;">
           <div>
-            <div style="font-size: 0.72rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
-              Diagrama Maestro [00] • Topología Ciberfísica Principal
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                Diagrama Maestro [00] • Topología Ciberfísica Principal
+              </span>
+              <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.7rem;">
+                300 DPI Ultra-HD
+              </span>
             </div>
-            <h4 style="font-size: 1.15rem; color: #ffffff; margin: 4px 0 0 0;">
+            <h4 style="font-size: 1.22rem; color: #ffffff; margin: 6px 0 0 0; font-weight: 700; letter-spacing: -0.01em;">
               Arquitectura Distribuida del Sistema CTS-C51 (RTOS 2.0)
             </h4>
           </div>
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button class="btn btn-sm btn-primary" onclick="abrirModal('assets/diagramas/00_arquitectura_distribuida.svg', 'Diagrama Maestro 00: Arquitectura Distribuida del Sistema CTS-C51 (ESP32-S3 Central, Wi-Fi SoftAP, VCSS con ADS1115 A2-A3, pH A0-A1 Diferencial)')">
-              🔍 Inspeccionar en HD
+
+          <!-- Selector de Modo / Perspectiva y Acciones -->
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <!-- Selector de Perspectiva -->
+            <div style="display: inline-flex; background: rgba(2, 6, 23, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; padding: 3px;">
+              <button id="btnVistaEstrella" class="btn btn-sm" onclick="cambiarVistaMaestro('estrella')" style="background: var(--primary); color: #ffffff; border: none; font-weight: 600; font-size: 0.78rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+                🌟 Topología Radial HD (Hardware Literal)
+              </button>
+              <button id="btnVistaMermaid" class="btn btn-sm" onclick="cambiarVistaMaestro('mermaid')" style="background: transparent; color: #94a3b8; border: none; font-weight: 600; font-size: 0.78rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+                🔄 Flujo Lógico RTOS (Mermaid Vectorial)
+              </button>
+            </div>
+
+            <button class="btn btn-sm btn-primary" onclick="inspeccionarMaestroActual()" style="display: inline-flex; align-items: center; gap: 6px;">
+              🔍 Zoom HD
             </button>
-            <a href="assets/diagramas/00_arquitectura_distribuida.svg" target="_blank" class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); text-decoration: none;">
-              Abrir SVG ↗
+            <a id="btnAbrirMaestroExt" href="assets/diagramas/00_arquitectura_distribuida.png" target="_blank" class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); text-decoration: none;">
+              ↗ Pantalla Completa
+            </a>
+            <a href="assets/diagramas/00_arquitectura_distribuida.png" download="CTS_C51_Topologia_Estrella_HD.png" class="btn btn-sm" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); text-decoration: none;">
+              📥 300 DPI
             </a>
           </div>
         </div>
 
-        <div style="text-align: center; background: rgba(5, 10, 20, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; cursor: pointer; transition: transform 0.2s;" onclick="abrirModal('assets/diagramas/00_arquitectura_distribuida.svg', 'Diagrama Maestro 00: Arquitectura Distribuida del Sistema CTS-C51')">
-          <img src="assets/diagramas/00_arquitectura_distribuida.svg" alt="Arquitectura Distribuida Mermaid" style="width: 100%; max-height: 520px; object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));">
-          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 8px;">
-            💡 <em>Haz clic sobre el diagrama para expandir a pantalla completa. Muestra el nodo central ESP32-S3, la capa superior Wi-Fi bidireccional (Web/SCADA), el lazo térmico Nano2/TRIACs y los canales diferenciales del ADC ADS1115 (A0-A1 pH y A2-A3 Shunts VCSS).</em>
+        <!-- Contenedor del Diagrama Maestro -->
+        <div style="text-align: center; background: radial-gradient(circle at center, #070e1e 0%, #020617 100%); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 14px; cursor: pointer; position: relative; box-shadow: inset 0 0 40px rgba(0,0,0,0.6);" onclick="inspeccionarMaestroActual()">
+          <!-- Vista 1: Topología Radial Estrella HD (Default) -->
+          <div id="vistaMaestroEstrella" style="display: block;">
+            <img src="assets/diagramas/00_arquitectura_distribuida.png" alt="Arquitectura Hardware Radial en Estrella (300 DPI)" style="width: 100%; max-height: 680px; object-fit: contain; filter: drop-shadow(0 6px 24px rgba(0,0,0,0.7)); border-radius: 6px;">
+          </div>
+          <!-- Vista 2: Flujo Lógico Mermaid Dark -->
+          <div id="vistaMaestroMermaid" style="display: none;">
+            <img src="assets/diagramas/00_arquitectura_distribuida.svg" alt="Arquitectura Distribuida Mermaid Dark" style="width: 100%; max-height: 680px; object-fit: contain; filter: drop-shadow(0 6px 24px rgba(0,0,0,0.7)); border-radius: 6px;">
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: #94a3b8; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+            <span id="pieMaestroTexto">
+              💡 <em>Topología Radial Física (300 DPI): Muestra el nodo maestro ESP32-S3 central, Wi-Fi hacia SCADA/Web arriba, lazo térmico Nano2/TRIACs abajo, bus I²C con ADS1115 (A0-A1 pH diferencial y A2-A3 Shunts Kelvin) y relé bipolar de corte (+ y -) a la derecha.</em>
+            </span>
+            <span style="color: #38bdf8; font-weight: 600;">Haz clic sobre el plano para Zoom Interactivo 🔍</span>
           </div>
         </div>
       </div>
@@ -1344,48 +1436,192 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       <div class="gallery-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
         <!-- DIAGRAMA 01 -->
         <div class="gallery-item" onclick="abrirModal('assets/diagramas/01_arquitectura_general.svg', 'Diagrama 01: Arquitectura General Master-Slave y SCADA')">
-          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
-            <img src="assets/diagramas/01_arquitectura_general.svg" alt="Diagrama 01" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          <div class="diagram-thumb-box">
+            <span style="position: absolute; top: 8px; right: 8px; font-size: 0.68rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 6px; border-radius: 4px;">Vectorial HD</span>
+            <img src="assets/diagramas/01_arquitectura_general.svg" alt="Diagrama 01: Arquitectura General">
           </div>
           <div class="gallery-desc">
-            <div class="gallery-title">[01] Arquitectura General Master-Slave & SCADA</div>
-            <div class="gallery-caption">FreeRTOS SMP Dual-Core en ESP32-S3 (16MB Flash, 8MB PSRAM), coprocesador Nano2 y enlace bidireccional de telemetría a 10 Hz.</div>
+            <div>
+              <div class="gallery-title">[01] Arquitectura General Master-Slave & SCADA</div>
+              <div class="gallery-caption">FreeRTOS SMP Dual-Core en ESP32-S3 (16MB Flash, 8MB PSRAM), coprocesador Nano2 y enlace bidireccional de telemetría a 10 Hz.</div>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 6px;">
+              <button class="btn btn-sm btn-primary" style="padding: 2px 10px; font-size: 0.72rem;">🔍 Ver en HD</button>
+              <a href="assets/diagramas/01_arquitectura_general.svg" target="_blank" onclick="event.stopPropagation()" class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12); text-decoration: none;">↗ SVG</a>
+            </div>
           </div>
         </div>
 
         <!-- DIAGRAMA 02 -->
         <div class="gallery-item" onclick="abrirModal('assets/diagramas/02_topologia_buses_datos.svg', 'Diagrama 02: Topología Detallada de Buses y Bloques de Hardware')">
-          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
-            <img src="assets/diagramas/02_topologia_buses_datos.svg" alt="Diagrama 02" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          <div class="diagram-thumb-box">
+            <span style="position: absolute; top: 8px; right: 8px; font-size: 0.68rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 6px; border-radius: 4px;">Vectorial HD</span>
+            <img src="assets/diagramas/02_topologia_buses_datos.svg" alt="Diagrama 02: Buses de Datos">
           </div>
           <div class="gallery-desc">
-            <div class="gallery-title">[02] Topología de Buses de Datos & Señales Físicas</div>
-            <div class="gallery-caption">Bus I²C Fast-Mode 400 kHz (ADS1115, MCP4725, AHT20/BMP280), Bus SPI 4 MHz (MAX6675 x4) y enlace serie UART2 a 9600 baud.</div>
+            <div>
+              <div class="gallery-title">[02] Topología de Buses de Datos & Señales Físicas</div>
+              <div class="gallery-caption">Bus I²C Fast-Mode 400 kHz (ADS1115, MCP4725, AHT20/BMP280), Bus SPI 4 MHz (MAX6675 x4) y enlace serie UART2 a 9600 baud.</div>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 6px;">
+              <button class="btn btn-sm btn-primary" style="padding: 2px 10px; font-size: 0.72rem;">🔍 Ver en HD</button>
+              <a href="assets/diagramas/02_topologia_buses_datos.svg" target="_blank" onclick="event.stopPropagation()" class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12); text-decoration: none;">↗ SVG</a>
+            </div>
           </div>
         </div>
 
         <!-- DIAGRAMA 03 -->
         <div class="gallery-item" onclick="abrirModal('assets/diagramas/03_concurrencia_free_rtos.svg', 'Diagrama 03: Concurrencia Simétrica FreeRTOS SMP Dual-Core')">
-          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
-            <img src="assets/diagramas/03_concurrencia_free_rtos.svg" alt="Diagrama 03" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          <div class="diagram-thumb-box">
+            <span style="position: absolute; top: 8px; right: 8px; font-size: 0.68rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 6px; border-radius: 4px;">Vectorial HD</span>
+            <img src="assets/diagramas/03_concurrencia_free_rtos.svg" alt="Diagrama 03: Concurrencia FreeRTOS">
           </div>
           <div class="gallery-desc">
-            <div class="gallery-title">[03] Concurrencia Multitarea FreeRTOS 2.0 (SMP)</div>
-            <div class="gallery-caption">Separación física de tareas: Core 0 (Comunicaciones, Servidor REST y OTA) y Core 1 (Lazos PI térmicos, VCSS analógico, pH @ 860 SPS y Fail-Safe).</div>
+            <div>
+              <div class="gallery-title">[03] Concurrencia Multitarea FreeRTOS 2.0 (SMP)</div>
+              <div class="gallery-caption">Separación física de tareas: Core 0 (Comunicaciones, Servidor REST y OTA) y Core 1 (Lazos PI térmicos, VCSS analógico, pH @ 860 SPS y Fail-Safe).</div>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 6px;">
+              <button class="btn btn-sm btn-primary" style="padding: 2px 10px; font-size: 0.72rem;">🔍 Ver en HD</button>
+              <a href="assets/diagramas/03_concurrencia_free_rtos.svg" target="_blank" onclick="event.stopPropagation()" class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12); text-decoration: none;">↗ SVG</a>
+            </div>
           </div>
         </div>
 
         <!-- DIAGRAMA 04 -->
         <div class="gallery-item" onclick="abrirModal('assets/diagramas/04_interlocks_estados.svg', 'Diagrama 04: Máquina de Estados, Interlocks y Fail-Safe Latch ISA-18.2')">
-          <div style="background: #0b1120; border-radius: 6px; padding: 10px; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center;">
-            <img src="assets/diagramas/04_interlocks_estados.svg" alt="Diagrama 04" style="max-height: 160px; max-width: 100%; object-fit: contain;">
+          <div class="diagram-thumb-box">
+            <span style="position: absolute; top: 8px; right: 8px; font-size: 0.68rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 6px; border-radius: 4px;">Vectorial HD</span>
+            <img src="assets/diagramas/04_interlocks_estados.svg" alt="Diagrama 04: Estados e Interlocks">
           </div>
           <div class="gallery-desc">
-            <div class="gallery-title">[04] Máquina de Estados & Fail-Safe ISA-18.2</div>
-            <div class="gallery-caption">Interlocks químicos de exclusión mutua, corte físico de potencia por sobretemperatura/sobrecorriente y protocolo de rearme /failsafe_reset.</div>
-          </div>
+            <div>
+              <div class="gallery-title">[04] Máquina de Estados & Fail-Safe ISA-18.2</div>
+              <div class="gallery-caption">Interlocks químicos de exclusión mutua, corte físico de potencia por sobretemperatura/sobrecorriente y protocolo de rearme /failsafe_reset.</div>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 6px;">
+              <button class="btn btn-sm btn-primary" style="padding: 2px 10px; font-size: 0.72rem;">🔍 Ver en HD</button>
+              <a href="assets/diagramas/04_interlocks_estados.svg" target="_blank" onclick="event.stopPropagation()" class="btn btn-sm" style="padding: 2px 8px; font-size: 0.72rem; background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12); text-decoration: none;">↗ SVG</a>
+            </div>
         </div>
       </div>
+
+      <!-- SUITE EXTENDIDA: DIAGRAMAS ESPECIALIZADOS DE CONTROL E INSTRUMENTACIÓN ([05] AL [11]) -->
+      <details style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 14px 16px; margin-bottom: 24px;">
+        <summary style="font-size: 0.95rem; font-weight: 700; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+          <span>📑 Ver los 7 Diagramas Especializados de Control & Señales ([05] al [11])</span>
+          <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.72rem;">Desplegar Suite Completa ▾</span>
+        </summary>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin: 12px 0 16px 0;">
+          Acceso directo a la instrumentación detallada de control térmico, lazo VCSS, corte bipolar ZCS, filtro digital tri-modo de pH, disparo por paquetes 60 Hz, servidor MVC web y supervisión SCADA ISA-88:
+        </p>
+        <div class="gallery-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+          <!-- DIAGRAMA 05 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/05_control_termico_pi.svg', 'Diagrama 05: Algoritmo y Flujo del Control Térmico PI + Soft-Start')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); padding: 1px 5px; border-radius: 4px;">Térmico PI</span>
+              <img src="assets/diagramas/05_control_termico_pi.svg" alt="Diagrama 05: Control Térmico PI" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[05] Control Térmico PI + Soft-Start</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">Lazo cerrado a 1 Hz, rampa suave anti-inrush y anti-windup condicional.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+
+          <!-- DIAGRAMA 06 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/06_sumidero_corriente_vcss.svg', 'Diagrama 06: Lazo Cerrado Híbrido VCSS, Sensado Kelvin en Shunts A2-A3 y Diagnóstico')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(139, 92, 246, 0.2); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.4); padding: 1px 5px; border-radius: 4px;">VCSS Kelvin</span>
+              <img src="assets/diagramas/06_sumidero_corriente_vcss.svg" alt="Diagrama 06: Sumidero VCSS" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[06] Sumidero VCSS & Sensado Kelvin</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">OpAmp LM358N + 2x MOSFETs IRLZ44N, shunt 0.5Ω y canales A2-A3 ADS1115.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+
+          <!-- DIAGRAMA 07 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/07_secuencia_zcs_rele.svg', 'Diagrama 07: Secuencia de Conmutación ZCS y Relé Bipolar en Corriente Nula')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(236, 72, 153, 0.2); color: #ec4899; border: 1px solid rgba(236, 72, 153, 0.4); padding: 1px 5px; border-radius: 4px;">Relé Bipolar</span>
+              <img src="assets/diagramas/07_secuencia_zcs_rele.svg" alt="Diagrama 07: Secuencia ZCS" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[07] Secuencia ZCS Relé Bipolar</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">Protocolo de extinción a I=0.00 A para corte simultáneo (+ y -) sin arco.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+
+          <!-- DIAGRAMA 08 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/08_filtro_ph_tri_modo.svg', 'Diagrama 08: Pipeline de Filtro Digital de pH Tri-Modo y Canales A0-A1 Diferencial en ADS1115')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); padding: 1px 5px; border-radius: 4px;">pH Tri-Modo</span>
+              <img src="assets/diagramas/08_filtro_ph_tri_modo.svg" alt="Diagrama 08: Filtro pH" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[08] Filtro Digital Tri-Modo de pH</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">Lectura pseudo-diferencial A1-A0 @ 860 SPS, mediana móvil y filtro IIR EMA.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+
+          <!-- DIAGRAMA 09 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/09_control_triacs_ac60hz.svg', 'Diagrama 09: Modulación por Tiempo Proporcional (Burst Firing ZCS) en Arduino Nano2')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); padding: 1px 5px; border-radius: 4px;">TRIACs 60Hz</span>
+              <img src="assets/diagramas/09_control_triacs_ac60hz.svg" alt="Diagrama 09: TRIACs ZCS" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[09] TRIACs Burst Firing (AC 60 Hz)</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">Disparo en cruce por cero en ventana 3000 ms, cero ruido EMI en pH.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+
+          <!-- DIAGRAMA 10 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/10_arquitectura_mvc_web.svg', 'Diagrama 10: Arquitectura Modular MVC y Enrutador Asíncrono RTOS 2.0 en ESP32-S3')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(14, 165, 233, 0.2); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.4); padding: 1px 5px; border-radius: 4px;">MVC Web</span>
+              <img src="assets/diagramas/10_arquitectura_mvc_web.svg" alt="Diagrama 10: MVC Web" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[10] Arquitectura Modular MVC Web</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">Servidor asíncrono Core 0, endpoint /data_all (10 Hz) y panel móvil HTML5.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+
+          <!-- DIAGRAMA 11 -->
+          <div class="gallery-item" onclick="abrirModal('assets/diagramas/11_supervision_scada_isa88.svg', 'Diagrama 11: Supervisión SCADA ISA-88, Culombimetría de Faraday y Balanza Analítica')">
+            <div class="diagram-thumb-box" style="height: 160px;">
+              <span style="position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.4); padding: 1px 5px; border-radius: 4px;">SCADA ISA-88</span>
+              <img src="assets/diagramas/11_supervision_scada_isa88.svg" alt="Diagrama 11: SCADA ISA-88" style="max-height: 140px;">
+            </div>
+            <div class="gallery-desc">
+              <div>
+                <div class="gallery-title" style="font-size: 0.85rem;">[11] Supervisión SCADA & ISA-88</div>
+                <div class="gallery-caption" style="font-size: 0.74rem;">32 ensayos Taguchi, culombimetría integral y gráficos científicos 300 DPI.</div>
+              </div>
+              <div style="margin-top: 8px;"><button class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.7rem;">🔍 Ver HD</button></div>
+            </div>
+          </div>
+        </div>
+      </details>
 
       <!-- FOTOGRAFÍAS FÍSICAS: PLACA PRINCIPAL Y ACTUADORES DE PLANTA -->
       <h3 style="font-size: 1.05rem; color: var(--primary); margin: 26px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
@@ -3468,15 +3704,29 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
 </div>
 
-<!-- MODAL PARA INSPECCIÓN DE IMÁGENES HD -->
+<!-- MODAL PARA INSPECCIÓN DE IMÁGENES HD CON ZOOM Y PAN INTERACTIVO -->
 <div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3 id="modalTitle">Inspección Técnica de Imagen</h3>
-      <button class="modal-close" onclick="cerrarModal()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+        <span style="font-size: 1.15rem;">📐</span>
+        <h3 id="modalTitle" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; font-weight: 700;">Inspección Técnica de Imagen</h3>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+        <span id="modalZoomBadge" style="font-size: 0.74rem; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; padding: 3px 8px; font-family: var(--code-font);">100%</span>
+        <button class="btn btn-sm" onclick="cambiarZoomModal(0.25)" title="Acercar (Zoom +)" style="padding: 3px 8px; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); font-weight: bold; cursor: pointer;">➕</button>
+        <button class="btn btn-sm" onclick="cambiarZoomModal(-0.25)" title="Alejar (Zoom -)" style="padding: 3px 8px; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); font-weight: bold; cursor: pointer;">➖</button>
+        <button class="btn btn-sm" onclick="resetZoomModal()" title="Restablecer escala (1:1)" style="padding: 3px 8px; background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); font-size: 0.75rem; cursor: pointer;">↺ 1:1</button>
+        <a id="modalExternalLink" href="#" target="_blank" class="btn btn-sm" title="Abrir archivo original en nueva pestaña" style="padding: 3px 9px; background: rgba(56, 189, 248, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); text-decoration: none; font-size: 0.75rem; font-weight: 600;">↗ Abrir Original</a>
+        <button class="modal-close" onclick="cerrarModal()" title="Cerrar ventana (Esc)">&times;</button>
+      </div>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" id="modalBody">
       <img src="" alt="Vista previa HD" id="modalImg" class="modal-img">
+    </div>
+    <div style="background: #070e1e; padding: 6px 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; font-size: 0.73rem; color: #94a3b8; flex-wrap: wrap; gap: 6px;">
+      <span>💡 <em>Rueda del ratón para Zoom continuo • Arrastra con el cursor para mover • Doble clic para 2x • Tecla Esc para salir</em></span>
+      <span style="color: #38bdf8; font-weight: 600;">Plataforma CTS-C51 • RTOS 2.0 (SMEQ 2026)</span>
     </div>
   </div>
 </div>
@@ -4063,14 +4313,52 @@ tabs.forEach(btn => {
   });
 });
 
-// MODAL DE IMÁGENES / LIGHTBOX HD
+// =========================================================================
+// MODAL DE IMÁGENES / LIGHTBOX HD CON ZOOM Y PAN INTERACTIVO
+// =========================================================================
+let modalZoom = 1.0;
+let modalPanX = 0;
+let modalPanY = 0;
+let isDraggingModal = false;
+let startDragX = 0;
+let startDragY = 0;
+
+function actualizarTransformModal() {
+  const modalImg = document.getElementById('modalImg');
+  if (!modalImg) return;
+  modalImg.style.transform = `translate(${modalPanX}px, ${modalPanY}px) scale(${modalZoom})`;
+  const badge = document.getElementById('modalZoomBadge');
+  if (badge) badge.textContent = `${Math.round(modalZoom * 100)}%`;
+}
+
+function cambiarZoomModal(delta) {
+  modalZoom = Math.min(5.0, Math.max(0.4, Math.round((modalZoom + delta) * 100) / 100));
+  if (modalZoom === 1.0) {
+    modalPanX = 0;
+    modalPanY = 0;
+  }
+  actualizarTransformModal();
+}
+
+function resetZoomModal() {
+  modalZoom = 1.0;
+  modalPanX = 0;
+  modalPanY = 0;
+  actualizarTransformModal();
+}
+
 function abrirModal(src, titulo) {
   const modal = document.getElementById('modalOverlay');
   const modalImg = document.getElementById('modalImg');
   const modalTitle = document.getElementById('modalTitle');
+  const modalExt = document.getElementById('modalExternalLink');
   if (!modal || !modalImg) return;
+
   modalImg.src = src;
-  if (modalTitle) modalTitle.textContent = titulo || 'Inspección en Alta Resolución';
+  if (modalTitle) modalTitle.textContent = titulo || 'Inspección Técnica en Alta Resolución';
+  if (modalExt) modalExt.href = src;
+
+  resetZoomModal();
   modal.classList.add('open');
 }
 
@@ -4078,14 +4366,75 @@ function cerrarModal(e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close')) return;
   const modal = document.getElementById('modalOverlay');
   if (modal) modal.classList.remove('open');
+  resetZoomModal();
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     const modal = document.getElementById('modalOverlay');
     if (modal) modal.classList.remove('open');
+    resetZoomModal();
   }
 });
+
+// GESTIÓN DEL DIAGRAMA MAESTRO [00]: TOPOLOGÍA RADIAL HD VS. MERMAID DARK
+let vistaMaestroActual = 'estrella';
+
+function cambiarVistaMaestro(vista) {
+  vistaMaestroActual = vista;
+  const vEstrella = document.getElementById('vistaMaestroEstrella');
+  const vMermaid = document.getElementById('vistaMaestroMermaid');
+  const btnEstrella = document.getElementById('btnVistaEstrella');
+  const btnMermaid = document.getElementById('btnVistaMermaid');
+  const btnExt = document.getElementById('btnAbrirMaestroExt');
+  const pieTexto = document.getElementById('pieMaestroTexto');
+
+  if (vista === 'estrella') {
+    if (vEstrella) vEstrella.style.display = 'block';
+    if (vMermaid) vMermaid.style.display = 'none';
+    if (btnEstrella) {
+      btnEstrella.style.background = 'var(--primary)';
+      btnEstrella.style.color = '#ffffff';
+    }
+    if (btnMermaid) {
+      btnMermaid.style.background = 'transparent';
+      btnMermaid.style.color = '#94a3b8';
+    }
+    if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.png';
+    if (pieTexto) {
+      pieTexto.innerHTML = '💡 <em>Topología Radial Física (300 DPI): Muestra el nodo maestro ESP32-S3 central, Wi-Fi hacia SCADA/Web arriba, lazo térmico Nano2/TRIACs abajo, bus I²C con ADS1115 (A0-A1 pH diferencial y A2-A3 Shunts Kelvin) y relé bipolar de corte (+ y -) a la derecha.</em>';
+    }
+  } else {
+    if (vEstrella) vEstrella.style.display = 'none';
+    if (vMermaid) vMermaid.style.display = 'block';
+    if (btnMermaid) {
+      btnMermaid.style.background = 'var(--primary)';
+      btnMermaid.style.color = '#ffffff';
+    }
+    if (btnEstrella) {
+      btnEstrella.style.background = 'transparent';
+      btnEstrella.style.color = '#94a3b8';
+    }
+    if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.svg';
+    if (pieTexto) {
+      pieTexto.innerHTML = '💡 <em>Diagrama de Flujo Lógico y Concurrencia RTOS 2.0 (Mermaid Dark): Modelado formal de concurrencia multitarea FreeRTOS SMP Dual-Core, colas de telemetría y sincronización atómica entre cores.</em>';
+    }
+  }
+}
+
+function inspeccionarMaestroActual() {
+  if (vistaMaestroActual === 'estrella') {
+    abrirModal(
+      'assets/diagramas/00_arquitectura_distribuida.png',
+      'Diagrama Maestro 00: Topología Radial de Hardware Literal (ESP32-S3 Central, ADS1115 A0-A1 pH y A2-A3 Shunts VCSS, Relé Bipolar y Nano2)'
+    );
+  } else {
+    abrirModal(
+      'assets/diagramas/00_arquitectura_distribuida.svg',
+      'Diagrama Maestro 00: Flujo Lógico y Concurrencia RTOS 2.0 (ESP32-S3 Dual-Core, Core 0 Web y Core 1 Control)'
+    );
+  }
+}
 
 // INICIALIZACIÓN GLOBAL
 window.addEventListener('DOMContentLoaded', () => {
@@ -4094,6 +4443,53 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
   if (typeof actualizarCalculadoraFaraday === 'function') actualizarCalculadoraFaraday();
   if (typeof seleccionarNodoArch === 'function') seleccionarNodoArch('esp32');
+
+  // Configuración de gestos y zoom interactivo en Modal HD
+  const modalBody = document.getElementById('modalBody');
+  const modalImg = document.getElementById('modalImg');
+
+  if (modalBody && modalImg) {
+    // Zoom con rueda del ratón
+    modalBody.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.25 : -0.25;
+      cambiarZoomModal(delta);
+    }, { passive: false });
+
+    // Arrastre con ratón
+    modalBody.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isDraggingModal = true;
+      startDragX = e.clientX - modalPanX;
+      startDragY = e.clientY - modalPanY;
+      modalImg.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDraggingModal) return;
+      modalPanX = e.clientX - startDragX;
+      modalPanY = e.clientY - startDragY;
+      actualizarTransformModal();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDraggingModal) {
+        isDraggingModal = false;
+        if (modalImg) modalImg.style.cursor = 'grab';
+      }
+    });
+
+    // Doble clic para alternar entre 100% y 200%
+    modalImg.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      if (modalZoom > 1.05) {
+        resetZoomModal();
+      } else {
+        modalZoom = 2.0;
+        actualizarTransformModal();
+      }
+    });
+  }
 });
 
 window.addEventListener('resize', () => {

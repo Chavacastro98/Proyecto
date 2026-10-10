@@ -273,7 +273,7 @@ def crear_diagrama():
         C_ENV, "🌤️"
     )
 
-    # Nodo 2 (Centro-Arriba): ADS1115 (ADC 16-bit) -> pH y Sensado Voltaje
+    # Nodo 2 (Centro-Arriba): ADS1115 (ADC 16-bit) -> pH Pseudo-Diferencial y Shunts VCSS
     draw.line([(1780, 430), (1850, 430)], fill=C_I2C, width=4)
     draw.polygon([(1850, 430), (1835, 422), (1835, 438)], fill=C_I2C)
 
@@ -287,8 +287,9 @@ def crear_diagrama():
             "  - A1: Tensión acondicionada de la sonda de vidrio de pH (Po).",
             "  - A0: Tierra local analógica aislada (AGND / Kelvin Ground).",
             "  - Resta DeltaV = A1 - A0 rechaza ruidos galvánicos de la celda (CMRR > 75dB).",
-            "• Canales A2 / A3:",
-            "  - Monitoreo de tensión analógica en bornes de la celda galvánica."
+            "• Canales A2 - A3 (Diferencial Kelvin):",
+            "  - Medición de corriente catódica real en el Source del VCSS.",
+            "  - Caída de tensión sobre Shunts cerámicos (Rs,eq = 0.5 Ω) sin error óhmico."
         ],
         C_PH_DIFF, "🧪"
     )
@@ -301,27 +302,28 @@ def crear_diagrama():
         1850, 680, 780, 230,
         "DAC MCP4725 (12 bits) & Sumidero VCSS", "I2C Dirección 0x60",
         [
-            "Función: Generación y regulación precisa de la corriente catódica.",
+            "Función: Generación y regulación precisa de corriente catódica.",
             "",
-            "• MCP4725: Fija tensión de consigna analógica V_ref (0 a 3.53 V).",
-            "• Sumidero VCSS: Op-Amp como amplificador de error (V_ref = Id · Rs)",
-            "  pilotando 2 ramas MOSFET con shunts cerámicos de 1 Ω / 10W (Rs,eq = 0.5 Ω).",
-            "  Ganancia de transconductancia Gm = 2 A/V (salida regulada 0 a 7.0 A DC / 10 Hz)."
+            "• MCP4725: Consigna analógica V_ref reconfigurable para Tinas 3 y 4.",
+            "• Sumidero VCSS: Op-Amp LM358N + 2x MOSFETs IRLZ44N en paralelo.",
+            "  Medición de corriente catódica en el Source (Shunts 1Ω / 10W, Rs,eq=0.5Ω).",
+            "  Ganancia Gm = 2.0 A/V (salida regulada de 0.00 a 7.00 A pico / tren a 10 Hz)."
         ],
         C_POWER_DC, "⚡"
     )
 
-    # Nodo 4 (Abajo): Relé de Corte DC -> Celda Hull (Electrodeposición)
+    # Nodo 4 (Abajo): Módulo Relé Bipolar -> Celda Hull / Tina 4
     draw_block(
         1850, 940, 780, 260,
-        "Relé DC & Celda Hull (Proceso Galvánico)", "Potencia DC & Celda",
+        "Módulo Relé Bipolar & Tinas Galvánicas", "Corte Bipolar (+ y -)",
         [
-            "Función: Desconexión de seguridad y electrodeposición de zinc.",
+            "Función: Corte físico total simultáneo y electrodeposición de zinc / níquel.",
             "",
-            "• Relé de Corte DC: Gobernado directamente por GPIO 20 del ESP32",
-            "  para corte físico instantáneo sin arco al finalizar ensayo o alarma.",
-            "• Celda Hull (Zincado Ácido): Prisma trapezoidal (267 mL),",
-            "  ánodo de Zinc puro y cátodo de probeta Al 6061-T6 con zincato previo."
+            "• Relé Bipolar de 2 Canales (GPIO 20):",
+            "  - Interrumpe físicamente tanto el positivo (+12V) como el retorno (-).",
+            "  - Conmutación en cero corriente (ZCS) a I = 0.00 A para evitar arcos eléctricos.",
+            "• Tinas Reconfigurables (Fuente Común):",
+            "  - Tina 3 (Celda Hull, 267 mL) y Tina 4 (Niquelado sobre Zincado)."
         ],
         (244, 63, 94), "🛑"
     )
@@ -367,7 +369,10 @@ def crear_diagrama():
         r"C:\Proyecto\Proyecto\hardware\esquemas_y_bom\sistema_moderno.png",
         r"C:\Proyecto\Proyecto\documentos\manuales\imagenes\sistema.png",
         r"C:\Proyecto\Proyecto\documentos\manuales\imagenes\sistema_moderno.png",
-        r"C:\Proyecto\Proyecto\documentos\academicos\showcase_web\assets\sistema.png"
+        r"C:\Proyecto\Proyecto\documentos\academicos\showcase_web\assets\sistema.png",
+        r"C:\Proyecto\Proyecto\documentos\academicos\showcase_web\assets\diagramas\00_arquitectura_distribuida.png",
+        r"C:\Proyecto\Proyecto\docs\assets\diagramas\00_arquitectura_distribuida.png",
+        r"C:\Proyecto\Proyecto\docs\assets\sistema.png"
     ]
 
     for ruta in rutas_salida:

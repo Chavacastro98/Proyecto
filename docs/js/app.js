@@ -26,14 +26,52 @@ tabs.forEach(btn => {
   });
 });
 
-// MODAL DE IMÁGENES / LIGHTBOX HD
+// =========================================================================
+// MODAL DE IMÁGENES / LIGHTBOX HD CON ZOOM Y PAN INTERACTIVO
+// =========================================================================
+let modalZoom = 1.0;
+let modalPanX = 0;
+let modalPanY = 0;
+let isDraggingModal = false;
+let startDragX = 0;
+let startDragY = 0;
+
+function actualizarTransformModal() {
+  const modalImg = document.getElementById('modalImg');
+  if (!modalImg) return;
+  modalImg.style.transform = `translate(${modalPanX}px, ${modalPanY}px) scale(${modalZoom})`;
+  const badge = document.getElementById('modalZoomBadge');
+  if (badge) badge.textContent = `${Math.round(modalZoom * 100)}%`;
+}
+
+function cambiarZoomModal(delta) {
+  modalZoom = Math.min(5.0, Math.max(0.4, Math.round((modalZoom + delta) * 100) / 100));
+  if (modalZoom === 1.0) {
+    modalPanX = 0;
+    modalPanY = 0;
+  }
+  actualizarTransformModal();
+}
+
+function resetZoomModal() {
+  modalZoom = 1.0;
+  modalPanX = 0;
+  modalPanY = 0;
+  actualizarTransformModal();
+}
+
 function abrirModal(src, titulo) {
   const modal = document.getElementById('modalOverlay');
   const modalImg = document.getElementById('modalImg');
   const modalTitle = document.getElementById('modalTitle');
+  const modalExt = document.getElementById('modalExternalLink');
   if (!modal || !modalImg) return;
+
   modalImg.src = src;
-  if (modalTitle) modalTitle.textContent = titulo || 'Inspección en Alta Resolución';
+  if (modalTitle) modalTitle.textContent = titulo || 'Inspección Técnica en Alta Resolución';
+  if (modalExt) modalExt.href = src;
+
+  resetZoomModal();
   modal.classList.add('open');
 }
 
@@ -41,14 +79,75 @@ function cerrarModal(e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close')) return;
   const modal = document.getElementById('modalOverlay');
   if (modal) modal.classList.remove('open');
+  resetZoomModal();
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     const modal = document.getElementById('modalOverlay');
     if (modal) modal.classList.remove('open');
+    resetZoomModal();
   }
 });
+
+// GESTIÓN DEL DIAGRAMA MAESTRO [00]: TOPOLOGÍA RADIAL HD VS. MERMAID DARK
+let vistaMaestroActual = 'estrella';
+
+function cambiarVistaMaestro(vista) {
+  vistaMaestroActual = vista;
+  const vEstrella = document.getElementById('vistaMaestroEstrella');
+  const vMermaid = document.getElementById('vistaMaestroMermaid');
+  const btnEstrella = document.getElementById('btnVistaEstrella');
+  const btnMermaid = document.getElementById('btnVistaMermaid');
+  const btnExt = document.getElementById('btnAbrirMaestroExt');
+  const pieTexto = document.getElementById('pieMaestroTexto');
+
+  if (vista === 'estrella') {
+    if (vEstrella) vEstrella.style.display = 'block';
+    if (vMermaid) vMermaid.style.display = 'none';
+    if (btnEstrella) {
+      btnEstrella.style.background = 'var(--primary)';
+      btnEstrella.style.color = '#ffffff';
+    }
+    if (btnMermaid) {
+      btnMermaid.style.background = 'transparent';
+      btnMermaid.style.color = '#94a3b8';
+    }
+    if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.png';
+    if (pieTexto) {
+      pieTexto.innerHTML = '💡 <em>Topología Radial Física (300 DPI): Muestra el nodo maestro ESP32-S3 central, Wi-Fi hacia SCADA/Web arriba, lazo térmico Nano2/TRIACs abajo, bus I²C con ADS1115 (A0-A1 pH diferencial y A2-A3 Shunts Kelvin) y relé bipolar de corte (+ y -) a la derecha.</em>';
+    }
+  } else {
+    if (vEstrella) vEstrella.style.display = 'none';
+    if (vMermaid) vMermaid.style.display = 'block';
+    if (btnMermaid) {
+      btnMermaid.style.background = 'var(--primary)';
+      btnMermaid.style.color = '#ffffff';
+    }
+    if (btnEstrella) {
+      btnEstrella.style.background = 'transparent';
+      btnEstrella.style.color = '#94a3b8';
+    }
+    if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.svg';
+    if (pieTexto) {
+      pieTexto.innerHTML = '💡 <em>Diagrama de Flujo Lógico y Concurrencia RTOS 2.0 (Mermaid Dark): Modelado formal de concurrencia multitarea FreeRTOS SMP Dual-Core, colas de telemetría y sincronización atómica entre cores.</em>';
+    }
+  }
+}
+
+function inspeccionarMaestroActual() {
+  if (vistaMaestroActual === 'estrella') {
+    abrirModal(
+      'assets/diagramas/00_arquitectura_distribuida.png',
+      'Diagrama Maestro 00: Topología Radial de Hardware Literal (ESP32-S3 Central, ADS1115 A0-A1 pH y A2-A3 Shunts VCSS, Relé Bipolar y Nano2)'
+    );
+  } else {
+    abrirModal(
+      'assets/diagramas/00_arquitectura_distribuida.svg',
+      'Diagrama Maestro 00: Flujo Lógico y Concurrencia RTOS 2.0 (ESP32-S3 Dual-Core, Core 0 Web y Core 1 Control)'
+    );
+  }
+}
 
 // INICIALIZACIÓN GLOBAL
 window.addEventListener('DOMContentLoaded', () => {
@@ -57,6 +156,53 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
   if (typeof actualizarCalculadoraFaraday === 'function') actualizarCalculadoraFaraday();
   if (typeof seleccionarNodoArch === 'function') seleccionarNodoArch('esp32');
+
+  // Configuración de gestos y zoom interactivo en Modal HD
+  const modalBody = document.getElementById('modalBody');
+  const modalImg = document.getElementById('modalImg');
+
+  if (modalBody && modalImg) {
+    // Zoom con rueda del ratón
+    modalBody.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.25 : -0.25;
+      cambiarZoomModal(delta);
+    }, { passive: false });
+
+    // Arrastre con ratón
+    modalBody.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isDraggingModal = true;
+      startDragX = e.clientX - modalPanX;
+      startDragY = e.clientY - modalPanY;
+      modalImg.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDraggingModal) return;
+      modalPanX = e.clientX - startDragX;
+      modalPanY = e.clientY - startDragY;
+      actualizarTransformModal();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDraggingModal) {
+        isDraggingModal = false;
+        if (modalImg) modalImg.style.cursor = 'grab';
+      }
+    });
+
+    // Doble clic para alternar entre 100% y 200%
+    modalImg.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      if (modalZoom > 1.05) {
+        resetZoomModal();
+      } else {
+        modalZoom = 2.0;
+        actualizarTransformModal();
+      }
+    });
+  }
 });
 
 window.addEventListener('resize', () => {
