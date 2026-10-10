@@ -2207,19 +2207,79 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         <span class="icon">⚡</span> Sumidero de Corriente VCSS & Generador de Onda Cuadrada a 10 Hz
       </div>
 
-      <div class="grid-2">
-        <div>
-          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 10px;">
-            El sumidero <strong>VCSS (Voltage-Controlled Current Sink)</strong> controla con precisión sub-milisegundo la corriente catódica hacia la Celda Hull. Utiliza un amplificador operacional en lazo cerrado (LM358N) como <em>amplificador de error</em> pilotando transistores MOSFET (IRLZ44Z) en modo lineal activo, con sensado Kelvin sobre un banco de <strong>2 resistencias de shunt cerámicas de 1.0 Ω (10W) en 2 ramas en paralelo</strong>, logrando una <strong>ganancia de transconductancia global de 2 A/V</strong>.
+      <!-- Mini-Barra de Navegación Rápida / Guía Visual de la Pestaña -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; background: rgba(2, 6, 23, 0.7); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.2); font-size: 0.76rem; align-items: center;">
+        <span style="color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 4px;">🗺️ Guía de la Pestaña:</span>
+        <a href="#vcss-topologia" style="color: #cbd5e1; text-decoration: none; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">1. Topología TI SLAA868A</a>
+        <a href="#vcss-matematicas" style="color: #cbd5e1; text-decoration: none; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">2. Modelado Matemático (DC & Laplace)</a>
+        <a href="#vcss-simulador" style="color: #cbd5e1; text-decoration: none; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">3. Simulador Onda 10 Hz</a>
+        <a href="#vcss-soa" style="color: #cbd5e1; text-decoration: none; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">4. Balance Térmico & SOA</a>
+        <a href="#vcss-hardware" style="color: #cbd5e1; text-decoration: none; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">5. Banco Físico & Diagramas</a>
+      </div>
+
+      <!-- KPI Tiles del Sumidero VCSS -->
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="metric-tile" style="border-left: 3px solid var(--purple); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Transconductancia Gm</div>
+          <div class="metric-value" style="color: var(--purple); font-size: 1.30rem;">2.00 A/V</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">2 ramas simétricas en paralelo</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--primary); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Rango Corriente Pico</div>
+          <div class="metric-value" style="color: var(--primary); font-size: 1.30rem;">0.00 – 7.00 A</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Resolución DAC 12-bit (0.8 mA)</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--emerald); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Tren de Pulsos Óptimo</div>
+          <div class="metric-value" style="color: var(--emerald); font-size: 1.30rem;">10 Hz / 50%</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">t_on = 50 ms / t_off = 50 ms</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--amber); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Sensado Kelvin Shunt</div>
+          <div class="metric-value" style="color: var(--amber); font-size: 1.30rem;">0.50 Ω / 20W</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">ADS1115 Canales A2-A3 (Kelvin)</div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 1: TOPOLOGÍA CANÓNICA Y ESPECIFICACIÓN SLAA868A -->
+      <div id="vcss-topologia" class="grid-2" style="margin-bottom: 22px; gap: 16px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; justify-content: space-between;">
+          <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6;">
+            El sumidero <strong>VCSS (Voltage-Controlled Current Sink)</strong> controla con precisión sub-milisegundo la corriente catódica hacia la Celda Hull. Utiliza un amplificador operacional en lazo cerrado (LM358N) como <em>amplificador de error</em> pilotando transistores MOSFET (IRLZ44Z) en modo lineal activo, con sensado Kelvin sobre un banco de <strong>2 resistencias de shunt cerámicas de 1.0 Ω (10W) en paralelo</strong>, logrando una <strong>ganancia de transconductancia global calibrada de 2.0 A/V</strong>.
           </p>
 
-          <div class="info-box info-box-success" style="margin-bottom: 14px;">
+          <div class="info-box info-box-success" style="margin-bottom: 0;">
             <strong>Validación de Topología y Estabilidad (Texas Instruments SLAA868A):</strong><br>
             Este diseño sigue fielmente las especificaciones del <em>Application Report SLAA868A: "Programmable Low-Side Current Sink Circuit"</em> de Texas Instruments (Satterfield, 2024). Dicho reporte valida formalmente la topología de lazo cerrado DAC + Op-Amp + MOSFET, la compensación de estabilidad mediante resistencia de aislamiento de compuerta <i>R</i><sub>ISO</sub> = 100 Ω (frente a la capacitancia parásita <i>C</i><sub>iss</sub>), y la relación directa de transconductancia gobernada por el resistor de sensado <i>R</i><sub>SET</sub> en el sumidero bajo (low-side).
           </div>
+        </div>
 
-          <!-- BLOQUE 1: MODELO TEÓRICO VCSS -->
-          <div class="math-card">
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+          <div style="font-size: 0.76rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Circuito Esquemático Canónico TI SLAA868A</span>
+            <button class="btn btn-sm btn-primary" onclick="abrirModal('assets/ti_slaa868a_esquematico.png', 'Circuito Esquemático Canónico: Topología de Sumidero de Corriente en Lazo Cerrado según Nota de Aplicación Texas Instruments SLAA868A')" style="padding: 2px 8px; font-size: 0.70rem;">🔍 Ampliar</button>
+          </div>
+          <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+            <img src="assets/ti_slaa868a_esquematico.png" alt="Topología TI SLAA868A" style="width: 100%; max-height: 220px; object-fit: contain; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: #ffffff; padding: 6px; cursor: pointer;" onclick="abrirModal(this.src, 'Circuito Esquemático Canónico: Topología de Sumidero de Corriente en Lazo Cerrado según Nota de Aplicación Texas Instruments SLAA868A')">
+          </div>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin: 8px 0 0 0;">Lazo cerrado DAC + Op-Amp + MOSFET con compensación R_ISO = 100 Ω y sensado low-side Kelvin.</p>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: MODELADO MATEMÁTICO EN 2 COLUMNAS EQUILIBRADAS -->
+      <div id="vcss-matematicas" style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; border-left: 3px solid var(--purple); padding-left: 10px;">
+          <h4 style="font-size: 1.05rem; color: #ffffff; margin: 0;">
+            🧮 Modelado Físico-Matemático del Sumidero VCSS (Ecuaciones Gobernadoras & Dinámica)
+          </h4>
+          <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); font-size: 0.72rem;">
+            2 Bloques Complementarios en Paralelo
+          </span>
+        </div>
+
+        <div class="grid-2" style="gap: 16px; align-items: start;">
+          <!-- COLUMNA IZQUIERDA: BLOQUE 1 -->
+          <div class="math-card" style="margin: 0; height: 100%;">
             <div class="math-label">1. Modelo Teórico del Sumidero VCSS: Régimen Estático y Dinámica en Laplace</div>
             
             <!-- SECCIÓN A: RÉGIMEN ESTÁTICO -->
@@ -2412,8 +2472,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             </div>
           </div>
 
-          <!-- BLOQUE 2: ARQUITECTURA DE 2 RAMAS EN PARALELO -->
-          <div class="math-card">
+          <!-- COLUMNA DERECHA: BLOQUE 2 -->
+          <div class="math-card" style="margin: 0; height: 100%;">
             <div class="math-label">2. Arquitectura de 2 Ramas Shunt en Paralelo (Ganancia Global de Transconductancia Gm = 2.0 A/V)</div>
             
             <p style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 8px;">
@@ -2511,15 +2571,10 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             </div>
           </div>
         </div>
-
-        <div style="text-align: center;">
-          <img src="assets/ti_slaa868a_esquematico.png" alt="Topología TI SLAA868A" style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--card-border); background: #ffffff; padding: 6px; cursor: pointer;" onclick="abrirModal(this.src, 'Circuito Esquemático Canónico: Topología de Sumidero de Corriente en Lazo Cerrado según Nota de Aplicación Texas Instruments SLAA868A')">
-          <p style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px;">Topología canónica según Texas Instruments SLAA868A: Lazo cerrado DAC + Op-Amp + MOSFET con compensación R_ISO y sensado low-side.</p>
-        </div>
       </div>
 
       <!-- SIMULADOR INTERACTIVO DE ONDA CUADRADA PULSADA A 10 HZ -->
-      <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--primary); border-radius: 12px; padding: 18px; margin-top: 16px; box-shadow: 0 0 20px var(--primary-glow);">
+      <div id="vcss-simulador" style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--primary); border-radius: 12px; padding: 18px; margin-top: 16px; box-shadow: 0 0 20px var(--primary-glow);">
         <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
           <span>📈</span> Simulador de Señal de Salida Cuadrada (Tren de Pulsos de Corriente a 10 Hz)
         </h4>
@@ -2597,8 +2652,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
       </div>
 
-      <!-- CALCULADORA DE DISIPACIÓN TÉRMICA SOA DEL MOSFET -->
-      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 18px;">
+      <!-- SECCIÓN 4: CALCULADORA DE DISIPACIÓN TÉRMICA SOA DEL MOSFET -->
+      <div id="vcss-soa" style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 18px;">
         <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 0.95rem;">🧮 Calculadora de Balance Térmico & Límites SOA del Transistor</h4>
 
         <div class="grid-2">
@@ -2658,8 +2713,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </div>
       </div>
 
-      <!-- FOTOGRAFÍAS FÍSICAS: SUMIDERO VCSS DE PLANTA -->
-      <h3 style="font-size: 1.05rem; color: var(--purple); margin: 26px 0 12px 0; border-left: 3px solid var(--purple); padding-left: 8px;">
+      <!-- SECCIÓN 5: FOTOGRAFÍAS FÍSICAS Y DIAGRAMAS DEL SUMIDERO VCSS DE PLANTA -->
+      <h3 id="vcss-hardware" style="font-size: 1.05rem; color: var(--purple); margin: 26px 0 12px 0; border-left: 3px solid var(--purple); padding-left: 8px;">
         Circuito Físico de Planta — Etapa de Potencia Lineal VCSS, Gabinete y Topología Esquemática
       </h3>
       <div class="gallery-grid">
