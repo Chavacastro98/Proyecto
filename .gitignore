@@ -74,3 +74,22 @@ herramientas/scratch/
 
 # Accesos directos locales de Windows
 *.url
+
+# Optimización de Repositorio (Archivos Pesados y Duplicados conservados localmente en PC)
+documentos/datasheets/*.pdf
+documentos/manuales/*.pdf
+documentos/imagenes/
+visualizacion/diagramas/imagenes/
+visualizacion/diagramas/superloop/
+visualizacion/preview/Beta/
+visualizacion/preview/Original/
+visualizacion/preview/2.0/
+visualizacion/preview/3.0/
+visualizacion/preview/3.5/
+visualizacion/preview/4.0/
+visualizacion/preview/RTOS1.0/
+visualizacion/preview/RTOS1.1/
+visualizacion/preview/RTOS1.2/
+visualizacion/preview/RTOS1.3/
+firmware/**/historico/
+software/telemetria/
