@@ -272,18 +272,23 @@ El presente proyecto articula una investigación científica electroquímica apl
   * **Rol y Responsabilidades:** Autor de la Investigación Electroquímica y Tesista de Grado (*"cliente" / formulador del proyecto*). Tomó la problemática industrial planteada por **Volta Plating Solutions** y propuso el estudio del zincado en medio ácido para solucionar el problema y validar formulaciones de manuales técnicos. Responsable de la formulación química de baños de electrodeposición y pretratamiento, matriz de diseño experimental (DOE 2⁵·4 / Taguchi), preparación metalográfica de probetas de Al 6061 T-6, ensayos gravimétricos, cálculo de eficiencias faradaicas y conclusiones de tesis.
 
 ### ⚙️ Automatización, Instrumentación & Plataforma Ciberfísica (Salvador² C Dev Team)
-Equipo de ingeniería desarrollador de la plataforma integral de ensayos ciberfísicos (diseño de planta física, electrónica, firmware, software y control):
+Equipo de ingeniería desarrollador de la plataforma integral de ensayos (diseño de planta física, instrumentación, electrónica, firmware, software y control):
 
 * **Salvador Castro Pérez**  
   * Correo Institucional: [salvador.castro7435@alumnos.udg.mx](mailto:salvador.castro7435@alumnos.udg.mx)  
-  * **Rol:** Automatización Industrial, Arquitectura SCADA Telemetría 2.0 (PyQt6 / Web Móvil), Modelado Físico-Matemático Térmico y Supervisión Ciberfísica.
-
 * **Fernando Salvador Samayoa Martínez**  
   * Correo Institucional: [fernando.samayoa0621@alumnos.udg.mx](mailto:fernando.samayoa0621@alumnos.udg.mx)  
   * Correo Alternativo: [fsamayoamarinez@gmail.com](mailto:fsamayoamarinez@gmail.com)  
-  * **Rol:** Diseño de Hardware e Instrumentación Electrónica, Firmware RTOS 2.0 (ESP32-S3 multitarea) y Nano2 (Burst Firing ZCS), Caracterización del Sumidero VCSS, Sensado (pH pseudo-diferencial, termometría, clima) y Aseguramiento de Calidad (QA).
 
-*(Desarrollo conjunto de la plataforma de ensayos por Salvador Castro Pérez y Fernando Salvador Samayoa Martínez: sensores, firmware, hardware, modelado térmico, caracterización de la fuente VCSS, módulo relé bipolar ZCS, interfaces UI/UX y control de calidad QA).*
+**Co-desarrollo Integral de la Planta de Ensayos:**  
+Ambos ingenieros desarrollaron e implementaron colaborativamente todas las disciplinas de la plataforma ciberfísica:
+* **Instrumentación y Sensores:** Acondicionamiento metrológico de pH pseudo-diferencial con aislamiento galvánico, termometría multizona (termopares y sondas digitales) y monitoreo ambiental (BME280).
+* **Firmware Embebido:** Arquitectura multitarea en ESP32-S3 (RTOS 2.0 bajo FreeRTOS SMP) y firmware esclavo Arduino Nano2 (conmutación Burst Firing ZCS por tiempo proporcional a ciclos completos).
+* **Hardware y Electrónica de Potencia:** Diseño de esquemáticos, ruteo y ensamble de PCB, sumidero de corriente reconfigurable VCSS (DAC + OpAmps + MOSFETs) y módulo relé bipolar para corte seguro en cero (ZCS).
+* **Modelado Físico-Matemático y Control:** Modelado térmico de tinas y sintonización de lazos de control PI.
+* **Caracterización Eléctrica de Potencia:** Ensayos de conmutación en carga y caracterización del sumidero VCSS.
+* **Interfaces UI/UX:** Suite SCADA Telemetría 2.0 en PyQt6 para PC y Servidor Web Móvil embebido en ESP32-S3 vía SoftAP Wi-Fi.
+* **Aseguramiento de Calidad (QA):** Validación de planta, matriz de interlocks de seguridad y pruebas de integración.
 
 ### 🎓 Directores y Asesores de Tesis
 * **Dr. Omar Alejandro González Meza** — Profesor Investigador, CUCEI, Universidad de Guadalajara.
