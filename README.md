@@ -120,7 +120,7 @@ flowchart TD
 
   | Control de Corriente Pulsada (Web Móvil) | Supervisión de Actuadores y Relés (SCADA) |
   | :---: | :---: |
-  | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | ![Supervisión de Actuadores y Relés](docs/assets/scada_02_actuadores.jpg) |
+  | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | 
   | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo programable.* | *Aislamiento bipolar físico en relé de 2 canales a corriente estrictamente nula (I=0.00A).* |
 
 * **Secuencia ZCS con Relé de 2 Canales (Corte Bipolar Simultáneo $+$ y $-$):**  
