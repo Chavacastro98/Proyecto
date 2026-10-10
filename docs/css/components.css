@@ -121,6 +121,105 @@
   padding-top: 2px;
 }
 
+/* PASOS MATEMÁTICOS SECUENCIALES Y ANÁLISIS DIMENSIONAL */
+.math-step {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 3px solid #38bdf8;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0;
+}
+
+.math-step-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.math-step-desc {
+  font-size: 0.83rem;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
+
+.math-vars-box {
+  background: rgba(2, 6, 23, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+
+.math-vars-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.math-vars-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.80rem;
+}
+
+.math-vars-table th {
+  text-align: left;
+  padding: 6px 8px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.math-vars-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  vertical-align: middle;
+}
+
+.math-vars-table tr:last-child td {
+  border-bottom: none;
+}
+
+.math-vars-sym {
+  font-family: var(--math-font);
+  font-size: 0.95rem;
+  color: #38bdf8;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.math-vars-unit {
+  font-family: var(--code-font);
+  color: #10b981;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.math-vars-dim {
+  font-family: var(--code-font);
+  color: #fbbf24;
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
 /* CONTROLES Y SLIDERS ADAPTADOS A PANTALLA TÁCTIL */
 .control-group {
   margin-bottom: 14px;
