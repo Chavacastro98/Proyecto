@@ -342,13 +342,13 @@ def crear_diagrama():
     draw.line([(60, 1640), (W - 60, 1640)], fill=C_CARD_BORDER, width=1)
     draw.text(
         (60, 1655),
-        "Tesista: V. U. Gutiérrez Ramírez (Tesis y Resultados)   |   Asesores: Dr. O. A. González-Meza & Dr. N. Casillas Santana (Línea Electroquímica UdeG)",
+        "Investigación Electroquímica: V. U. Gutiérrez Ramírez (Problemática Volta Plating)   |   Asesores: Dr. O. A. González-Meza & Dr. N. Casillas",
         fill=(241, 245, 249),
         font=FONT_BLOCK_DESC
     )
     draw.text(
         (60, 1685),
-        "Instrumentación y Control (Hardware, Firmware, Térmico, SCADA): S. Castro Pérez & F. S. Samayoa Martínez   |   UdeG (CUCEI) & Volta Plating Solutions",
+        "Plataforma de Ensayos, Firmware & SCADA: Salvador² C Dev Team (S. Castro Pérez & F. S. Samayoa Martínez)   |   CUCEI - UdeG",
         fill=(148, 163, 184),
         font=FONT_BLOCK_TAG
     )

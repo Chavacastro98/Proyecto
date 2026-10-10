@@ -369,8 +369,8 @@ def crear_diagrama():
 
     # 4. Pie de página institucional con Responsables del Proyecto
     draw.line([(60, 1610), (W - 60, 1610)], fill=C_CARD_BORDER, width=1)
-    draw.text((60, 1622), "Tesista: V. U. Gutiérrez Ramírez   |   Directores de Tesis: Dr. O. A. González-Meza & Dr. N. Casillas Santana", fill=(241, 245, 249), font=FONT_BLOCK_DESC)
-    draw.text((60, 1652), "Desarrollo Hardware, Firmware & Software: S. Castro Pérez & F. S. Samayoa Martínez   |   UdeG (CUCEI) & Volta Plating Solutions", fill=(148, 163, 184), font=FONT_BLOCK_TAG)
+    draw.text((60, 1622), "Investigación Electroquímica: V. U. Gutiérrez Ramírez (Problemática Volta Plating)   |   Directores: Dr. O. A. González-Meza & Dr. N. Casillas", fill=(241, 245, 249), font=FONT_BLOCK_DESC)
+    draw.text((60, 1652), "Plataforma de Ensayos, Firmware & SCADA: Salvador² C Dev Team (S. Castro Pérez & F. S. Samayoa Martínez)   |   CUCEI - UdeG", fill=(148, 163, 184), font=FONT_BLOCK_TAG)
     draw.text((W - 440, 1632), "SMEQ 2026 • CARTEL CTS-C51", fill=C_CTRL_MASTER, font=FONT_SECTION)
 
     # Rutas oficiales a actualizar

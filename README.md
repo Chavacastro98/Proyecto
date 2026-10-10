@@ -261,14 +261,17 @@ Genera automáticamente las 8 figuras normalizadas:
 
 ## 7. Equipo de Investigación y Desarrollo
 
-El presente proyecto articula una investigación científica electroquímica aplicada a nivel de licenciatura con la ingeniería de una plataforma ciberfísica e industrial de ensayos:
+El presente proyecto articula una investigación científica electroquímica aplicada con la ingeniería de una plataforma ciberfísica e industrial de ensayos:
+
+### 🏭 Problemática Industrial de Origen
+* **Volta Plating Solutions:** Empresa industrial que presentó el reto técnico y la problemática de adhesión y calidad en recubrimientos galvánicos sobre aluminio.
 
 ### 🧪 Investigación Electroquímica & Tesis de Grado ("Planteamiento y Validación Experimental")
 * **Víctor Ulises Gutiérrez Ramírez**  
   * Correo Institucional: [victor.gutierrez7221@alumnos.udg.mx](mailto:victor.gutierrez7221@alumnos.udg.mx)  
-  * **Rol y Responsabilidades:** Autor de la Investigación Electroquímica y Tesista de Grado (*planteamiento del problema metalúrgico y requerimientos de experimentación*). Formulación química de baños de electrodeposición y pretratamiento, diseño de experimentos (DOE 2⁵·4 / Taguchi), preparación metalográfica de probetas de Al 6061 T-6, análisis gravimétrico/faradaico y obtención de resultados experimentales.
+  * **Rol y Responsabilidades:** Autor de la Investigación Electroquímica y Tesista de Grado (*"cliente" / formulador del proyecto*). Tomó la problemática industrial planteada por **Volta Plating Solutions** y propuso el estudio del zincado en medio ácido para solucionar el problema y validar formulaciones de manuales técnicos. Responsable de la formulación química de baños de electrodeposición y pretratamiento, matriz de diseño experimental (DOE 2⁵·4 / Taguchi), preparación metalográfica de probetas de Al 6061 T-6, ensayos gravimétricos, cálculo de eficiencias faradaicas y conclusiones de tesis.
 
-### ⚙️ Automatización, Instrumentación & Plataforma Ciberfísica (Salvador² C Dev Team / Volta Plating Solutions)
+### ⚙️ Automatización, Instrumentación & Plataforma Ciberfísica (Salvador² C Dev Team)
 Equipo de ingeniería desarrollador de la plataforma integral de ensayos ciberfísicos (diseño de planta física, electrónica, firmware, software y control):
 
 * **Salvador Castro Pérez**  
@@ -288,6 +291,6 @@ Equipo de ingeniería desarrollador de la plataforma integral de ensayos ciberf�
 
 ---
 
-**Salvador² C Dev Team / Volta Plating Solutions**  
+**Salvador² C Dev Team**  
 *Ingeniería de Automatización, Sistemas Embebidos, Electrónica de Potencia e Instrumentación Científica.*  
 *Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI) — Universidad de Guadalajara.*
