@@ -320,3 +320,91 @@ function seleccionarNodoArch(id) {
     </p>
   `;
 }
+
+// =========================================================================
+// CONTROLADOR DE MODO DE LECTURA (SHOWCASE EJECUTIVO VS. REPORTE TÉCNICO)
+// =========================================================================
+let modoLecturaActual = 'showcase';
+
+function setModoLectura(modo) {
+  modoLecturaActual = modo;
+  document.body.classList.remove('modo-showcase', 'modo-tecnico');
+  document.body.classList.add(`modo-${modo}`);
+
+  const btnShowcase = document.getElementById('btnModoShowcase');
+  const btnTecnico = document.getElementById('btnModoTecnico');
+  if (btnShowcase && btnTecnico) {
+    if (modo === 'showcase') {
+      btnShowcase.classList.add('active');
+      btnTecnico.classList.remove('active');
+    } else {
+      btnTecnico.classList.add('active');
+      btnShowcase.classList.remove('active');
+    }
+  }
+
+  // Si estamos en modo técnico, asegurar que los acordeones muestren su contenido
+  const collapsibleBlocks = document.querySelectorAll('.math-collapsible');
+  collapsibleBlocks.forEach(block => {
+    if (modo === 'tecnico') {
+      block.classList.remove('collapsed');
+      const toggleBtn = block.previousElementSibling?.querySelector('.math-toggle-btn') || 
+                        block.parentElement?.querySelector('.math-toggle-btn');
+      if (toggleBtn) toggleBtn.innerHTML = '🔼 Contraer deducción analítica';
+    } else {
+      // en modo showcase, replegar si no fue abierto manualmente
+      if (!block.dataset.manuallyExpanded) {
+        block.classList.add('collapsed');
+        const toggleBtn = block.previousElementSibling?.querySelector('.math-toggle-btn') || 
+                          block.parentElement?.querySelector('.math-toggle-btn');
+        if (toggleBtn) toggleBtn.innerHTML = '📖 Ver deducción analítica paso a paso ▾';
+      }
+    }
+  });
+
+  try {
+    localStorage.setItem('cts_modo_lectura', modo);
+  } catch (e) {
+    // localStorage no disponible o bloqueado en contexto local
+  }
+}
+
+function toggleMathCollapsible(btn, targetId) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  const isCollapsed = target.classList.contains('collapsed');
+  if (isCollapsed) {
+    target.classList.remove('collapsed');
+    target.dataset.manuallyExpanded = 'true';
+    btn.innerHTML = '🔼 Contraer deducción analítica';
+  } else {
+    target.classList.add('collapsed');
+    delete target.dataset.manuallyExpanded;
+    btn.innerHTML = '📖 Ver deducción analítica paso a paso ▾';
+  }
+}
+
+// Inicializar modo de lectura al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+  let modoGuardado = 'showcase';
+  try {
+    modoGuardado = localStorage.getItem('cts_modo_lectura') || 'showcase';
+  } catch (e) {}
+  setModoLectura(modoGuardado);
+
+  // Soporte de desplazamiento suave compensado para enlaces de roadmap
+  document.querySelectorAll('.roadmap-step').forEach(stepLink => {
+    stepLink.addEventListener('click', (e) => {
+      const targetHash = stepLink.getAttribute('href');
+      if (targetHash && targetHash.startsWith('#')) {
+        const elem = document.querySelector(targetHash);
+        if (elem) {
+          e.preventDefault();
+          elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+});
+

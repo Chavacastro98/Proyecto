@@ -217,7 +217,20 @@ footer a { color: var(--primary); text-decoration: none; }
   header { padding: 16px; border-radius: 12px; }
   h1 { font-size: 1.18rem; }
   .subtitle { font-size: 0.85rem; }
-  .credits-panel { grid-template-columns: 1fr; gap: 8px; }
+  .badge-bar {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+  .mode-selector {
+    width: 100%;
+    justify-content: center;
+  }
+  .mode-pill {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+  }
   .nav-tabs {
     gap: 6px;
     margin-bottom: 16px;
@@ -283,6 +296,12 @@ footer a { color: var(--primary); text-decoration: none; }
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 14px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
 }
 
 /* CAJAS DE INFORMACIÓN */
@@ -1026,6 +1045,171 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
   margin: 10px 0;
 }
 
+/* ==========================================================================
+   ARQUITECTURA DE DISEÑO: MODO DUAL (SHOWCASE VS. REPORTE TÉCNICO) & GUÍA VISUAL
+   ========================================================================== */
+
+/* SELECTOR GLOBAL DE MODO DE LECTURA (HEADER) */
+.mode-selector {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 3px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.mode-pill:hover {
+  color: #ffffff;
+}
+
+.mode-pill.active {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.5);
+}
+
+.mode-pill.active.mode-tecnico {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+}
+
+/* BARRA DE HITOS / ROADMAP VISUAL POR PESTAÑA */
+.module-roadmap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  background: rgba(2, 6, 23, 0.75);
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  font-size: 0.76rem;
+  align-items: center;
+}
+
+.roadmap-label {
+  color: var(--primary);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 4px;
+}
+
+.roadmap-step {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.roadmap-step:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.roadmap-step.active {
+  background: rgba(14, 165, 233, 0.25);
+  border-color: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* TARJETAS RESUMEN DE FÓRMULAS Y REVELACIÓN PROGRESIVA */
+.math-summary-box {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.math-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.math-toggle-btn:hover {
+  background: rgba(14, 165, 233, 0.25);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.math-collapsible {
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+/* En modo Showcase por defecto los contenedores matemáticos extensos pueden estar contraídos */
+body.modo-showcase .math-collapsible.collapsed {
+  display: none;
+}
+
+body.modo-tecnico .math-collapsible.collapsed {
+  display: block !important;
+}
+
+body.modo-tecnico .math-toggle-btn {
+  display: none;
+}
+
+/* REJILLA SIMÉTRICA DE 2 COLUMNAS DE ANCHO COMPLETO */
+.grid-2-balanced {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 992px) {
+  .grid-2-balanced {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+
 
 </style>
 </head>
@@ -1035,18 +1219,30 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
 
   <!-- HEADER OFICIAL SMEQ 2026 -->
   <header>
-    <div class="badge-bar">
-      <span class="badge badge-primary">SMEQ 2026 • CARTEL CTS-C51</span>
-      <span class="badge badge-emerald">CONTROL IN-OPERANDO</span>
-      <span class="badge badge-amber">ESP32-S3 SMP @ 240 MHz</span>
-      <span class="badge badge-purple">ANSI/ISA-88.01</span>
-      <a href="https://github.com/Chavacastro98/Proyecto" target="_blank" rel="noopener noreferrer" class="badge badge-github" title="Abrir Repositorio Oficial en GitHub">
-        <svg height="13" width="13" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: text-bottom;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        <span>GitHub: Chavacastro98/Proyecto</span>
-      </a>
-      <a href="https://chavacastro98.github.io/Proyecto/" target="_blank" rel="noopener noreferrer" class="badge badge-pages" title="Abrir GitHub Pages en Vivo">
-        <span>🌐 GitHub Pages</span>
-      </a>
+    <div class="badge-bar" style="justify-content: space-between; align-items: center;">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+        <span class="badge badge-primary">SMEQ 2026 • CARTEL CTS-C51</span>
+        <span class="badge badge-emerald">CONTROL IN-OPERANDO</span>
+        <span class="badge badge-amber">ESP32-S3 SMP @ 240 MHz</span>
+        <span class="badge badge-purple">ANSI/ISA-88.01</span>
+        <a href="https://github.com/Chavacastro98/Proyecto" target="_blank" rel="noopener noreferrer" class="badge badge-github" title="Abrir Repositorio Oficial en GitHub">
+          <svg height="13" width="13" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: text-bottom;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <a href="https://chavacastro98.github.io/Proyecto/" target="_blank" rel="noopener noreferrer" class="badge badge-pages" title="Abrir GitHub Pages en Vivo">
+          <span>🌐 Pages</span>
+        </a>
+      </div>
+
+      <!-- SELECTOR GLOBAL DE MODO DE LECTURA (PERSISTENTE) -->
+      <div class="mode-selector" title="Alternar entre vista ejecutiva de alto impacto y reporte analítico exhaustivo">
+        <button id="btnModoShowcase" class="mode-pill active" onclick="setModoLectura('showcase')">
+          <span>👁️ Showcase Ejecutivo</span>
+        </button>
+        <button id="btnModoTecnico" class="mode-pill mode-tecnico" onclick="setModoLectura('tecnico')">
+          <span>📖 Reporte Técnico</span>
+        </button>
+      </div>
     </div>
     <h1>Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6</h1>
     <p class="subtitle">Diseño de Experimentos Multinivel 2⁵·4, Instrumentación Modular y Supervisión SCADA con Etapa de Potencia Pulsada VCSS y Conmutación ZCS</p>
@@ -1172,12 +1368,46 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       <div class="card-title">
         <span class="icon">📐</span> Diagrama de Bloques Funcional de Hardware — Arquitectura Integral
       </div>
+
+      <!-- Mini-Barra de Navegación Rápida / Guía Visual de la Pestaña -->
+      <div class="module-roadmap">
+        <span class="roadmap-label">🗺️ Guía del Módulo:</span>
+        <a href="#arch-vectorial" class="roadmap-step">1. Bloques Funcionales Interactivos</a>
+        <a href="#arch-maestro" class="roadmap-step">2. Topología Radial Estrella HD</a>
+        <a href="#arch-especialidad" class="roadmap-step">3. Diagramas de Especialidad</a>
+        <a href="#arch-planta" class="roadmap-step">4. Circuito Físico & Actuadores</a>
+      </div>
+
+      <!-- KPI Tiles de Arquitectura Central -->
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="metric-tile" style="border-left: 3px solid var(--primary); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Microcontrolador Maestro</div>
+          <div class="metric-value" style="color: var(--primary); font-size: 1.30rem;">ESP32-S3</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">240 MHz Dual-Core • RTOS 2.0</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--purple); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Buses de Instrumentación</div>
+          <div class="metric-value" style="color: var(--purple); font-size: 1.30rem;">I²C & SPI</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">400 kHz Fast-Mode / 4 MHz SPI</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--amber); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Coprocesador Esclavo</div>
+          <div class="metric-value" style="color: var(--amber); font-size: 1.30rem;">Nano2 (328P)</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">ZCS 60 Hz • Watchdog UART 4.0s</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--emerald); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Aislamiento & Seguridad</div>
+          <div class="metric-value" style="color: var(--emerald); font-size: 1.30rem;">Optoacoplado</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Corte Bipolar Relé + Fail-Safe</div>
+        </div>
+      </div>
+
       <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
         Arquitectura modular organizada por bloques de <strong>Nombre + Función</strong>: Entradas y Sensado (Izq.) → Núcleo de Control Maestro/Esclavo (Centro) → Etapa de Potencia y Planta (Der.) → HMI y Supervisión (Abajo).
       </p>
 
       <!-- DIAGRAMA VECTORIAL INTERACTIVO DE ARQUITECTURA -->
-      <div id="vistaArchVectorial" class="arch-container">
+      <div id="arch-vectorial" class="arch-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <span style="font-size: 0.78rem; color: #94a3b8;">
             💡 <strong>Toca cualquier bloque</strong> para inspeccionar pines, bus de comunicación y especificaciones técnicas:
@@ -1371,7 +1601,7 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       </p>
 
       <!-- DIAGRAMA MAESTRO DESTACADO: 00 ARQUITECTURA DISTRIBUIDA -->
-      <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--primary); border-radius: 14px; padding: 18px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(2, 132, 199, 0.22);">
+      <div id="arch-maestro" style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--primary); border-radius: 14px; padding: 18px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(2, 132, 199, 0.22);">
         <!-- Encabezado con selector de vista -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;">
           <div>
@@ -1433,7 +1663,7 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       </div>
 
       <!-- CUADRÍCULA DE DIAGRAMAS DE ESPECIALIDAD -->
-      <div class="gallery-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
+      <div id="arch-especialidad" class="gallery-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
         <!-- DIAGRAMA 01 -->
         <div class="gallery-item" onclick="abrirModal('assets/diagramas/01_arquitectura_general.svg', 'Diagrama 01: Arquitectura General Master-Slave y SCADA')">
           <div class="diagram-thumb-box">
@@ -1624,7 +1854,7 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       </details>
 
       <!-- FOTOGRAFÍAS FÍSICAS: PLACA PRINCIPAL Y ACTUADORES DE PLANTA -->
-      <h3 style="font-size: 1.05rem; color: var(--primary); margin: 26px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
+      <h3 id="arch-planta" style="font-size: 1.05rem; color: var(--primary); margin: 26px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
         Circuito Físico de Planta — Placa Base Principal, Cableado de Laboratorio y Actuadores Electromecánicos
       </h3>
       <div class="gallery-grid">
@@ -1670,7 +1900,40 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
         <span class="icon">🔥</span> Proceso de Modelado Térmico a Detalle y Control Sincrónico (ZCS & FDT)
       </div>
 
-      <div class="info-box info-box-info">
+      <!-- Mini-Barra de Navegación Rápida / Guía Visual de la Pestaña -->
+      <div class="module-roadmap">
+        <span class="roadmap-label">🗺️ Guía del Módulo:</span>
+        <a href="#termico-principio" class="roadmap-step">1. Fundamentos & Conmutación ZCS</a>
+        <a href="#termico-matematicas" class="roadmap-step">2. Modelado Matemático FDT</a>
+        <a href="#termico-simulador" class="roadmap-step">3. Simulador Dinámico 60 Hz</a>
+        <a href="#termico-hardware" class="roadmap-step">4. Circuitos Físicos & Perfiles</a>
+      </div>
+
+      <!-- KPI Tiles del Módulo Térmico -->
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="metric-tile" style="border-left: 3px solid var(--amber); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Algoritmo Térmico PI</div>
+          <div class="metric-value" style="color: var(--amber); font-size: 1.30rem;">Anti-Windup</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Sintonizado en MATLAB (Kp, Ki)</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--primary); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Modulación Sincrónica</div>
+          <div class="metric-value" style="color: var(--primary); font-size: 1.30rem;">ZCS 60 Hz</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Burst Firing (Ventana 3.0s)</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--emerald); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Sobretiro Experimental</div>
+          <div class="metric-value" style="color: var(--emerald); font-size: 1.30rem;">0.0 % OS</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Cero degradación de reactivos</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--purple); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Retardo Padé Compensado</div>
+          <div class="metric-value" style="color: var(--purple); font-size: 1.30rem;">θ = 6.5 s</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Vaina física (6.0s) + ZOH (0.5s)</div>
+        </div>
+      </div>
+
+      <div id="termico-principio" class="info-box info-box-info">
         <strong>Principio de Operación: Conmutación por Cruce por Cero (ZCS Burst Firing):</strong><br>
         El control térmico de las 4 tinas de tratamiento opera mediante modulación de tiempo proporcional sincrónica en cruce por cero (Zero-Crossing Switching, 60 Hz). Los fundamentos del acondicionamiento y actuación son:
         <ul style="margin-left: 18px; margin-top: 6px; font-size: 0.85rem;">
@@ -1683,13 +1946,53 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
       <!-- ========================================================================= -->
       <!-- SECCIÓN CIENTÍFICA: MODELADO TÉRMICO Y CONTROL POR FDT (Control_termico.m) -->
       <!-- ========================================================================= -->
-      <div style="margin: 24px 0 16px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px;">
+      <div id="termico-matematicas" style="margin: 24px 0 16px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px;">
         <h3 style="font-size: 1.15rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <span>📐</span> Proceso de Modelado: Desde la Ecuación de Calor hasta el Controlador
         </h3>
-        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
           Modelado dinámico de las tinas de tratamiento: reducción del transporte térmico bajo agitación forzada a un sistema de capacitancia concentrada de primer orden con retardo de transporte, y cálculo de las ganancias analíticas del lazo PI en <code style="color: var(--emerald);">hardware/control_matlab/Control_termico.m</code>.
         </p>
+
+        <!-- CAJA RESUMEN EJECUTIVA DE LA FDT TÉRMICA GOBERNADORA -->
+        <div class="math-summary-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 0.76rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.06em;">
+              Fórmula Gobernadora Ejecutiva • Modelo FDT Dinámico en Laplace
+            </span>
+            <span class="badge badge-amber" style="font-size: 0.68rem;">Sintonización MATLAB</span>
+          </div>
+
+          <div class="math-eq" style="font-size: 1.35rem; color: #fbbf24; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
+            <span class="m-var">G</span><span class="m-sub">total</span>(s) = 
+            <span class="fraction">
+              <span class="num"><span class="m-var">K</span><span class="m-sub">planta</span></span>
+              <span class="den"><span class="m-var">τ</span><span class="m-sub">planta</span> · s + 1</span>
+            </span>
+            · <span class="m-var">e</span><span class="m-sup">−6.5·s</span>
+            &nbsp;=&nbsp;
+            <span class="fraction">
+              <span class="num">0.185&nbsp;°C/W</span>
+              <span class="den">650·s + 1</span>
+            </span>
+            · <span class="m-var">e</span><span class="m-sup">−6.5·s</span>
+          </div>
+
+          <div class="grid-3" style="font-size: 0.78rem; color: #94a3b8; margin-top: 12px; gap: 10px;">
+            <div>• <strong style="color: #fbbf24;">Ganancia Estática (K):</strong> 0.185 °C/W (1 / (h · A_s)).</div>
+            <div>• <strong style="color: #fbbf24;">Constante de Tiempo (τ):</strong> 650 s (Capacitancia térmica m·cp / (h·As)).</div>
+            <div>• <strong style="color: #fbbf24;">Retardo Total (θ):</strong> 6.5 s (Vaina física 6.0s + Retenedor ZOH 0.5s).</div>
+          </div>
+
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <button type="button" class="math-toggle-btn" onclick="toggleMathCollapsible(this, 'termico-math-steps')">
+              📖 Ver deducción analítica paso a paso (Pasos 1 al 6) ▾
+            </button>
+          </div>
+        </div>
+
+        <!-- CONTENEDOR COLAPSABLE CON LAS DEDUCCIONES DETALLADAS PASO A PASO -->
+        <div id="termico-math-steps" class="math-collapsible collapsed">
 
         <!-- PASO 1 -->
         <div class="math-card" style="border-left: 4px solid #38bdf8;">
@@ -2064,9 +2367,10 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </span>
         </div>
       </div>
+    </div> <!-- Cierre de #termico-math-steps -->
 
       <!-- SIMULADOR INTERACTIVO ZCS -->
-      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 16px;">
+      <div id="termico-simulador" style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 16px;">
         <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 0.95rem;">🎛️ Simulador Interactivo: Modulación ZCS a 60 Hz en Tiempo Real</h4>
         
         <div class="grid-2">
@@ -2151,7 +2455,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       </div>
 
       <!-- FOTOGRAFÍAS FÍSICAS: ETAPA TÉRMICA DE PLANTA -->
-      <h3 style="font-size: 1.05rem; color: var(--amber); margin: 26px 0 12px 0; border-left: 3px solid var(--amber); padding-left: 8px;">
+      <h3 id="termico-hardware" style="font-size: 1.05rem; color: var(--amber); margin: 26px 0 12px 0; border-left: 3px solid var(--amber); padding-left: 8px;">
         Circuitos Físicos de Planta — Módulo de Potencia TRIACs, Cableado AC, Sensores Térmicos y Dinámica Experimental
       </h3>
       <div class="gallery-grid">
@@ -2277,10 +2581,45 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </span>
         </div>
 
-        <div class="grid-2" style="gap: 16px; align-items: start;">
-          <!-- COLUMNA IZQUIERDA: BLOQUE 1 -->
-          <div class="math-card" style="margin: 0; height: 100%;">
-            <div class="math-label">1. Modelo Teórico del Sumidero VCSS: Régimen Estático y Dinámica en Laplace</div>
+        <!-- CAJA RESUMEN EJECUTIVA DE LA RELACIÓN GOBERNADORA VCSS -->
+        <div class="math-summary-box" style="border-left-color: var(--purple);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 0.76rem; font-weight: 700; color: #c084fc; text-transform: uppercase; letter-spacing: 0.06em;">
+              Fórmula Gobernadora Ejecutiva • Ley de Transconductancia Global VCSS
+            </span>
+            <span class="badge badge-purple" style="font-size: 0.68rem;">SLAA868A Lazo Cerrado</span>
+          </div>
+
+          <div class="math-eq" style="font-size: 1.35rem; color: #c084fc; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
+            <span class="m-var">I</span><span class="m-sub">total</span>(t) = 
+            <span class="m-var">G</span><span class="m-sub">m</span> · <span class="m-var">V</span><span class="m-sub">DAC</span>(t) = 
+            <span class="fraction">
+              <span class="num">1</span>
+              <span class="den"><span class="m-var">R</span><span class="m-sub">s,eq</span></span>
+            </span>
+            · <span class="m-var">V</span><span class="m-sub">DAC</span>(t) = 
+            <strong style="color: #a855f7;">2.00&nbsp;<span class="fraction"><span class="num">A</span><span class="den">V</span></span> · <span class="m-var">V</span><span class="m-sub">DAC</span>(t)</strong>
+          </div>
+
+          <div class="grid-3" style="font-size: 0.78rem; color: #94a3b8; margin-top: 12px; gap: 10px;">
+            <div>• <strong style="color: #c084fc;">Transconductancia Neta (Gm):</strong> 2.00 A/V (Sensado Kelvin low-side).</div>
+            <div>• <strong style="color: #c084fc;">Shunts en Source (Rs,eq):</strong> 0.50 Ω / 20W (2 ramas simétricas de 1.0 Ω).</div>
+            <div>• <strong style="color: #c084fc;">Margen Lineal Activo (VDS):</strong> &ge; 1.5 V (Saturación garantizada en IRLZ44Z).</div>
+          </div>
+
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <button type="button" class="math-toggle-btn" onclick="toggleMathCollapsible(this, 'vcss-math-steps')">
+              📖 Ver deducción analítica paso a paso (DC, Laplace & Potencia) ▾
+            </button>
+          </div>
+        </div>
+
+        <!-- CONTENEDOR COLAPSABLE CON LAS DEDUCCIONES DETALLADAS DE VCSS -->
+        <div id="vcss-math-steps" class="math-collapsible collapsed">
+          <div class="grid-2" style="gap: 16px; align-items: start;">
+            <!-- COLUMNA IZQUIERDA: BLOQUE 1 -->
+            <div class="math-card" style="margin: 0; height: 100%;">
+              <div class="math-label">1. Modelo Teórico del Sumidero VCSS: Régimen Estático y Dinámica en Laplace</div>
             
             <!-- SECCIÓN A: RÉGIMEN ESTÁTICO -->
             <div style="margin-bottom: 16px;">
@@ -2570,7 +2909,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
               </div>
             </div>
           </div>
-        </div>
+        </div> <!-- Cierre de #vcss-math-steps -->
       </div>
 
       <!-- SIMULADOR INTERACTIVO DE ONDA CUADRADA PULSADA A 10 HZ -->
@@ -2786,16 +3125,46 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
     </div>
   </section>
 
-  <!-- ========================================================================= -->
-  <!-- TAB 4: SENSADO PSEUDO-DIFERENCIAL & CALIBRACIÓN DE DOBLE PENDIENTE (3 PUNTOS) -->
-  <!-- ========================================================================= -->
   <section class="tab-panel" id="tab-ph">
     <div class="card">
       <div class="card-title">
         <span class="icon">🧪</span> Sensado Pseudo-Diferencial y Calibración de Doble Pendiente de 3 Puntos (pH 4, 7 y 10)
       </div>
 
-      <div class="info-box info-box-success">
+      <!-- Mini-Barra de Navegación Rápida / Guía Visual de la Pestaña -->
+      <div class="module-roadmap">
+        <span class="roadmap-label">🗺️ Guía del Módulo:</span>
+        <a href="#ph-principio" class="roadmap-step">1. Sensado Pseudo-Diferencial</a>
+        <a href="#ph-matematicas" class="roadmap-step">2. Ecuación Nernst & Bilineal</a>
+        <a href="#ph-calculadora" class="roadmap-step">3. Calculadora 3 Puntos</a>
+        <a href="#ph-hardware" class="roadmap-step">4. Circuitos & Filtro Tri-Modo</a>
+      </div>
+
+      <!-- KPI Tiles del Módulo de pH -->
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="metric-tile" style="border-left: 3px solid var(--emerald); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Impedancia de Entrada</div>
+          <div class="metric-value" style="color: var(--emerald); font-size: 1.30rem;">&gt; 10¹² Ω</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Frontend analógico PH-4502C</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--primary); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Sensibilidad Teórica Nernst</div>
+          <div class="metric-value" style="color: var(--primary); font-size: 1.30rem;">59.16 mV/pH</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Compensación automática @ 25 °C</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--purple); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Muestreo Pseudo-Diferencial</div>
+          <div class="metric-value" style="color: var(--purple); font-size: 1.30rem;">A1 − A0 (ADS1115)</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">860 SPS • Rechazo CMRR &gt; 75 dB</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--amber); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Calibración Multicanal</div>
+          <div class="metric-value" style="color: var(--amber); font-size: 1.30rem;">3 Puntos (Bilineal)</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Buffers 4.01, 7.00 y 10.01</div>
+        </div>
+      </div>
+
+      <div id="ph-principio" class="info-box info-box-success">
         <strong>Principio de Sensado Pseudo-Diferencial (<i>P</i><sub>o</sub> → A1, <i>AGND</i> → A0):</strong><br>
         Durante el proceso electroquímico, corrientes de hasta 7.06 A viajan por el baño electrolítico hacia el cátodo. Estas corrientes inducen caídas óhmicas en las pistas de tierra del chasis. Si el sensor de pH se mide referenciado a masa convencional, el potencial galvánico parásito desplaza la lectura analógica de forma inaceptable. Con la configuración <strong>Pseudo-Diferencial</strong>, el microcontrolador muestrea ambos terminales de la sonda y calcula Δ<i>V</i> = <i>V</i><sub>A1</sub> − <i>V</i><sub>A0</sub>, cancelando el modo común (CMRR &gt; 75 dB) y aislando la medición del ruido galvánico.
       </div>
@@ -2810,12 +3179,51 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
         </ul>
       </div>
 
-      <!-- MATEMÁTICAS FORMATEADAS EN HTML/CSS NATIVO -->
-      <div class="math-card">
-        <div class="math-label">1. Sensibilidad Teórica de Nernst dependiente de Temperatura</div>
-        
-        <div class="math-step">
-          <div class="math-step-title">Ecuación Electroquímica Fundamental de Nernst para Electrodo de Vidrio</div>
+      <!-- SECCIÓN MATEMÁTICA Y ELECTROQUÍMICA -->
+      <div id="ph-matematicas">
+        <!-- CAJA RESUMEN EJECUTIVA DE LA ECUACIÓN DE NERNST & CALIBRACIÓN BILINEAL -->
+        <div class="math-summary-box" style="border-left-color: var(--emerald);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 0.76rem; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.06em;">
+              Fórmula Gobernadora Ejecutiva • Modelo Bilineal Asimétrico de Nernst
+            </span>
+            <span class="badge badge-emerald" style="font-size: 0.68rem;">Calibración 3 Puntos</span>
+          </div>
+
+          <div class="math-eq" style="font-size: 1.25rem; color: #10b981; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="text-align: center; width: 100%;">
+              <div style="margin-bottom: 6px;">
+                <strong style="color: #38bdf8;">Tramo Ácido (V<sub>med</sub> &ge; V<sub>7</sub>):</strong>&nbsp;&nbsp;
+                pH = 7.00 − <span class="fraction"><span class="num">V<sub>med</sub> − V<sub>7</sub></span><span class="den">S<sub>ácida</sub>(T)</span></span>
+              </div>
+              <div style="font-size: 0.95rem; color: #c084fc;">
+                <strong>Tramo Alcalino (V<sub>med</sub> &lt; V<sub>7</sub>):</strong>&nbsp;&nbsp;
+                pH = 7.00 + <span class="fraction"><span class="num">V<sub>7</sub> − V<sub>med</sub></span><span class="den">S<sub>básica</sub>(T)</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="font-size: 0.78rem; color: #94a3b8; margin-top: 12px; gap: 10px;">
+            <div>• <strong style="color: #10b981;">Pendiente Teórica S(T):</strong> 0.1984 · (T°C + 273.15) [mV/pH].</div>
+            <div>• <strong style="color: #10b981;">Punto Isopotencial (V7):</strong> Vértice de empalme neutro (pH 7.00) [V].</div>
+            <div>• <strong style="color: #10b981;">Compensación Asimétrica:</strong> Neutraliza el error alcalino de iones Na⁺.</div>
+          </div>
+
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <button type="button" class="math-toggle-btn" onclick="toggleMathCollapsible(this, 'ph-math-steps')">
+              📖 Ver desarrollo analítico paso a paso (Nernst & Bilineal) ▾
+            </button>
+          </div>
+        </div>
+
+        <!-- CONTENEDOR COLAPSABLE CON LAS DEDUCCIONES DETALLADAS DE PH -->
+        <div id="ph-math-steps" class="math-collapsible collapsed">
+          <!-- MATEMÁTICAS FORMATEADAS EN HTML/CSS NATIVO -->
+          <div class="math-card">
+            <div class="math-label">1. Sensibilidad Teórica de Nernst dependiente de Temperatura</div>
+            
+            <div class="math-step">
+              <div class="math-step-title">Ecuación Electroquímica Fundamental de Nernst para Electrodo de Vidrio</div>
           <div class="math-step-desc">
             La pendiente de potencial por unidad de actividad de iones hidronio varía proporcionalmente con la temperatura absoluta del baño:
           </div>
@@ -2912,9 +3320,11 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </div>
         </div>
       </div>
+    </div> <!-- Cierre de #ph-math-steps -->
+  </div> <!-- Cierre de #ph-matematicas -->
 
       <!-- CALCULADORA DE CALIBRACIÓN DE 3 PUNTOS INTERACTIVA -->
-      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 16px;">
+      <div id="ph-calculadora" style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-top: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <h4 style="color: var(--primary); font-size: 0.95rem;">🔬 Calculadora Interactiva: Modo Doble Pendiente de 3 Puntos (Buffers 4.01, 7.00 y 10.01)</h4>
           <span id="badgeDominioPh" class="badge badge-primary">DOMINIO ÁCIDO (V &ge; V7)</span>
@@ -3009,7 +3419,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       </div>
 
       <!-- FOTOGRAFÍAS FÍSICAS: ADQUISICIÓN ANALÓGICA DE pH Y BORNERAS DE PLANTA -->
-      <h3 style="font-size: 1.05rem; color: var(--emerald); margin: 26px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
+      <h3 id="ph-hardware" style="font-size: 1.05rem; color: var(--emerald); margin: 26px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
         Circuitos Físicos de Planta — Sonda de Vidrio de pH, Módulo Transmisor PH-4502C, ADC y Calibración
       </h3>
       <div class="gallery-grid">
@@ -3070,12 +3480,46 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       <div class="card-title">
         <span class="icon">🖥️</span> Supervisión Dual: SCADA PyQt6 Industrial & Servidor Web ESP32-S3
       </div>
+
+      <!-- Mini-Barra de Navegación Rápida / Guía Visual de la Pestaña -->
+      <div class="module-roadmap">
+        <span class="roadmap-label">🗺️ Guía del Módulo:</span>
+        <a href="#scada-pyqt6" class="roadmap-step">1. SCADA Industrial PyQt6</a>
+        <a href="#scada-isa88" class="roadmap-step">2. Supervisión ISA-88 & Faraday</a>
+        <a href="#scada-web" class="roadmap-step">3. Servidor Web Móvil ESP32-S3</a>
+        <a href="#scada-mvc" class="roadmap-step">4. Arquitectura MVC & JSON/CSV</a>
+      </div>
+
+      <!-- KPI Tiles de Supervisión SCADA & Web -->
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="metric-tile" style="border-left: 3px solid var(--primary); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Estándar Batch Industrial</div>
+          <div class="metric-value" style="color: var(--primary); font-size: 1.30rem;">ANSI/ISA-88.01</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Máquina de estados finitos</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--emerald); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Telemetría Científica</div>
+          <div class="metric-value" style="color: var(--emerald); font-size: 1.30rem;">10 Hz / 60 FPS</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">PyQt6 QTimer determinístico</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--purple); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Motor Culombimétrico</div>
+          <div class="metric-value" style="color: var(--purple); font-size: 1.30rem;">Q = ∫ I dt</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Espesor depositado en tiempo real</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--amber); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Servidor Web Embebido</div>
+          <div class="metric-value" style="color: var(--amber); font-size: 1.30rem;">FreeRTOS Core 0</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">REST /data_all asíncrono</div>
+        </div>
+      </div>
+
       <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
         El sistema cuenta con doble arquitectura de visualización: una <strong>Estación SCADA de escritorio</strong> en Python/PyQt6 para telemetría científica a 60 FPS bajo norma ANSI/ISA-88.01, y un <strong>Servidor Web Asíncrono Embebido</strong> en el ESP32-S3 para control in-situ desde cualquier teléfono móvil o laptop vía Wi-Fi.
       </p>
 
       <!-- SECCIÓN A: SCADA INDUSTRIAL PYQT6 -->
-      <h3 style="font-size: 1.05rem; color: var(--primary); margin: 20px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
+      <h3 id="scada-pyqt6" style="font-size: 1.05rem; color: var(--primary); margin: 20px 0 12px 0; border-left: 3px solid var(--primary); padding-left: 8px;">
         1. Estación SCADA Industrial de Escritorio (Python / PyQt6)
       </h3>
       <div class="gallery-grid">
@@ -3129,7 +3573,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       </div>
 
       <!-- DIAGRAMA MERMAID: SUPERVISIÓN SCADA ISA-88 -->
-      <div style="margin-top: 18px;">
+      <div id="scada-isa88" style="margin-top: 18px;">
         <div class="card" style="margin: 0; padding: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <strong style="color: var(--primary); font-size: 0.88rem;">[11] Arquitectura de Supervisión SCADA Telemetría 2.0 (ISA-88)</strong>
@@ -3143,7 +3587,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       </div>
 
       <!-- SECCIÓN B: INTERFAZ WEB EMBEBIDA EN ESP32-S3 -->
-      <h3 style="font-size: 1.05rem; color: var(--emerald); margin: 32px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
+      <h3 id="scada-web" style="font-size: 1.05rem; color: var(--emerald); margin: 32px 0 12px 0; border-left: 3px solid var(--emerald); padding-left: 8px;">
         2. Servidor Web Asíncrono Embebido en ESP32-S3 (Acceso Wi-Fi / Móvil)
       </h3>
       <div class="gallery-grid">
@@ -3199,7 +3643,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       <!-- ========================================================================= -->
       <!-- SECCIÓN 3: ARQUITECTURA DEL SERVIDOR WEB, MENSAJERÍA JSON Y ARCHIVOS CSV -->
       <!-- ========================================================================= -->
-      <div style="margin: 32px 0 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 24px;">
+      <div id="scada-mvc" style="margin: 32px 0 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 24px;">
         <h3 style="font-size: 1.15rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <span>🌐</span> Arquitectura del Servidor Web, Mensajería JSON / REST y Trazabilidad en CSV
         </h3>
@@ -3364,8 +3808,42 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           </div>
 
           <div>
-            <div class="math-card" style="margin-top: 0;">
-              <div class="math-label">Formulación Matemática: Leyes de Faraday y Espesor de Película</div>
+            <!-- CAJA RESUMEN EJECUTIVA DE LA LEY DE FARADAY -->
+            <div class="math-summary-box" style="margin-top: 0; border-left-color: var(--primary);">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                <span style="font-size: 0.74rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.06em;">
+                  Ecuación Gobernadora • Culombimetría de Faraday
+                </span>
+                <span class="badge badge-primary" style="font-size: 0.68rem;">ASTM B633 / ISO 2081</span>
+              </div>
+
+              <div class="math-eq" style="font-size: 1.15rem; color: #38bdf8; background: rgba(0,0,0,0.4); border-radius: 6px; padding: 10px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                <span class="m-var">m</span><span class="m-sub">Zn</span> = 
+                <span class="fraction">
+                  <span class="num"><span class="m-var">I</span> · <span class="m-var">t</span> · <span class="m-var">M</span><span class="m-sub">Zn</span></span>
+                  <span class="den"><span class="m-var">n</span> · <span class="m-var">F</span></span>
+                </span>
+                · <span class="m-var">η</span>
+                &nbsp;&nbsp;<span class="m-sym">⟹</span>&nbsp;&nbsp;
+                <span class="m-var">e</span><span class="m-sub">µm</span> = 
+                <span class="fraction">
+                  <span class="num"><span class="m-var">m</span><span class="m-sub">Zn</span></span>
+                  <span class="den"><span class="m-var">ρ</span><span class="m-sub">Zn</span> · <span class="m-var">A</span></span>
+                </span>
+                · 10<span class="m-sup">4</span>
+              </div>
+
+              <div style="margin-top: 8px; display: flex; justify-content: flex-end;">
+                <button type="button" class="math-toggle-btn" onclick="toggleMathCollapsible(this, 'faraday-math-steps')">
+                  📖 Ver deducción analítica paso a paso ▾
+                </button>
+              </div>
+            </div>
+
+            <!-- CONTENEDOR COLAPSABLE CON LAS DEDUCCIONES DE FARADAY -->
+            <div id="faraday-math-steps" class="math-collapsible collapsed">
+              <div class="math-card" style="margin-top: 0;">
+                <div class="math-label">Formulación Matemática: Leyes de Faraday y Espesor de Película</div>
               
               <!-- Paso 1 -->
               <div class="math-step">
@@ -3448,6 +3926,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 </div>
               </div>
             </div>
+          </div> <!-- Cierre de #faraday-math-steps -->
 
             <div class="grid-3" style="gap: 10px;">
               <div class="metric-tile">
@@ -3477,6 +3956,30 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       <div class="card-title">
         <span class="icon">📊</span> Matriz de Ensayos DOE Multinivel 2⁵·4 (128 Corridas Experimentales)
       </div>
+      <!-- KPI Tiles de la Matriz Experimental -->
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="metric-tile" style="border-left: 3px solid var(--emerald); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Diseño Experimental</div>
+          <div class="metric-value" style="color: var(--emerald); font-size: 1.30rem;">2⁵·4 Multinivel</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Factores combinados y réplicas</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--primary); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Espacio Muestral</div>
+          <div class="metric-value" style="color: var(--primary); font-size: 1.30rem;">128 Ensayos</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">32 configuraciones piloto clave</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--amber); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Sustrato Metálico</div>
+          <div class="metric-value" style="color: var(--amber); font-size: 1.30rem;">Al 6061 T-6</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Aleación aeronáutica / industrial</div>
+        </div>
+        <div class="metric-tile" style="border-left: 3px solid var(--purple); text-align: left; padding: 12px 14px;">
+          <div class="metric-label" style="font-size: 0.72rem;">Pre-Tratamiento</div>
+          <div class="metric-value" style="color: var(--purple); font-size: 1.30rem;">Zincato Ácido</div>
+          <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 3px;">Protocolo químico VUGR</div>
+        </div>
+      </div>
+
       <p style="font-size: 0.88rem; color: var(--text-muted);">
         Diseño factorial multinivel implementado en la línea piloto para investigar la adherencia, espesor y morfología cristalina del zincado sobre Aluminio 6061 T-6 con pre-tratamiento de inmersión en zincato ácido (VUGR).
       </p>
@@ -4662,6 +5165,94 @@ function seleccionarNodoArch(id) {
     </p>
   `;
 }
+
+// =========================================================================
+// CONTROLADOR DE MODO DE LECTURA (SHOWCASE EJECUTIVO VS. REPORTE TÉCNICO)
+// =========================================================================
+let modoLecturaActual = 'showcase';
+
+function setModoLectura(modo) {
+  modoLecturaActual = modo;
+  document.body.classList.remove('modo-showcase', 'modo-tecnico');
+  document.body.classList.add(`modo-${modo}`);
+
+  const btnShowcase = document.getElementById('btnModoShowcase');
+  const btnTecnico = document.getElementById('btnModoTecnico');
+  if (btnShowcase && btnTecnico) {
+    if (modo === 'showcase') {
+      btnShowcase.classList.add('active');
+      btnTecnico.classList.remove('active');
+    } else {
+      btnTecnico.classList.add('active');
+      btnShowcase.classList.remove('active');
+    }
+  }
+
+  // Si estamos en modo técnico, asegurar que los acordeones muestren su contenido
+  const collapsibleBlocks = document.querySelectorAll('.math-collapsible');
+  collapsibleBlocks.forEach(block => {
+    if (modo === 'tecnico') {
+      block.classList.remove('collapsed');
+      const toggleBtn = block.previousElementSibling?.querySelector('.math-toggle-btn') || 
+                        block.parentElement?.querySelector('.math-toggle-btn');
+      if (toggleBtn) toggleBtn.innerHTML = '🔼 Contraer deducción analítica';
+    } else {
+      // en modo showcase, replegar si no fue abierto manualmente
+      if (!block.dataset.manuallyExpanded) {
+        block.classList.add('collapsed');
+        const toggleBtn = block.previousElementSibling?.querySelector('.math-toggle-btn') || 
+                          block.parentElement?.querySelector('.math-toggle-btn');
+        if (toggleBtn) toggleBtn.innerHTML = '📖 Ver deducción analítica paso a paso ▾';
+      }
+    }
+  });
+
+  try {
+    localStorage.setItem('cts_modo_lectura', modo);
+  } catch (e) {
+    // localStorage no disponible o bloqueado en contexto local
+  }
+}
+
+function toggleMathCollapsible(btn, targetId) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  const isCollapsed = target.classList.contains('collapsed');
+  if (isCollapsed) {
+    target.classList.remove('collapsed');
+    target.dataset.manuallyExpanded = 'true';
+    btn.innerHTML = '🔼 Contraer deducción analítica';
+  } else {
+    target.classList.add('collapsed');
+    delete target.dataset.manuallyExpanded;
+    btn.innerHTML = '📖 Ver deducción analítica paso a paso ▾';
+  }
+}
+
+// Inicializar modo de lectura al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+  let modoGuardado = 'showcase';
+  try {
+    modoGuardado = localStorage.getItem('cts_modo_lectura') || 'showcase';
+  } catch (e) {}
+  setModoLectura(modoGuardado);
+
+  // Soporte de desplazamiento suave compensado para enlaces de roadmap
+  document.querySelectorAll('.roadmap-step').forEach(stepLink => {
+    stepLink.addEventListener('click', (e) => {
+      const targetHash = stepLink.getAttribute('href');
+      if (targetHash && targetHash.startsWith('#')) {
+        const elem = document.querySelector(targetHash);
+        if (elem) {
+          e.preventDefault();
+          elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+});
+
 
 </script>
 

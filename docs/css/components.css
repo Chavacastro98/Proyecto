@@ -40,6 +40,12 @@
   gap: 14px;
 }
 
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
 /* CAJAS DE INFORMACIÓN */
 .info-box {
   background: rgba(30, 41, 59, 0.5);
@@ -780,4 +786,169 @@ tr:hover td { background: rgba(14, 165, 233, 0.05); }
   align-items: center;
   margin: 10px 0;
 }
+
+/* ==========================================================================
+   ARQUITECTURA DE DISEÑO: MODO DUAL (SHOWCASE VS. REPORTE TÉCNICO) & GUÍA VISUAL
+   ========================================================================== */
+
+/* SELECTOR GLOBAL DE MODO DE LECTURA (HEADER) */
+.mode-selector {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 3px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.mode-pill:hover {
+  color: #ffffff;
+}
+
+.mode-pill.active {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.5);
+}
+
+.mode-pill.active.mode-tecnico {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+}
+
+/* BARRA DE HITOS / ROADMAP VISUAL POR PESTAÑA */
+.module-roadmap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  background: rgba(2, 6, 23, 0.75);
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  font-size: 0.76rem;
+  align-items: center;
+}
+
+.roadmap-label {
+  color: var(--primary);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 4px;
+}
+
+.roadmap-step {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.roadmap-step:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.roadmap-step.active {
+  background: rgba(14, 165, 233, 0.25);
+  border-color: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* TARJETAS RESUMEN DE FÓRMULAS Y REVELACIÓN PROGRESIVA */
+.math-summary-box {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.math-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.math-toggle-btn:hover {
+  background: rgba(14, 165, 233, 0.25);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.math-collapsible {
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+/* En modo Showcase por defecto los contenedores matemáticos extensos pueden estar contraídos */
+body.modo-showcase .math-collapsible.collapsed {
+  display: none;
+}
+
+body.modo-tecnico .math-collapsible.collapsed {
+  display: block !important;
+}
+
+body.modo-tecnico .math-toggle-btn {
+  display: none;
+}
+
+/* REJILLA SIMÉTRICA DE 2 COLUMNAS DE ANCHO COMPLETO */
+.grid-2-balanced {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 992px) {
+  .grid-2-balanced {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
 
