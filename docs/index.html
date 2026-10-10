@@ -1840,22 +1840,77 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
       <!-- SECCIÓN 4.1: CURVAS PARAMÉTRICAS DEL MOSFET IRLZ44N, TRANSCONDUCTANCIA gm & LINEALIZACIÓN POR OP-AMP -->
       <div id="vcss-mosfet-curvas" style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--purple); border-radius: 12px; padding: 18px; margin-top: 18px; box-shadow: 0 0 25px rgba(168, 85, 247, 0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
           <div>
             <span class="badge badge-purple" style="font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
               Semiconductor de Potencia en Modo Lineal Activo
             </span>
             <h4 style="color: #ffffff; margin: 4px 0 0 0; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-              <span>⚡</span> Curvas de Operación del IRLZ44N, Transconductancia g<sub>m</sub> y Linealización por Op-Amp LM358N
+              <span>⚡</span> Curvas de Operación del IRLZ44N, Recta de Carga y Linealización por Op-Amp LM358N
             </h4>
           </div>
           <!-- Selector de Vista: Salida (ID vs VDS) o Transferencia (ID vs VGS & gm) -->
           <div style="display: inline-flex; background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 3px;">
             <button id="btnVistaCurvasVds" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vds')" style="background: var(--purple); color: #ffffff; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
-              📈 Curvas de Salida (I<sub>D</sub> vs V<sub>DS</sub> & Punto Q)
+              📈 Curvas de Salida (I<sub>D</sub> vs V<sub>DS</sub>, Recta de Carga & Punto Q)
             </button>
             <button id="btnVistaCurvasVgs" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vgs')" style="background: transparent; color: #94a3b8; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
               📊 Transferencia (I<sub>D</sub> vs V<sub>GS</sub> & g<sub>m</sub>)
+            </button>
+          </div>
+        </div>
+
+        <!-- PANEL DE CONTROL DINÁMICO DEL EXPERIMENTO: SLIDERS DEDICADOS -->
+        <div style="background: rgba(2, 6, 23, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;">
+          <div class="grid-3" style="gap: 14px; margin-bottom: 10px;">
+            <!-- Slider 1: VDD -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+                <span style="color: #94a3b8; font-weight: 600;">⚡ Tensión Fuente V<sub>DD</sub>:</span>
+                <strong id="lblVddMosfet" style="color: #38bdf8; font-family: var(--code-font);">12.0 V</strong>
+              </div>
+              <input type="range" id="rngVddMosfet" min="5.0" max="24.0" step="0.5" value="12.0" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
+              <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
+                <span>5 V</span><span>12 V (Nominal)</span><span>24 V</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: R_carga -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+                <span style="color: #94a3b8; font-weight: 600;">🧪 Resistencia Celda Hull R<sub>carga</sub>:</span>
+                <strong id="lblRloadMosfet" style="color: #f59e0b; font-family: var(--code-font);">5.6 Ω</strong>
+              </div>
+              <input type="range" id="rngRloadMosfet" min="0.5" max="12.0" step="0.1" value="5.6" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
+              <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
+                <span>0.5 Ω</span><span>5.6 Ω (Exp. Real)</span><span>12.0 Ω</span>
+              </div>
+            </div>
+
+            <!-- Slider 3: Itotal / Vref -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+                <span style="color: #94a3b8; font-weight: 600;">🎯 Corriente Total I<sub>total</sub> (V<sub>ref</sub>):</span>
+                <strong id="lblItotalMosfet" style="color: #10b981; font-family: var(--code-font);">1.50 A (V<sub>ref</sub> = 0.75V)</strong>
+              </div>
+              <input type="range" id="rngItotalMosfet" min="0.10" max="4.00" step="0.05" value="1.50" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
+              <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
+                <span>0.10 A</span><span>1.50 A (Exp. Clave)</span><span>4.00 A</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTONES DE PRESETS EXPERIMENTALES -->
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+            <span style="font-size: 0.73rem; color: #94a3b8; font-weight: 600;">Puntos de Ensayo del Experimento:</span>
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 5.6, 1.50)" style="background: rgba(14, 165, 233, 0.2); border: 1px solid var(--primary); color: #38bdf8; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; cursor: pointer;">
+              📍 Experimento Clave: 1.50 A @ 5.6 Ω (VDD 12V)
+            </button>
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 2.5, 3.00)" style="background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald); color: #10b981; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; cursor: pointer;">
+              ⚡ Alta Densidad: 3.00 A @ 2.5 Ω (VDD 12V)
+            </button>
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 7.5, 1.50)" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; cursor: pointer;">
+              ⚠️ Límite Óhmico / Colapso: 1.50 A @ 7.5 Ω (VDD 12V)
             </button>
           </div>
         </div>
@@ -1864,12 +1919,12 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           <!-- Columna Izquierda: Canvas del Gráfico Paramétrico -->
           <div>
             <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px; position: relative;">
-              <canvas id="canvasMosfetCurvas" style="width: 100%; height: 260px; display: block;"></canvas>
+              <canvas id="canvasMosfetCurvas" style="width: 100%; height: 270px; display: block;"></canvas>
               <!-- Leyenda descriptiva -->
               <div id="leyendaCurvasMosfet" style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #94a3b8; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
-                <span>Línea continua cian: Curva V<sub>GS</sub> comandada en tiempo real.</span>
-                <span>Parábola ámbar: Límite de estrangulamiento V<sub>DS,sat</sub>.</span>
-                <span style="color: #10b981; font-weight: 700;">Punto Q: Saturación Lineal OK</span>
+                <span>Línea continua cian: Curva V<sub>GS</sub> comandada.</span>
+                <span>Línea magenta: Recta de Carga Dinámica.</span>
+                <span style="color: #10b981; font-weight: 700;">Punto Q: Saturación Activa OK</span>
               </div>
             </div>
           </div>
@@ -1879,8 +1934,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             <div class="grid-2" style="gap: 8px; margin-bottom: 10px;">
               <div class="metric-tile" style="border-left: 3px solid #38bdf8;">
                 <div class="metric-label">Punto Quiescente Q (c/rama)</div>
-                <div class="metric-value" id="valPuntoQ" style="color: #38bdf8; font-size: 1.05rem;">Q(6.80V, 2.00A)</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>DS</sub> sobre drenador | I<sub>D</sub> en el canal</div>
+                <div class="metric-value" id="valPuntoQ" style="color: #38bdf8; font-size: 1.05rem;">Q(2.85V, 0.75A)</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>DS</sub> sobre drenador | I<sub>D</sub> por rama</div>
               </div>
               <div class="metric-tile" style="border-left: 3px solid #a855f7;">
                 <div class="metric-label">Régimen del Semiconductor</div>
@@ -1888,30 +1943,34 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <div style="font-size: 0.68rem; color: #94a3b8;" id="valSubregimen">Pinch-off V<sub>DS</sub> &ge; V<sub>DS,sat</sub></div>
               </div>
               <div class="metric-tile" style="border-left: 3px solid #f59e0b;">
-                <div class="metric-label">V<sub>GS</sub> de Compuerta Requerida</div>
-                <div class="metric-value" id="valVgsReq" style="color: #fbbf24; font-size: 1.05rem;">2.62 V</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>th</sub> = 1.50 V | Sobre-umbral = 1.12 V</div>
+                <div class="metric-label">Caída en Carga (Celda Hull)</div>
+                <div class="metric-value" id="valVcargaMosfet" style="color: #fbbf24; font-size: 1.05rem;">8.40 V</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>carga</sub> = I<sub>total</sub> · R<sub>carga</sub> (12.6 W)</div>
               </div>
               <div class="metric-tile" style="border-left: 3px solid #10b981;">
-                <div class="metric-label">Transconductancia g<sub>m</sub> (c/rama)</div>
-                <div class="metric-value" id="valGmIntrinseco" style="color: #10b981; font-size: 1.05rem;">3.58 S (A/V)</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;">g<sub>m</sub> = &part;I<sub>D</sub>/&part;V<sub>GS</sub> = &radic;(2K<sub>n</sub>I<sub>D</sub>)</div>
+                <div class="metric-label">Salida Op-Amp V<sub>gate</sub> LM358N</div>
+                <div class="metric-value" id="valVgateOpamp" style="color: #10b981; font-size: 1.05rem;">2.94 V</div>
+                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>gate</sub> = V<sub>S</sub> + V<sub>GS</sub> &approx; V<sub>ref</sub> + V<sub>th</sub></div>
               </div>
             </div>
 
             <!-- Fila informativa de tensión y margen -->
             <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px; font-size: 0.76rem; color: #cbd5e1; margin-bottom: 8px;">
               <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span>• Tensión en Shunt V<sub>S</sub> (Entrada V<sub>ref</sub> Op-Amp):</span>
+                <strong id="valVshuntMosfet" style="color: #38bdf8;">0.75 V (I<sub>D</sub> · 1.0 Ω)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                 <span>• Tensión Estrangulamiento V<sub>DS,sat</sub> (V<sub>GS</sub> − V<sub>th</sub>):</span>
-                <strong id="valVdsSat" style="color: #38bdf8;">1.12 V</strong>
+                <strong id="valVdsSat" style="color: #fbbf24;">0.68 V</strong>
               </div>
               <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                 <span>• Margen de Linealidad &Delta;V (V<sub>DS</sub> − V<sub>DS,sat</sub>):</span>
-                <strong id="valMargenVds" style="color: #10b981;">+5.68 V (Óptimo)</strong>
+                <strong id="valMargenVds" style="color: #10b981;">+2.17 V (Óptimo)</strong>
               </div>
               <div style="display: flex; justify-content: space-between;">
-                <span>• Salida Op-Amp V<sub>gate</sub> (V<sub>GS</sub> + V<sub>shunt</sub>):</span>
-                <strong id="valVgateOpamp" style="color: #c084fc;">4.62 V</strong>
+                <span>• Transconductancia g<sub>m</sub> IRLZ44N (c/rama):</span>
+                <strong id="valGmIntrinseco" style="color: #c084fc;">2.19 S (G<sub>m</sub> neta = 2.00 A/V)</strong>
               </div>
             </div>
 

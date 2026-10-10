@@ -23,6 +23,7 @@ tabs.forEach(btn => {
       if (typeof actualizarOndaCuadrada === 'function' && targetId === 'tab-vcss') {
         actualizarOndaCuadrada();
         if (typeof actualizarCalculadoraVCSS === 'function') actualizarCalculadoraVCSS();
+        if (typeof actualizarCurvasMosfetInteractivo === 'function') actualizarCurvasMosfetInteractivo();
       }
       if (typeof actualizarCalculadoraPh === 'function' && targetId === 'tab-ph') actualizarCalculadoraPh();
     }
@@ -117,6 +118,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof actualizarOndaCuadrada === 'function') actualizarOndaCuadrada();
   if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
   if (typeof actualizarCalculadoraFaraday === 'function') actualizarCalculadoraFaraday();
+  if (typeof actualizarCurvasMosfetInteractivo === 'function') actualizarCurvasMosfetInteractivo();
   if (typeof seleccionarNodoArch === 'function') seleccionarNodoArch('esp32');
 
   // Configuración de gestos y zoom interactivo en Modal HD
@@ -171,6 +173,7 @@ window.addEventListener('resize', () => {
   if (typeof actualizarSimuladorTermico === 'function') actualizarSimuladorTermico();
   if (typeof actualizarOndaCuadrada === 'function') actualizarOndaCuadrada();
   if (typeof actualizarCalculadoraVCSS === 'function') actualizarCalculadoraVCSS();
+  if (typeof actualizarCurvasMosfetInteractivo === 'function') actualizarCurvasMosfetInteractivo();
   if (typeof actualizarCalculadoraPh === 'function') actualizarCalculadoraPh();
 });
 

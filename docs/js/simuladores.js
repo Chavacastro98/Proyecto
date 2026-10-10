@@ -314,7 +314,7 @@
   }
 
   // =========================================================================
-  // SIMULADOR PARAMÉTRICO: CURVAS DEL MOSFET IRLZ44N & TRANSCONDUCTANCIA gm
+  // SIMULADOR PARAMÉTRICO: CURVAS DEL MOSFET IRLZ44N & RECTA DE CARGA DINÁMICA
   // =========================================================================
   let vistaCurvasMosfet = 'vds'; // 'vds' o 'vgs'
 
@@ -335,78 +335,94 @@
         btnVds.style.color = '#94a3b8';
       }
     }
-    const Ipeak = parseFloat(document.getElementById('rngIpeak').value);
-    const Vfuente = parseFloat(document.getElementById('rngVfuente').value);
-    const Vcelda = parseFloat(document.getElementById('rngVcelda').value);
-    const Vds = Math.max(0, Vfuente - Vcelda - (Ipeak * 0.5));
-    actualizarCurvasIRLZ44(Ipeak / 2, Vds);
+    actualizarCurvasMosfetInteractivo();
   }
 
-  function actualizarCurvasIRLZ44(I_rama, Vds) {
+  function aplicarPresetMosfet(vdd, rload, itotal) {
+    const elVdd = document.getElementById('rngVddMosfet');
+    const elRload = document.getElementById('rngRloadMosfet');
+    const elItotal = document.getElementById('rngItotalMosfet');
+    if (elVdd) elVdd.value = vdd;
+    if (elRload) elRload.value = rload;
+    if (elItotal) elItotal.value = itotal;
+    actualizarCurvasMosfetInteractivo();
+  }
+
+  function actualizarCurvasMosfetInteractivo() {
+    const elVdd = document.getElementById('rngVddMosfet');
+    const elRload = document.getElementById('rngRloadMosfet');
+    const elItotal = document.getElementById('rngItotalMosfet');
+
+    const Vdd = elVdd ? parseFloat(elVdd.value) : 12.0;
+    const Rload = elRload ? parseFloat(elRload.value) : 5.6;
+    const Itotal = elItotal ? parseFloat(elItotal.value) : 1.50;
+
+    const I_rama = Itotal / 2;
+    const Rs = 1.0;
+    const Vref = I_rama * Rs; // 0.75 V para 1.5 A total
+    const Vcarga = Itotal * Rload; // Caída en Celda Hull
+    const Vshunt = I_rama * Rs;
+    const Vds = Math.max(0, Vdd - Vcarga - Vshunt);
+
+    const lblVdd = document.getElementById('lblVddMosfet');
+    if (lblVdd) lblVdd.textContent = Vdd.toFixed(1) + ' V';
+
+    const lblRload = document.getElementById('lblRloadMosfet');
+    if (lblRload) lblRload.textContent = Rload.toFixed(1) + ' Ω';
+
+    const lblItotal = document.getElementById('lblItotalMosfet');
+    if (lblItotal) lblItotal.textContent = Itotal.toFixed(2) + ' A (Vref = ' + Vref.toFixed(2) + ' V)';
+
+    actualizarCurvasIRLZ44(I_rama, Vds, Vdd, Rload, Itotal);
+  }
+
+  function actualizarCurvasIRLZ44(I_rama_val, Vds_val, Vdd_val, Rload_val, Itotal_val) {
     const canvas = document.getElementById('canvasMosfetCurvas');
     if (!canvas) return;
 
+    // Obtener parámetros o usar defaults
+    const elVdd = document.getElementById('rngVddMosfet');
+    const elRload = document.getElementById('rngRloadMosfet');
+    const elItotal = document.getElementById('rngItotalMosfet');
+
+    const Vdd = Vdd_val !== undefined ? Vdd_val : (elVdd ? parseFloat(elVdd.value) : 12.0);
+    const Rload = Rload_val !== undefined ? Rload_val : (elRload ? parseFloat(elRload.value) : 5.6);
+    const Itotal = Itotal_val !== undefined ? Itotal_val : (elItotal ? parseFloat(elItotal.value) : (I_rama_val ? I_rama_val * 2 : 1.50));
+
     // Constantes del modelo físico IRLZ44N (HEXFET Logic-Level)
     const Vth = 1.50; // Tensión de umbral [V]
-    const Kn = 3.20;  // Parámetro de transconductancia de proceso [A/V²]
+    const Kn = 3.20;  // Transconductancia de proceso Kn = μn·Cox·(W/L) [A/V²]
     const lambda = 0.015; // Modulación de longitud de canal [V⁻¹]
-    const Rs = 1.0;   // Resistor de sensado en Source por rama [Ω]
+    const Rs = 1.0;   // Resistor shunt de sensado en Source por rama [Ω]
 
-    // Cálculos de polarización en régimen de saturación activa
-    const I_clamp = Math.max(0.01, I_rama);
-    const Vov = Math.sqrt((2 * I_clamp) / Kn); // Tensión sobre-umbral (VGS - Vth)
-    const Vgs_req = Vth + Vov; // VGS requerida en compuerta
-    const Vds_sat = Vov;       // Límite de estrangulamiento de canal
+    // Cálculos de lazo cerrado con LM358N
+    const I_rama = Math.max(0.01, Itotal / 2);
+    const Vcarga = Itotal * Rload;
+    const Vshunt = I_rama * Rs; // Vshunt = Vref
+    const Vds = Math.max(0, Vdd - Vcarga - Vshunt);
+
+    const Vov = Math.sqrt((2 * I_rama) / Kn); // Tensión sobre-umbral Vov = VGS - Vth
+    const Vgs_req = Vth + Vov; // Tensión compuerta-surtidor requerida
+    const Vds_sat = Vov;       // Límite de estrangulamiento de canal (Pinch-off)
     const gm_intrinseco = Kn * Vov * (1 + lambda * Vds); // gm = dID/dVGS
     const margen_lineal = Vds - Vds_sat; // Margen antes de caer a zona óhmica
-    const Vshunt = I_clamp * Rs;
-    const Vgate_opamp = Vgs_req + Vshunt; // Salida del Op-Amp LM358N
+    const Vgate_opamp = Vgs_req + Vshunt; // Tensión que debe entregar el Op-Amp
+
+    const Pmosfet_rama = Vds * I_rama;
+    const Pcelda_total = Itotal * Vcarga;
 
     // Actualización de Métricas en el Panel
     const elPuntoQ = document.getElementById('valPuntoQ');
-    if (elPuntoQ) elPuntoQ.textContent = 'Q(' + Vds.toFixed(2) + 'V, ' + I_clamp.toFixed(2) + 'A)';
+    if (elPuntoQ) elPuntoQ.textContent = 'Q(' + Vds.toFixed(2) + 'V, ' + I_rama.toFixed(2) + 'A)';
 
-    const elRegimen = document.getElementById('valRegimenMosfet');
-    const elSubregimen = document.getElementById('valSubregimen');
-    const elAlertaMargen = document.getElementById('boxAlertaMargenLineal');
+    const elVcarga = document.getElementById('valVcargaMosfet');
+    if (elVcarga) elVcarga.textContent = Vcarga.toFixed(2) + ' V (' + Pcelda_total.toFixed(1) + ' W)';
 
-    if (Vds < Vds_sat) {
-      if (elRegimen) {
-        elRegimen.textContent = 'REGIÓN ÓHMICA / TRIODO';
-        elRegimen.style.color = '#ef4444';
-      }
-      if (elSubregimen) elSubregimen.textContent = 'VDS (' + Vds.toFixed(2) + 'V) < VDS,sat (' + Vds_sat.toFixed(2) + 'V) [Desregulado]';
-      if (elAlertaMargen) {
-        elAlertaMargen.className = 'info-box info-box-danger';
-        elAlertaMargen.innerHTML = '<strong>PELIGRO: MOSFET EN REGIÓN ÓHMICA (PÉRDIDA DE REGULACIÓN)</strong><br>El margen VDS (' + Vds.toFixed(2) + ' V) es menor a la tensión de estrangulamiento (' + Vds_sat.toFixed(2) + ' V). El canal no está estrangulado, el Op-Amp se satura a rail positivo (+5V) y la corriente ya no se puede regular como fuente constante.';
-      }
-    } else if (margen_lineal < 0.6) {
-      if (elRegimen) {
-        elRegimen.textContent = 'SATURACIÓN MARGINAL';
-        elRegimen.style.color = '#f59e0b';
-      }
-      if (elSubregimen) elSubregimen.textContent = 'Margen lineal crítico: ΔV = ' + margen_lineal.toFixed(2) + ' V';
-      if (elAlertaMargen) {
-        elAlertaMargen.className = 'info-box info-box-warn';
-        elAlertaMargen.innerHTML = '<strong>PRECAUCIÓN: MARGEN LINEAL ESTRECHO (ΔV = ' + margen_lineal.toFixed(2) + ' V)</strong><br>El transistor opera cerca del codo de saturación. Si la celda aumenta su impedancia o la fuente DC cae, el MOSFET entrará en región óhmica.';
-      }
-    } else {
-      if (elRegimen) {
-        elRegimen.textContent = 'SATURACIÓN ACTIVA (PENTODO)';
-        elRegimen.style.color = '#10b981';
-      }
-      if (elSubregimen) elSubregimen.textContent = 'Canal estrangulado VDS (' + Vds.toFixed(2) + 'V) ≥ VDS,sat (' + Vds_sat.toFixed(2) + 'V)';
-      if (elAlertaMargen) {
-        elAlertaMargen.className = 'info-box info-box-success';
-        elAlertaMargen.innerHTML = '<strong>MODO DE SUMIDERO IDEAL GARANTIZADO:</strong><br>El MOSFET opera en la región plana de saturación activa (alta impedancia dinámica ro ≈ ∞). La corriente ID depende únicamente de la consigna analógica comandada y es inmune a fluctuaciones o rizado en la Celda Hull.';
-      }
-    }
+    const elVgate = document.getElementById('valVgateOpamp');
+    if (elVgate) elVgate.textContent = Vgate_opamp.toFixed(2) + ' V';
 
-    const elVgs = document.getElementById('valVgsReq');
-    if (elVgs) elVgs.textContent = Vgs_req.toFixed(2) + ' V';
-
-    const elGm = document.getElementById('valGmIntrinseco');
-    if (elGm) elGm.textContent = gm_intrinseco.toFixed(2) + ' S (A/V)';
+    const elVshunt = document.getElementById('valVshuntMosfet');
+    if (elVshunt) elVshunt.textContent = Vshunt.toFixed(2) + ' V (I_D · 1.0 Ω)';
 
     const elVdsSat = document.getElementById('valVdsSat');
     if (elVdsSat) elVdsSat.textContent = Vds_sat.toFixed(2) + ' V';
@@ -417,32 +433,75 @@
       elMargen.style.color = margen_lineal >= 1.5 ? '#10b981' : margen_lineal >= 0.5 ? '#f59e0b' : '#ef4444';
     }
 
-    const elVgate = document.getElementById('valVgateOpamp');
-    if (elVgate) elVgate.textContent = Vgate_opamp.toFixed(2) + ' V';
+    const elGm = document.getElementById('valGmIntrinseco');
+    if (elGm) elGm.textContent = gm_intrinseco.toFixed(2) + ' S (Gm neta = 2.00 A/V)';
+
+    const elRegimen = document.getElementById('valRegimenMosfet');
+    const elSubregimen = document.getElementById('valSubregimen');
+    const elAlertaMargen = document.getElementById('boxAlertaMargenLineal');
+
+    if (Vds < Vds_sat) {
+      if (elRegimen) {
+        elRegimen.textContent = 'COLAPSO ÓHMICO (TRIODO)';
+        elRegimen.style.color = '#ef4444';
+      }
+      if (elSubregimen) elSubregimen.textContent = 'VDS (' + Vds.toFixed(2) + 'V) < VDS,sat (' + Vds_sat.toFixed(2) + 'V) [Desregulado]';
+      if (elAlertaMargen) {
+        elAlertaMargen.className = 'info-box info-box-danger';
+        elAlertaMargen.innerHTML = '<strong>PELIGRO: MOSFET EN REGIÓN ÓHMICA (PÉRDIDA DE REGULACIÓN)</strong><br>' +
+                                   'La carga (R<sub>carga</sub> = ' + Rload.toFixed(1) + ' Ω) consume ' + Vcarga.toFixed(2) + ' V de los ' + Vdd.toFixed(1) + ' V de la fuente, dejando solo V<sub>DS</sub> = ' + Vds.toFixed(2) + ' V (&lt; V<sub>DS,sat</sub> = ' + Vds_sat.toFixed(2) + ' V). ' +
+                                   'El canal no está estrangulado, el LM358N se satura a rail positivo (+5V) y la corriente ya no se puede sostener en ' + Itotal.toFixed(2) + ' A.';
+      }
+    } else if (margen_lineal < 0.8) {
+      if (elRegimen) {
+        elRegimen.textContent = 'SATURACIÓN MARGINAL';
+        elRegimen.style.color = '#f59e0b';
+      }
+      if (elSubregimen) elSubregimen.textContent = 'Margen lineal estrecho: ΔV = +' + margen_lineal.toFixed(2) + ' V';
+      if (elAlertaMargen) {
+        elAlertaMargen.className = 'info-box info-box-warn';
+        elAlertaMargen.innerHTML = '<strong>PRECAUCIÓN: MARGEN LINEAL ESTRECHO (ΔV = +' + margen_lineal.toFixed(2) + ' V)</strong><br>' +
+                                   'El transistor opera muy cerca del codo de saturación. Si la celda aumenta su impedancia o la temperatura del baño sube, el MOSFET colapsará a régimen óhmico.';
+      }
+    } else {
+      if (elRegimen) {
+        elRegimen.textContent = 'SATURACIÓN ACTIVA (PENTODO)';
+        elRegimen.style.color = '#10b981';
+      }
+      if (elSubregimen) elSubregimen.textContent = 'Canal estrangulado VDS (' + Vds.toFixed(2) + 'V) ≥ VDS,sat (' + Vds_sat.toFixed(2) + 'V)';
+      if (elAlertaMargen) {
+        elAlertaMargen.className = 'info-box info-box-success';
+        elAlertaMargen.innerHTML = '<strong>MODO DE SUMIDERO IDEAL GARANTIZADO:</strong><br>' +
+                                   'El MOSFET opera en la región plana de saturación activa (r<sub>o</sub> &approx; &infin;, V<sub>DS</sub> = ' + Vds.toFixed(2) + ' V &ge; V<sub>DS,sat</sub> = ' + Vds_sat.toFixed(2) + ' V). ' +
+                                   'La corriente I<sub>D</sub> = ' + I_rama.toFixed(2) + ' A por rama depende exclusivamente de la consigna comandada (V<sub>gate</sub> = ' + Vgate_opamp.toFixed(2) + ' V) y es inmune a perturbaciones en la Celda Hull.';
+      }
+    }
 
     // Dibujo en Canvas según la vista seleccionada
     if (vistaCurvasMosfet === 'vds') {
-      dibujarCurvasSalidaIRLZ44(canvas, I_clamp, Vds, Vgs_req, Vds_sat, Vth, Kn, lambda);
+      dibujarCurvasSalidaIRLZ44(canvas, I_rama, Vds, Vgs_req, Vds_sat, Vth, Kn, lambda, Vdd, Rload, Itotal);
     } else {
-      dibujarTransferenciaIRLZ44(canvas, I_clamp, Vds, Vgs_req, gm_intrinseco, Vth, Kn);
+      dibujarTransferenciaIRLZ44(canvas, I_rama, Vds, Vgs_req, gm_intrinseco, Vth, Kn, Vgate_opamp, Vshunt);
     }
   }
 
-  function dibujarCurvasSalidaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, Vds_sat, Vth, Kn, lambda) {
+  function dibujarCurvasSalidaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, Vds_sat, Vth, Kn, lambda, Vdd, Rload, Itotal) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
-    const h = canvas.height = 260;
+    const h = canvas.height = 270;
 
     ctx.clearRect(0, 0, w, h);
 
     const padLeft = 45;
-    const padRight = 20;
-    const padTop = 20;
+    const padRight = 25;
+    const padTop = 22;
     const padBottom = 35;
     const plotW = w - padLeft - padRight;
     const plotH = h - padTop - padBottom;
 
-    const maxVds = 12.0;
+    const vdd_val = Vdd || 12.0;
+    const rload_val = Rload || 5.6;
+    const maxVds = Math.max(14.0, Math.ceil(vdd_val + 2));
     const maxId = 4.0; // Amperios por rama
 
     const mapX = (v) => padLeft + (v / maxVds) * plotW;
@@ -458,7 +517,8 @@
     // Rejilla de fondo
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
-    for (let v = 2; v <= maxVds; v += 2) {
+    const vStep = maxVds > 18 ? 4 : 2;
+    for (let v = vStep; v <= maxVds; v += vStep) {
       ctx.beginPath();
       ctx.moveTo(mapX(v), padTop);
       ctx.lineTo(mapX(v), padTop + plotH);
@@ -474,26 +534,26 @@
     // 1. Zona Óhmica Sombreada (a la izquierda de la parábola de estrangulamiento)
     ctx.beginPath();
     ctx.moveTo(mapX(0), mapY(0));
-    for (let v = 0; v <= 2.5; v += 0.05) {
+    for (let v = 0; v <= 3.0; v += 0.05) {
       const id_sat = 0.5 * Kn * v * v;
       if (id_sat <= maxId) {
         ctx.lineTo(mapX(v), mapY(id_sat));
       }
     }
-    ctx.lineTo(mapX(0), mapY(Math.min(maxId, 0.5 * Kn * 2.5 * 2.5)));
+    ctx.lineTo(mapX(0), mapY(Math.min(maxId, 0.5 * Kn * 3.0 * 3.0)));
     ctx.closePath();
     ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
     ctx.fill();
 
     // Rótulo zona óhmica
-    ctx.fillStyle = 'rgba(239, 68, 68, 0.5)';
-    ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.6)';
+    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
     ctx.fillText('ZONA ÓHMICA (TRIODO)', mapX(0.2), mapY(3.5));
 
     // Rótulo zona saturación activa
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
-    ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('ZONA DE SATURACIÓN ACTIVA (MODO FUENTE CONSTANTE)', mapX(3.5), mapY(3.7));
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
+    ctx.fillText('ZONA DE SATURACIÓN ACTIVA (FUENTE CONSTANTE)', mapX(3.5), mapY(3.75));
 
     // 2. Parábola de estrangulamiento (Pinch-off boundary: VDS,sat = VGS - Vth)
     ctx.beginPath();
@@ -501,7 +561,7 @@
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 4]);
     let first = true;
-    for (let v = 0; v <= 3.0; v += 0.05) {
+    for (let v = 0; v <= 3.5; v += 0.05) {
       const id_sat = 0.5 * Kn * v * v;
       if (id_sat <= maxId) {
         if (first) { ctx.moveTo(mapX(v), mapY(id_sat)); first = false; }
@@ -513,15 +573,15 @@
 
     // Etiqueta de la parábola
     ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
+    ctx.font = 'bold 8px "JetBrains Mono", Consolas, monospace';
     ctx.fillText('Límite Estrangulamiento VDS = VGS − Vth', mapX(1.4), mapY(0.5 * Kn * 1.4 * 1.4) - 6);
 
     // 3. Familia de Curvas ID vs VDS para valores fijos de VGS
     const curvasVgs = [1.8, 2.1, 2.4, 2.7, 3.0];
     curvasVgs.forEach((vgs) => {
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.30)';
+      ctx.lineWidth = 1.1;
       const v_sat = vgs - Vth;
       for (let v = 0; v <= maxVds; v += 0.1) {
         let id_val = 0;
@@ -542,13 +602,38 @@
       // Rotular VGS al final de la curva
       const id_end = 0.5 * Kn * Math.pow(vgs - Vth, 2) * (1 + lambda * (maxVds - 0.5));
       if (id_end <= maxId && id_end >= 0.1) {
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.55)';
         ctx.font = '8px "JetBrains Mono", Consolas, monospace';
-        ctx.fillText('VGS=' + vgs.toFixed(1) + 'V', mapX(maxVds - 1.2), mapY(id_end) - 4);
+        ctx.fillText('VGS=' + vgs.toFixed(1) + 'V', mapX(maxVds - 1.4), mapY(id_end) - 4);
       }
     });
 
-    // 4. Curva del VGS actual gobernado por el Op-Amp (Resaltada en cian brillante)
+    // 4. RECTA DE CARGA DINÁMICA (Load Line)
+    // Ecuación por rama: VDS = VDD - ID * (2*Rload + Rs) -> ID = (VDD - VDS) / (2*Rload + Rs)
+    const Rs = 1.0;
+    const R_malla = 2 * rload_val + Rs;
+    const Id_max_load = vdd_val / R_malla;
+
+    ctx.beginPath();
+    ctx.strokeStyle = '#f43f5e'; // Magenta / Rosa Neón
+    ctx.lineWidth = 2.2;
+    // Desde (VDS = 0, ID = Id_max_load) hasta (VDS = VDD, ID = 0)
+    const y0 = Math.min(maxId, Id_max_load);
+    const x0 = Id_max_load > maxId ? (vdd_val - maxId * R_malla) : 0;
+    ctx.moveTo(mapX(x0), mapY(y0));
+    ctx.lineTo(mapX(vdd_val), mapY(0));
+    ctx.stroke();
+
+    // Rótulo a lo largo de la Recta de Carga
+    ctx.fillStyle = '#f43f5e';
+    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
+    const midVds = vdd_val * 0.42;
+    const midId = Math.max(0, (vdd_val - midVds) / R_malla);
+    if (midId <= maxId && midVds <= maxVds) {
+      ctx.fillText('Recta de Carga (Rc=' + rload_val.toFixed(1) + 'Ω, VDD=' + vdd_val.toFixed(1) + 'V)', mapX(midVds) + 6, mapY(midId) - 6);
+    }
+
+    // 5. Curva del VGS actual gobernado por el Op-Amp (Resaltada en cian brillante)
     ctx.beginPath();
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 2.5;
@@ -568,7 +653,7 @@
     }
     ctx.stroke();
 
-    // 5. Dibujar el Punto de Operación Quiescente Q(Vds, Id)
+    // 6. Dibujar el Punto de Operación Quiescente Q(Vds, Id)
     const qX = mapX(Math.min(maxVds, Math.max(0, Vds_Q)));
     const qY = mapY(Math.min(maxId, Math.max(0, I_Q)));
 
@@ -586,13 +671,13 @@
     // Halo y punto Q
     const qColor = Vds_Q >= Vds_sat ? '#10b981' : '#ef4444';
     ctx.beginPath();
-    ctx.fillStyle = qColor === '#10b981' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.3)';
-    ctx.arc(qX, qY, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = qColor === '#10b981' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.35)';
+    ctx.arc(qX, qY, 11, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = qColor;
-    ctx.arc(qX, qY, 5, 0, 2 * Math.PI);
+    ctx.arc(qX, qY, 5.5, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1.5;
@@ -604,10 +689,10 @@
     const labelQ = 'Q(' + Vds_Q.toFixed(2) + 'V, ' + I_Q.toFixed(2) + 'A)';
     const textWidth = ctx.measureText(labelQ).width;
     const textX = qX + 12 + textWidth > w ? qX - textWidth - 12 : qX + 10;
-    const textY = qY - 10 < padTop ? qY + 15 : qY - 8;
+    const textY = qY - 10 < padTop ? qY + 16 : qY - 8;
     ctx.fillText(labelQ, textX, textY);
 
-    // 6. Ejes cartesianos
+    // 7. Ejes cartesianos
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -631,44 +716,44 @@
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 10px "Inter", sans-serif';
+    ctx.font = 'bold 9.5px "Inter", sans-serif';
     ctx.fillText('Corriente Drenador ID (A / rama)', 0, 0);
     ctx.restore();
 
     // Marcas y números Eje X (VDS en Voltios)
     ctx.textAlign = 'center';
-    for (let v = 0; v <= maxVds; v += 2) {
+    for (let v = 0; v <= maxVds; v += vStep) {
       ctx.fillText(v.toFixed(0) + 'V', mapX(v), padTop + plotH + 14);
     }
     // Título Eje X
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 10px "Inter", sans-serif';
+    ctx.font = 'bold 9.5px "Inter", sans-serif';
     ctx.fillText('Tensión Drenador-Surtidor VDS (V)', padLeft + plotW / 2, h - 8);
 
     // Actualizar texto descriptivo bajo el canvas
     const leyenda = document.getElementById('leyendaCurvasMosfet');
     if (leyenda) {
-      leyenda.innerHTML = '<span>Línea continua cian: Curva V<sub>GS</sub> comandada (' + Vgs_Q.toFixed(2) + ' V).</span>' +
-                          '<span>Parábola ámbar: Límite de estrangulamiento V<sub>DS,sat</sub>.</span>' +
-                          '<span style="color:' + qColor + '; font-weight:700;">Punto Q: ' + (Vds_Q >= Vds_sat ? 'Saturación Lineal OK' : 'Colapso Óhmico') + '</span>';
+      leyenda.innerHTML = '<span>Línea continua cian: V<sub>GS</sub> comandada (' + Vgs_Q.toFixed(2) + ' V).</span>' +
+                          '<span style="color:#f43f5e; font-weight:600;">Línea magenta: Recta de Carga (R<sub>c</sub>=' + rload_val.toFixed(1) + ' Ω).</span>' +
+                          '<span style="color:' + qColor + '; font-weight:700;">Punto Q: ' + (Vds_Q >= Vds_sat ? 'Saturación Activa OK' : 'Colapso Óhmico') + '</span>';
     }
   }
 
-  function dibujarTransferenciaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, gm_Q, Vth, Kn) {
+  function dibujarTransferenciaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, gm_Q, Vth, Kn, Vgate_opamp, Vshunt) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
-    const h = canvas.height = 260;
+    const h = canvas.height = 270;
 
     ctx.clearRect(0, 0, w, h);
 
     const padLeft = 45;
     const padRight = 50; // Para el segundo eje Y (gm)
-    const padTop = 20;
+    const padTop = 22;
     const padBottom = 35;
     const plotW = w - padLeft - padRight;
     const plotH = h - padTop - padBottom;
 
-    const maxVgs = 3.6; // Voltios
+    const maxVgs = 4.5; // Voltios (para abarcar Vgate)
     const maxId = 4.0;  // Amperios
     const maxGm = 6.0;  // Siemens
 
@@ -713,8 +798,25 @@
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
+    ctx.font = 'bold 8px "JetBrains Mono", Consolas, monospace';
     ctx.fillText('Vth = 1.50 V', mapX(Vth) + 4, padTop + 14);
+
+    // Línea vertical de Salida Op-Amp Vgate (si está disponible)
+    const vgate_val = Vgate_opamp || (Vgs_Q + (Vshunt || 0));
+    if (vgate_val <= maxVgs) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#c084fc';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(mapX(vgate_val), padTop);
+      ctx.lineTo(mapX(vgate_val), padTop + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#c084fc';
+      ctx.font = 'bold 8px "JetBrains Mono", Consolas, monospace';
+      ctx.fillText('Vgate Op-Amp = ' + vgate_val.toFixed(2) + 'V', mapX(vgate_val) + 4, padTop + 26);
+    }
 
     // 2. Curva Cuadrática de Transferencia ID vs VGS (Azul Neón)
     ctx.beginPath();
@@ -770,7 +872,7 @@
     // Punto en curva ID
     ctx.beginPath();
     ctx.fillStyle = '#38bdf8';
-    ctx.arc(ptX, ptY_Id, 5, 0, 2 * Math.PI);
+    ctx.arc(ptX, ptY_Id, 5.5, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1.5;
@@ -779,7 +881,7 @@
     // Punto en curva gm
     ctx.beginPath();
     ctx.fillStyle = '#10b981';
-    ctx.arc(ptX, ptY_Gm, 5, 0, 2 * Math.PI);
+    ctx.arc(ptX, ptY_Gm, 5.5, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1.5;
@@ -813,7 +915,7 @@
     ctx.font = '9px "JetBrains Mono", Consolas, monospace';
     ctx.textAlign = 'right';
     for (let i = 0; i <= maxId; i += 1) {
-      ctx.fillText(i.toFixed(1) + 'A', padLeft - 6, mapYId(i) + 3);
+      ctx.fillText(i.toFixed(1), padLeft - 6, mapYId(i) + 3);
     }
 
     // Rotulación Eje Y Derecho (gm)
@@ -832,15 +934,15 @@
 
     // Título Eje X
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 10px "Inter", sans-serif';
+    ctx.font = 'bold 9.5px "Inter", sans-serif';
     ctx.fillText('Tensión Compuerta-Surtidor VGS (V)', padLeft + plotW / 2, h - 8);
 
     // Leyenda descriptiva
     const leyenda = document.getElementById('leyendaCurvasMosfet');
     if (leyenda) {
-      leyenda.innerHTML = '<span style="color:#38bdf8; font-weight:600;">Línea continua cian: Curva cuadrática ID vs VGS.</span>' +
-                          '<span style="color:#10b981; font-weight:600;">Línea discontinua verde: gm = dID/dVGS.</span>' +
-                          '<span style="color:#f59e0b; font-weight:600;">Vth = 1.50 V (Umbral Logic-Level).</span>';
+      leyenda.innerHTML = '<span style="color:#38bdf8; font-weight:600;">Línea continua cian: ID(VGS).</span>' +
+                          '<span style="color:#10b981; font-weight:600;">Línea verde: gm=' + gm_Q.toFixed(2) + ' S.</span>' +
+                          '<span style="color:#c084fc; font-weight:600;">Vgate Op-Amp: ' + vgate_val.toFixed(2) + ' V (Gm=2.0 A/V).</span>';
     }
   }
 
