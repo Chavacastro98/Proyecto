@@ -338,6 +338,25 @@
     actualizarCurvasMosfetInteractivo();
   }
 
+  function toggleModoAmpliadoMosfet() {
+    const container = document.getElementById('layoutMosfetVis');
+    const canvas = document.getElementById('canvasMosfetCurvas');
+    const btn = document.getElementById('btnExpandirMosfet');
+    if (!container || !canvas) return;
+
+    const isExpanded = container.classList.toggle('modo-panoramico');
+    if (isExpanded) {
+      container.style.gridTemplateColumns = '1fr';
+      canvas.style.height = '460px';
+      if (btn) btn.innerHTML = '⛶ Vista Dividida';
+    } else {
+      container.style.gridTemplateColumns = 'minmax(0, 1.35fr) minmax(320px, 1fr)';
+      canvas.style.height = '390px';
+      if (btn) btn.innerHTML = '⛶ Vista Panorámica';
+    }
+    actualizarCurvasMosfetInteractivo();
+  }
+
   function aplicarPresetMosfet(vdd, vcarga, itotal) {
     const elVdd = document.getElementById('rngVddMosfet');
     const elVload = document.getElementById('rngVloadMosfet');
@@ -487,15 +506,15 @@
 
   function dibujarCurvasSalidaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, Vds_sat, Vth, Kn, lambda, Vdd, Vcarga, Itotal) {
     const ctx = canvas.getContext('2d');
-    const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
-    const h = canvas.height = 270;
+    const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 600) || 600;
+    const h = canvas.height = (canvas.clientHeight && canvas.clientHeight > 100) ? canvas.clientHeight : 390;
 
     ctx.clearRect(0, 0, w, h);
 
-    const padLeft = 45;
-    const padRight = 25;
-    const padTop = 22;
-    const padBottom = 35;
+    const padLeft = 54;
+    const padRight = 32;
+    const padTop = 26;
+    const padBottom = 42;
     const plotW = w - padLeft - padRight;
     const plotH = h - padTop - padBottom;
 
@@ -505,7 +524,8 @@
     const rap_val = vcarga_val / Math.max(0.01, itotal_val);
 
     const maxVds = Math.max(14.0, Math.ceil(vdd_val + 2));
-    const maxId = 4.0; // Amperios por rama
+    // Soporte de corriente dinámico: mínimo 4.0A por rama, escalable si se piden hasta 6A totales (3A rama) o más
+    const maxId = Math.max(4.0, Math.ceil((I_Q + 0.6) * 2) / 2);
 
     const mapX = (v) => padLeft + (v / maxVds) * plotW;
     const mapY = (i) => padTop + plotH - (i / maxId) * plotH;
@@ -518,7 +538,7 @@
     ctx.fillRect(0, 0, w, h);
 
     // Rejilla de fondo
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
     ctx.lineWidth = 1;
     const vStep = maxVds > 18 ? 4 : 2;
     for (let v = vStep; v <= maxVds; v += vStep) {
@@ -527,7 +547,8 @@
       ctx.lineTo(mapX(v), padTop + plotH);
       ctx.stroke();
     }
-    for (let i = 1; i <= maxId; i += 1) {
+    const idStep = maxId > 5.0 ? 1.0 : 0.5;
+    for (let i = idStep; i <= maxId; i += idStep) {
       ctx.beginPath();
       ctx.moveTo(padLeft, mapY(i));
       ctx.lineTo(padLeft + plotW, mapY(i));
@@ -537,26 +558,26 @@
     // 1. Zona Óhmica Sombreada (a la izquierda de la parábola de estrangulamiento)
     ctx.beginPath();
     ctx.moveTo(mapX(0), mapY(0));
-    for (let v = 0; v <= 3.0; v += 0.05) {
+    for (let v = 0; v <= 4.0; v += 0.05) {
       const id_sat = 0.5 * Kn * v * v;
       if (id_sat <= maxId) {
         ctx.lineTo(mapX(v), mapY(id_sat));
       }
     }
-    ctx.lineTo(mapX(0), mapY(Math.min(maxId, 0.5 * Kn * 3.0 * 3.0)));
+    ctx.lineTo(mapX(0), mapY(Math.min(maxId, 0.5 * Kn * 4.0 * 4.0)));
     ctx.closePath();
     ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
     ctx.fill();
 
     // Rótulo zona óhmica
-    ctx.fillStyle = 'rgba(239, 68, 68, 0.6)';
-    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('ZONA ÓHMICA (TRIODO)', mapX(0.2), mapY(3.5));
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+    ctx.font = 'bold 9.5px "JetBrains Mono", Consolas, monospace';
+    ctx.fillText('ZONA ÓHMICA (TRIODO)', mapX(0.2), mapY(maxId * 0.90));
 
     // Rótulo zona saturación activa
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
-    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('ZONA DE SATURACIÓN ACTIVA (FUENTE CONSTANTE)', mapX(3.5), mapY(3.75));
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+    ctx.font = 'bold 9.5px "JetBrains Mono", Consolas, monospace';
+    ctx.fillText('ZONA DE SATURACIÓN ACTIVA (FUENTE CONSTANTE)', mapX(3.5), mapY(maxId * 0.95));
 
     // 2. Parábola de estrangulamiento (Pinch-off boundary: VDS,sat = VGS - Vth)
     ctx.beginPath();
@@ -564,7 +585,7 @@
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 4]);
     let first = true;
-    for (let v = 0; v <= 3.5; v += 0.05) {
+    for (let v = 0; v <= 4.0; v += 0.05) {
       const id_sat = 0.5 * Kn * v * v;
       if (id_sat <= maxId) {
         if (first) { ctx.moveTo(mapX(v), mapY(id_sat)); first = false; }
@@ -576,15 +597,21 @@
 
     // Etiqueta de la parábola
     ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 8px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('Límite Estrangulamiento VDS = VGS − Vth', mapX(1.4), mapY(0.5 * Kn * 1.4 * 1.4) - 6);
+    ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
+    const vRefPinch = Math.min(2.0, Math.sqrt((2 * Math.min(1.5, maxId * 0.4)) / Kn));
+    ctx.fillText('Límite Estrangulamiento VDS = VGS − Vth', mapX(vRefPinch) + 6, mapY(0.5 * Kn * vRefPinch * vRefPinch) - 6);
 
     // 3. Familia de Curvas ID vs VDS para valores fijos de VGS
-    const curvasVgs = [1.8, 2.1, 2.4, 2.7, 3.0];
+    const curvasVgs = [];
+    const vgsMaxCalc = Vth + Math.sqrt((2 * maxId) / Kn) + 0.3;
+    for (let v = 1.8; v <= vgsMaxCalc; v += 0.3) {
+      curvasVgs.push(parseFloat(v.toFixed(1)));
+    }
+
     curvasVgs.forEach((vgs) => {
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.30)';
-      ctx.lineWidth = 1.1;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
+      ctx.lineWidth = 1.2;
       const v_sat = vgs - Vth;
       for (let v = 0; v <= maxVds; v += 0.1) {
         let id_val = 0;
@@ -604,10 +631,10 @@
 
       // Rotular VGS al final de la curva
       const id_end = 0.5 * Kn * Math.pow(vgs - Vth, 2) * (1 + lambda * (maxVds - 0.5));
-      if (id_end <= maxId && id_end >= 0.1) {
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.55)';
-        ctx.font = '8px "JetBrains Mono", Consolas, monospace';
-        ctx.fillText('VGS=' + vgs.toFixed(1) + 'V', mapX(maxVds - 1.4), mapY(id_end) - 4);
+      if (id_end <= maxId && id_end >= 0.15) {
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.65)';
+        ctx.font = '8.5px "JetBrains Mono", Consolas, monospace';
+        ctx.fillText('VGS=' + vgs.toFixed(1) + 'V', mapX(maxVds - 1.8), mapY(id_end) - 4);
       }
     });
 
@@ -619,7 +646,7 @@
 
     ctx.beginPath();
     ctx.strokeStyle = '#f43f5e'; // Magenta / Rosa Neón
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 2.4;
     // Desde (VDS = 0, ID = Id_max_load) hasta (VDS = VDD, ID = 0)
     const y0 = Math.min(maxId, Id_max_load);
     const x0 = Id_max_load > maxId ? (vdd_val - maxId * R_malla) : 0;
@@ -629,8 +656,8 @@
 
     // Rótulo a lo largo de la Recta de Carga
     ctx.fillStyle = '#f43f5e';
-    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
-    const midVds = vdd_val * 0.45;
+    ctx.font = 'bold 9.5px "JetBrains Mono", Consolas, monospace';
+    const midVds = vdd_val * 0.42;
     const midId = Math.max(0, (vdd_val - midVds) / R_malla);
     if (midId <= maxId && midVds <= maxVds) {
       ctx.fillText('Recta Carga (Vcarga=' + vcarga_val.toFixed(1) + 'V, Rap=' + rap_val.toFixed(2) + 'Ω)', mapX(midVds) + 6, mapY(midId) - 6);
@@ -639,7 +666,7 @@
     // 5. Curva del VGS actual gobernado por el Op-Amp (Resaltada en cian brillante)
     ctx.beginPath();
     ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.8;
     for (let v = 0; v <= maxVds; v += 0.1) {
       let id_val = 0;
       if (v < Vds_sat) {
@@ -662,8 +689,8 @@
 
     // Líneas punteadas hacia los ejes
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1.2;
     ctx.setLineDash([3, 3]);
     ctx.moveTo(qX, padTop + plotH);
     ctx.lineTo(qX, qY);
@@ -674,25 +701,25 @@
     // Halo y punto Q
     const qColor = Vds_Q >= Vds_sat ? '#10b981' : '#ef4444';
     ctx.beginPath();
-    ctx.fillStyle = qColor === '#10b981' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.35)';
-    ctx.arc(qX, qY, 11, 0, 2 * Math.PI);
+    ctx.fillStyle = qColor === '#10b981' ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.4)';
+    ctx.arc(qX, qY, 13, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = qColor;
-    ctx.arc(qX, qY, 5.5, 0, 2 * Math.PI);
+    ctx.arc(qX, qY, 6.5, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     // Rótulo del Punto Q
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 10px "JetBrains Mono", Consolas, monospace';
+    ctx.font = 'bold 11px "JetBrains Mono", Consolas, monospace';
     const labelQ = 'Q(' + Vds_Q.toFixed(2) + 'V, ' + I_Q.toFixed(2) + 'A)';
     const textWidth = ctx.measureText(labelQ).width;
-    const textX = qX + 12 + textWidth > w ? qX - textWidth - 12 : qX + 10;
-    const textY = qY - 10 < padTop ? qY + 16 : qY - 8;
+    const textX = qX + 14 + textWidth > w ? qX - textWidth - 14 : qX + 12;
+    const textY = qY - 12 < padTop ? qY + 18 : qY - 10;
     ctx.fillText(labelQ, textX, textY);
 
     // 7. Ejes cartesianos
@@ -707,58 +734,58 @@
     ctx.stroke();
 
     // Marcas y números Eje Y (ID en Amperios)
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '9px "JetBrains Mono", Consolas, monospace';
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '10px "JetBrains Mono", Consolas, monospace';
     ctx.textAlign = 'right';
-    for (let i = 0; i <= maxId; i += 1) {
-      ctx.fillText(i.toFixed(1), padLeft - 6, mapY(i) + 3);
+    for (let i = 0; i <= maxId; i += (maxId > 5 ? 1.0 : 0.5)) {
+      ctx.fillText(i.toFixed(1), padLeft - 6, mapY(i) + 3.5);
     }
     // Título Eje Y
     ctx.save();
-    ctx.translate(14, padTop + plotH / 2);
+    ctx.translate(16, padTop + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 9.5px "Inter", sans-serif';
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 11px "Inter", sans-serif';
     ctx.fillText('Corriente Drenador ID (A / rama)', 0, 0);
     ctx.restore();
 
     // Marcas y números Eje X (VDS en Voltios)
     ctx.textAlign = 'center';
     for (let v = 0; v <= maxVds; v += vStep) {
-      ctx.fillText(v.toFixed(0) + 'V', mapX(v), padTop + plotH + 14);
+      ctx.fillText(v.toFixed(0) + 'V', mapX(v), padTop + plotH + 16);
     }
     // Título Eje X
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 9.5px "Inter", sans-serif';
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 11px "Inter", sans-serif';
     ctx.fillText('Tensión Drenador-Surtidor VDS (V)', padLeft + plotW / 2, h - 8);
 
     // Actualizar texto descriptivo bajo el canvas
     const leyenda = document.getElementById('leyendaCurvasMosfet');
     if (leyenda) {
       leyenda.innerHTML = '<span>Línea continua cian: V<sub>GS</sub> comandada (' + Vgs_Q.toFixed(2) + ' V).</span>' +
-                          '<span style="color:#f43f5e; font-weight:600;">Línea magenta: Recta de Carga (R<sub>c</sub>=' + rload_val.toFixed(1) + ' Ω).</span>' +
+                          '<span style="color:#f43f5e; font-weight:600;">Línea magenta: Recta de Carga (V<sub>carga</sub>=' + vcarga_val.toFixed(1) + ' V, R<sub>ap</sub>=' + rap_val.toFixed(2) + ' Ω).</span>' +
                           '<span style="color:' + qColor + '; font-weight:700;">Punto Q: ' + (Vds_Q >= Vds_sat ? 'Saturación Activa OK' : 'Colapso Óhmico') + '</span>';
     }
   }
 
   function dibujarTransferenciaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, gm_Q, Vth, Kn, Vgate_opamp, Vshunt) {
     const ctx = canvas.getContext('2d');
-    const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
-    const h = canvas.height = 270;
+    const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 600) || 600;
+    const h = canvas.height = (canvas.clientHeight && canvas.clientHeight > 100) ? canvas.clientHeight : 390;
 
     ctx.clearRect(0, 0, w, h);
 
-    const padLeft = 45;
-    const padRight = 50; // Para el segundo eje Y (gm)
-    const padTop = 22;
-    const padBottom = 35;
+    const padLeft = 54;
+    const padRight = 56; // Para el segundo eje Y (gm)
+    const padTop = 26;
+    const padBottom = 42;
     const plotW = w - padLeft - padRight;
     const plotH = h - padTop - padBottom;
 
-    const maxVgs = 4.5; // Voltios (para abarcar Vgate)
-    const maxId = 4.0;  // Amperios
-    const maxGm = 6.0;  // Siemens
+    const maxVgs = Math.max(4.5, Math.ceil((Vgs_Q + 0.8) * 2) / 2); // Voltios (para abarcar Vgate)
+    const maxId = Math.max(4.0, Math.ceil((I_Q + 0.6) * 2) / 2);     // Amperios
+    const maxGm = Math.max(6.0, Math.ceil(gm_Q + 1.5));             // Siemens
 
     const mapX = (vgs) => padLeft + (vgs / maxVgs) * plotW;
     const mapYId = (id) => padTop + plotH - (id / maxId) * plotH;
@@ -769,7 +796,7 @@
     ctx.fillRect(0, 0, w, h);
 
     // Rejilla
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
     ctx.lineWidth = 1;
     for (let v = 1; v <= maxVgs; v += 0.5) {
       ctx.beginPath();
@@ -777,7 +804,8 @@
       ctx.lineTo(mapX(v), padTop + plotH);
       ctx.stroke();
     }
-    for (let i = 1; i <= maxId; i += 1) {
+    const idStep = maxId > 5.0 ? 1.0 : 0.5;
+    for (let i = idStep; i <= maxId; i += idStep) {
       ctx.beginPath();
       ctx.moveTo(padLeft, mapYId(i));
       ctx.lineTo(padLeft + plotW, mapYId(i));
@@ -787,21 +815,21 @@
     // 1. Zona de corte (VGS < Vth) sombreada
     ctx.fillStyle = 'rgba(100, 116, 139, 0.12)';
     ctx.fillRect(mapX(0), padTop, mapX(Vth) - mapX(0), plotH);
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-    ctx.font = 'bold 8.5px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('CORTE (VGS < Vth)', mapX(Vth / 2) - 30, mapYId(2.0));
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+    ctx.font = 'bold 9.5px "JetBrains Mono", Consolas, monospace';
+    ctx.fillText('CORTE (VGS < Vth)', mapX(Vth / 2) - 36, mapYId(maxId * 0.5));
 
     // Línea vertical en Vth = 1.50V
     ctx.beginPath();
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.6;
     ctx.setLineDash([4, 4]);
     ctx.moveTo(mapX(Vth), padTop);
     ctx.lineTo(mapX(Vth), padTop + plotH);
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 8px "JetBrains Mono", Consolas, monospace';
+    ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
     ctx.fillText('Vth = 1.50 V', mapX(Vth) + 4, padTop + 14);
 
     // Línea vertical de Salida Op-Amp Vgate (si está disponible)
@@ -809,7 +837,7 @@
     if (vgate_val <= maxVgs) {
       ctx.beginPath();
       ctx.strokeStyle = '#c084fc';
-      ctx.lineWidth = 1.8;
+      ctx.lineWidth = 2.0;
       ctx.setLineDash([3, 3]);
       ctx.moveTo(mapX(vgate_val), padTop);
       ctx.lineTo(mapX(vgate_val), padTop + plotH);
@@ -817,14 +845,14 @@
       ctx.setLineDash([]);
 
       ctx.fillStyle = '#c084fc';
-      ctx.font = 'bold 8px "JetBrains Mono", Consolas, monospace';
-      ctx.fillText('Vgate Op-Amp = ' + vgate_val.toFixed(2) + 'V', mapX(vgate_val) + 4, padTop + 26);
+      ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
+      ctx.fillText('Vgate Op-Amp = ' + vgate_val.toFixed(2) + 'V', mapX(vgate_val) + 4, padTop + 28);
     }
 
     // 2. Curva Cuadrática de Transferencia ID vs VGS (Azul Neón)
     ctx.beginPath();
     ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.8;
     let started = false;
     for (let v = 0; v <= maxVgs; v += 0.05) {
       let id_val = 0;
@@ -841,7 +869,7 @@
     // 3. Curva de Transconductancia gm vs VGS (Línea Verde Esmeralda)
     ctx.beginPath();
     ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.2;
     ctx.setLineDash([5, 3]);
     let startedGm = false;
     for (let v = 0; v <= maxVgs; v += 0.05) {
@@ -864,8 +892,8 @@
 
     // Línea vertical punteada del VGS actual
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.lineWidth = 1.2;
     ctx.setLineDash([2, 2]);
     ctx.moveTo(ptX, padTop + plotH);
     ctx.lineTo(ptX, padTop);
@@ -875,29 +903,29 @@
     // Punto en curva ID
     ctx.beginPath();
     ctx.fillStyle = '#38bdf8';
-    ctx.arc(ptX, ptY_Id, 5.5, 0, 2 * Math.PI);
+    ctx.arc(ptX, ptY_Id, 6.5, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
     // Punto en curva gm
     ctx.beginPath();
     ctx.fillStyle = '#10b981';
-    ctx.arc(ptX, ptY_Gm, 5.5, 0, 2 * Math.PI);
+    ctx.arc(ptX, ptY_Gm, 6.5, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
     // Rótulos de los puntos
     ctx.fillStyle = '#38bdf8';
-    ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('ID = ' + I_Q.toFixed(2) + ' A', ptX + 8, ptY_Id - 4);
+    ctx.font = 'bold 10px "JetBrains Mono", Consolas, monospace';
+    ctx.fillText('ID = ' + I_Q.toFixed(2) + ' A', ptX + 8, ptY_Id - 6);
 
     ctx.fillStyle = '#10b981';
-    ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
-    ctx.fillText('gm = ' + gm_Q.toFixed(2) + ' S', ptX + 8, ptY_Gm + 12);
+    ctx.font = 'bold 10px "JetBrains Mono", Consolas, monospace';
+    ctx.fillText('gm = ' + gm_Q.toFixed(2) + ' S', ptX + 8, ptY_Gm + 14);
 
     // 5. Ejes
     ctx.strokeStyle = '#94a3b8';
@@ -915,29 +943,47 @@
 
     // Rotulación Eje Y Izquierdo (ID)
     ctx.fillStyle = '#38bdf8';
-    ctx.font = '9px "JetBrains Mono", Consolas, monospace';
+    ctx.font = '10px "JetBrains Mono", Consolas, monospace';
     ctx.textAlign = 'right';
-    for (let i = 0; i <= maxId; i += 1) {
-      ctx.fillText(i.toFixed(1), padLeft - 6, mapYId(i) + 3);
+    for (let i = 0; i <= maxId; i += (maxId > 5 ? 1.0 : 0.5)) {
+      ctx.fillText(i.toFixed(1), padLeft - 6, mapYId(i) + 3.5);
     }
+    // Título Eje Y Izquierdo
+    ctx.save();
+    ctx.translate(16, padTop + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 11px "Inter", sans-serif';
+    ctx.fillText('Corriente Drenador ID (A / rama)', 0, 0);
+    ctx.restore();
 
     // Rotulación Eje Y Derecho (gm)
     ctx.fillStyle = '#10b981';
     ctx.textAlign = 'left';
-    for (let g = 0; g <= maxGm; g += 1.5) {
-      ctx.fillText(g.toFixed(1) + 'S', padLeft + plotW + 6, mapYGm(g) + 3);
+    for (let g = 0; g <= maxGm; g += (maxGm > 8 ? 2.0 : 1.5)) {
+      ctx.fillText(g.toFixed(1) + 'S', padLeft + plotW + 6, mapYGm(g) + 3.5);
     }
+    // Título Eje Y Derecho
+    ctx.save();
+    ctx.translate(w - 12, padTop + plotH / 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#10b981';
+    ctx.font = 'bold 11px "Inter", sans-serif';
+    ctx.fillText('Transconductancia gm (Siemens)', 0, 0);
+    ctx.restore();
 
     // Rotulación Eje X (VGS)
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = '#cbd5e1';
     ctx.textAlign = 'center';
     for (let v = 0; v <= maxVgs; v += 0.5) {
-      ctx.fillText(v.toFixed(1) + 'V', mapX(v), padTop + plotH + 14);
+      ctx.fillText(v.toFixed(1) + 'V', mapX(v), padTop + plotH + 16);
     }
 
     // Título Eje X
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'bold 9.5px "Inter", sans-serif';
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 11px "Inter", sans-serif';
     ctx.fillText('Tensión Compuerta-Surtidor VGS (V)', padLeft + plotW / 2, h - 8);
 
     // Leyenda descriptiva
@@ -948,6 +994,12 @@
                           '<span style="color:#c084fc; font-weight:600;">Vgate Op-Amp: ' + vgate_val.toFixed(2) + ' V (Gm=2.0 A/V).</span>';
     }
   }
+
+  // Exposición en ámbito global para eventos inline HTML
+  window.setVistaCurvasMosfet = setVistaCurvasMosfet;
+  window.toggleModoAmpliadoMosfet = toggleModoAmpliadoMosfet;
+  window.aplicarPresetMosfet = aplicarPresetMosfet;
+  window.actualizarCurvasMosfetInteractivo = actualizarCurvasMosfetInteractivo;
 
   // =========================================================================
   // CALCULADORA 4: CULOMBIMETRÍA DE FARADAY

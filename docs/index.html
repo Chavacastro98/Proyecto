@@ -1849,13 +1849,18 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
               <span>⚡</span> Curvas de Operación del IRLZ44N, Recta de Carga y Linealización por Op-Amp LM358N
             </h4>
           </div>
-          <!-- Selector de Vista: Salida (ID vs VDS) o Transferencia (ID vs VGS & gm) -->
-          <div style="display: inline-flex; background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 3px;">
-            <button id="btnVistaCurvasVds" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vds')" style="background: var(--purple); color: #ffffff; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
-              📈 Curvas de Salida (I<sub>D</sub> vs V<sub>DS</sub>, Recta de Carga & Punto Q)
-            </button>
-            <button id="btnVistaCurvasVgs" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vgs')" style="background: transparent; color: #94a3b8; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
-              📊 Transferencia (I<sub>D</sub> vs V<sub>GS</sub> & g<sub>m</sub>)
+          <!-- Selector de Vista y Modo de Tamaño -->
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div style="display: inline-flex; background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 3px;">
+              <button id="btnVistaCurvasVds" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vds')" style="background: var(--purple); color: #ffffff; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+                📈 Curvas de Salida (I<sub>D</sub> vs V<sub>DS</sub>, Recta de Carga & Punto Q)
+              </button>
+              <button id="btnVistaCurvasVgs" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vgs')" style="background: transparent; color: #94a3b8; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+                📊 Transferencia (I<sub>D</sub> vs V<sub>GS</sub> & g<sub>m</sub>)
+              </button>
+            </div>
+            <button id="btnExpandirMosfet" type="button" class="btn btn-sm" onclick="toggleModoAmpliadoMosfet()" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Alternar entre vista dividida y vista panorámica ampliada">
+              ⛶ Vista Panorámica
             </button>
           </div>
         </div>
@@ -1881,9 +1886,9 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <span style="color: #94a3b8; font-weight: 600;">🧪 Voltaje en Carga (Celda Hull) V<sub>carga</sub>:</span>
                 <strong id="lblVloadMosfet" style="color: #f59e0b; font-family: var(--code-font);">5.60 V (R<sub>ap</sub> = 3.73 Ω)</strong>
               </div>
-              <input type="range" id="rngVloadMosfet" min="1.0" max="11.0" step="0.1" value="5.6" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
+              <input type="range" id="rngVloadMosfet" min="0.0" max="20.0" step="0.1" value="5.6" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
               <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
-                <span>1.0 V</span><span>5.6 V (Exp. Real)</span><span>11.0 V</span>
+                <span>0.0 V (Corto)</span><span>5.6 V (Exp. Real)</span><span>10.0 V</span><span>20.0 V (Máx)</span>
               </div>
             </div>
 
@@ -1893,9 +1898,9 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <span style="color: #94a3b8; font-weight: 600;">🎯 Corriente Total I<sub>total</sub> (V<sub>ref</sub>):</span>
                 <strong id="lblItotalMosfet" style="color: #10b981; font-family: var(--code-font);">1.50 A (V<sub>ref</sub> = 0.75V)</strong>
               </div>
-              <input type="range" id="rngItotalMosfet" min="0.10" max="4.00" step="0.05" value="1.50" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
+              <input type="range" id="rngItotalMosfet" min="0.10" max="6.00" step="0.05" value="1.50" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
               <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
-                <span>0.10 A</span><span>1.50 A (Exp. Clave)</span><span>4.00 A</span>
+                <span>0.10 A</span><span>1.50 A (Exp. Clave)</span><span>3.00 A (Alta Densidad)</span><span>6.00 A (Máx)</span>
               </div>
             </div>
           </div>
@@ -1903,25 +1908,28 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
           <!-- BOTONES DE PRESETS EXPERIMENTALES -->
           <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
             <span style="font-size: 0.73rem; color: #94a3b8; font-weight: 600;">Puntos de Ensayo del Experimento:</span>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 5.6, 1.50)" style="background: rgba(14, 165, 233, 0.2); border: 1px solid var(--primary); color: #38bdf8; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; cursor: pointer;">
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 5.6, 1.50)" style="background: rgba(14, 165, 233, 0.2); border: 1px solid var(--primary); color: #38bdf8; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
               📍 Experimento Clave: 1.50 A @ V<sub>carga</sub> = 5.6 V (VDD 12V)
             </button>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 6.8, 3.00)" style="background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald); color: #10b981; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; cursor: pointer;">
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 6.8, 3.00)" style="background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald); color: #10b981; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
               ⚡ Alta Densidad: 3.00 A @ V<sub>carga</sub> = 6.8 V (VDD 12V)
             </button>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 10.8, 1.50)" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; font-size: 0.72rem; padding: 3px 10px; border-radius: 6px; cursor: pointer;">
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(15.0, 5.6, 5.00)" style="background: rgba(168, 85, 247, 0.2); border: 1px solid var(--purple); color: #c084fc; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
+              🚀 Ensayo Potencia: 5.00 A @ V<sub>carga</sub> = 5.6 V (VDD 15V)
+            </button>
+            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 10.8, 1.50)" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
               ⚠️ Límite Óhmico / Colapso: 1.50 A @ V<sub>carga</sub> = 10.8 V (VDD 12V)
             </button>
           </div>
         </div>
 
-        <div class="grid-2" style="gap: 16px; align-items: start;">
-          <!-- Columna Izquierda: Canvas del Gráfico Paramétrico -->
+        <div id="layoutMosfetVis" style="display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); gap: 18px; align-items: start; transition: all 0.3s ease;">
+          <!-- Columna Izquierda: Canvas del Gráfico Paramétrico (VENTANA AMPLIADA) -->
           <div>
-            <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px; position: relative;">
-              <canvas id="canvasMosfetCurvas" style="width: 100%; height: 270px; display: block;"></canvas>
+            <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 12px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.6);">
+              <canvas id="canvasMosfetCurvas" style="width: 100%; height: 390px; display: block; border-radius: 6px;"></canvas>
               <!-- Leyenda descriptiva -->
-              <div id="leyendaCurvasMosfet" style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #94a3b8; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+              <div id="leyendaCurvasMosfet" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 0.76rem; color: #94a3b8; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
                 <span>Línea continua cian: Curva V<sub>GS</sub> comandada.</span>
                 <span>Línea magenta: Recta de Carga Dinámica.</span>
                 <span style="color: #10b981; font-weight: 700;">Punto Q: Saturación Activa OK</span>
