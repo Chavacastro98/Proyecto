@@ -377,8 +377,8 @@
       }
       if (elSubregimen) elSubregimen.textContent = 'VDS (' + Vds.toFixed(2) + 'V) < VDS,sat (' + Vds_sat.toFixed(2) + 'V) [Desregulado]';
       if (elAlertaMargen) {
-        alertaMargen.className = 'info-box info-box-danger';
-        alertaMargen.innerHTML = '<strong>PELIGRO: MOSFET EN REGIÓN ÓHMICA (PÉRDIDA DE REGULACIÓN)</strong><br>El margen VDS (' + Vds.toFixed(2) + ' V) es menor a la tensión de estrangulamiento (' + Vds_sat.toFixed(2) + ' V). El canal no está estrangulado, el Op-Amp se satura a rail positivo (+5V) y la corriente ya no se puede regular como fuente constante.';
+        elAlertaMargen.className = 'info-box info-box-danger';
+        elAlertaMargen.innerHTML = '<strong>PELIGRO: MOSFET EN REGIÓN ÓHMICA (PÉRDIDA DE REGULACIÓN)</strong><br>El margen VDS (' + Vds.toFixed(2) + ' V) es menor a la tensión de estrangulamiento (' + Vds_sat.toFixed(2) + ' V). El canal no está estrangulado, el Op-Amp se satura a rail positivo (+5V) y la corriente ya no se puede regular como fuente constante.';
       }
     } else if (margen_lineal < 0.6) {
       if (elRegimen) {
@@ -387,8 +387,8 @@
       }
       if (elSubregimen) elSubregimen.textContent = 'Margen lineal crítico: ΔV = ' + margen_lineal.toFixed(2) + ' V';
       if (elAlertaMargen) {
-        alertaMargen.className = 'info-box info-box-warn';
-        alertaMargen.innerHTML = '<strong>PRECAUCIÓN: MARGEN LINEAL ESTRECHO (ΔV = ' + margen_lineal.toFixed(2) + ' V)</strong><br>El transistor opera cerca del codo de saturación. Si la celda aumenta su impedancia o la fuente DC cae, el MOSFET entrará en región óhmica.';
+        elAlertaMargen.className = 'info-box info-box-warn';
+        elAlertaMargen.innerHTML = '<strong>PRECAUCIÓN: MARGEN LINEAL ESTRECHO (ΔV = ' + margen_lineal.toFixed(2) + ' V)</strong><br>El transistor opera cerca del codo de saturación. Si la celda aumenta su impedancia o la fuente DC cae, el MOSFET entrará en región óhmica.';
       }
     } else {
       if (elRegimen) {
@@ -397,8 +397,8 @@
       }
       if (elSubregimen) elSubregimen.textContent = 'Canal estrangulado VDS (' + Vds.toFixed(2) + 'V) ≥ VDS,sat (' + Vds_sat.toFixed(2) + 'V)';
       if (elAlertaMargen) {
-        alertaMargen.className = 'info-box info-box-success';
-        alertaMargen.innerHTML = '<strong>MODO DE SUMIDERO IDEAL GARANTIZADO:</strong><br>El MOSFET opera en la región plana de saturación activa (alta impedancia dinámica ro ≈ ∞). La corriente ID depende únicamente de la consigna analógica comandada y es inmune a fluctuaciones o rizado en la Celda Hull.';
+        elAlertaMargen.className = 'info-box info-box-success';
+        elAlertaMargen.innerHTML = '<strong>MODO DE SUMIDERO IDEAL GARANTIZADO:</strong><br>El MOSFET opera en la región plana de saturación activa (alta impedancia dinámica ro ≈ ∞). La corriente ID depende únicamente de la consigna analógica comandada y es inmune a fluctuaciones o rizado en la Celda Hull.';
       }
     }
 
@@ -430,7 +430,7 @@
 
   function dibujarCurvasSalidaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, Vds_sat, Vth, Kn, lambda) {
     const ctx = canvas.getContext('2d');
-    const w = canvas.width = canvas.offsetWidth;
+    const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
     const h = canvas.height = 260;
 
     ctx.clearRect(0, 0, w, h);
@@ -656,7 +656,7 @@
 
   function dibujarTransferenciaIRLZ44(canvas, I_Q, Vds_Q, Vgs_Q, gm_Q, Vth, Kn) {
     const ctx = canvas.getContext('2d');
-    const w = canvas.width = canvas.offsetWidth;
+    const w = canvas.width = (canvas.offsetWidth && canvas.offsetWidth > 50) ? canvas.offsetWidth : (canvas.parentElement ? canvas.parentElement.offsetWidth : 520) || 520;
     const h = canvas.height = 260;
 
     ctx.clearRect(0, 0, w, h);
