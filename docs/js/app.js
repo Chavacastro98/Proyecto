@@ -90,63 +90,22 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// GESTIÓN DEL DIAGRAMA MAESTRO [00]: TOPOLOGÍA RADIAL HD VS. MERMAID DARK
-let vistaMaestroActual = 'estrella';
+// GESTIÓN DEL DIAGRAMA MAESTRO [00]: FLUJO LÓGICO Y CONCURRENCIA RTOS 2.0 (MERMAID VECTORIAL)
+let vistaMaestroActual = 'mermaid';
 
 function cambiarVistaMaestro(vista) {
-  vistaMaestroActual = vista;
-  const vEstrella = document.getElementById('vistaMaestroEstrella');
+  vistaMaestroActual = 'mermaid';
   const vMermaid = document.getElementById('vistaMaestroMermaid');
-  const btnEstrella = document.getElementById('btnVistaEstrella');
-  const btnMermaid = document.getElementById('btnVistaMermaid');
+  if (vMermaid) vMermaid.style.display = 'block';
   const btnExt = document.getElementById('btnAbrirMaestroExt');
-  const pieTexto = document.getElementById('pieMaestroTexto');
-
-  if (vista === 'estrella') {
-    if (vEstrella) vEstrella.style.display = 'block';
-    if (vMermaid) vMermaid.style.display = 'none';
-    if (btnEstrella) {
-      btnEstrella.style.background = 'var(--primary)';
-      btnEstrella.style.color = '#ffffff';
-    }
-    if (btnMermaid) {
-      btnMermaid.style.background = 'transparent';
-      btnMermaid.style.color = '#94a3b8';
-    }
-    if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.png';
-    if (pieTexto) {
-      pieTexto.innerHTML = '💡 <em>Topología Radial Física (300 DPI): Muestra el nodo maestro ESP32-S3 central, Wi-Fi hacia SCADA/Web arriba, lazo térmico Nano2/TRIACs abajo, bus I²C con ADS1115 (A0-A1 pH diferencial y A2-A3 Shunts Kelvin) y relé bipolar de corte (+ y -) a la derecha.</em>';
-    }
-  } else {
-    if (vEstrella) vEstrella.style.display = 'none';
-    if (vMermaid) vMermaid.style.display = 'block';
-    if (btnMermaid) {
-      btnMermaid.style.background = 'var(--primary)';
-      btnMermaid.style.color = '#ffffff';
-    }
-    if (btnEstrella) {
-      btnEstrella.style.background = 'transparent';
-      btnEstrella.style.color = '#94a3b8';
-    }
-    if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.svg';
-    if (pieTexto) {
-      pieTexto.innerHTML = '💡 <em>Diagrama de Flujo Lógico y Concurrencia RTOS 2.0 (Mermaid Dark): Modelado formal de concurrencia multitarea FreeRTOS SMP Dual-Core, colas de telemetría y sincronización atómica entre cores.</em>';
-    }
-  }
+  if (btnExt) btnExt.href = 'assets/diagramas/00_arquitectura_distribuida.svg';
 }
 
 function inspeccionarMaestroActual() {
-  if (vistaMaestroActual === 'estrella') {
-    abrirModal(
-      'assets/diagramas/00_arquitectura_distribuida.png',
-      'Diagrama Maestro 00: Topología Radial de Hardware Literal (ESP32-S3 Central, ADS1115 A0-A1 pH y A2-A3 Shunts VCSS, Relé Bipolar y Nano2)'
-    );
-  } else {
-    abrirModal(
-      'assets/diagramas/00_arquitectura_distribuida.svg',
-      'Diagrama Maestro 00: Flujo Lógico y Concurrencia RTOS 2.0 (ESP32-S3 Dual-Core, Core 0 Web y Core 1 Control)'
-    );
-  }
+  abrirModal(
+    'assets/diagramas/00_arquitectura_distribuida.svg',
+    'Diagrama Maestro 00: Arquitectura Distribuida y Concurrencia RTOS 2.0 (ESP32-S3 Dual-Core SMP, Core 0 Web y Core 1 Control)'
+  );
 }
 
 // INICIALIZACIÓN GLOBAL
