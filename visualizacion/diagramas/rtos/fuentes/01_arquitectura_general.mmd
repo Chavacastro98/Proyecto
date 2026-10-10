@@ -17,33 +17,33 @@ graph TB
         MUTEXES["Sincronizacion Atomica SMP:<br>• xDataMutex (Estado Global)<br>• xI2CMutex (Bus Wire 400 kHz)<br>• xSPIMutex (Termopares MAX6675)<br>• xLogMutex (RingBuffer RAM)"]
     end
 
-    subgraph ARDUINO_SLAVE["Capa de Potencia AC (Arduino Nano @ 16 MHz)"]
-        ZC["Interrupcion Cruce por Cero (INT1 Pin 3)<br>Hardware ISR ~8 us en Registros Directos"]
-        LUT["Look-Up Table PROGMEM Flash<br>Linealizacion Coseno Inverso 101 pts RMS"]
-        GATES["4x Disparadores TRIAC (BTA24 + MOC3021)<br>Pulsos de Gate Calibrados a 80 us"]
-        WDG["Watchdog UART Fail-Safe (Timeout 3.0 s)"]
+    subgraph ARDUINO_SLAVE["Capa de Potencia AC (Arduino Nano2 @ 16 MHz)"]
+        ZC["Interrupcion Cruce por Cero (INT1 Pin D3)<br>Sincronismo de Red a 60 Hz en Registros Directos"]
+        BURST["Tiempo Proporcional Burst Firing (JELDimmer2)<br>Ventana Fija 3000 ms a Ciclos Completos"]
+        GATES["4x Compuertas TRIAC (BTA24 + MOC3021 / D7-D10)<br>Conmutacion en Cruce por Cero (Cero Ruido EMI)"]
+        WDG["Watchdog UART Fail-Safe (Timeout 4.0 s)"]
     end
 
     subgraph HARDWARE_CONMUTACION["Modulo de Aislamiento y Potencia Galvanica"]
-        RELE_2CH["Modulo Rele Optoacoplado de Aislamiento<br>• Disparo Active-LOW desde GPIO 20<br>• Conmutacion ZCS a Corriente Nula (I=0.00A)<br>• Contactos de Potencia para Linea +12V VDD"]
-        VCSS_STAGE["Etapa VCSS Sumidero Lineal (LM358N + 2x IRLZ44Z)<br>DAC MCP4725 (I2C 0x60) -> Consigna 0-3.53V"]
+        RELE_2CH["Modulo Rele 2-Canales de Aislamiento Bipolar<br>• Disparo Active-LOW desde GPIO 20<br>• Conmutacion ZCS a Corriente Nula (I=0.00A)<br>• Corte Fisico Simultaneo de Lineas (+) y (-)"]
+        VCSS_STAGE["Etapa VCSS Sumidero Lineal (LM358N + 2x IRLZ44N)<br>DAC MCP4725 (I2C 0x60) -> Consigna 0-3.30V Reconfigurable"]
     end
 
     subgraph PLANTA_FISICA["Planta Piloto de Procesos Quimicos (4 Tinas)"]
         T1["Tina 1: Desengrase Alcalino (450W AC @ 90 C)"]
         T2["Tina 2: Decapado Alcalino (Na3PO4 450W AC @ 90 C)"]
         T3["Tina 3: Celda Hull - Zincado Acido (18W AC + VCSS 0-3.5A)"]
-        T4["Tina 4: Niquelado sobre Zinc (450W AC @ 30-40 C)"]
+        T4["Tina 4: Niquelado sobre Zinc (450W AC + VCSS 0-3.5A)"]
         SENS_SPI["4x Termopares K + MAX6675 (SPI)"]
         SENS_PH["1x Sonda pH (PH-4502C + ADS1115 Canal A1 Dedicado)"]
-        SENS_SHUNTS["2x Resistencias Shunt 1 Ohm (ADS1115 A2/A3)"]
+        SENS_SHUNTS["2x Resistencias Shunt 1 Ohm en Source (ADS1115 A2/A3)"]
         SENS_AMB["Sensor Ambiental AHT20 + BMP280 (I2C)"]
     end
 
-    SCADA_PC <==>|Wi-Fi HTTP / REST JSON - data_all| TASK_WEB
-    CORE0 <==>|Atomic Snapshot bajo xDataMutex| CORE1
-    TASK_TERM ==>|UART2 TX GPIO 17 @ 9600 bps| ARDUINO_SLAVE
-    ARDUINO_SLAVE ==>|Pulsos de Fase Optoacoplados| T1 & T2 & T3 & T4
+    SCADA_PC <-->|"Wi-Fi HTTP / REST JSON - data_all (10 Hz)"| TASK_WEB
+    CORE0 <-->|"Atomic Snapshot bajo xDataMutex"| CORE1
+    TASK_TERM -->|"UART2 TX GPIO 17 @ 9600 bps"| ARDUINO_SLAVE
+    ARDUINO_SLAVE -->|"Ciclos Completos 60 Hz ZCS (Burst Firing)"| T1 & T2 & T3 & T4
     
     TASK_FUE ==>|Senal de Disparo ZCS| RELE_2CH
     RELE_2CH ==>|Corte Fisico +12V Anodo| T3

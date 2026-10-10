@@ -24,12 +24,12 @@ graph LR
     end
 
     subgraph BUS_UART["Bus Serie UART2 (9600 Baud)"]
-        NANO["Arduino Nano (ATmega328P Pin RX 0)<br>• Trama CSV: 'pot0,pot1,pot2,pot3'<br>• Watchdog de Seguridad (3.0 s)<br>• 4x Opto-TRIACs MOC3021 + BTA24"]
+        NANO["Arduino Nano2 (ATmega328P Pin RX 0)<br>• Trama CSV: 'pot0,pot1,pot2,pot3'<br>• Tiempo Proporcional ZCS (JELDimmer2 3000 ms)<br>• Watchdog de Seguridad (4.0 s)<br>• 4x Opto-TRIACs MOC3021 + BTA24 (D7 a D10)"]
     end
 
-    subgraph ETAPA_RELE_2CH["Modulo de Rele Optoacoplado de Aislamiento Galvánico"]
-        RELE_MOD["Modulo Rele 5V (Active-LOW)<br>• Disparo sincronizado desde GPIO 20<br>• Contactos de Potencia para 10A/30VDC<br>• Protocolo ZCS: Conmutacion a I=0.00A"]
-        VDD_LINE["Linea de Potencia +12V DC<br>Aislamiento Fisico del Anodo de Celda Hull"]
+    subgraph ETAPA_RELE_2CH["Modulo de Rele 2-Canales de Aislamiento Bipolar"]
+        RELE_MOD["Modulo Rele 5V (Active-LOW)<br>• Disparo sincronizado desde GPIO 20<br>• Contactos de Potencia para 10A/30VDC<br>• Protocolo ZCS: Conmutacion a I=0.00A<br>• Corte Fisico Simultaneo de (+) y (-)"]
+        VDD_LINE["Lineas de Potencia Aisladas<br>Aislamiento Bipolar Total del Anodo y Retorno Catodico"]
     end
 
     subgraph DISTRIBUCION_POTENCIA["Sistema de Alimentacion Hibrido (Pre-Regulador Buck + LDOs TO-220)"]

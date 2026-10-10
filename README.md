@@ -34,23 +34,100 @@ Este proyecto resuelve ese reto construyendo una **planta piloto automatizada de
 
 ## 2. Arquitectura Técnica (Versión RTOS 2.0)
 
-El sistema opera con la versión de producción **RTOS 2.0**, diseñada para garantizar determinismo temporal y aislamiento total de ruido:
+El sistema opera con la versión de producción **RTOS 2.0**, diseñada para garantizar determinismo temporal, aislamiento total de ruido e instrumentación electroquímica de alta fidelidad:
+
+```mermaid
+flowchart TD
+    %% CAPA SUPERIOR: RED INALAMBRICA Y SUPERVISION
+    SCADA["Estacion SCADA PC (Telemetria 2.0)<br/>Recetas ISA-88, Culombimetria Faraday,<br/>Balanza Analitica y Figuras 300 DPI"]
+    WEB["Capa Web Embebida (Core 0)<br/>Web App Movil HTML5 / REST API /data_all (10 Hz)"]
+
+    %% NODO CENTRAL ORQUESTADOR
+    ESP["ESP32-S3 Maestro Dual-Core @ 240 MHz<br/>RTOS 2.0 (SMP FreeRTOS)<br/>Core 0: Servidor Web / Core 1: Control Real-Time"]
+
+    %% ENLACE INALÁMBRICO BIDIRECCIONAL (HACIA ARRIBA)
+    ESP <.->|"((( Wi-Fi SoftAP 'Uli' 2.4 GHz )))<br/>Telemetria Completa 10 Hz <==> Consignas de Receta"| WEB
+    WEB <-->|"Comunicacion Bidireccional HTTP/JSON<br/>Telemetria en Vivo y Comandos de Marcha/Paro"| SCADA
+
+    %% RAMA 1: CONTROL TERMICO AC (EN CASCADA)
+    ESP -->|"UART2 TX (9600 bps)<br/>Watchdog 4.0 s"| NANO["Arduino Nano2 (ATmega328P @ 16 MHz)<br/>JELDimmer2 (Ventana 3000 ms)"]
+    NANO -->|"ZCS Cruce Cero (D3/INT1)<br/>Modulacion Tiempo Proporcional"| TRIACS["Modulo 4x TRIACs BTA24-800BW<br/>Optoacopladores MOC3021 (D7 a D10)"]
+    TRIACS -->|"Ciclos Completos 60 Hz<br/>Cero Ruido EMI"| CALENTADORES["Calentadores de Inmersion<br/>Tina 1, 2, 4 (450W AC)<br/>Tina 3 - Hull (18W AC)"]
+
+    %% RAMA 2: CORRIENTE GALVANICA VCSS (CORTE BIPOLAR + Y -)
+    ESP -->|"Bus I2C (0x60)<br/>Consigna 12-bit (0-3.3V)"| DAC["DAC MCP4725<br/>Reconfigurable Tinas 3 y 4"]
+    DAC -->|"Voltaje Analogico Vref"| VCSS["Modulo Sumidero VCSS (Gm = 2.0 S)<br/>OpAmp LM358N + 2x MOSFETs IRLZ44N<br/>Medicion de Corriente en Source (Shunts)"]
+    ESP -.->|"GPIO 20 (Active-LOW)<br/>Protocolo ZCS a I=0.00A"| RELE["Modulo Rele 2-Canales (Corte Bipolar)<br/>Aislamiento Fisico Total de Lineas (+) y (-)"]
+    RELE <-->|"Corte Bipolar: +12V Anodo y Retorno Catodo"| CELDA["Tinas Electroquimicas Reconfigurables<br/>Tina 3: Celda Hull (Zincado 0-3.50 A)<br/>Tina 4: Niquelado sobre Zinc"]
+    CELDA -->|"Retorno de Corriente al Drain"| VCSS
+    VCSS -->|"Shunts en Source -> ADC A2/A3 (I2C 0x48)"| ESP
+
+    %% RAMA 3: INSTRUMENTACION PH
+    ELECTRODO["Electrodo Vidrio BNC<br/>PH-4502C"] -->|"Voltaje Po"| ADS_PH["ADC ADS1115 (Canal A1 Dedicado)<br/>Modo Continuo @ 860 SPS"]
+    ADS_PH -->|"Bus I2C Fast-Mode (0x48)"| ESP
+
+    %% RAMA 4: TERMOMETRIA
+    TERMOS["4x Termopares Industriales Tipo K<br/>(Tinas 1 a 4)"] -->|"Compensacion Union Fria"| MAXS["4x Modulos MAX6675<br/>Digitalizadores SPI 12-bit"]
+    MAXS -->|"Bus SPI (SCK=18, MISO=19, 4x CS)"| ESP
+
+    %% RAMA 5: AMBIENTE
+    AMB["Sensor Ambiental<br/>AHT20 + BMP280"] -->|"Bus I2C (0x38 / 0x76)"| ESP
+
+    %% ESTILOS VISUALES
+    style ESP fill:#0284c7,stroke:#38bdf8,stroke-width:3px,color:#ffffff
+    style SCADA fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style WEB fill:#0369a1,stroke:#38bdf8,stroke-width:2px,color:#ffffff
+
+    style NANO fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    style TRIACS fill:#1e293b,stroke:#f59e0b,stroke-width:1px,color:#f8fafc
+    style CALENTADORES fill:#0f172a,stroke:#f59e0b,stroke-width:1px,color:#f8fafc
+
+    style DAC fill:#1e293b,stroke:#8b5cf6,stroke-width:1px,color:#f8fafc
+    style VCSS fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+    style RELE fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#f8fafc
+    style CELDA fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+
+    style ELECTRODO fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#f8fafc
+    style ADS_PH fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#f8fafc
+
+    style TERMOS fill:#0f172a,stroke:#ef4444,stroke-width:1px,color:#f8fafc
+    style MAXS fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#f8fafc
+
+    style AMB fill:#1e293b,stroke:#06b6d4,stroke-width:2px,color:#f8fafc
+```
+
+---
+
+### Galería de Interfaces de Usuario (SCADA PC y Web Móvil)
+
+| Estación SCADA de Escritorio (Telemetría 2.0 en Python) | Interfaz Web Móvil Embebida (ESP32-S3 a Pie de Tina) |
+| :---: | :---: |
+| ![SCADA Telemetría 2.0](docs/assets/scada_01_principal.jpg) | ![Web Móvil ESP32](docs/assets/web_01_hub.jpg) |
+| *Supervisión multivariable ISA-88, lazos térmicos de 4 tinas, culombimetría faradaica, osciloscopio virtual y balanza analítica.* | *Control táctil responsivo servido directamente por el Core 0 vía Wi-Fi SoftAP ('Uli') sin necesidad de conexión a Internet.* |
+
+---
 
 ### Nodo Maestro ESP32-S3 (Dual-Core @ 240 MHz, 16 MB Flash, 8 MB PSRAM)
 * **Concurrencia Simétrica FreeRTOS:**
   * **Core 1 (Tiempo Real Estricto):** Lazos de control térmico PI (1 Hz), modulación analógica de corriente VCSS, muestreo continuo a 860 SPS en ADC ADS1115 y máquina de seguridad Fail-Safe (50 Hz).
-  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA (Over-The-Air) a través del punto de acceso Wi-Fi SoftAP ("Uli"). Esto permite operación totalmente autónoma e inalámbrica, eliminando la conexión de cables USB a la computadora durante los ensayos electroquímicos.
+  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA (Over-The-Air) a través del punto de acceso Wi-Fi SoftAP ("Uli"). Esto permite operación totalmente autónoma e inalámbrica, eliminando cables USB hacia la computadora durante los ensayos electroquímicos.
 * **Medición de pH en Canal A1 (ADS1115):**  
   La señal potenciométrica del módulo PH-4502C se adquiere de forma directa y continua a través del **Canal A1** del convertidor ADS1115 a **860 SPS**. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
-* **Lazo de Corriente VCSS (Sumidero Analógico Gm = 2.00 S):**  
-  Modulación directa por DAC MCP4725 de 12 bits sobre dos ramas MOSFET con dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación térmica combinada, garantizando seguridad industrial contra sobrecalentamiento e incendio en régimen DC y pulsado a 10 Hz). Monitoreo continuo de corriente por rama (A2/A3) y diagnóstico de salud de celda (`SaludCelda_t`).
-* **Secuencia ZCS (Zero-Current Switching):**  
-  Al detener la fuente o finalizar el cronómetro de la etapa, el firmware reduce la consigna del DAC a 0V, espera 30 ms para disipación de corriente remanente en la celda y abre el relé mecánico de aislamiento de +12V a corriente cero, eliminando arcos eléctricos y desgaste de contactos.
+* **Lazo de Corriente VCSS Reconfigurable (Sumidero Analógico Gm = 2.00 S):**  
+  Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44N) mide la corriente en el **Source** mediante dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación combinada), con retorno hacia los canales A2/A3 del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
 
-### Coprocesador de Potencia AC (Arduino Nano ATmega328P @ 16 MHz)
+  | Control de Corriente Pulsada (Web Móvil) | Protocolo Zero-Current Switching (ZCS) |
+  | :---: | :---: |
+  | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | ![Secuencia ZCS](docs/assets/onda_zcs_tiempo_proporcional.jpg) |
+  | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo programable.* | *Aislamiento bipolar físico en relé de 2 canales a corriente estrictamente nula (I=0.00A).* |
+
+* **Secuencia ZCS con Relé de 2 Canales (Corte Bipolar Simultáneo $+$ y $-$):**  
+  Al detener la fuente o finalizar el cronómetro de la etapa, el firmware anula la consigna del DAC a 0V, espera 30 ms para disipación de corriente remanente en la celda y abre el relé mecánico de 2 canales, **cortando simultáneamente tanto la línea positiva (+12V VDD) como la línea negativa de retorno catódico**, dejando la celda 100% aislada flotante y eliminando arcos eléctricos y desgaste de contactos.
+
+### Coprocesador de Potencia AC (Arduino Nano2 ATmega328P @ 16 MHz)
 * **Módulo de TRIACs de Fabricación Propia:** Etapa de potencia de 4 canales diseñada por el equipo con 4x TRIACs BTA24-800BW y optoacopladores MOC3021, gobernando 3 resistencias de inmersión de 450 W (Tinas 1, 2 y 4) y 1 calentador de cartucho de 18 W (Tina 3 - Celda Hull de 267 mL).
-* **Firmware Nano2 (Tiempo Proporcional / Burst Firing):** Modula la potencia térmica a ciclos completos de 60 Hz en ventanas temporales fijas de 3000 ms mediante la librería `JELDimmer2`, conmutando exclusivamente en cruces por cero. Esta estrategia suprime la interferencia electromagnética (EMI) por conmutación abrupta sobre los sensores de pH y termopares.
-* **Seguridad por Perro Guardián UART:** Si el enlace serie con el ESP32 se interrumpe por más de 4000 ms, el Nano apaga inmediatamente todas las compuertas de los TRIACs.
+* **Firmware Nano2 (Tiempo Proporcional / Burst Firing ZCS):** Modula la potencia térmica a ciclos completos de 60 Hz en ventanas temporales fijas de 3000 ms mediante la librería `JELDimmer2`, conmutando exclusivamente en cruces por cero detectados por interrupción `INT1` en Pin D3. Esta estrategia erradica los transitorios $dv/dt$ y la interferencia electromagnética (EMI) sobre los sensores de pH y termopares.
+* **Seguridad por Perro Guardián UART:** Si el enlace serie con el ESP32 se interrumpe por más de 4000 ms, el Nano apaga inmediatamente todas las compuertas de los TRIACs (D7 a D10).
 
 ### SCADA Telemetría 2.0 (Python / Windows)
 * **Gestión de Recetas ISA-88 desde Excel:** Carga dinámica de la matriz experimental (`matriz_experimentos.xlsx`) para 32 probetas, con selección automática de tiempos, consignas de temperatura y modos de corriente (DC continuo o Pulsado a 10 Hz / 20% duty cycle, con soporte para columnas personalizadas de frecuencia y ciclo de trabajo).

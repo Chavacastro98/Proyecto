@@ -24,10 +24,10 @@ graph TD
         FS_LATCH["Fail-Safe Latch (g_failsafe_latched)<br>• Desconexion Rele VDD (HIGH)<br>• Nano a '0,0,0,0'<br>• DAC a 0V<br>• Baliza Rojo Estroboscopico (4 Hz)"]
     end
 
-    subgraph NANO_CONCURRENCIA["Concurrencia y Atomicidad en Arduino Nano (ATmega328P)"]
-        NANO_ISR["alCruzarPorCero() Hardware ISR (INT1 Pin 3)<br>• Ejecucion ultra-rapida en ~8 us<br>• Manipulacion directa de registros PORTD/PORTB"]
-        NANO_MUTEX["noInterrupts() / interrupts()<br>• Lectura/Escritura atomica de retardos uint16_t"]
-        NANO_LOOP["loop() Principal:<br>• UART RX byte a byte + Watchdog 3s + Disparo 80us"]
+    subgraph NANO_CONCURRENCIA["Concurrencia y Sincronismo en Arduino Nano2 (ATmega328P)"]
+        NANO_ISR["isr_zero_cross() Hardware ISR (INT1 Pin D3)<br>• Sincronismo de ciclo completo de red a 60 Hz<br>• Conmutacion ZCS a voltaje nulo V=0 (Cero EMI)"]
+        NANO_DIMMER["JELDimmer2 (Tiempo Proporcional)<br>• Ventana fija de 3000 ms<br>• Modulacion dutyWindow por canal"]
+        NANO_LOOP["loop() Principal:<br>• UART RX de tramas 'p0,p1,p2,p3' + Watchdog 4.0 s"]
     end
 
     T_WEB <==>|Atomic Snapshot - Lectura Rapida| MUX_DATA

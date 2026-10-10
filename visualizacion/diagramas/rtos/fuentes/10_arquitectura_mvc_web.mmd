@@ -1,6 +1,6 @@
 graph TD
     subgraph CLIENTE["Clientes de Red (Core 0 Wi-Fi SoftAP 'Uli')"]
-        SCADA_APP["SCADA PC (telemetria_gui.py)<br>• Consulta Periodica /data_all (1 Hz)<br>• Reduccion 75% de Carga de Red"]
+        SCADA_APP["SCADA PC (telemetria_gui.py)<br>• Consulta Periodica /data_all (10 Hz / 100 ms)<br>• Snapshot Integral Multivariable"]
         BROWSER["Navegador Web (http://interfaz.local)<br>• Renderizado HTML5 / CSS3 Glassmorphism<br>• Consola de Logs RingBuffer (/logs)<br>• Calibracion pH, Control VCSS y OTA"]
     end
 
@@ -34,6 +34,6 @@ graph TD
     CONTROLADORES -->|Inyecta HTML desde PROGMEM| VISTAS
     VISTAS -->|Retorno Pagina Completa| BROWSER
 
-    SCADA_APP <==>|2. Consulta Unificada /data_all - 1 s| C_SYS
+    SCADA_APP <==>|2. Consulta Unificada /data_all - 10 Hz| C_SYS
     BROWSER <==>|3. AJAX REST JSON /data_t, /data_f, /logs| CONTROLADORES
     CONTROLADORES <==>|Acceso Atomico con xDataMutex| MODELOS_RTOS

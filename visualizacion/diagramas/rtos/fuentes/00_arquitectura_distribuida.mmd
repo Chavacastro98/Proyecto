@@ -1,0 +1,57 @@
+flowchart TD
+    %% CAPA SUPERIOR: RED INALAMBRICA Y SUPERVISION
+    SCADA["Estacion SCADA PC (Telemetria 2.0)<br/>Recetas ISA-88, Culombimetria Faraday,<br/>Balanza Analitica y Figuras 300 DPI"]
+    WEB["Capa Web Embebida (Core 0)<br/>Web App Movil HTML5 / REST API /data_all (10 Hz)"]
+
+    %% NODO CENTRAL ORQUESTADOR
+    ESP["ESP32-S3 Maestro Dual-Core @ 240 MHz<br/>RTOS 2.0 (SMP FreeRTOS)<br/>Core 0: Servidor Web / Core 1: Control Real-Time"]
+
+    %% ENLACE INALÁMBRICO BIDIRECCIONAL (HACIA ARRIBA)
+    ESP <.->|"((( Wi-Fi SoftAP 'Uli' 2.4 GHz )))<br/>Telemetria Completa 10 Hz <==> Consignas de Receta"| WEB
+    WEB <-->|"Comunicacion Bidireccional HTTP/JSON<br/>Telemetria en Vivo y Comandos de Marcha/Paro"| SCADA
+
+    %% RAMA 1: CONTROL TERMICO AC (EN CASCADA)
+    ESP -->|"UART2 TX (9600 bps)<br/>Watchdog 4.0 s"| NANO["Arduino Nano2 (ATmega328P @ 16 MHz)<br/>JELDimmer2 (Ventana 3000 ms)"]
+    NANO -->|"ZCS Cruce Cero (D3/INT1)<br/>Modulacion Tiempo Proporcional"| TRIACS["Modulo 4x TRIACs BTA24-800BW<br/>Optoacopladores MOC3021 (D7 a D10)"]
+    TRIACS -->|"Ciclos Completos 60 Hz<br/>Cero Ruido EMI"| CALENTADORES["Calentadores de Inmersion<br/>Tina 1, 2, 4 (450W AC)<br/>Tina 3 - Hull (18W AC)"]
+
+    %% RAMA 2: CORRIENTE GALVANICA VCSS (CORTE BIPOLAR + Y -)
+    ESP -->|"Bus I2C (0x60)<br/>Consigna 12-bit (0-3.3V)"| DAC["DAC MCP4725<br/>Reconfigurable Tinas 3 y 4"]
+    DAC -->|"Voltaje Analogico Vref"| VCSS["Modulo Sumidero VCSS (Gm = 2.0 S)<br/>OpAmp LM358N + 2x MOSFETs IRLZ44N<br/>Medicion de Corriente en Source (Shunts)"]
+    ESP -.->|"GPIO 20 (Active-LOW)<br/>Protocolo ZCS a I=0.00A"| RELE["Modulo Rele 2-Canales (Corte Bipolar)<br/>Aislamiento Fisico Total de Lineas (+) y (-)"]
+    RELE <-->|"Corte Bipolar: +12V Anodo y Retorno Catodo"| CELDA["Tinas Electroquimicas Reconfigurables<br/>Tina 3: Celda Hull (Zincado 0-3.50 A)<br/>Tina 4: Niquelado sobre Zinc"]
+    CELDA -->|"Retorno de Corriente al Drain"| VCSS
+    VCSS -->|"Shunts en Source -> ADC A2/A3 (I2C 0x48)"| ESP
+
+    %% RAMA 3: INSTRUMENTACION PH
+    ELECTRODO["Electrodo Vidrio BNC<br/>PH-4502C"] -->|"Voltaje Po"| ADS_PH["ADC ADS1115 (Canal A1 Dedicado)<br/>Modo Continuo @ 860 SPS"]
+    ADS_PH -->|"Bus I2C Fast-Mode (0x48)"| ESP
+
+    %% RAMA 4: TERMOMETRIA
+    TERMOS["4x Termopares Industriales Tipo K<br/>(Tinas 1 a 4)"] -->|"Compensacion Union Fria"| MAXS["4x Modulos MAX6675<br/>Digitalizadores SPI 12-bit"]
+    MAXS -->|"Bus SPI (SCK=18, MISO=19, 4x CS)"| ESP
+
+    %% RAMA 5: AMBIENTE
+    AMB["Sensor Ambiental<br/>AHT20 + BMP280"] -->|"Bus I2C (0x38 / 0x76)"| ESP
+
+    %% ESTILOS VISUALES
+    style ESP fill:#0284c7,stroke:#38bdf8,stroke-width:3px,color:#ffffff
+    style SCADA fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style WEB fill:#0369a1,stroke:#38bdf8,stroke-width:2px,color:#ffffff
+
+    style NANO fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    style TRIACS fill:#1e293b,stroke:#f59e0b,stroke-width:1px,color:#f8fafc
+    style CALENTADORES fill:#0f172a,stroke:#f59e0b,stroke-width:1px,color:#f8fafc
+
+    style DAC fill:#1e293b,stroke:#8b5cf6,stroke-width:1px,color:#f8fafc
+    style VCSS fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+    style RELE fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#f8fafc
+    style CELDA fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+
+    style ELECTRODO fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#f8fafc
+    style ADS_PH fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#f8fafc
+
+    style TERMOS fill:#0f172a,stroke:#ef4444,stroke-width:1px,color:#f8fafc
+    style MAXS fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#f8fafc
+
+    style AMB fill:#1e293b,stroke:#06b6d4,stroke-width:2px,color:#f8fafc

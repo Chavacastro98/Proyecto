@@ -4,6 +4,14 @@
   "nombre": "Arquitectura FreeRTOS SMP (RTOS 2.0)",
   "descripcion": "Colección de diagramas de la arquitectura multitarea simétrica (SMP) para ESP32-S3 N16R8, separación física Core 0 (Comunicaciones) y Core 1 (Control determinista), sensor de pH dedicado en Canal A1 del ADS1115 (eliminación de A0, bus I2C al 100% a 860 SPS), persistencia NVS por modo, control PI VCSS con Anti-Inrush y muestreo estroboscópico ETS, mutexes semafóricos, Fail-Safe Latch ISA-18.2, balanza analítica y culombimetría faradaica en Telemetría 2.0.",
   "diagramas": {
+    "00_arquitectura_distribuida": {
+      "num": "00",
+      "cat": "Arquitectura Distribuida",
+      "title": "Topología Ciberfísica Distribuida y Flujo Multietapa (RTOS 2.0)",
+      "badge": "ESP32-S3 Central • Wi-Fi Bidireccional • VCSS Bipolar",
+      "archivo": "00_arquitectura_distribuida.mmd",
+      "desc": "Diagrama maestro de arquitectura distribuida en cascada: ESP32-S3 como nodo central orquestador, capa superior inalámbrica Wi-Fi SoftAP hacia SCADA Telemetría 2.0 y Web Móvil con enlace bidireccional a 10 Hz, módulo relé de 2 canales con corte físico bipolar (+ y -), sumidero VCSS reconfigurable para Tinas 3 y 4 con medición de corriente en Source, modulación térmica AC por cruces por cero ZCS con Nano2 y sensado multicanal."
+    },
     "01_arquitectura_general": {
       "num": "01",
       "cat": "Arquitectura Global",
@@ -71,10 +79,10 @@
     "09_control_triacs_ac60hz": {
       "num": "09",
       "cat": "Potencia AC 60Hz",
-      "title": "Control de Fase AC 60 Hz en Arduino Nano con Watchdog",
-      "badge": "Interrupciones INT1 • LUT 101 Pts • Watchdog",
+      "title": "Modulación por Tiempo Proporcional (Burst Firing ZCS) en Arduino Nano2",
+      "badge": "Burst Firing ZCS • Ventana 3000 ms • Watchdog 4.0s",
       "archivo": "09_control_triacs_ac60hz.mmd",
-      "desc": "Control de ángulo de fase a 60 Hz: Interrupción por hardware en INT1 (4N35, duración ~8 µs), reinicio de registros de puerto directos (PORTD y PORTB), conversión no lineal de potencia activa RMS mediante Look-Up Table (0-100% -> 8333-0 µs), pulsos de gate de 80 µs y rama de contingencia Fail-Safe por Watchdog UART (3.0 segundos)."
+      "desc": "Control térmico por modulación de tiempo proporcional (Burst Firing ZCS a ciclos completos de 60 Hz) gobernado por Nano2 y librería JELDimmer2: Cruce por cero en Pin D3 (INT1), conmutación en voltaje nulo V=0 en compuertas D7 a D10 para erradicar ruido EMI sobre pH y termopares, y watchdog UART de seguridad de 4000 ms."
     },
     "10_arquitectura_mvc_web": {
       "num": "10",
