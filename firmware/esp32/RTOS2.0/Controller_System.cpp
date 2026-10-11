@@ -318,8 +318,28 @@ static void handleDataSensors() {
  * @brief Endpoint POST invocado por el operador para restablecer el enclavamiento Fail-Safe.
  */
 static void handleFailSafeReset() {
+  if (!validarAutenticacion(server)) return;
   clearFailSafe();
   server.send(200, "text/plain", "OK");
+}
+
+/**
+ * @brief Endpoint POST para reconfigurar credenciales Wi-Fi SoftAP en Flash NVS (Auditoría W1).
+ */
+static void handleWifiCfg() {
+  if (!validarAutenticacion(server)) return;
+  if (!server.hasArg("ssid") || !server.hasArg("pass")) {
+    server.send(400, "application/json", "{\"status\":\"error\",\"msg\":\"Parametros 'ssid' y 'pass' requeridos\"}");
+    return;
+  }
+  String nuevo_ssid = server.arg("ssid");
+  String nuevo_pass = server.arg("pass");
+  if (nuevo_ssid.length() < 1 || nuevo_pass.length() < 8) {
+    server.send(400, "application/json", "{\"status\":\"error\",\"msg\":\"SSID no vacio y password min 8 caracteres\"}");
+    return;
+  }
+  reconfigurarCredencialesWiFi(nuevo_ssid.c_str(), nuevo_pass.c_str());
+  server.send(200, "application/json", "{\"status\":\"ok\",\"msg\":\"Credenciales guardadas en NVS. Reinicie ESP32 para aplicar.\"}");
 }
 
 /**
@@ -335,5 +355,6 @@ void registrarRutasSystem() {
   server.on("/data_all", handleDataAll);
   server.on("/data_sensors", handleDataSensors);
   server.on("/failsafe_reset", handleFailSafeReset);
+  server.on("/wifi_cfg", handleWifiCfg);
 }
 

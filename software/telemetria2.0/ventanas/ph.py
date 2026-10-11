@@ -39,6 +39,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.patches as patches
 
+AUTH_HEADERS = {"X-Auth-Token": "cts51_sec_2026"}
+
 
 class VentanaPH:
 
@@ -452,7 +454,7 @@ class VentanaPH:
                             self.win.after(0, self._actualizar_boton_sonda)
                         return
 
-                r_act = requests.get(f"http://{ip}/act_ph?run=1", timeout=1.5)
+                r_act = requests.get(f"http://{ip}/act_ph?run=1", headers=AUTH_HEADERS, timeout=1.5)
                 if r_act.status_code == 200:
                     self.sonda_encendida = True
                     if self._running and self.win.winfo_exists():
@@ -491,7 +493,7 @@ class VentanaPH:
         def _enviar():
             try:
                 val = 1 if nuevo_estado else 0
-                r = requests.get(f"http://{ip}/act_ph?run={val}", timeout=1.5)
+                r = requests.get(f"http://{ip}/act_ph?run={val}", headers=AUTH_HEADERS, timeout=1.5)
                 if r.status_code == 200:
                     self.sonda_encendida = nuevo_estado
                     if self._running and self.win.winfo_exists():
@@ -501,7 +503,7 @@ class VentanaPH:
                         self.win.after(0, lambda: messagebox.showerror("Bloqueado por ESP32", f"El ESP32 rechazó la activación:\n{r.text}"))
             except Exception as e:
                 if self._running and self.win.winfo_exists():
-                    self.win.after(0, lambda: messagebox.showerror("Error de Comunicación", f"No se pudo comunicar con el ESP32:\n{e}"))
+                    self.win.after(0, lambda err=e: messagebox.showerror("Error de Comunicación", f"No se pudo comunicar con el ESP32:\n{err}"))
 
         threading.Thread(target=_enviar, daemon=True).start()
 
@@ -907,8 +909,8 @@ class VentanaPH:
 
             def _cal_worker():
                 try:
-                    requests.get(f"http://{ip}/set_cal_mode?m={modo}", timeout=1.5)
-                    r = requests.get(f"http://{ip}/do_cal_ph?p={punto_ph}", timeout=4.0)
+                    requests.get(f"http://{ip}/set_cal_mode?m={modo}", headers=AUTH_HEADERS, timeout=1.5)
+                    r = requests.get(f"http://{ip}/do_cal_ph?p={punto_ph}", headers=AUTH_HEADERS, timeout=4.0)
                     if r.status_code == 200:
                         d = r.json()
                         if d.get("ok") == 1:
@@ -935,9 +937,9 @@ class VentanaPH:
                             self.win.after(0, lambda: messagebox.showerror("Interlock ESP32", f"El ESP32 rechazó la calibración:\n{r.text}"))
                 except Exception as e:
                     if self._running and self.win.winfo_exists():
-                        self.win.after(0, lambda: messagebox.showinfo(
+                        self.win.after(0, lambda err=e: messagebox.showinfo(
                             "Punto Registrado",
-                            f"Punto pH {punto_ph} guardado en GUI (V = {v_actual:.3f} V).\n\n(No se pudo contactar endpoint /do_cal_ph en ESP32: {e})"
+                            f"Punto pH {punto_ph} guardado en GUI (V = {v_actual:.3f} V).\n\n(No se pudo contactar endpoint /do_cal_ph en ESP32: {err})"
                         ))
 
             threading.Thread(target=_cal_worker, daemon=True).start()
@@ -974,7 +976,7 @@ class VentanaPH:
         ip = getattr(self.app, 'ip_grabacion', '192.168.4.1')
 
         try:
-            r = requests.get(f"http://{ip}/set_cal_mode?m={modo}", timeout=2.0)
+            r = requests.get(f"http://{ip}/set_cal_mode?m={modo}", headers=AUTH_HEADERS, timeout=2.0)
             if r.status_code == 200:
                 messagebox.showinfo(
                     "Sincronización Exitosa",
@@ -1013,7 +1015,7 @@ class VentanaPH:
 
         ip = getattr(self.app, 'ip_grabacion', '192.168.4.1')
         try:
-            r = requests.get(f"http://{ip}/reset_cal_ph", timeout=2.5)
+            r = requests.get(f"http://{ip}/reset_cal_ph", headers=AUTH_HEADERS, timeout=2.5)
             if r.status_code == 200:
                 self.cal_puntos = {7: 1.765, 4: 2.472, 10: 1.058}
                 self.cal_completada = False

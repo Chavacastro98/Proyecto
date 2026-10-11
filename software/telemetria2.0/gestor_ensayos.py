@@ -17,6 +17,8 @@ try:
 except ImportError:
     from telemetria.utilidades.alarma import reproducir_alarma_sonora
 
+API_AUTH_TOKEN = "cts51_sec_2026"
+
 
 class GestorEnsayosMixin:
 
@@ -336,6 +338,7 @@ class GestorEnsayosMixin:
                     self.root.after(0, self.destellar_tx)
                 base_url = f"http://{ip}"
                 session = requests.Session()
+                session.headers.update({"X-Auth-Token": API_AUTH_TOKEN})
                 # 1. Apagar fuente en firmware (DAC a 0V, espera descarga ZCS y abre relé físico)
                 # NOTA: No se envían set_f(a=0) ni modo_f(v=0) para evitar colisiones de hilos
                 # asíncronos y sobreescrituras en NVS que forzaban DC al conmutar etapas pulsadas.
@@ -398,6 +401,7 @@ class GestorEnsayosMixin:
                     self.root.after(0, self.destellar_tx)
                 base_url = f"http://{ip}"
                 session = requests.Session()
+                session.headers.update({"X-Auth-Token": API_AUTH_TOKEN})
 
                 # 1. Configuración de la Fuente de Corriente (VCSS)
                 if self.etapa_activa_idx in (0, 1):

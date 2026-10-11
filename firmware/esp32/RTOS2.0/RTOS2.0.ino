@@ -43,8 +43,21 @@
 // =================================================================================
 
 /** @brief Credenciales de la red inalámbrica generada directamente por el ESP32 */
-const char *ssid = "Uli";
-const char *password = "12345678";
+String g_wifi_ssid = DEFAULT_WIFI_SSID;
+String g_wifi_pass = DEFAULT_WIFI_PASS;
+const char *ssid = DEFAULT_WIFI_SSID;
+const char *password = DEFAULT_WIFI_PASS;
+
+void reconfigurarCredencialesWiFi(const char *nuevo_ssid, const char *nuevo_pass) {
+  if (!nuevo_ssid || !nuevo_pass) return;
+  g_wifi_ssid = String(nuevo_ssid);
+  g_wifi_pass = String(nuevo_pass);
+  ssid = g_wifi_ssid.c_str();
+  password = g_wifi_pass.c_str();
+  memoria.putString("wifi_ssid", g_wifi_ssid);
+  memoria.putString("wifi_pass", g_wifi_pass);
+  logSistema(LOG_LVL_INFO, "WIFI", "Credenciales SoftAP actualizadas en NVS (SSID: %s)", nuevo_ssid);
+}
 
 /** @brief Instancia del servidor HTTP en el puerto estándar 80 */
 WebServer server(80);
@@ -125,6 +138,12 @@ void setup() {
 
   // 5. Carga de parámetros operacionales desde memoria Flash no volátil (NVS)
   memoria.begin("config", false);
+
+  // Restaurar credenciales Wi-Fi desde NVS si existen
+  g_wifi_ssid = memoria.getString("wifi_ssid", DEFAULT_WIFI_SSID);
+  g_wifi_pass = memoria.getString("wifi_pass", DEFAULT_WIFI_PASS);
+  ssid = g_wifi_ssid.c_str();
+  password = g_wifi_pass.c_str();
 
   if (takeDataMutex(pdMS_TO_TICKS(100))) {
     // Restaurar consignas de temperatura para las 4 tinas

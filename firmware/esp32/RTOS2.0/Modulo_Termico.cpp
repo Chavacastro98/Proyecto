@@ -37,10 +37,10 @@
  * ganancias sintonizadas analíticamente para cada volumen de electrolito.
  */
 CanalTermico canales[] = {
-    CanalTermico(0, COMMON_SCK, PIN_CS_TC0, COMMON_SO, 62.65f, 0.0897f), // Canal 0: Limpieza (450W)
-    CanalTermico(1, COMMON_SCK, PIN_CS_TC1, COMMON_SO, 62.65f, 0.0897f), // Canal 1: Decapado (450W)
-    CanalTermico(2, COMMON_SCK, PIN_CS_TC2, COMMON_SO, 16.71f, 0.0239f), // Canal 2: Celda Hull (18W)
-    CanalTermico(3, COMMON_SCK, PIN_CS_TC3, COMMON_SO, 62.51f, 0.0895f)  // Canal 3: Niquelado (450W)
+    CanalTermico(0, COMMON_SCK, PIN_CS_TC0, COMMON_SO, 13.92f, 0.0199f), // Canal 0: Limpieza (450W, normalizado %/°C)
+    CanalTermico(1, COMMON_SCK, PIN_CS_TC1, COMMON_SO, 13.92f, 0.0199f), // Canal 1: Decapado (450W, normalizado %/°C)
+    CanalTermico(2, COMMON_SCK, PIN_CS_TC2, COMMON_SO, 92.83f, 0.1328f), // Canal 2: Celda Hull (18W, normalizado %/°C)
+    CanalTermico(3, COMMON_SCK, PIN_CS_TC3, COMMON_SO, 13.89f, 0.0199f)  // Canal 3: Niquelado (450W, normalizado %/°C)
 };
 
 /**

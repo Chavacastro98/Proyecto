@@ -10,9 +10,32 @@ import time
 import csv
 import threading
 import subprocess
+import hashlib
+import logging
+import uuid
 from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
+
+logger = logging.getLogger("SCADA.Grabacion")
+
+
+def calcular_sha256_archivo(ruta_archivo):
+    """Calcula el hash SHA-256 de un archivo en bloques de 64 KB (Auditoría D2)."""
+    if not os.path.exists(ruta_archivo):
+        return None
+    sha256 = hashlib.sha256()
+    try:
+        with open(ruta_archivo, "rb") as f:
+            while True:
+                chunk = f.read(65536)
+                if not chunk:
+                    break
+                sha256.update(chunk)
+        return sha256.hexdigest()
+    except Exception as e:
+        logger.error("Error calculando SHA-256 de %s: %s", ruta_archivo, e)
+        return None
 
 
 class GrabacionMixin:
@@ -30,8 +53,17 @@ class GrabacionMixin:
         p_num = self.placa_activa["num"] if self.placa_activa else 1
         r_name = str(self.placa_activa["ronda"]).replace(" ", "_") if self.placa_activa else "Manual"
 
-        # Crear carpeta dedicada estructurada por ensayo
-        self.carpeta_ensayo_actual = os.path.join(self.carpeta_experimentos, f"Ensayo_P{p_num:02d}_{r_name}_{timestamp_str}")
+        # Trazabilidad y Proveniencia (Auditoría D1):
+        self.ensayo_uuid = str(uuid.uuid4())
+        es_demo = getattr(self, 'modo_demo', False)
+        self.fuente_datos = "DEMO" if es_demo else "HARDWARE"
+        self.version_firmware = "RTOS 2.0"
+
+        # Carpeta dedicada: Datos simulados se aíslan en experimentos/demo/ (Auditoría D1)
+        carpeta_base = os.path.join(self.carpeta_experimentos, "demo") if es_demo else self.carpeta_experimentos
+        os.makedirs(carpeta_base, exist_ok=True)
+
+        self.carpeta_ensayo_actual = os.path.join(carpeta_base, f"Ensayo_P{p_num:02d}_{r_name}_{timestamp_str}")
         self.carpeta_graficas_actual = os.path.join(self.carpeta_ensayo_actual, "graficas")
         os.makedirs(self.carpeta_graficas_actual, exist_ok=True)
 
@@ -51,23 +83,27 @@ class GrabacionMixin:
                 f_res.write(f"FICHA TÉCNICA DE RECETA ISA-88 — ENSAYO PLACA #{p.get('num', 1):02d}\n")
                 f_res.write("========================================================================\n")
                 f_res.write(f"Fecha y Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f_res.write(f"Fuente de Datos: {self.fuente_datos}\n")
+                f_res.write(f"Versión Firmware: {self.version_firmware}\n")
+                f_res.write(f"UUID del Ensayo: {self.ensayo_uuid}\n")
                 f_res.write(f"Ronda / Bloque: {p.get('ronda')}\n")
                 f_res.write(f"pH de Referencia Inicial: {p.get('ph')}\n")
-                f_res.write(f"Etapa 1 - Limpieza: 240s @ 85°C (0.00 A)\n")
+                f_res.write("Etapa 1 - Limpieza: 240s @ 85°C (0.00 A)\n")
                 f_res.write(f"Etapa 2 - Decapado: {p.get('matizado_s', 120)}s @ 85°C (0.00 A)\n")
                 f_res.write(f"Etapa 3 - Zincado: {p.get('tiem_zin_s', 120)}s @ {p.get('temp_zin', 25)}°C | 1.50 A ({'Pulsado 10Hz 20%' if p.get('pulsado')==1 else 'DC'})\n")
                 f_res.write(f"Etapa 4 - Niquelado Watts: {p.get('tiem_niq_s', 600)}s (10 min) @ 30°C | 1.13 A DC (pH ref ~5.5)\n")
                 f_res.write("========================================================================\n")
-        except Exception:
-            pass
+        except Exception as e_res:
+            logger.warning("No se pudo escribir resumen_receta.txt: %s", e_res)
 
         try:
-            # 1. CSV Principal de Telemetría (Compatible v3.1 / v3.5 / RTOS 1.3 con shunts, PI y ETS)
+            # 1. CSV Principal de Telemetría (con metadatos de proveniencia D1)
             self.csv_file_handle = open(self.archivo_csv, mode="w", newline="", encoding="utf-8")
             self.csv_writer = csv.writer(self.csv_file_handle)
 
             headers_tel = [
                 "Timestamp_ISO", "Tiempo_Relativo_s",
+                "Fuente_Datos", "Firmware_Version", "Ensayo_UUID",
                 "Placa_ID", "Ronda", "Etapa_Num", "Etapa_Nombre", "Etapa_Tiempo_s", "Etapa_Duracion_s",
                 "Corriente_Target_A", "Modo_Corriente", "Temp_SP_Target_C",
                 # Canal Térmico y TRIAC 1 (Limpieza - 450W)
@@ -86,7 +122,7 @@ class GrabacionMixin:
                 "pH_Tina1", "pH_Tina2", "pH_Modulo_Activo",
                 "pH_Modo_Cal_T1", "pH_Modo_Cal_T2",
                 "pH_Slope_Pct_T1", "pH_Slope_Pct_T2", "pH_Interlock_Activo",
-                # Fuente de Corriente Galvánica Lazo Cerrado RTOS 1.3
+                # Fuente de Corriente Galvánica Lazo Cerrado RTOS 2.0
                 "Fuente_Activa", "Fuente_Modo_Pulsado",
                 "Fuente_Corriente_Consigna_A", "Fuente_Corriente_Real_A",
                 "Fuente_Corriente_Shunt1_A", "Fuente_Corriente_Shunt2_A",
@@ -139,6 +175,7 @@ class GrabacionMixin:
             self.csv_eventos_handle.flush()
 
         except Exception as e:
+            logger.error("No se pudieron crear los archivos CSV del ensayo: %s", e)
             messagebox.showerror("Error de Archivo", f"No se pudieron crear los archivos CSV del ensayo:\n{e}")
             return
 
@@ -272,33 +309,35 @@ class GrabacionMixin:
 
     def detener_grabacion(self):
         self.grabando = False
-        if getattr(self, 'csv_file_handle', None):
-            try:
-                self.csv_file_handle.close()
-            except Exception:
-                pass
-            self.csv_file_handle = None
+        for attr, nom_log in [
+            ('csv_file_handle', 'telemetría'),
+            ('csv_err_handle', 'errores'),
+            ('csv_tm_handle', 'tiempos muertos'),
+            ('csv_eventos_handle', 'eventos'),
+        ]:
+            handle = getattr(self, attr, None)
+            if handle:
+                try:
+                    handle.flush()
+                    handle.close()
+                except Exception as ex_c:
+                    logger.warning("Error cerrando archivo de %s: %s", nom_log, ex_c)
+                setattr(self, attr, None)
 
-        if getattr(self, 'csv_err_handle', None):
+        # Generar manifiesto criptográfico de integridad SHA-256 (Auditoría D2)
+        if self.carpeta_ensayo_actual and os.path.exists(self.carpeta_ensayo_actual):
+            ruta_checksums = os.path.join(self.carpeta_ensayo_actual, "checksums.sha256")
             try:
-                self.csv_err_handle.close()
-            except Exception:
-                pass
-            self.csv_err_handle = None
-
-        if getattr(self, 'csv_tm_handle', None):
-            try:
-                self.csv_tm_handle.close()
-            except Exception:
-                pass
-            self.csv_tm_handle = None
-
-        if getattr(self, 'csv_eventos_handle', None):
-            try:
-                self.csv_eventos_handle.close()
-            except Exception:
-                pass
-            self.csv_eventos_handle = None
+                with open(ruta_checksums, "w", encoding="utf-8") as f_chk:
+                    for nom in ["telemetria_completa.csv", "metricas_control_errores.csv",
+                                "registro_tiempos_muertos.csv", "registro_eventos_fallos.csv"]:
+                        ruta_c = os.path.join(self.carpeta_ensayo_actual, nom)
+                        h = calcular_sha256_archivo(ruta_c)
+                        if h:
+                            f_chk.write(f"{h}  {nom}\n")
+                logger.info("Manifiesto de integridad SHA-256 generado en: %s", ruta_checksums)
+            except Exception as e_chk:
+                logger.warning("No se pudo generar manifiesto SHA-256: %s", e_chk)
 
         # Consolidar Auditoría Técnica de Incidentes en resumen_receta.txt
         resumen_txt_path = os.path.join(self.carpeta_ensayo_actual, "resumen_receta.txt") if self.carpeta_ensayo_actual else None
@@ -324,8 +363,8 @@ class GrabacionMixin:
                             t_fmt = f"{ev.get('t_rel', 0.0):.1f} s"
                             f_res.write(f"{t_fmt:<10} | {ev.get('etapa', '')[:22]:<22} | {ev.get('severidad', ''):<12} | {ev.get('sensor', '')[:22]:<22} | {ev.get('tipo', '')[:24]:<24} | {ev.get('desc', '')}\n")
                     f_res.write("========================================================================\n")
-            except Exception:
-                pass
+            except Exception as e_aud:
+                logger.warning("No se pudo escribir auditoría en resumen_receta.txt: %s", e_aud)
 
         self.btn_rec.config(text="▶ INICIAR GRABACIÓN", bg="#059669", activebackground="#10b981")
         self.lbl_csv_info.config(text=f"✅ Ensayo cerrado en: {os.path.basename(self.carpeta_ensayo_actual)}/ ({self.muestras_count} muestras)", fg="#fbbf24")

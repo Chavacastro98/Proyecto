@@ -85,6 +85,7 @@ static void handleDataF() {
  * La escritura en Flash NVS se realiza fuera del mutex para no retener la sección crítica.
  */
 static void handleSetF() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("p") || server.arg("p").length() == 0 || !server.hasArg("v")) {
     server.send(400, "text/plain", "Parámetros insuficientes");
     return;
@@ -136,6 +137,7 @@ static void handleSetF() {
  * @brief Conmuta el modo de operación entre Continuo (DC) y Pulsado.
  */
 static void handleModoF() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("v")) {
     server.send(400, "text/plain", "Parámetro v faltante");
     return;
@@ -151,6 +153,7 @@ static void handleModoF() {
  * @brief Habilita o deshabilita la compensación automática de ganancia en lazo cerrado (2 Hz).
  */
 static void handleSetCompF() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("v")) {
     server.send(400, "text/plain", "Parámetro v faltante");
     return;
@@ -165,6 +168,7 @@ static void handleSetCompF() {
  * Aplica interlock estricto: la fuente DEBE estar apagada previamente para evitar colisión I2C y cuelgues.
  */
 static void handleCalVCSS() {
+  if (!validarAutenticacion(server)) return;
   bool activa = false;
   if (takeDataMutex(pdMS_TO_TICKS(20))) {
     activa = fuenteActiva;
@@ -197,6 +201,7 @@ static void handleCalVCSS() {
  * @brief Restablece la ganancia Gm al valor nominal de diseño (2.000 S, Factor 1.0000x).
  */
 static void handleResetCalVCSS() {
+  if (!validarAutenticacion(server)) return;
   bool activa = false;
   if (takeDataMutex(pdMS_TO_TICKS(20))) {
     activa = fuenteActiva;
@@ -220,6 +225,7 @@ static void handleResetCalVCSS() {
  * Aplica interlocks de seguridad (prohibido si Fail-Safe está activo o si el módulo de pH está operando).
  */
 static void handleActF() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("run")) {
     server.send(400, "text/plain", "Parámetro run faltante");
     return;

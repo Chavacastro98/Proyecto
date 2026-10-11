@@ -20,12 +20,14 @@ OriginPro, Python (Pandas/Matplotlib) o Microsoft Excel.
 ===================================================================================
 """
 
+import argparse
+import csv
+from datetime import datetime
+import hashlib
+import os
 import sys
 import time
-import os
-import csv
-import argparse
-from datetime import datetime
+import uuid
 
 try:
     import requests
@@ -122,10 +124,15 @@ def main():
         print("👉 Verifica que el ESP32 esté encendido y responda en http://192.168.4.1")
         sys.exit(1)
 
+    ensayo_uuid = str(uuid.uuid4())
+
     # Definición de cabeceras de columnas para el CSV (compatibles con MATLAB / Pandas)
     headers = [
         "Timestamp_ISO",
         "Tiempo_Relativo_s",
+        "Fuente_Datos",
+        "Firmware_Version",
+        "Ensayo_UUID",
         # Canal Térmico y TRIAC 1 (Limpieza - 450W)
         "T1_Limpieza_Temp_C", "T1_Limpieza_SP_C", "T1_Limpieza_Activo",
         "T1_TRIAC_Potencia_Pct", "T1_TRIAC_Alpha_Deg", "T1_TRIAC_Delay_us", "T1_TRIAC_Watts_W",
@@ -256,6 +263,9 @@ def main():
                 row = [
                     timestamp_iso,
                     t_relativo,
+                    "HARDWARE",
+                    "RTOS 2.0",
+                    ensayo_uuid,
                     # T1 y TRIAC 1
                     t_data[0].get("t", 0.0), t_data[0].get("sp", 0.0), t_data[0].get("run", 0),
                     p1_pct, a1_deg, d1_us, w1,
@@ -327,6 +337,20 @@ def main():
             print(f"📊 Total de muestras registradas: {muestras_guardadas}")
             print(f"⏱️  Tiempo total registrado: {round(time.time() - t_inicio, 1)} segundos")
             print(f"📁 Archivo CSV guardado en: {os.path.abspath(filename)}")
+
+            # Generar checksum SHA-256 (Auditoría D2)
+            try:
+                sha256 = hashlib.sha256()
+                with open(filename, "rb") as f_chk:
+                    while chunk := f_chk.read(65536):
+                        sha256.update(chunk)
+                chk_hex = sha256.hexdigest()
+                sha_file = f"{filename}.sha256"
+                with open(sha_file, "w", encoding="utf-8") as f_out:
+                    f_out.write(f"{chk_hex}  {os.path.basename(filename)}\n")
+                print(f"🔒 Checksum SHA-256 verificado: {chk_hex[:16]}... ({sha_file})")
+            except Exception as e_chk:
+                print(f"⚠️ No se pudo calcular SHA-256: {e_chk}")
             print("=" * 80)
 
 

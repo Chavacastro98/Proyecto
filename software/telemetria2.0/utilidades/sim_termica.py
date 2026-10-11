@@ -21,16 +21,16 @@ H_EFF_DEF = 65.0     # W/(m²·K)
 TINAS_DEFAULT = [
     {"nombre": "Tina 1: Desengrase Alcalino (450W)",
      "vol": 1.0, "A_s": 0.0470, "P_max": 450, "retardo": 6,
-     "T_set": 90, "Kp": 62.65, "Ki": 0.0897},
+     "T_set": 90, "Kp": 13.92, "Ki": 0.0199},
     {"nombre": "Tina 2: Decapado Ácido (450W)",
      "vol": 1.0, "A_s": 0.0470, "P_max": 450, "retardo": 6,
-     "T_set": 90, "Kp": 62.65, "Ki": 0.0897},
+     "T_set": 90, "Kp": 13.92, "Ki": 0.0199},
     {"nombre": "Tina 3: Celda Hull / Zincado (18W)",
      "vol": 0.267, "A_s": 0.0210, "P_max": 18, "retardo": 3,
-     "T_set": 30, "Kp": 16.71, "Ki": 0.0239},
+     "T_set": 30, "Kp": 92.83, "Ki": 0.1328},
     {"nombre": "Tina 4: Niquelado (450W)",
      "vol": 1.0, "A_s": 0.0470, "P_max": 450, "retardo": 6,
-     "T_set": 30, "Kp": 62.51, "Ki": 0.0895},
+     "T_set": 30, "Kp": 13.89, "Ki": 0.0199},
 ]
 
 

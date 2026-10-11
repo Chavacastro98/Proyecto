@@ -549,6 +549,9 @@ class ComunicacionMixin:
                 try:
                     fila_tel = [
                         t_iso, t_rel,
+                        getattr(self, 'fuente_datos', 'HARDWARE'),
+                        getattr(self, 'version_firmware', 'RTOS 2.0'),
+                        getattr(self, 'ensayo_uuid', ''),
                         placa_id, ronda_id, self.etapa_activa_idx + 1, nom_etapa,
                         self.etapa_segundos_transcurridos, dur_etapa,
                         curr_target, modo_corr, sp_target,

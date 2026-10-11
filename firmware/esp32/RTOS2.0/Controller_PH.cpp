@@ -127,6 +127,7 @@ static void handleDataPHRaw() {
  * @brief Conmuta el estado de adquisición del módulo de pH con validación estricta de interlock.
  */
 static void handleActPH() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("run")) {
     server.send(400, "text/plain", "Parámetro run faltante");
     return;
@@ -157,6 +158,7 @@ static void handleActPH() {
  * @brief Selecciona el modelo metrológico de calibración (0: Teórico, 1: 2 Puntos, 2: 3 Puntos).
  */
 static void handleSetCalMode() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("m")) {
     server.send(400, "text/plain", "Parámetro m (modo) faltante");
     return;
@@ -185,6 +187,7 @@ static void handleSetCalMode() {
  * coherencia de buffer, cálculo de pendientes y persistencia en Flash NVS.
  */
 static void handleDoCalPH() {
+  if (!validarAutenticacion(server)) return;
   if (phInterlockActivo()) {
     server.send(403, "application/json", "{\"ok\":0,\"err\":\"Interlock activo: apague la fuente antes de calibrar\"}");
     return;
@@ -227,6 +230,7 @@ static void handleDoCalPH() {
  * @brief Restablece la calibración del sensor dedicado a los valores teóricos de fábrica y limpia la NVS.
  */
 static void handleResetCalPH() {
+  if (!validarAutenticacion(server)) return;
   if (phInterlockActivo()) {
     server.send(403, "application/json", "{\"ok\":0,\"err\":\"Interlock activo: apague la fuente y calefacción antes de restablecer.\"}");
     return;

@@ -52,12 +52,18 @@ fprintf('// ==================================================================\n
 for i = 1:length(tinas)
     % Parámetros termodinámicos puntuales de la planta actual
     m = tinas(i).volumen * rho_agua; 
-    K_planta = 1 / (h_efectivo * tinas(i).A_s); 
+    K_planta = 1 / (h_efectivo * tinas(i).A_s); % Ganancia en °C/W
     tau_planta = (m * cp_agua) / (h_efectivo * tinas(i).A_s); 
+    
+    % Normalización de Actuador (Auditoría T1):
+    % La señal de control en el firmware opera en u in [0, 100]%.
+    % La potencia inyectada es P(t) = u * (P_max / 100) Watts.
+    % Por ende, la ganancia estática respecto al comando porcentual es °C/%:
+    K_planta_pct = K_planta * (tinas(i).P_max / 100.0);
     
     % Modelo dinámico en lazo abierto con aproximación de Padé de orden 2 para el retardo
     s = tf('s');
-    G_planta = (K_planta / (tau_planta * s + 1)) * pade(exp(-tinas(i).retardo * s), 2);
+    G_planta = (K_planta_pct / (tau_planta * s + 1)) * pade(exp(-tinas(i).retardo * s), 2);
     
     % Criterio de sintonización restrictivo enfocado estrictamente en tracking libre de sobretiro
     wc = 0.015; 

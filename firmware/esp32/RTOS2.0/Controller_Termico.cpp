@@ -59,6 +59,7 @@ static void handleDataT() {
  * Por seguridad industrial, el canal DEBE estar inactivo para aceptar el cambio.
  */
 static void handleSetT() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("id") || !server.hasArg("v")) {
     server.send(400, "text/plain", "Parámetros faltantes");
     return;
@@ -103,6 +104,7 @@ static void handleSetT() {
  * Al apagar el sistema, reinicia a 0 el límite de rampa y el acumulador integral.
  */
 static void handleActT() {
+  if (!validarAutenticacion(server)) return;
   if (!server.hasArg("run")) {
     server.send(400, "text/plain", "Parámetro run faltante");
     return;

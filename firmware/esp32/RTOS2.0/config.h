@@ -37,6 +37,18 @@
 #define FIRMWARE_VERSION "2.0.0"
 
 // =================================================================================
+// SEGURIDAD DE RED Y AUTENTICACIÓN REST API (Auditoría W1)
+// =================================================================================
+#define DEFAULT_WIFI_SSID     "Uli"
+#define DEFAULT_WIFI_PASS     "12345678"
+#define API_AUTH_TOKEN        "cts51_sec_2026"
+
+extern String g_wifi_ssid;
+extern String g_wifi_pass;
+void reconfigurarCredencialesWiFi(const char *nuevo_ssid, const char *nuevo_pass);
+bool validarAutenticacion(WebServer &srv);
+
+// =================================================================================
 // PARÁMETROS DE CONTROL DE CORRIENTE Y MUESTREO ETS (RTOS 2.0)
 // =================================================================================
 #define VCSS_PI_BLANKING_MS   0UL    // 0 ms: respuesta analógica inmediata

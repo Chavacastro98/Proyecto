@@ -70,5 +70,11 @@
     "valencia_z_Zn": 2,
     "densidad_Zn_g_cm3": 7.14,
     "faraday_C_mol": 96485.3
+  },
+  "red": {
+    "default_wifi_ssid": "Uli",
+    "default_wifi_pass": "12345678",
+    "api_auth_token": "cts51_sec_2026",
+    "ip_esp32_defecto": "192.168.4.1"
   }
 }
