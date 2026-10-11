@@ -268,21 +268,34 @@
     document.getElementById('lblVceldaVal').textContent = Vcelda.toFixed(1) + ' V';
     document.getElementById('lblThetaVal').textContent = Theta.toFixed(1) + ' °C/W';
 
-    // Topología: 2 ramas en paralelo con shunts cerámicos de 1.0 Ω (10W) cada una
-    const Rshunt_rama = 1.0;
-    const Rshunt_eq = 0.5; // 1.0 Ω || 1.0 Ω
+    // Topología: 2 ramas simétricas con MOSFETs IRLZ44Z independientes.
+    // Cada MOSFET tiene su propio nodo de Source conectado a su propio shunt cerámico de 1.0 Ω (10W) a GND común.
+    // Los nodos de Source NO están en paralelo (evita embalamiento térmico por dispersión de Vth).
+    // Cada medio LM358N regula independientemente su rama (V_S1 = V_S2 = V_ref), forzando I_rama = I_total / 2.
+    // La caída en el Source de cada MOSFET es V_S = I_rama * Rshunt_rama = (I_total / 2) * 1.0 Ω = 0.5 * I_total [V].
+    const Rshunt_rama = 1.0; // 1.0 Ω cerámico (10W) en cada Source a GND
     const I_rama_peak = Ipeak / 2;
     const I_rama_avg = Iavg / 2;
 
-    const Vshunt = Ipeak * Rshunt_eq; // Caída sobre el banco de shunts
-    const Vds = Math.max(0, Vfuente - Vcelda - Vshunt);
+    // Conforme a la deducción analítica del Paso 3 en la documentación:
+    // V_DS = V_fuente - V_celda - V_S = V_fuente - V_celda - (I_total / 2) * Rshunt_rama
+    // Evaluada a régimen nominal medio (I_total = I_avg = 2.0 A con shunt disipando 1.0 W):
+    // V_S = (2.0 A / 2) * 1.0 Ω = 1.0 V
+    // V_DS = 12.0 V - 2.8 V - 1.0 V = 8.20 V
+    const I_total_eval = (typeof modoCorrienteActual !== 'undefined' && modoCorrienteActual === 'dc') ? Ipeak : Iavg;
+    const I_rama_eval = I_total_eval / 2;
+    const Vshunt = I_rama_eval * Rshunt_rama; // Tensión en cada nodo de Source: 1.0 V a 2.0 A total (1.0 A por rama)
+    const Vds = Math.max(0, Vfuente - Vcelda - Vshunt); // 8.20 V
+
+    // Caída instantánea V_DS durante el pulso activo t_on (a corriente pico Ipeak)
+    const Vds_on_peak = Math.max(0, Vfuente - Vcelda - ((Ipeak / 2) * Rshunt_rama)); // 7.20 V @ 4.0 A
 
     // Disipación: 2 MOSFETs IRLZ44Z se reparten equitativamente la corriente
-    const Pmosfet_total = Vds * Iavg;
-    const Pmosfet_rama = Vds * I_rama_avg; // Potencia disipada en cada MOSFET TO-220
+    const Pmosfet_total = Vds * I_total_eval;
+    const Pmosfet_rama = Pmosfet_total / 2; // Potencia disipada en cada MOSFET TO-220 (8.2 W)
 
     // Disipación en cada resistencia shunt cerámica de 1 Ω (10W)
-    const Pshunt_rama = I_rama_avg * I_rama_avg * Rshunt_rama;
+    const Pshunt_rama = I_rama_avg * I_rama_avg * Rshunt_rama; // (1.0 A)^2 * 1.0 Ω = 1.0 W
 
     const Tamb = 25.0;
     const Theta_jc = 0.7; // TO-220 juntura-a-cápsula
@@ -293,7 +306,7 @@
     document.getElementById('valVds').textContent = Vds.toFixed(2) + ' V';
     document.getElementById('valPmosfet').textContent = Pmosfet_rama.toFixed(1) + ' W';
     const elPtotal = document.getElementById('valPmosfetTotal');
-    if (elPtotal) elPtotal.textContent = 'Total 2 ramas: ' + Pmosfet_total.toFixed(1) + ' W';
+    if (elPtotal) elPtotal.textContent = 'Total 2 ramas: ' + Pmosfet_total.toFixed(1) + ' W (Vds_on = ' + Vds_on_peak.toFixed(2) + ' V)';
     document.getElementById('valTj').textContent = Tj.toFixed(1) + ' °C';
     document.getElementById('valPshunt').textContent = Pshunt_rama.toFixed(1) + ' W';
 

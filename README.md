@@ -116,19 +116,19 @@ flowchart TD
 * **Medición de pH en Modo Diferencial (Canales A0-A1, ADS1115):**  
   La señal potenciométrica del módulo PH-4502C se adquiere en modo diferencial (Canales A0 y A1) a través del convertidor ADS1115 a **860 SPS** para maximizar el rechazo de modo común y eliminar offset galvánico de masa. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
 * **Lazo de Corriente VCSS Reconfigurable (Sumidero Analógico Gm = 2.00 S):**  
-  Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44N) mide la corriente en el **Source** mediante dos shunts cerámicos de 1.0 Ω / 10W en paralelo (resistencia equivalente de 0.50 Ω con 20W de disipación combinada), con retorno Kelvin hacia los canales **A2-A3 en modo diferencial** del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
+  Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44Z) bifurca la corriente en dos ramas simétricas con shunt cerámico individual de 1.0 Ω / 10W conectado a su propio nodo de Source a GND común (previniendo embalamiento térmico por dispersión de $V_{\text{th}}$), con retorno Kelvin hacia los canales **A2-A3 en modo diferencial** del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
 
   | Control de Corriente Pulsada (Web Móvil) |
   | :---: |
   | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | 
-  | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo programable.* |
+  | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo óptimo del 20%.* |
 
-* **Secuencia ZCS con Relé de 2 Canales (Corte Bipolar Simultáneo $+$ y $-$):**  
-  Al detener la fuente o finalizar el cronómetro de la etapa, el firmware anula la consigna del DAC a 0V, espera 30 ms para disipación de corriente remanente en la celda y abre el relé mecánico de 2 canales, **cortando simultáneamente tanto la línea positiva (+12V VDD) como la línea negativa de retorno catódico**, dejando la celda 100% aislada flotante y eliminando arcos eléctricos y desgaste de contactos.
+* **Aislamiento Bipolar y Conmutación en Frío (Cold Switching) con Relé de 2 Canales:**  
+  Al detener la fuente o finalizar el cronómetro de la etapa, el firmware anula primero la consigna del DAC a 0V, espera 30 ms para disipar la corriente remanente en la celda ($I = 0.00\text{ A}$) y posteriormente abre el relé mecánico de 2 canales. Esta maniobra de **conmutación en frío (Cold Switching / interlock por software)** corta simultáneamente tanto la línea positiva (+12V VDD) como la línea negativa de retorno catódico, dejando la celda 100% aislada flotante y eliminando arcos eléctricos y desgaste de contactos mecánicos.
 
 ### Coprocesador de Potencia AC (Arduino Nano2 ATmega328P @ 16 MHz)
 * **Módulo de TRIACs de Fabricación Propia:** Etapa de potencia de 4 canales diseñada por el equipo con 4x TRIACs BTA24-800BW y optoacopladores MOC3021, gobernando 3 resistencias de inmersión de 450 W (Tinas 1, 2 y 4) y 1 calentador de cartucho de 18 W (Tina 3 - Celda Hull de 267 mL).
-* **Firmware Nano2 (Tiempo Proporcional / Burst Firing ZCS):** Modula la potencia térmica a ciclos completos de 60 Hz en ventanas temporales fijas de 3000 ms mediante la librería `JELDimmer2`, conmutando exclusivamente en cruces por cero detectados por interrupción `INT1` en Pin D3. Esta estrategia erradica los transitorios $dv/dt$ y la interferencia electromagnética (EMI) sobre los sensores de pH y termopares.
+* **Firmware Nano2 (Método de Control por Tiempo Proporcional en Cruce por Cero - Burst Firing):** Modula la potencia térmica a ciclos completos de 60 Hz en ventanas temporales fijas de 3000 ms mediante la librería `JELDimmer2`. Dado que los TRIACs son **interruptores de estado sólido**, pueden conmutar a nivel de semiciclo; al disparar exclusivamente en el cruce por cero de voltaje detectado por interrupción `INT1` en Pin D3 y extinguirse en el cruce por cero de corriente ($I=0$), este **método de control ZCS** erradica los transitorios abruptos $dv/dt$ y la interferencia electromagnética (EMI) sobre los sensores de pH y termopares (a diferencia del recorte por ángulo de fase / dimmer).
 * **Seguridad por Perro Guardián UART:** Si el enlace serie con el ESP32 se interrumpe por más de 4000 ms, el Nano apaga inmediatamente todas las compuertas de los TRIACs (D7 a D10).
 
 ### SCADA Telemetría 2.0 (Python / Windows)

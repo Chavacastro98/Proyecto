@@ -18,27 +18,32 @@
     document.getElementById('lblV10Val').textContent = V10.toFixed(0) + ' mV';
     document.getElementById('lblVinPhVal').textContent = Vin.toFixed(0) + ' mV';
 
-    // 1. Sensibilidad y Pendiente Ácida (pH 4.01 a pH 7.00)
+    // 1. Sensibilidad y Pendiente Ácida del Módulo (pH 4.01 a pH 7.00)
     const deltaV_ac = Math.max(10, V4 - V7);
     const deltaPh_ac = 7.00 - 4.01; // 2.99 pH
-    const S_acida = deltaV_ac / deltaPh_ac; // mV / pH
-    const m_acida = deltaPh_ac / (deltaV_ac / 1000); // pH / V (RTOS 2.0)
+    const S_acida = deltaV_ac / deltaPh_ac; // mV / pH a la salida del módulo PH-4502C
 
-    // 2. Sensibilidad y Pendiente Alcalina (pH 7.00 a pH 10.01)
+    // 2. Sensibilidad y Pendiente Alcalina del Módulo (pH 7.00 a pH 10.01)
     const deltaV_ba = Math.max(10, V7 - V10);
     const deltaPh_ba = 10.01 - 7.00; // 3.01 pH
-    const S_basica = deltaV_ba / deltaPh_ba; // mV / pH
-    const m_basica = deltaPh_ba / (deltaV_ba / 1000); // pH / V (RTOS 2.0)
+    const S_basica = deltaV_ba / deltaPh_ba; // mV / pH a la salida del módulo PH-4502C
 
-    // 3. Sensibilidad Nernst Teórica dependiente de T
+    // 3. Sensibilidad Nernst Teórica dependiente de T y Ganancia del Acondicionador
+    // El módulo PH-4502C incorpora un amplificador operacional con ganancia G_modulo = 2.0
+    const G_modulo = 2.0;
     const Tk = tempC + 273.15;
     const R = 8.31446;
     const F = 96485.3;
-    const S_teorica = (2.302585 * R * Tk / F) * 1000; // mV/pH (59.16 mV/pH @ 25°C)
+    const S_nernst_sonda = (2.302585 * R * Tk / F) * 1000; // 59.16 mV/pH @ 25°C en electrodo de vidrio
+    const S_teorica_modulo = G_modulo * S_nernst_sonda;   // 118.32 mV/pH @ 25°C a la salida del módulo
 
-    // 4. Eficiencia y Salud del Electrodo
-    const saludAcida = Math.min(115, Math.max(0, (S_acida / S_teorica) * 100));
-    const saludBasica = Math.min(115, Math.max(0, (S_basica / S_teorica) * 100));
+    // Pendientes equivalentes referidas directamente al electrodo de vidrio (sin ganancia)
+    const S_sonda_ac = S_acida / G_modulo;
+    const S_sonda_ba = S_basica / G_modulo;
+
+    // 4. Eficiencia y Salud del Electrodo (comparada estrictamente contra G_módulo · S_Nernst(T))
+    const saludAcida = Math.min(115, Math.max(0, (S_acida / S_teorica_modulo) * 100));
+    const saludBasica = Math.min(115, Math.max(0, (S_basica / S_teorica_modulo) * 100));
 
     // 5. Transducción In-Operando según Dominio Ácido vs Alcalino
     let phCalculado = 7.00;
@@ -63,14 +68,21 @@
 
     // Despliegue en interfaz
     document.getElementById('valPhCalculado').textContent = phCalculado.toFixed(2) + ' pH';
-    document.getElementById('valPendienteAcida').textContent = S_acida.toFixed(2) + ' mV/pH';
-    document.getElementById('valSaludAcida').textContent = 'Salud: ' + saludAcida.toFixed(1) + ' %';
-    document.getElementById('valPendienteBasica').textContent = S_basica.toFixed(2) + ' mV/pH';
-    document.getElementById('valSaludBasica').textContent = 'Salud: ' + saludBasica.toFixed(1) + ' %';
-    document.getElementById('valPendienteTeorica').textContent = S_teorica.toFixed(2) + ' mV/pH';
+    document.getElementById('valPendienteAcida').textContent = S_acida.toFixed(1) + ' mV/pH';
+    const elSaludAc = document.getElementById('valSaludAcida');
+    if (elSaludAc) elSaludAc.textContent = 'Salud: ' + saludAcida.toFixed(1) + ' % (Sonda: ' + S_sonda_ac.toFixed(1) + ' mV/pH)';
+    
+    document.getElementById('valPendienteBasica').textContent = S_basica.toFixed(1) + ' mV/pH';
+    const elSaludBa = document.getElementById('valSaludBasica');
+    if (elSaludBa) elSaludBa.textContent = 'Salud: ' + saludBasica.toFixed(1) + ' % (Sonda: ' + S_sonda_ba.toFixed(1) + ' mV/pH)';
+
+    document.getElementById('valPendienteTeorica').textContent = S_teorica_modulo.toFixed(1) + ' mV/pH';
+    const elRefSub = document.getElementById('lblRefNernstSub');
+    if (elRefSub) elRefSub.textContent = 'G·S(T) [Sonda: ' + S_nernst_sonda.toFixed(1) + ' mV/pH]';
+
     document.getElementById('valOffsetPh').textContent = V7.toFixed(0) + ' mV';
 
-    dibujarCurvaNernst(V4, V7, V10, Vin, phCalculado, S_acida, S_basica, S_teorica);
+    dibujarCurvaNernst(V4, V7, V10, Vin, phCalculado, S_acida, S_basica, S_teorica_modulo);
   }
 
   function dibujarCurvaNernst(V4, V7, V10, Vin, phCalc, S_ac, S_ba, S_teor) {
