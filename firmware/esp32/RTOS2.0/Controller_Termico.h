@@ -3,7 +3,7 @@
 
 /**
  * =================================================================================
- * CONTROLADOR: CONTROL TÉRMICO PI (Controller_Termico.h) — RTOS 1.0
+ * CONTROLADOR: CONTROL TÉRMICO PI (Controller_Termico.h) — RTOS 2.0
  * =================================================================================
  * Plataforma: ESP32-S3 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
  *

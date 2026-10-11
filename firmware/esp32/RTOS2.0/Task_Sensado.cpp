@@ -52,7 +52,7 @@ void taskSensadoFunc(void *pvParameters) {
       procesarLecturaPH();
     }
 
-    // 2. NOTA ARQUITECTÓNICA (RTOS 1.4):
+    // 2. NOTA ARQUITECTÓNICA (RTOS 2.0):
     // El sensado analógico de los shunts VCSS (A2/A3) y el lazo PI han sido transferidos
     // al 100% a Task_Fuente (Single-Writer Pattern). Task_Sensado queda completamente
     // liberada de la etapa de potencia, suprimiendo cualquier riesgo de colisión I2C.

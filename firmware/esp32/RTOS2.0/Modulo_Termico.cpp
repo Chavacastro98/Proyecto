@@ -1,6 +1,6 @@
 /**
  * =================================================================================
- * MÓDULO DE CONTROL TÉRMICO PI (Modulo_Termico.cpp) — Versión RTOS 1.0
+ * MÓDULO DE CONTROL TÉRMICO PI (Modulo_Termico.cpp) — Versión RTOS 2.0
  * =================================================================================
  * Plataforma: ESP32-S3 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
  *

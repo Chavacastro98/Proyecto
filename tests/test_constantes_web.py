@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 TEST DE FUENTE ÚNICA DE VERDAD: CONSTANTES Y SHOWCASE WEB (tests/test_constantes_web.py)
@@ -10,9 +9,9 @@ Showcase Web (documentos/academicos/showcase_web/index.html).
 ===============================================================================
 """
 
-import os
 import json
-import re
+import os
+
 import pytest
 
 DIR_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,14 +22,14 @@ HTML_SHOWCASE = os.path.join(DIR_ROOT, "documentos", "academicos", "showcase_web
 @pytest.fixture(scope="module")
 def constantes():
     assert os.path.exists(JSON_CONSTANTES), f"No existe archivo de constantes: {JSON_CONSTANTES}"
-    with open(JSON_CONSTANTES, "r", encoding="utf-8") as f:
+    with open(JSON_CONSTANTES, encoding="utf-8") as f:
         return json.load(f)
 
 
 @pytest.fixture(scope="module")
 def html_content():
     assert os.path.exists(HTML_SHOWCASE), f"No existe archivo HTML de showcase: {HTML_SHOWCASE}"
-    with open(HTML_SHOWCASE, "r", encoding="utf-8") as f:
+    with open(HTML_SHOWCASE, encoding="utf-8") as f:
         return f.read()
 
 
@@ -77,6 +76,7 @@ class TestFuenteUnicaVerdad:
     def test_celda_hull_y_difusion_pulsada(self, constantes, html_content):
         hull = constantes["celda_hull_267ml"]
         electro = constantes["electrodeposicion"]
+        assert electro["masa_molar_Zn_g_mol"] == 65.38
         # Ecuación de celda Hull a=5.10, b=5.24
         assert f"{hull['constante_a']:.2f}" in html_content
         assert f"{hull['constante_b']:.2f}" in html_content

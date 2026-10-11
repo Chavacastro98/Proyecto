@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 SUITE DE PRUEBAS UNITARIAS: CÁLCULOS METROLÓGICOS Y CONTROL (tests/test_calculos.py)
@@ -9,8 +8,9 @@ culombimetría faradaica y espesores de electrodeposición.
 ===============================================================================
 """
 
-import sys
 import os
+import sys
+
 import pytest
 
 # Incluir rutas del software SCADA para resolver módulos de telemetria y utilidades

@@ -10,11 +10,10 @@ interactivo en HTML con gráficas vectoriales SVG de los modelos físicos
 ===============================================================================
 """
 
-import sys
 import os
-import time
-import math
 import subprocess
+import sys
+import time
 import webbrowser
 
 # Rutas del proyecto

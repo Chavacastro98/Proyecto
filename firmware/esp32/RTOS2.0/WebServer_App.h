@@ -3,7 +3,7 @@
 
 /**
  * =================================================================================
- * ENRUTADOR PRINCIPAL DEL SERVIDOR WEB (WebServer_App.h) — RTOS 1.0
+ * ENRUTADOR PRINCIPAL DEL SERVIDOR WEB (WebServer_App.h) — RTOS 2.0
  * =================================================================================
  * Plataforma: ESP32-S3 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
  *

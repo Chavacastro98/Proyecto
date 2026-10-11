@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 SUITE DE PRUEBAS UNITARIAS: INTERLOCKS DE SEGURIDAD Y MATRIZ ISA-88
@@ -9,7 +8,6 @@ y conmutación en cero corriente (ZCS) implementadas en el firmware RTOS 2.0.
 ===============================================================================
 """
 
-import pytest
 
 
 class InterlockValidator:
@@ -131,7 +129,7 @@ class TestInterlocksFailSafeYCalibracion:
 
     def test_reset_calibracion_permitido_si_fuente_apagada(self):
         """El factor Gm puede reescribirse a nominal de 2.000 S con la fuente apagada."""
-        ok, msg = InterlockValidator.validar_reset_calibracion(fuente_activa=False)
+        ok, _msg = InterlockValidator.validar_reset_calibracion(fuente_activa=False)
         assert ok
 
 

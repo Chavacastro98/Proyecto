@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 SUITE DE PRUEBAS UNITARIAS: DESERIALIZACIÓN Y CONTRATOS JSON DE TELEMETRÍA
@@ -10,13 +9,13 @@ nodo maestro ESP32-S3 (RTOS 2.0) y la estación SCADA en PC (Telemetría 2.0).
 """
 
 import json
-import pytest
+from typing import ClassVar
 
 
 class TestContratoJSONFuenteVCSS:
     """Valida el contrato y rangos del endpoint de corriente /data_f."""
 
-    MOCK_PAYLOAD_FUENTE = {
+    MOCK_PAYLOAD_FUENTE: ClassVar[dict] = {
         "act": 1,
         "modo": 0,
         "amp": 2048,
@@ -66,7 +65,7 @@ class TestContratoJSONFuenteVCSS:
 class TestContratoJSONTermico:
     """Valida el esquema del array de 4 lazos térmicos /data_t."""
 
-    MOCK_PAYLOAD_TERMICO = [
+    MOCK_PAYLOAD_TERMICO: ClassVar[list] = [
         {"t": 87.5, "sp": 88.0, "p": 62, "run": 1},   # Tina 1: Desengrase
         {"t": 86.2, "sp": 88.0, "p": 58, "run": 1},   # Tina 2: Decapado
         {"t": 25.1, "sp": 25.0, "p": 0,  "run": 0},   # Tina 3: Celda Hull Zinc
@@ -94,7 +93,7 @@ class TestContratoJSONTermico:
 class TestContratoJSONPHDual:
     """Valida el endpoint de medición de pH /get_ph_dual."""
 
-    MOCK_PAYLOAD_PH = {
+    MOCK_PAYLOAD_PH: ClassVar[dict] = {
         "p1": "2.05",
         "p2": "4.10",
         "on": 1,

@@ -1,6 +1,6 @@
 /**
  * =================================================================================
- * MÓDULO DE SALIDA DE CORRIENTE VCSS (Modulo_Fuentes.cpp) — Versión RTOS 1.4
+ * MÓDULO DE SALIDA DE CORRIENTE VCSS (Modulo_Fuentes.cpp) — Versión RTOS 2.0
  * =================================================================================
  * Plataforma: ESP32-S3 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
  *
@@ -256,7 +256,7 @@ void actualizarFuenteDAC() {
  * @brief Envoltura de compatibilidad (la regulación ahora se gestiona directamente en Modulo_Fuente_DC).
  */
 void actualizarSensadoVCSS() {
-  // En RTOS 1.4, Modulo_Fuente_DC ejecuta el sensado analógico y PI a 10 Hz dentro de Task_Fuente
+  // En RTOS 2.0, Modulo_Fuente_DC ejecuta el sensado analógico y supervisión a 10 Hz dentro de Task_Fuente
 }
 
 /**
@@ -284,7 +284,7 @@ bool autoCalibrarVCSS() {
     return false;
   }
 
-  Serial.println("[VCSS] Iniciando auto-calibración de transconductancia (RTOS 1.4)...");
+  Serial.println("[VCSS] Iniciando auto-calibración de transconductancia (RTOS 2.0)...");
 
   // Asegurar relé mecánico cerrado a 0A
   digitalWrite(PIN_RELE_VCSS, RELE_NIVEL_ACTIVO);

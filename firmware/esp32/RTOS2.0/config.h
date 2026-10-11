@@ -97,7 +97,7 @@ enum SaludCelda_t : uint8_t {
  * RELÉ DE AISLAMIENTO DE LA ETAPA DE POTENCIA (ZCS - Zero Current Switching):
  * - Desconecta físicamente la línea positiva de +12V (VDD) que alimenta la celda de electrodeposición.
  * - Al apagar la fuente o en paradas de emergencia, primero se fija la consigna DAC a 0V (corriente = 0A)
- *   y tras un retardo de asentamiento de 50 ms se conmuta el relé para evitar arcos voltaicos y degradación de contactos.
+ *   y tras un retardo de asentamiento de 30 ms (disipación de corriente remanente) se conmuta el relé para evitar arcos voltaicos y degradación de contactos.
  * - Lógica: Optoacoplador activo en nivel BAJO (Active-LOW).
  */
 #define PIN_RELE_VCSS       20  // Control de bobina relé +12V

@@ -1,0 +1,66 @@
+name: CI Multidisciplinaria
+
+on:
+  push:
+    branches: ["main", "remediacion-*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  python-quality-and-tests:
+    name: Calidad Python y Pruebas Unitarias
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov ruff numpy matplotlib
+
+      - name: Verificación de estilo y linter (Ruff)
+        run: |
+          ruff check tests software/telemetria2.0/utilidades
+
+      - name: Ejecución de pruebas unitarias y cobertura (pytest)
+        run: |
+          pytest --cov=software/telemetria2.0/utilidades --cov-fail-under=70
+
+  cpp-interlocks-host:
+    name: Pruebas Host C++ (Interlocks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Compilar y ejecutar pruebas de interlock nativas
+        run: |
+          g++ -O2 -Wall -Wextra tests/test_interlocks_host.cpp -o test_interlocks
+          ./test_interlocks
+
+  firmware-nano-compile:
+    name: Compilación Firmware Arduino Nano
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+
+      - name: Instalar Core AVR
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+      - name: Compilar nano2.ino
+        run: |
+          arduino-cli compile --fqbn arduino:avr:nano firmware/arduino_nano/nano2

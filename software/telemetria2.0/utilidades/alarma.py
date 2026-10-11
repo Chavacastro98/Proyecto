@@ -5,8 +5,8 @@ Módulo de alarmas acústicas y señalización sonora para la GUI SCADA.
 """
 
 import sys
-import time
 import threading
+import time
 
 try:
     import winsound

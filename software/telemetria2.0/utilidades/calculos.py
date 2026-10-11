@@ -6,14 +6,15 @@ Funciones y cálculos matemáticos para actuadores y telemetría.
 
 import math
 
+
 def calcular_disparo_triac(p_pct, max_watts):
     """
     Calcula el ángulo de disparo, retardo de fase en microsegundos y potencia activa RMS.
-    
+
     Parámetros:
         p_pct (float): Porcentaje de potencia solicitado (0.0 a 100.0).
         max_watts (float): Potencia máxima nominal de la resistencia calefactora.
-        
+
     Retorna:
         tuple: (p_safe, alpha_deg, delay_us, watts)
     """
@@ -22,7 +23,7 @@ def calcular_disparo_triac(p_pct, max_watts):
         return 0.0, 180.0, 8333, 0.0
     elif p_safe >= 100.0:
         return 100.0, 0.0, 0, float(max_watts)
-    
+
     arg = 2.0 * (p_safe / 100.0) - 1.0
     alpha_rad = math.acos(max(-1.0, min(1.0, arg)))
     alpha_deg = round((alpha_rad / math.pi) * 180.0, 1)

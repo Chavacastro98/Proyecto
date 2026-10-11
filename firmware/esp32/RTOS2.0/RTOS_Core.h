@@ -3,7 +3,7 @@
 
 /**
  * =================================================================================
- * NÚCLEO DE SINCRONIZACIÓN Y SUPERVISIÓN FREERTOS (RTOS_Core.h) — RTOS 1.0
+ * NÚCLEO DE SINCRONIZACIÓN Y SUPERVISIÓN FREERTOS (RTOS_Core.h) — RTOS 2.0
  * =================================================================================
  * Centraliza las primitivas de sincronización (Mutexes, Semáforos),
  * identificadores de tareas (Task Handles), sistema de Heartbeat y

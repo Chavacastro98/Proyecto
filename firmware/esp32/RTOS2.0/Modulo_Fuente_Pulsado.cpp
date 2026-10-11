@@ -1,6 +1,6 @@
 /**
  * =================================================================================
- * CONTROL DE CORRIENTE PULSADA VCSS (Modulo_Fuente_Pulsado.cpp) — RTOS 1.4
+ * CONTROL DE CORRIENTE PULSADA VCSS (Modulo_Fuente_Pulsado.cpp) — RTOS 2.0
  * =================================================================================
  * Plataforma: ESP32-S3 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
  *

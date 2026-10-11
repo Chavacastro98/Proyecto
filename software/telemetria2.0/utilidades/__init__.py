@@ -1,8 +1,8 @@
 """
 Utilidades para el sistema de telemetría.
 """
+from .alarma import play_chime, reproducir_alarma_sonora
 from .calculos import calcular_disparo_triac
-from .alarma import reproducir_alarma_sonora, play_chime
 
 __all__ = [
     "calcular_disparo_triac",

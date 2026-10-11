@@ -3,7 +3,7 @@
 
 /**
  * =================================================================================
- * MÓDULO METEOROLÓGICO Y AMBIENTAL (Modulo_Ambiental.h) — Versión RTOS 1.0
+ * MÓDULO METEOROLÓGICO Y AMBIENTAL (Modulo_Ambiental.h) — Versión RTOS 2.0
  * =================================================================================
  * Plataforma: ESP32-S3 (Xtensa Dual-Core 32-bit LX7 @ 240 MHz)
  *
