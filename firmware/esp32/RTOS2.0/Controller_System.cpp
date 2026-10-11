@@ -15,6 +15,7 @@
 #include "views/View_Menu.h"
 #include "views/View_Sensores.h"
 #include "views/View_Consola.h"
+#include "views/View_WiFi.h"
 #include "Modulo_Ambiental.h"
 #include "Modulo_Termico.h"
 #include "Modulo_PH.h"
@@ -324,10 +325,53 @@ static void handleFailSafeReset() {
 }
 
 /**
- * @brief Endpoint POST para reconfigurar credenciales Wi-Fi SoftAP en Flash NVS (Auditoría W1).
+ * @brief Sirve la página web de Configuración de Red Wi-Fi SoftAP.
+ */
+static void handleWifiView() {
+  server.send_P(200, "text/html", HTML_WIFI);
+}
+
+/**
+ * @brief Endpoint JSON que entrega el estado en vivo del SoftAP y clientes conectados.
+ */
+static void handleWifiStatus() {
+  char json[320];
+  uint8_t estaciones = WiFi.softAPgetStationNum();
+  String ipStr = WiFi.softAPIP().toString();
+  String macStr = WiFi.softAPmacAddress();
+  snprintf(json, sizeof(json),
+    "{\"status\":\"ok\",\"ssid\":\"%s\",\"pass\":\"%s\",\"ip\":\"%s\",\"mac\":\"%s\",\"stations\":%u,\"default_ssid\":\"%s\",\"default_pass\":\"%s\",\"token\":\"%s\"}",
+    g_wifi_ssid.c_str(), g_wifi_pass.c_str(), ipStr.c_str(), macStr.c_str(), estaciones,
+    DEFAULT_WIFI_SSID, DEFAULT_WIFI_PASS, API_AUTH_TOKEN
+  );
+  server.send(200, "application/json", json);
+}
+
+/**
+ * @brief Endpoint POST invocado por la UI para reiniciar el ESP32 tras guardar credenciales.
+ */
+static void handleSystemRestart() {
+  if (!validarAutenticacion(server)) return;
+  server.send(200, "application/json", "{\"status\":\"ok\",\"msg\":\"Reiniciando microcontrolador...\"}");
+  vTaskDelay(pdMS_TO_TICKS(500));
+  ESP.restart();
+}
+
+/**
+ * @brief Endpoint para configurar o visualizar credenciales Wi-Fi SoftAP (Auditoría W1).
+ * Si se accede por GET sin parámetros, sirve la vista HTML_WIFI interactiva.
+ * Si se envían parámetros 'ssid' y 'pass', procesa la actualización persistente en Flash NVS.
  */
 static void handleWifiCfg() {
+  // Si no se envían parámetros y es una petición GET (ej. desde el navegador), servir la interfaz web
+  if (!server.hasArg("ssid") && !server.hasArg("pass")) {
+    handleWifiView();
+    return;
+  }
+
+  // Si se envían parámetros, validar autenticación
   if (!validarAutenticacion(server)) return;
+
   if (!server.hasArg("ssid") || !server.hasArg("pass")) {
     server.send(400, "application/json", "{\"status\":\"error\",\"msg\":\"Parametros 'ssid' y 'pass' requeridos\"}");
     return;
@@ -355,6 +399,9 @@ void registrarRutasSystem() {
   server.on("/data_all", handleDataAll);
   server.on("/data_sensors", handleDataSensors);
   server.on("/failsafe_reset", handleFailSafeReset);
+  server.on("/wifi", handleWifiView);
   server.on("/wifi_cfg", handleWifiCfg);
+  server.on("/wifi_status", handleWifiStatus);
+  server.on("/system_restart", handleSystemRestart);
 }
 

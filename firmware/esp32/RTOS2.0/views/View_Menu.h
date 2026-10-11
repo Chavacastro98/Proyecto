@@ -204,6 +204,13 @@ h1{font-size:1.45em;color:#fff;font-weight:900;letter-spacing:-0.5px;margin-bott
                 </div>
                 <span>&rarr;</span>
             </a>
+            <a href='/wifi_cfg' class='btn-tool'>
+                <div class='tool-left'>
+                    <span class='ico'>&#128246;</span>
+                    <span>Red Wi-Fi SoftAP</span>
+                </div>
+                <span id='live-wifi' style='font-size:0.8em;color:#38bdf8;font-weight:800;'>Ajustes &rarr;</span>
+            </a>
             <a href='/consola' class='btn-tool'>
                 <div class='tool-left'>
                     <span class='ico'>&#128187;</span>
@@ -337,6 +344,13 @@ h1{font-size:1.45em;color:#fff;font-weight:900;letter-spacing:-0.5px;margin-bott
                 }else{
                     el.innerText='Standby';
                     el.className='proc-live';
+                }
+            }).catch(function(){});
+            fetch('/wifi_status').then(function(r){return r.json();}).then(function(d){
+                var el=document.getElementById('live-wifi');
+                if(el && d.status==='ok'){
+                    el.innerText=d.stations + (d.stations===1?' disp.':' disp.');
+                    el.style.color='#34d399';
                 }
             }).catch(function(){});
         }
