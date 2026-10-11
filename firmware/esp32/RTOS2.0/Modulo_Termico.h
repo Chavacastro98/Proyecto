@@ -41,6 +41,7 @@ struct CanalTermico {
     float Kp;               /**< Ganancia proporcional sintonizada */
     float Ki;               /**< Ganancia integral sintonizada */
     int potenciaActual;     /**< Potencia de salida calculada y transmitida (0..100%) */
+    uint32_t tiempoSobretemperatura; /**< Marca de tiempo cuando se detectó T >= SP + delta (0 si normal) */
 
     /**
      * @brief Constructor del canal térmico.
@@ -48,7 +49,7 @@ struct CanalTermico {
     CanalTermico(int _id, int _sck, int _cs, int _so, float _kp, float _ki) 
         : id(_id), pinCS(_cs), sensor(_sck, _cs, _so), temperatura(0.0f), 
           setpoint(60.0f), activo(false), limitePotencia(0.0f), integral(0.0f), 
-          Kp(_kp), Ki(_ki), potenciaActual(0) {}
+          Kp(_kp), Ki(_ki), potenciaActual(0), tiempoSobretemperatura(0) {}
 
     /**
      * @brief Evalúa la ley de control Proporcional-Integral con límites y protecciones.

@@ -114,9 +114,9 @@ void ejecutarCicloFuentePulsada() {
   // 1. Transición al Flanco de Subida y Nivel ALTO (DAC a amplitud consignada)
   if (takeI2CMutex(pdMS_TO_TICKS(10))) {
     if (isDACInicializado()) {
-      dac.setVoltage((uint16_t)constrain(localAmplitud, 0, 4095), false);
+      dac.setVoltage((uint16_t)constrain(localAmplitud, 0, VCSS_DAC_MAX_PERMITIDO), false);
     }
-    s_ultimoCodigoPulsado = (uint16_t)localAmplitud;
+    s_ultimoCodigoPulsado = (uint16_t)constrain(localAmplitud, 0, VCSS_DAC_MAX_PERMITIDO);
     giveI2CMutex();
   }
 

@@ -98,7 +98,7 @@ static void handleSetF() {
 
   if (takeDataMutex(pdMS_TO_TICKS(20))) {
     if (parametro == 'a') {
-      amplitudDAC_Setpoint = constrain(valor, 0, 4095);
+      amplitudDAC_Setpoint = constrain(valor, 0, VCSS_DAC_MAX_PERMITIDO);
       float factor = (factorGananciaVCSS > 0.5f && factorGananciaVCSS < 1.5f) ? factorGananciaVCSS : 1.0f;
       amplitudDAC = constrain((int)roundf(amplitudDAC_Setpoint / factor), 0, 4095);
       nvsVal = amplitudDAC_Setpoint;
@@ -120,8 +120,8 @@ static void handleSetF() {
   if (nvsKey != NULL && persistirNVS) {
     memoria.putInt(nvsKey, nvsVal);
     if (parametro == 'a') {
-      float ampsTarget = (valor / 4095.0f) * VCSS_IMAX_NOMINAL;
-      logSistema(LOG_LVL_INFO, "FUENTE", "Consigna VCSS ajustada a %.2f A (DAC: %d)", ampsTarget, valor);
+      float ampsTarget = (nvsVal / 4095.0f) * VCSS_IMAX_NOMINAL;
+      logSistema(LOG_LVL_INFO, "FUENTE", "Consigna VCSS ajustada a %.2f A (DAC: %d / max %d)", ampsTarget, nvsVal, VCSS_DAC_MAX_PERMITIDO);
     } else if (parametro == 'f') {
       logSistema(LOG_LVL_INFO, "FUENTE", "Frecuencia pulsado ajustada a %d Hz", valor);
     } else if (parametro == 'd') {

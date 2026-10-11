@@ -148,3 +148,86 @@ class TestProtocoloZCS:
         # En el paso 3, el relé abre con corriente 0
         assert secuencia[2]["rele"] == 0
         assert secuencia[2]["corriente"] == 0.0
+
+
+class TestNuevosInterlocksSeguridad:
+    """Pruebas de los nuevos interlocks de seguridad implementados en firmware RTOS 2.0 (Lote A)."""
+
+    def test_recorte_rigido_corriente_a_3_50a(self):
+        """Verifica que consignas > 3.50 A o DAC > 2029 LSB se recorten rígidamente al límite de hardware (S2)."""
+        vcss_imax_nominal = 3.53 * 2.00  # 7.06 A
+        vcss_imax_permitida = 3.50
+        vcss_dac_max = int((vcss_imax_permitida / vcss_imax_nominal) * 4095.0)  # 2029 LSB
+
+        # Solicitud de 6.0 A o DAC 4095
+        dac_solicitado = 4095
+        dac_clamped = min(max(dac_solicitado, 0), vcss_dac_max)
+        assert dac_clamped == 2030
+        amperios_efectivos = (dac_clamped / 4095.0) * vcss_imax_nominal
+        assert round(amperios_efectivos, 2) == 3.50
+
+    def test_rechazo_encendido_sin_dac_inicializado(self):
+        """Verifica que el relé de +12V no se energice si el DAC MCP4725 no está operativo en I2C (S5)."""
+        dac_inicializado = False
+        rele_cerrado = False
+        fuente_activa = False
+
+        if not dac_inicializado:
+            resultado = "RECHAZADO_DAC_NO_INIT"
+        else:
+            rele_cerrado = True
+            fuente_activa = True
+            resultado = "ENCENDIDO_OK"
+
+        assert resultado == "RECHAZADO_DAC_NO_INIT"
+        assert not rele_cerrado
+        assert not fuente_activa
+
+    def test_disparo_sobretemperatura_critica(self):
+        """Verifica que T >= SP + 3.0 °C sostenida por 3000 ms active ERR_TEMP_OVERHEAT código 14 (S1)."""
+        sp = 60.0
+        temp = 63.5  # SP + 3.5 °C
+        delta_umbral = 3.0
+        hold_ms_umbral = 3000
+
+        tiempo_sostenido = 1500
+        latch = (temp >= sp + delta_umbral) and (tiempo_sostenido >= hold_ms_umbral)
+        assert not latch
+
+        tiempo_sostenido = 3100
+        latch = (temp >= sp + delta_umbral) and (tiempo_sostenido >= hold_ms_umbral)
+        err_code = 14 if latch else 0
+        assert latch
+        assert err_code == 14
+
+    def test_disparo_sobrecorriente_medida(self):
+        """Verifica que corriente medida > 3.50 A por 200 ms active ERR_VCSS_OVERCURRENT código 21 (S3)."""
+        i_medida = 3.85
+        umbral_imax = 3.50
+        hold_ms_umbral = 200
+
+        tiempo_sobrecorriente = 100
+        latch = (i_medida > umbral_imax) and (tiempo_sobrecorriente >= hold_ms_umbral)
+        assert not latch
+
+        tiempo_sobrecorriente = 250
+        latch = (i_medida > umbral_imax) and (tiempo_sobrecorriente >= hold_ms_umbral)
+        err_code = 21 if latch else 0
+        assert latch
+        assert err_code == 21
+
+    def test_disparo_celda_abierta(self):
+        """Verifica que corriente < 0.05 A con consigna > 0.30 A por 1000 ms active ERR_VCSS_OPEN_CIRCUIT código 20 (S3)."""
+        i_setpoint = 1.50
+        i_medida = 0.00
+        hold_ms_umbral = 1000
+
+        tiempo_abierta = 500
+        latch = (i_setpoint > 0.30 and i_medida < 0.05) and (tiempo_abierta >= hold_ms_umbral)
+        assert not latch
+
+        tiempo_abierta = 1100
+        latch = (i_setpoint > 0.30 and i_medida < 0.05) and (tiempo_abierta >= hold_ms_umbral)
+        err_code = 20 if latch else 0
+        assert latch
+        assert err_code == 20

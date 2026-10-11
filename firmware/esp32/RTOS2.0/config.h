@@ -106,14 +106,17 @@ enum SaludCelda_t : uint8_t {
 /**
  * PARÁMETROS FÍSICOS DEL SUMIDERO DE CORRIENTE (VCSS - Voltage-Controlled Current Sink):
  * - Topología eléctrica: Sumidero de corriente de lado bajo compuesto por dos ramas MOSFET N en paralelo.
- * - Cada rama cuenta con un shunt de sensado de 0.50 Ohms y un amplificador operacional en lazo cerrado local.
+ * - Cada rama cuenta con un shunt de sensado de 1.00 Ohm (0.50 Ohms equivalente total en paralelo) y un amplificador operacional en lazo cerrado local.
  * - Transconductancia nominal por rama: 1.0 A/V.
  * - Transconductancia total combinada: Gm = 1.0 A/V + 1.0 A/V = 2.00 Siemens (A/V).
- * - Rango de entrada DAC: 0.00 V a 3.53 V -> Rango nominal de salida: 0.00 A a 7.06 A (limitado por firmware a 3.50 A).
+ * - Rango de entrada DAC: 0.00 V a 3.53 V -> Rango nominal de salida: 0.00 A a 7.06 A.
+ * - Límite de seguridad por firmware: Recortado rígidamente a 3.50 A (máx. 2029 LSB en DAC) para asegurar derating térmico de shunts.
  */
 #define VCSS_GM_NOMINAL     2.00f   // Transconductancia total nominal (2.00 S)
 #define VCSS_VREF_DAC       3.53f   // Tensión de fondo de escala del DAC MCP4725 ajustada a riel físico (3.53 V)
 #define VCSS_IMAX_NOMINAL   (VCSS_VREF_DAC * VCSS_GM_NOMINAL) // 7.06 A teóricos a 4095 LSB
+#define VCSS_IMAX_PERMITIDA 3.50f   // Corriente máxima operativa permitida por firmware (3.50 A)
+#define VCSS_DAC_MAX_PERMITIDO ((int)((VCSS_IMAX_PERMITIDA / VCSS_IMAX_NOMINAL) * 4095.0f)) // Límite DAC (≈ 2029 LSB)
 
 /**
  * BALIZA LUMINOSA RGB DEL SUPERVISOR FREERTOS:
@@ -153,6 +156,8 @@ enum SaludCelda_t : uint8_t {
 #define PH_OFFSET_TEORICO     1.765f  // Offset teórico pH 7 neutro a VDD/2 (3.53 V / 2 = 1.765 V)
 #define PH_PENDIENTE_TEORICA  4.242f
 #define PH_CAL_MAX_DISPERSION_MV  80.0f   // Umbral máximo de dispersión pico a pico admisible (mV)
+#define TEMP_OVERHEAT_DELTA_C 3.0f    // Delta sobre Setpoint (°C) para disparo de sobretemperatura crítica
+#define TEMP_OVERHEAT_HOLD_MS 3000    // Tiempo de persistencia requerido para activar ERR_TEMP_OVERHEAT (ms)
 
 // =================================================================================
 // OBJETOS GLOBALES DE HARDWARE Y ALMACENAMIENTO
@@ -243,11 +248,11 @@ enum ErrorCode_t : uint8_t {
   ERR_TC1_FAIL            = 11,  // Falla Termopar 1 (Decapado)
   ERR_TC2_FAIL            = 12,  // Falla Termopar 2 (Celda Hull)
   ERR_TC3_FAIL            = 13,  // Falla Termopar 3 (Niquelado)
-  ERR_TEMP_OVERHEAT       = 14,  // Sobretemperatura Crítica (> Setpoint + 5°C)
-  ERR_VCSS_OPEN_CIRCUIT   = 20,  // Circuito Abierto en Celda VCSS (0A medido con consigna activa)
-  ERR_VCSS_OVERCURRENT    = 21,  // Sobrecorriente en Celda VCSS (> 3.5A medido)
-  ERR_I2C_ADS_LOST        = 30,  // Pérdida de comunicación ADC ADS1115
-  ERR_I2C_DAC_LOST        = 31,  // Pérdida de comunicación DAC MCP4725
+  ERR_TEMP_OVERHEAT       = 14,  // Sobretemperatura Crítica (> Setpoint + 3°C sostenida por 3 s)
+  ERR_VCSS_OPEN_CIRCUIT   = 20,  // Circuito Abierto en Celda VCSS (< 0.05A con consigna > 0.3A por 1 s)
+  ERR_VCSS_OVERCURRENT    = 21,  // Sobrecorriente en Celda VCSS (> 3.5A medido por 200 ms)
+  ERR_I2C_ADS_LOST        = 30,  // Pérdida de comunicación ADC ADS1115 (3 fallos consecutivos)
+  ERR_I2C_DAC_LOST        = 31,  // Pérdida de comunicación DAC MCP4725 (3 fallos consecutivos)
   ERR_I2C_ENV_LOST        = 32,  // Pérdida de sensores AHT20/BMP280
   ERR_RTOS_HEARTBEAT      = 40,  // Falla Watchdog: Tarea FreeRTOS congelada (> 5000 ms)
   ERR_UART_NANO_TIMEOUT   = 50,  // Pérdida de enlace serie con Arduino Nano

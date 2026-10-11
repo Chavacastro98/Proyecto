@@ -12,16 +12,18 @@ Gobernado por la librería `JELDimmer2`, modula la potencia térmica suministrad
 ---
 
 ## ⚡ Principio de Operación: Tiempo Proporcional (Burst Firing)
-A diferencia del recorte de ángulo de fase convencional, este módulo utiliza **conmutación a ciclo completo de 60 Hz** en ventanas fijas de **3000 ms**:
-- Conmuta los TRIACs únicamente en el **cruce por cero** detectado por el optoacoplador 4N35 en el pin **D3 (INT1)**.
-- **Ventaja crítica en planta:** Elimina picos abruptos de dv/dt y di/dt en media onda, suprimiendo las interferencias electromagnéticas (EMI) sobre el electrodo de pH (PH-4502C) y los termopares (MAX6675).
+A diferencia del recorte de ángulo de fase convencional, este módulo utiliza **modulación por tiempo proporcional (Burst Firing por software)** en ventanas temporales fijas de **3000 ms**:
+- Modula el ciclo de trabajo por tramos enteros dentro de la ventana de 3 segundos (ej. 50% = 1.5 s encendido, 1.5 s apagado).
+- **Aclaración de hardware:** La etapa utiliza optoacopladores MOC3021 (fase aleatoria). El pin **D3 (ZC_PIN)** está reservado en hardware para futura sincronización por interrupción en cruce por cero en banco de pruebas (S11).
 
 ---
 
 ## 🔒 Mecanismos de Seguridad
-1. **Perro Guardián UART (`TIMEOUT_UART_MS = 4000 ms`):**
-   Si el ESP32 deja de enviar la trama serie periódica `p0,p1,p2,p3\n` por más de 4 segundos, todas las salidas de disparo se apagan inmediatamente a nivel bajo (corte seguro).
-2. **Apagado inicial:** Todos los canales inician en estado `APC_OFF` al reiniciar el microcontrolador.
+1. **Watchdog de Hardware AVR (`wdt_enable(WDTO_1S)`):**
+   Supervisa el lazo principal a 1000 ms. Si ocurre un bloqueo de ejecución, reinicia el microcontrolador y fuerza las compuertas a nivel BAJO (LOW).
+2. **Perro Guardián UART (`TIMEOUT_UART_MS = 4000 ms`):**
+   Si el ESP32 deja de enviar la trama serie periódica `p0,p1,p2,p3\n` por más de 4 segundos, todas las potencias se ponen en 0% y las compuertas se apagan inmediatamente.
+3. **Arranque Seguro en LOW:** Todos los pines de compuerta (`GATE_PINS`) se configuran inmediatamente como `OUTPUT, LOW` en `setup()` antes de cualquier otra instrucción.
 
 ---
 

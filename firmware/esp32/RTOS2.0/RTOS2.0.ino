@@ -154,7 +154,7 @@ void setup() {
     phModuloActivo = false; // El módulo de pH siempre arranca en reposo por seguridad
 
     // Restaurar configuración de la salida de corriente VCSS
-    amplitudDAC = memoria.getInt("dac_amp", 1024);
+    amplitudDAC = constrain(memoria.getInt("dac_amp", 1024), 0, VCSS_DAC_MAX_PERMITIDO);
     amplitudDAC_Setpoint = amplitudDAC;
     frecuencia = memoria.getInt("dac_freq", 10);
     dutyCycle = memoria.getInt("dac_duty", 50);

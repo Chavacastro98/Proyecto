@@ -11,7 +11,7 @@ Este documento detalla la lista completa de componentes electrónicos, módulos 
 | Cantidad | Componente / Modelo | Descripción | Función en el Proyecto |
 | :---: | :--- | :--- | :--- |
 | 1 | **ESP32-S3-WROOM-1** | Microcontrolador Dual-Core 240MHz, Wi-Fi / Bluetooth (SoftAP + OTA) | **Nodo Maestro Autónomo**: Servidor Web, Lazo PI Térmico, Control VCSS, NVS y Telemetría. Operación inalámbrica sin cable USB de planta. |
-| 1 | **Arduino Nano (ATmega328P)** | Microcontrolador 16MHz, 32KB Flash | **Nodo Esclavo de Potencia**: Dimmer de 4 canales por Tiempo Proporcional (firmware Nano2) y sincronización ZCS |
+| 1 | **Arduino Nano (ATmega328P)** | Microcontrolador 16MHz, 32KB Flash | **Nodo Esclavo de Potencia**: Dimmer de 4 canales por Tiempo Proporcional en ventanas fijas de 3000 ms (firmware Nano2 con Watchdog de hardware WDTO_1S) |
 
 ---
 
@@ -19,8 +19,8 @@ Este documento detalla la lista completa de componentes electrónicos, módulos 
 
 | Cantidad | Componente / Modelo | Interfaz / Bus | Descripción / Función |
 | :---: | :--- | :--- | :--- |
-| 1 | **ADS1115** | I2C (`0x48`) | ADC de 16 bits (4 canales) a 860 SPS para lectura de electrodos de pH |
-| 1 | **MCP4725** | I2C (`0x60`) | DAC de 12 bits para control analógico del sumidero de corriente (0-3.3V) |
+| 1 | **ADS1115** | I2C (`0x48`) | ADC de 16 bits (4 canales) a 860 SPS para lectura de pH (A0-A1) y shunts de corriente VCSS (A2 y A3 en modo single-ended) |
+| 1 | **MCP4725** | I2C (`0x60`) | DAC de 12 bits para control analógico del sumidero de corriente (0-3.53V) |
 | 4 | **MAX6675** | SPI (SCK/SO) | Conversores de termopar Tipo K con compensación de junta fría (0-1024°C) |
 | 4 | **Termopares Tipo K** | Analógico | Sondas de temperatura para las 4 tinas químicas |
 | 2 | **PH-4502C** | Analógico | Módulos acondicionadores analógicos con electrodos de vidrio para pH |
@@ -39,10 +39,9 @@ Este documento detalla la lista completa de componentes electrónicos, módulos 
 
 > [!NOTE]
 > **Justificación Técnica de Resistencias de 10W (Cerámicas Blancas de Cemento)**:
-> En el sumidero de corriente VCSS, cada rama MOSFET maneja hasta $I_{\text{rama}} = 3.50\text{ A}$ (o $I_{\text{total}} = 7.00\text{ A}$ repartidas). La potencia instantánea disipada es:
-> $$P = I^2 \cdot R = (3.50\text{ A})^2 \cdot 1.0\,\Omega = 12.25\text{ W (pico transitorio)}$$
-> $$P_{\text{nom}} = (2.50\text{ A})^2 \cdot 1.0\,\Omega = 6.25\text{ W (régimen continuo medio)}$$
-> El uso de resistencias cerámicas blancas de cemento de **10W** (tipo SQP / alambre devanado encapsulado en cerámica ignífuga blanca) evita el sobrecalentamiento crítico y la deriva del coeficiente térmico que ocurría con resistencias convencionales de 5W.
+> En el sumidero de corriente VCSS, la consigna está limitada rígidamente por firmware a $I_{\text{total}} = 3.50\text{ A}$ (máximo $I_{\text{rama}} = 1.75\text{ A}$ por rama balanceada). La potencia máxima en régimen continuo por resistencia es:
+> $$P = I_{\text{rama}}^2 \cdot R = (1.75\text{ A})^2 \cdot 1.0\,\Omega = 3.06\text{ W}$$
+> Operando a $3.06\text{ W}$ frente a los **10W nominales** de cada resistencia cerámica blanca (tipo SQP / alambre devanado ignífugo), se garantiza un factor de derating térmico seguro del $69\%$ sin sobrecalentamiento crítico.
 
 ### 3.1 Distribución de Clemas y Pines en la Placa Casera VCSS
 La placa casera cuenta con 3 pares de clemas de tornillo y 2 pines header macho para su interconexión:
@@ -56,7 +55,7 @@ La placa casera cuenta con 3 pares de clemas de tornillo y 2 pines header macho 
   * `OUT+`: Conectado internamente al riel VDD (+12V); va al terminal `COM 1` del Módulo de Relés.
   * `OUT-`: Conectado a los Drains de los MOSFETs IRLZ44N (sumidero de corriente); va al terminal `COM 2` del Módulo de Relés.
 * **Headers Macho de Sensado:**
-  * `HEADER SH1` y `HEADER SH2`: Caídas de tensión en las resistencias de shunt cerámicas de 10W; van conectados directamente a los canales `A2` y `A3` del ADC ADS1115 de 16 bits.
+  * `HEADER SH1` y `HEADER SH2`: Caídas de tensión en las resistencias de shunt cerámicas de 10W; van conectados directamente a los canales `A2` y `A3` (modo single-ended) del ADC ADS1115 de 16 bits.
 
 ---
 
@@ -67,8 +66,8 @@ La placa casera cuenta con 3 pares de clemas de tornillo y 2 pines header macho 
 | 1 | [**Módulo de 2 Relevadores 5V Optoacoplado**](https://emexbit.com/product/modulo-2-relevadores-5v/) | Bobina 5V DC / Contactos 10A 250VAC / 10A 30VDC (Active-LOW, Optoacopladores PC817, LEDs indicadores) • [Ver en Emexbit](https://emexbit.com/product/modulo-2-relevadores-5v/) | **Aislamiento Galvánico +12V VDD**: Entradas IN1 e IN2 puenteadas a GPIO 20 (ESP32-S3) con contactos COM/NO en paralelo para conmutación ZCS (Zero-Current Switching) de alta corriente y redundancia de conmutación sin arco voltaico |
 | 3 | **Resistencias de Inmersión 450W** | 110V / 220V AC (Blindadas en acero inoxidable) | Calentadores para Tina 1 (Desengrase Alcalino), Tina 2 (Decapado Alcalino), Tina 4 (Niquelado sobre Zinc) |
 | 1 | **Calentador de Celda Hull 18W** | 110V / 220V AC (Cartucho de precisión) | Calentador para Tina 3 (Celda Hull 267 mL - Zincado Ácido) |
-| 1 | **Placa Propia de Potencia TRIAC (4 Canales AC)** | Fabricación propia / circuito con 4x TRIACs BTA24-800BW (TO-220 con disipador) + 4x Optoacopladores MOC3021 (reemplazo de MDAC4C) | Conmutación de potencia para los 4 calentadores mediante control por **Tiempo Proporcional (Burst Firing / ciclo completo)** en ventanas de 3000 ms ejecutadas por Arduino Nano (firmware Nano2 con librería `JELDimmer2`). Suprime armónicos y ruido EMI sobre sensores analógicos |
-| 1 | **Detector de Cruce por Cero (Zero-Cross)** | Optoacoplador 4N35 conectado a pin INT1 (D3) del Arduino Nano | Sincronización con la red eléctrica AC de 60 Hz para conmutación limpia en V = 0 |
+| 1 | **Placa Propia de Potencia TRIAC (4 Canales AC)** | Fabricación propia / circuito con 4x TRIACs BTA24-800BW (TO-220 con disipador) + 4x Optoacopladores MOC3021 (reemplazo de MDAC4C) | Conmutación de potencia para los 4 calentadores mediante control por **Tiempo Proporcional (Burst Firing)** en ventanas fijas de 3000 ms ejecutadas por Arduino Nano (firmware Nano2 con librería `JELDimmer2` y WDT). Suprime armónicos y ruido EMI |
+| 1 | **Línea D3 Reservada (Entrada Hardware)** | Optoacoplador 4N35 conectado a pin D3 del Arduino Nano | Entrada de hardware reservada para sincronización futura en cruce por cero en banco (S11). En la versión actual la conmutación se realiza por ventanas temporales fijas |
 
 ---
 

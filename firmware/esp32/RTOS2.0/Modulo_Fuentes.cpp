@@ -100,6 +100,12 @@ void setEstadoFuente(bool encender) {
   }
 
   if (encender) {
+    if (!isDACInicializado()) {
+      Serial.println("[FUENTE] ❌ Rechazado: DAC MCP4725 no inicializado. Relé permanece abierto.");
+      logSistema(LOG_LVL_ERR, "FUENTE", "Rechazado: DAC no operativo en I2C. Rele permanece abierto.");
+      return;
+    }
+
     // --- SECUENCIA DE ENCENDIDO SEGURO (ZCS) ---
     if (takeI2CMutex(pdMS_TO_TICKS(50))) {
       dac.setVoltage(0, false);
@@ -174,7 +180,8 @@ void setEstadoFuente(bool encender) {
 void setCorrienteContinua(float amperios) {
   if (takeDataMutex(pdMS_TO_TICKS(20))) {
     modoPulsado = false;
-    int dacVal = (int)constrain((amperios / VCSS_IMAX_NOMINAL) * 4095.0f, 0.0f, 4095.0f);
+    float ampLimitado = constrain(amperios, 0.0f, VCSS_IMAX_PERMITIDA);
+    int dacVal = (int)constrain((ampLimitado / VCSS_IMAX_NOMINAL) * 4095.0f, 0.0f, (float)VCSS_DAC_MAX_PERMITIDO);
     amplitudDAC_Setpoint = dacVal;
     float factor = (factorGananciaVCSS > 0.5f && factorGananciaVCSS < 1.5f) ? factorGananciaVCSS : 1.0f;
     amplitudDAC = constrain((int)roundf(amplitudDAC_Setpoint / factor), 0, 4095);
@@ -190,7 +197,8 @@ void setCorrienteContinua(float amperios) {
  */
 void setConfigPulsado(float amperiosPico, float hz, float duty) {
   if (takeDataMutex(pdMS_TO_TICKS(20))) {
-    int dacVal = (int)constrain((amperiosPico / VCSS_IMAX_NOMINAL) * 4095.0f, 0.0f, 4095.0f);
+    float ampLimitado = constrain(amperiosPico, 0.0f, VCSS_IMAX_PERMITIDA);
+    int dacVal = (int)constrain((ampLimitado / VCSS_IMAX_NOMINAL) * 4095.0f, 0.0f, (float)VCSS_DAC_MAX_PERMITIDO);
     amplitudDAC_Setpoint = dacVal;
     float factor = (factorGananciaVCSS > 0.5f && factorGananciaVCSS < 1.5f) ? factorGananciaVCSS : 1.0f;
     amplitudDAC = constrain((int)roundf(amplitudDAC_Setpoint / factor), 0, 4095);

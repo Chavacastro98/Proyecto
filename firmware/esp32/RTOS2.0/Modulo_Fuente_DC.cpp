@@ -28,27 +28,50 @@
 static uint16_t s_ultimoCodigoDAC_DC = 0xFFFF;
 static uint32_t s_tiempoInicioDC = 0;
 static float    s_integralPI = 0.0f;
+static uint32_t s_tiempoSobrecorriente = 0;
+static uint32_t s_tiempoCeldaAbierta = 0;
+static uint8_t  s_fallosConsecutivosADS = 0;
+static uint8_t  s_fallosConsecutivosDAC = 0;
 
 void inicializarFuenteDC() {
   s_ultimoCodigoDAC_DC = 0xFFFF;
   s_tiempoInicioDC = 0;
   s_integralPI = 0.0f;
+  s_tiempoSobrecorriente = 0;
+  s_tiempoCeldaAbierta = 0;
+  s_fallosConsecutivosADS = 0;
+  s_fallosConsecutivosDAC = 0;
 }
 
 void resetLazoDC() {
   s_tiempoInicioDC = millis();
   s_integralPI = 0.0f;
   s_ultimoCodigoDAC_DC = 0xFFFF;
+  s_tiempoSobrecorriente = 0;
+  s_tiempoCeldaAbierta = 0;
+  s_fallosConsecutivosADS = 0;
+  s_fallosConsecutivosDAC = 0;
 }
 
 void escribirDAC_DC(uint16_t codigoDAC) {
   if (codigoDAC == s_ultimoCodigoDAC_DC) return;
   if (!isDACInicializado()) return;
 
+  bool ok = false;
   if (takeI2CMutex(pdMS_TO_TICKS(20))) {
-    dac.setVoltage(codigoDAC, false);
-    s_ultimoCodigoDAC_DC = codigoDAC;
+    ok = dac.setVoltage(codigoDAC, false);
+    if (ok) {
+      s_ultimoCodigoDAC_DC = codigoDAC;
+      s_fallosConsecutivosDAC = 0;
+    }
     giveI2CMutex();
+  }
+
+  if (!ok && fuenteActiva) {
+    s_fallosConsecutivosDAC++;
+    if (s_fallosConsecutivosDAC >= 3) {
+      triggerFailSafe((uint8_t)ERR_I2C_DAC_LOST, "Perdida de comunicacion I2C con DAC MCP4725 (3 intentos)");
+    }
   }
 }
 
@@ -91,8 +114,8 @@ void ejecutarCicloFuenteDC() {
   uint32_t tiempoActiva = millis() - s_tiempoInicioDC;
   uint16_t codigoSalida = 0;
 
-  // 1. SALIDA DIRECTA AL DAC (Escalón directo calibrado, sin rampa de software)
-  codigoSalida = (uint16_t)constrain(localAmplitud, 0, 4095);
+  // 1. SALIDA DIRECTA AL DAC (Escalón directo calibrado, acotado a VCSS_DAC_MAX_PERMITIDO)
+  codigoSalida = (uint16_t)constrain(localAmplitud, 0, VCSS_DAC_MAX_PERMITIDO);
   escribirDAC_DC(codigoSalida);
 
   // 2. ADQUISICIÓN ANALÓGICA DE SHUNTS EN ADS1115 (Canales A2 y A3)
@@ -108,7 +131,17 @@ void ejecutarCicloFuenteDC() {
     }
   }
 
-  if (!okADS) return;
+  if (!okADS) {
+    if (localActiva) {
+      s_fallosConsecutivosADS++;
+      if (s_fallosConsecutivosADS >= 3) {
+        triggerFailSafe((uint8_t)ERR_I2C_ADS_LOST, "Perdida de comunicacion I2C con ADS1115 (3 lecturas fallidas)");
+      }
+    }
+    return;
+  } else {
+    s_fallosConsecutivosADS = 0;
+  }
 
   // Conversión metrológica (0.1875 mV/LSB a Gain 2/3, Shunts 1.0 Ohm)
   float vs1 = max(0.0f, raw2 * 0.0001875f);
@@ -117,14 +150,50 @@ void ejecutarCicloFuenteDC() {
   float i2 = vs2 / 1.0f;
   float i_total = i1 + i2;
 
-  // 3. DIAGNÓSTICO DE SALUD DE CELDA Y TELEMETRÍA METROLÓGICA (Lazo Analógico Puro)
+  // 3. SUPERVISIÓN DE SEGURIDAD (S3: Sobrecorriente y Celda Abierta)
+  const uint32_t VENTANA_GRACIA_ARRANQUE_MS = 250;
+  if (localActiva && tiempoActiva >= VENTANA_GRACIA_ARRANQUE_MS) {
+    // Sobrecorriente medida (> VCSS_IMAX_PERMITIDA durante >= 200 ms)
+    if (i_total > VCSS_IMAX_PERMITIDA) {
+      if (s_tiempoSobrecorriente == 0) {
+        s_tiempoSobrecorriente = millis();
+      } else if (millis() - s_tiempoSobrecorriente >= 200) {
+        char msg[64];
+        snprintf(msg, sizeof(msg), "Sobrecorriente VCSS medida: %.2f A (>%.2f A por 200ms)",
+                 i_total, VCSS_IMAX_PERMITIDA);
+        triggerFailSafe((uint8_t)ERR_VCSS_OVERCURRENT, msg);
+      }
+    } else {
+      s_tiempoSobrecorriente = 0;
+    }
+
+    // Celda abierta (< 0.05 A con consigna > 0.30 A durante >= 1000 ms, solo en DC)
+    float i_esperada = (localSetpoint / 4095.0f) * VCSS_IMAX_NOMINAL;
+    if (i_esperada > 0.30f && i_total < 0.05f) {
+      if (s_tiempoCeldaAbierta == 0) {
+        s_tiempoCeldaAbierta = millis();
+      } else if (millis() - s_tiempoCeldaAbierta >= 1000) {
+        char msg[64];
+        snprintf(msg, sizeof(msg), "Celda abierta: %.2f A con consigna %.2f A por 1s",
+                 i_total, i_esperada);
+        triggerFailSafe((uint8_t)ERR_VCSS_OPEN_CIRCUIT, msg);
+      }
+    } else {
+      s_tiempoCeldaAbierta = 0;
+    }
+  } else {
+    s_tiempoSobrecorriente = 0;
+    s_tiempoCeldaAbierta = 0;
+  }
+
+  // 4. TELEMETRÍA METROLÓGICA Y DIAGNÓSTICO DE SALUD DE CELDA
   if (takeDataMutex(pdMS_TO_TICKS(15))) {
     voltajeShunt1_raw = vs1;
     voltajeShunt2_raw = vs2;
     corrienteReal_R1 = i1;
     corrienteReal_R2 = i2;
     corrienteTotalReal = i_total;
-    estadoPICorriente = PI_STATE_LOCKED; // Operación en lazo analógico puro calibrado (sin oscilaciones)
+    estadoPICorriente = PI_STATE_LOCKED; // Operación en lazo analógico puro calibrado
 
     // Diagnóstico continuo de celda electroquímica
     if (i_total > 0.05f) {

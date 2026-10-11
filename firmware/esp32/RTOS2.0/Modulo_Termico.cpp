@@ -99,6 +99,7 @@ int CanalTermico::calcularPI() {
       integral = 0.0f;
       temperatura = 0.0f;
       potenciaActual = 0;
+      tiempoSobretemperatura = 0;
       giveDataMutex();
     }
     return 0;
@@ -123,14 +124,30 @@ int CanalTermico::calcularPI() {
     if (takeDataMutex(pdMS_TO_TICKS(10))) {
       integral = 0.0f;
       potenciaActual = 0;
+      tiempoSobretemperatura = 0;
       giveDataMutex();
     }
     return 0;
   }
 
-  // Interlock por sobre-temperatura: si T >= Setpoint + 2.0 °C, corte inmediato de potencia
+  // Interlock por sobre-temperatura: si T >= Setpoint + 2.0 °C, corte preventivo inmediato de potencia
   if (tempLocal >= (spLocal + 2.0f)) {
+    // Si la condición crítica persiste por encima de Setpoint + TEMP_OVERHEAT_DELTA_C durante TEMP_OVERHEAT_HOLD_MS -> Fail-Safe Latch
+    if (tempLocal >= (spLocal + TEMP_OVERHEAT_DELTA_C)) {
+      if (tiempoSobretemperatura == 0) {
+        tiempoSobretemperatura = millis();
+      } else if (millis() - tiempoSobretemperatura >= TEMP_OVERHEAT_HOLD_MS) {
+        char msg[64];
+        snprintf(msg, sizeof(msg), "Sobretemperatura critica Canal %d (%.1f C >= SP+%.1f C por %u s)",
+                 id, tempLocal, TEMP_OVERHEAT_DELTA_C, (unsigned)(TEMP_OVERHEAT_HOLD_MS / 1000));
+        triggerFailSafe((uint8_t)ERR_TEMP_OVERHEAT, msg);
+      }
+    } else {
+      tiempoSobretemperatura = 0;
+    }
     return 0;
+  } else {
+    tiempoSobretemperatura = 0;
   }
 
   // 4. Algoritmo de Control Proporcional-Integral (PI)
