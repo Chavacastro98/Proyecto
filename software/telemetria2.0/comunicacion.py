@@ -5,15 +5,133 @@ Módulo de comunicación HTTP con ESP32, ping, bucle de adquisición y modo demo
 """
 
 import math
-import time
+import queue
 import random
 import threading
+import time
 from datetime import datetime
-import requests
-import tkinter as tk
 from tkinter import messagebox
 
+import requests
 from utilidades.calculos import calcular_disparo_triac
+
+
+class NucleoAdquisicion(threading.Thread):
+    """
+    Núcleo de adquisición HTTP desacoplado de la GUI (Auditoría D4/D5).
+    Ejecuta el sondeo continuo hacia el ESP32 o generador simulado y deposita
+    los paquetes adquiridos en una cola thread-safe (queue.Queue) para que
+    cualquier consumidor (GUI Tkinter, logger de consola o script headless)
+    los procese sin acoplamiento.
+    """
+    def __init__(self, ip="192.168.4.1", modo_demo=False, cola_salida=None, intervalo_s=1.0):
+        super().__init__(daemon=True)
+        self.ip = ip
+        self.modo_demo = modo_demo
+        self.cola_salida = cola_salida or queue.Queue(maxsize=100)
+        self.intervalo_s = intervalo_s
+        self._detener_evento = threading.Event()
+        self.conectado = False
+        self.dato_obsoleto = True
+        self.ultimo_exito = 0.0
+        self.reintentos_fallidos = 0
+        self.tiempo_inicio = time.time()
+        self.ultimo_paquete = None
+
+    def detener(self):
+        self._detener_evento.set()
+
+    def run(self):
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": "TelemetriaCore/2.0",
+            "X-Auth-Token": "cts51_sec_2026"
+        })
+        base_url = f"http://{self.ip}"
+
+        while not self._detener_evento.is_set():
+            t_ahora = time.time()
+            paquete = None
+
+            if self.modo_demo:
+                t_rel = round(t_ahora - self.tiempo_inicio, 1)
+                paquete = self._generar_simulacion(t_rel)
+                self.conectado = True
+                self.dato_obsoleto = False
+                self.ultimo_exito = t_ahora
+                self.reintentos_fallidos = 0
+            else:
+                try:
+                    r = session.get(f"{base_url}/data_all", timeout=1.0)
+                    if r.status_code == 200:
+                        data = r.json()
+                        paquete = {
+                            "timestamp": t_ahora,
+                            "iso": datetime.now().isoformat(timespec="seconds"),
+                            "t_rel": round(t_ahora - self.tiempo_inicio, 1),
+                            "t": data.get("t"),
+                            "ph": data.get("ph"),
+                            "f": data.get("f"),
+                            "env": data.get("env"),
+                            "fs": data.get("fs")
+                        }
+                        self.conectado = True
+                        self.dato_obsoleto = False
+                        self.ultimo_exito = t_ahora
+                        self.reintentos_fallidos = 0
+                    else:
+                        self.conectado = False
+                except Exception:
+                    self.conectado = False
+
+                if not self.conectado:
+                    self.reintentos_fallidos += 1
+                    if t_ahora - self.ultimo_exito > 3.0:
+                        self.dato_obsoleto = True
+
+            if paquete is not None:
+                self.ultimo_paquete = paquete
+                try:
+                    self.cola_salida.put_nowait(paquete)
+                except queue.Full:
+                    try:
+                        self.cola_salida.get_nowait()
+                        self.cola_salida.put_nowait(paquete)
+                    except Exception:
+                        pass
+
+            if not self.conectado and not self.modo_demo:
+                espera = min(10.0, 1.0 * (1.5 ** min(self.reintentos_fallidos, 5)))
+            else:
+                espera = self.intervalo_s
+
+            self._detener_evento.wait(espera)
+
+    def _generar_simulacion(self, t_rel):
+        d_t = [
+            {"t": round(23.5 + 40.0 * (1 - math.exp(-t_rel / 300.0)), 1), "sp": 60.0, "p": 45, "run": 1},
+            {"t": round(23.5 + 40.0 * (1 - math.exp(-t_rel / 300.0)), 1), "sp": 60.0, "p": 45, "run": 1},
+            {"t": round(23.5 + 15.0 * (1 - math.exp(-t_rel / 200.0)), 1), "sp": 40.0, "p": 25, "run": 1},
+            {"t": round(23.5 + 40.0 * (1 - math.exp(-t_rel / 300.0)), 1), "sp": 60.0, "p": 45, "run": 1}
+        ]
+        d_ph = {
+            "p": "3.85", "v": "1.890", "vs": "2.45", "on": 0, "m": 2, "sl": "98.5", "c": 1, "il": 0,
+            "p1": 3.85, "p2": 3.85, "v1": 1.890, "v2": 1.890, "on1": 0, "on2": 0, "m1": 2, "m2": 2,
+            "sl1": 98.5, "sl2": 98.5, "c1": 1, "c2": 1
+        }
+        d_f = {
+            "act": 1, "modo": 0, "amps": 1.50, "i_real": 1.50, "i1": 0.75, "i2": 0.75,
+            "vs1": 0.750, "vs2": 0.750, "gm": 1.0000, "comp": 0, "rele": 1,
+            "amp": 870, "sp": 870, "freq": 10, "duty": 20
+        }
+        d_env = {"t": "23.5", "h": "58", "p": "1013.2"}
+        return {
+            "timestamp": time.time(),
+            "iso": datetime.now().isoformat(timespec="seconds"),
+            "t_rel": t_rel,
+            "t": d_t, "ph": d_ph, "f": d_f, "env": d_env,
+            "fs": {"latched": 0, "code": 0, "reason": "OK"}
+        }
 
 
 class ComunicacionMixin:
@@ -408,6 +526,17 @@ class ComunicacionMixin:
                         d_env = ultimo_d_env
 
                 self.conectado = any_success
+                if any_success:
+                    self._ultimo_exito_adq = time.time()
+                    self.dato_obsoleto = False
+                    self._fallos_consecutivos_adq = 0
+                else:
+                    self._fallos_consecutivos_adq = getattr(self, '_fallos_consecutivos_adq', 0) + 1
+                    if time.time() - getattr(self, '_ultimo_exito_adq', time.time()) > 3.0:
+                        self.dato_obsoleto = True
+                        if hasattr(self, 'lbl_status'):
+                            self.root.after(0, lambda: self.lbl_status.config(text="⚠️ DATO OBSOLETO (>3s)", fg="#f97316"))
+
                 d_t = d_t or ultimo_d_t
                 d_ph = d_ph or ultimo_d_ph
                 d_f = d_f or ultimo_d_f
@@ -623,7 +752,11 @@ class ComunicacionMixin:
                     pass
 
             t_espera = 1.0 - (time.time() - t_ciclo_inicio)
-            if t_espera > 0:
+            if not self.conectado and not self.modo_demo:
+                # D5: Reconexión con backoff exponencial si el microcontrolador no responde
+                t_backoff = min(4.0, 0.2 * (1.5 ** min(getattr(self, '_fallos_consecutivos_adq', 0), 5)))
+                time.sleep(max(0.1, t_espera) + t_backoff)
+            elif t_espera > 0:
                 time.sleep(t_espera)
 
 

@@ -3,7 +3,8 @@
 
 [![Status: WIP](https://img.shields.io/badge/Status-Work%20In%20Progress%20(WIP)-amber?style=for-the-badge&logo=git)](https://github.com/Chavacastro98/Proyecto)
 [![Showcase: Live](https://img.shields.io/badge/Showcase%20Web-GitHub%20Pages-0ea5e9?style=for-the-badge&logo=github)](https://chavacastro98.github.io/Proyecto/)
-[![Tests: 34 Passed](https://img.shields.io/badge/Tests-34%20Passed-10b981?style=for-the-badge&logo=pytest)](tests/)
+[![Tests: 62 Passed](https://img.shields.io/badge/Tests-62%20Passed-10b981?style=for-the-badge&logo=pytest)](tests/)
+[![Coverage: 95%](https://img.shields.io/badge/Coverage-95%25-brightgreen?style=for-the-badge)](tests/)
 [![MCU: ESP32-S3 + Nano](https://img.shields.io/badge/Hardware-ESP32--S3%20%7C%20ATmega328P-8b5cf6?style=for-the-badge)](firmware/)
 
 > [!WARNING]
@@ -280,7 +281,7 @@ Genera automáticamente las 8 figuras normalizadas:
 * **Electrónica de Potencia:** Sumidero reconfigurable VCSS (DAC + OpAmps + MOSFETs con shunts single-ended) y relé bipolar ZCS.
 * **Modelado y Control:** Modelo térmico de tinas y sintonización analítica de lazos PI.
 * **Software y UI/UX:** SCADA Telemetría 2.0 (Tkinter / Python) y servidor Web embebido.
-* **Aseguramiento de Calidad:** Matriz de interlocks de seguridad y pruebas de integración.
+* **Aseguramiento de Calidad:** [Matriz de interlocks de seguridad](MATRIZ_INTERLOCKS.md), [Lista de Materiales y Componentes (BOM)](hardware/esquemas_y_bom/BOM.md) y suite automatizada de pruebas (62 pruebas unitarias y de integración).
 
 ### 🎓 Directores de Tesis
 * **Dr. Omar Alejandro González Meza** — Profesor Investigador, CUCEI, Universidad de Guadalajara.

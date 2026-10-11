@@ -123,7 +123,8 @@ void setup() {
 
   // 2. UART2 hacia microcontrolador Arduino Nano esclavo (TX Pin 17 @ 9600 bps)
   Serial2.begin(9600, SERIAL_8N1, -1, PIN_UART2_TX);
-  Serial.println("[UART] Puente con Arduino Nano listo en TX GPIO 17 (9600 bps).");
+  enviarResetNano();
+  Serial.println("[UART] Puente con Arduino Nano listo en TX GPIO 17 (9600 bps). Reset sincronizado enviado.");
 
   // 3. Inicialización del bus I2C con resistencias pull-up internas
   pinMode(PIN_I2C_SDA, INPUT_PULLUP);
@@ -146,12 +147,13 @@ void setup() {
   password = g_wifi_pass.c_str();
 
   if (takeDataMutex(pdMS_TO_TICKS(100))) {
-    // Restaurar consignas de temperatura para las 4 tinas
+    // Restaurar consignas de temperatura para las 4 tinas (S8: Topes por tina)
     for (int i = 0; i < 4; i++) {
       char key[16];
       snprintf(key, sizeof(key), "sp%d", i);
+      float maxSP = obtenerTopeSetpointTina(i);
       float spG = memoria.getFloat(key, canales[i].setpoint);
-      if (spG <= 0.0f || spG > 150.0f) spG = 60.0f;
+      if (spG <= 0.0f || spG > maxSP) spG = (i == 2) ? 40.0f : 60.0f;
       canales[i].setpoint = spG;
     }
 

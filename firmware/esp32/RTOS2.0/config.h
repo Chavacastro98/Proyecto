@@ -170,6 +170,12 @@ enum SaludCelda_t : uint8_t {
 #define PH_CAL_MAX_DISPERSION_MV  80.0f   // Umbral máximo de dispersión pico a pico admisible (mV)
 #define TEMP_OVERHEAT_DELTA_C 3.0f    // Delta sobre Setpoint (°C) para disparo de sobretemperatura crítica
 #define TEMP_OVERHEAT_HOLD_MS 3000    // Tiempo de persistencia requerido para activar ERR_TEMP_OVERHEAT (ms)
+#define TEMP_SP_MAX_GENERAL   95.0f   // Límite máximo general para tinas químicas (°C)
+#define TEMP_SP_MAX_HULL      60.0f   // Límite de seguridad Celda Hull Tina 2 (°C)
+
+inline float obtenerTopeSetpointTina(int id) {
+  return (id == 2) ? TEMP_SP_MAX_HULL : TEMP_SP_MAX_GENERAL;
+}
 
 // =================================================================================
 // OBJETOS GLOBALES DE HARDWARE Y ALMACENAMIENTO

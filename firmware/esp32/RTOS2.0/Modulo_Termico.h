@@ -76,5 +76,15 @@ void ejecutarPasoTermico200ms();
  */
 void ejecutarPasoTermico1000ms();
 
+/**
+ * @brief S7: Calcula el CRC8 estándar (0x07) para paquetes UART hacia el Arduino Nano.
+ */
+uint8_t calcularCRC8(const uint8_t *data, size_t len);
+
+/**
+ * @brief Envía la orden de reinicio sincronizado "RST*crc\n" hacia el Arduino Nano.
+ */
+void enviarResetNano();
+
 #endif // MODULO_TERMICO_H
 

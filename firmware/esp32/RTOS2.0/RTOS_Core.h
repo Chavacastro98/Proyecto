@@ -160,4 +160,10 @@ void obtenerLogsJSON(char* buffer, size_t maxLen);
  */
 void escaparJSON(const char* src, char* dst, size_t maxLen);
 
+/**
+ * @brief S9: Recuperación de bus I2C mediante 9 pulsos en SCL y condición de STOP manual.
+ * @return true si el bus quedó libre (SDA y SCL en nivel ALTO).
+ */
+bool i2cRecuperarBus();
+
 #endif // RTOS_CORE_H

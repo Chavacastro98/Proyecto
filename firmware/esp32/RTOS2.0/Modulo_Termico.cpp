@@ -189,15 +189,51 @@ void ejecutarPasoTermico200ms() {
   }
 }
 
+static uint8_t s_uart_seq = 0;
+
+/**
+ * @brief S7: Calcula el CRC-8 estándar (polinomio 0x07, init 0x00).
+ */
+uint8_t calcularCRC8(const uint8_t *data, size_t len) {
+  uint8_t crc = 0x00;
+  for (size_t i = 0; i < len; i++) {
+    crc ^= data[i];
+    for (uint8_t b = 0; b < 8; b++) {
+      if (crc & 0x80) {
+        crc = (crc << 1) ^ 0x07;
+      } else {
+        crc <<= 1;
+      }
+    }
+  }
+  return crc;
+}
+
+/**
+ * @brief Envía la orden de reinicio sincronizado "RST*crc\n" hacia el Arduino Nano.
+ */
+void enviarResetNano() {
+  uint8_t crc = calcularCRC8((const uint8_t*)"RST", 3);
+  char trama[16];
+  snprintf(trama, sizeof(trama), "RST*%02X", crc);
+  Serial2.println(trama);
+}
+
 /**
  * @brief Ciclo maestro de control térmico a 1 Hz:
  * - Evalúa calcularPI() para los 4 canales.
  * - Aplica el recorte por rampa de potencia.
- * - Construye y transmite la trama serie UART2 hacia el Arduino Nano esclavo: "P0,P1,P2,P3\n".
+ * - S7: Construye y transmite la trama serie estructurada UART2 con secuencia y CRC8:
+ *       "p0,p1,p2,p3,seq*crc\n" hacia el Arduino Nano esclavo.
  */
 void ejecutarPasoTermico1000ms() {
   if (g_failsafe_latched) {
-    Serial2.println("0,0,0,0");
+    char carga[32];
+    snprintf(carga, sizeof(carga), "0,0,0,0,%u", s_uart_seq++);
+    uint8_t crc = calcularCRC8((const uint8_t*)carga, strlen(carga));
+    char trama[40];
+    snprintf(trama, sizeof(trama), "%s*%02X", carga, crc);
+    Serial2.println(trama);
     return;
   }
 
@@ -215,11 +251,14 @@ void ejecutarPasoTermico1000ms() {
     }
   }
 
-  // Transmisión UART2 al Arduino Nano esclavo: "P0,P1,P2,P3"
-  char bufferSerie[32];
-  snprintf(bufferSerie, sizeof(bufferSerie), "%d,%d,%d,%d",
-           potencias[0], potencias[1], potencias[2], potencias[3]);
-  Serial2.println(bufferSerie);
+  // S7: Transmisión UART2 al Arduino Nano esclavo: "p0,p1,p2,p3,seq*crc"
+  char cargaUtil[32];
+  snprintf(cargaUtil, sizeof(cargaUtil), "%d,%d,%d,%d,%u",
+           potencias[0], potencias[1], potencias[2], potencias[3], s_uart_seq++);
+  uint8_t crc = calcularCRC8((const uint8_t*)cargaUtil, strlen(cargaUtil));
+  char tramaCompleta[40];
+  snprintf(tramaCompleta, sizeof(tramaCompleta), "%s*%02X", cargaUtil, crc);
+  Serial2.println(tramaCompleta);
 
   // Acumulación de energía térmica disipada en reactores (Wh, Ts = 1.0 s)
   float wTotal = (potencias[0] * 4.5f) + (potencias[1] * 4.5f) + 

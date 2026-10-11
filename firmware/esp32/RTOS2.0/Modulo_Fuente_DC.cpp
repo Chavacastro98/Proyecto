@@ -69,7 +69,9 @@ void escribirDAC_DC(uint16_t codigoDAC) {
 
   if (!ok && fuenteActiva) {
     s_fallosConsecutivosDAC++;
-    if (s_fallosConsecutivosDAC >= 3) {
+    if (s_fallosConsecutivosDAC == 2) {
+      i2cRecuperarBus(); // Intento de recuperación antes de declarar fallo fatal
+    } else if (s_fallosConsecutivosDAC >= 3) {
       triggerFailSafe((uint8_t)ERR_I2C_DAC_LOST, "Perdida de comunicacion I2C con DAC MCP4725 (3 intentos)");
     }
   }
@@ -134,7 +136,9 @@ void ejecutarCicloFuenteDC() {
   if (!okADS) {
     if (localActiva) {
       s_fallosConsecutivosADS++;
-      if (s_fallosConsecutivosADS >= 3) {
+      if (s_fallosConsecutivosADS == 2) {
+        i2cRecuperarBus(); // Intento de recuperación antes de declarar fallo fatal
+      } else if (s_fallosConsecutivosADS >= 3) {
         triggerFailSafe((uint8_t)ERR_I2C_ADS_LOST, "Perdida de comunicacion I2C con ADS1115 (3 lecturas fallidas)");
       }
     }

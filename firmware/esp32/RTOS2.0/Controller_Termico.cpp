@@ -74,9 +74,12 @@ static void handleSetT() {
 
     if (!canalActivo) {
       float nuevoSP = server.arg("v").toFloat();
+      float maxSP = obtenerTopeSetpointTina(id);
 
-      if (isnan(nuevoSP) || nuevoSP < 0.0f || nuevoSP > 150.0f) {
-        server.send(400, "text/plain", "Setpoint fuera de rango (0-150°C)");
+      if (isnan(nuevoSP) || nuevoSP < 0.0f || nuevoSP > maxSP) {
+        char err[64];
+        snprintf(err, sizeof(err), "Setpoint fuera de rango (0-%.0f C para Tina %d)", maxSP, id);
+        server.send(400, "text/plain", err);
         return;
       }
 

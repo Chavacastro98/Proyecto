@@ -408,3 +408,58 @@ void escaparJSON(const char* src, char* dst, size_t maxLen) {
   dst[j] = '\0';
 }
 
+/**
+ * @brief S9: Rutina de recuperación de bus I2C (I2C Bus Clear / Clock Toggling).
+ * Si un esclavo quedó trabado sosteniendo SDA en LOW, conmuta los pines a GPIO,
+ * genera hasta 9 pulsos en SCL para liberar el bus y emite una condición de STOP
+ * antes de reiniciar la pila Wire.
+ * @return true si el bus quedó en estado IDLE (SDA y SCL en HIGH).
+ */
+bool i2cRecuperarBus() {
+  logSistema(LOG_LVL_WARN, "I2C", "Iniciando secuencia de recuperacion de bus I2C (9 pulsos SCL)...");
+
+  // 1. Terminar Wire temporalmente si estaba activo
+  Wire.end();
+
+  // 2. Configurar SCL como salida y SDA como entrada con pull-up
+  pinMode(PIN_I2C_SCL, OUTPUT);
+  pinMode(PIN_I2C_SDA, INPUT_PULLUP);
+  digitalWrite(PIN_I2C_SCL, HIGH);
+  delayMicroseconds(10);
+
+  // 3. Generar hasta 9 pulsos de reloj en SCL mientras SDA siga en nivel BAJO
+  for (int i = 0; i < 9; i++) {
+    if (digitalRead(PIN_I2C_SDA) == HIGH) {
+      break; // El esclavo liberó la línea SDA
+    }
+    digitalWrite(PIN_I2C_SCL, LOW);
+    delayMicroseconds(5);
+    digitalWrite(PIN_I2C_SCL, HIGH);
+    delayMicroseconds(5);
+  }
+
+  // 4. Generar condición de STOP manual: SDA LOW -> HIGH con SCL HIGH
+  pinMode(PIN_I2C_SDA, OUTPUT);
+  digitalWrite(PIN_I2C_SDA, LOW);
+  delayMicroseconds(5);
+  digitalWrite(PIN_I2C_SCL, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(PIN_I2C_SDA, HIGH);
+  delayMicroseconds(5);
+
+  // 5. Reinicializar Wire
+  pinMode(PIN_I2C_SDA, INPUT_PULLUP);
+  pinMode(PIN_I2C_SCL, INPUT_PULLUP);
+  Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
+  Wire.setClock(400000);
+  Wire.setTimeOut(50);
+
+  bool ok = (digitalRead(PIN_I2C_SDA) == HIGH && digitalRead(PIN_I2C_SCL) == HIGH);
+  if (ok) {
+    logSistema(LOG_LVL_INFO, "I2C", "Recuperacion de bus I2C completada con exito (SDA/SCL HIGH).");
+  } else {
+    logSistema(LOG_LVL_WARN, "I2C", "Bus I2C sigue bloqueado tras 9 pulsos.");
+  }
+  return ok;
+}
+
