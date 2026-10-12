@@ -17,7 +17,7 @@ try:
 except ImportError:
     from telemetria.utilidades.alarma import reproducir_alarma_sonora
 
-API_AUTH_TOKEN = "cts51_sec_2026"
+API_AUTH_TOKEN = "admin"
 
 
 class GestorEnsayosMixin:

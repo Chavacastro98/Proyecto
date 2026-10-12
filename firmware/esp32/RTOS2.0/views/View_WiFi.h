@@ -160,7 +160,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"H
             <div class='field-group'>
                 <label class='field-label'>Token de Autorizaci&oacute;n REST</label>
                 <div class='input-wrapper'>
-                    <input type='text' id='inp-token' class='input-field' value='cts51_sec_2026' required placeholder='Token de seguridad'>
+                    <input type='text' id='inp-token' class='input-field' value='admin' required placeholder='Token de seguridad'>
                 </div>
             </div>
 

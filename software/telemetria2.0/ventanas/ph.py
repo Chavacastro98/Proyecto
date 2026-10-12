@@ -39,7 +39,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.patches as patches
 
-AUTH_HEADERS = {"X-Auth-Token": "cts51_sec_2026"}
+AUTH_HEADERS = {"X-Auth-Token": "admin"}
 
 
 class VentanaPH:

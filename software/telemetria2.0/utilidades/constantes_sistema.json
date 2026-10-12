@@ -74,7 +74,7 @@
   "red": {
     "default_wifi_ssid": "Uli",
     "default_wifi_pass": "12345678",
-    "api_auth_token": "cts51_sec_2026",
+    "api_auth_token": "admin",
     "ip_esp32_defecto": "192.168.4.1"
   }
 }

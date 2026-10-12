@@ -41,7 +41,7 @@
 // =================================================================================
 #define DEFAULT_WIFI_SSID     "Uli"
 #define DEFAULT_WIFI_PASS     "12345678"
-#define API_AUTH_TOKEN        "cts51_sec_2026"
+#define API_AUTH_TOKEN        "admin"
 
 extern String g_wifi_ssid;
 extern String g_wifi_pass;

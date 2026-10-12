@@ -115,7 +115,7 @@ El sistema distingue estrictamente entre fallas de **seguridad física** (que de
      ```http
      POST /failsafe_reset HTTP/1.1
      Host: 192.168.4.1
-     X-Auth-Token: cts51_sec_2026
+     X-Auth-Token: admin
      ```
   4. El firmware valida que las condiciones de seguridad sean normales, borra `flagFailSafe = false`, restablece el código de falla a `ERR_OK` (0) y retorna la baliza al modo reposo.
 

@@ -45,7 +45,7 @@ class NucleoAdquisicion(threading.Thread):
         session = requests.Session()
         session.headers.update({
             "User-Agent": "TelemetriaCore/2.0",
-            "X-Auth-Token": "cts51_sec_2026"
+            "X-Auth-Token": "admin"
         })
         base_url = f"http://{self.ip}"
 
