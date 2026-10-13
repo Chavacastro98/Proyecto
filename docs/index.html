@@ -1942,8 +1942,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       </div>
 
       <!-- SECCIÓN 4.1: CURVAS PARAMÉTRICAS DEL MOSFET IRLZ44N, TRANSCONDUCTANCIA gm & LINEALIZACIÓN POR OP-AMP -->
-      <div id="vcss-mosfet-curvas" style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--purple); border-radius: 12px; padding: 18px; margin-top: 18px; box-shadow: 0 0 25px rgba(168, 85, 247, 0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+      <div id="vcss-mosfet-curvas" class="mosfet-card">
+        <div class="mosfet-header">
           <div>
             <span class="badge badge-purple" style="font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
               Semiconductor de Potencia en Modo Lineal Activo
@@ -1953,89 +1953,89 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             </h4>
           </div>
           <!-- Selector de Vista y Modo de Tamaño -->
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <div style="display: inline-flex; background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 3px;">
-              <button id="btnVistaCurvasVds" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vds')" style="background: var(--purple); color: #ffffff; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
-                📈 Curvas de Salida (I<sub>D</sub> vs V<sub>DS</sub>, Recta de Carga & Punto Q)
+          <div class="mosfet-toolbar">
+            <div class="mosfet-view-switch">
+              <button id="btnVistaCurvasVds" type="button" class="btn btn-sm mosfet-view-btn" onclick="setVistaCurvasMosfet('vds')" style="background: var(--purple); color: #ffffff;">
+                📈 Salida (I<sub>D</sub> vs V<sub>DS</sub>)
               </button>
-              <button id="btnVistaCurvasVgs" type="button" class="btn btn-sm" onclick="setVistaCurvasMosfet('vgs')" style="background: transparent; color: #94a3b8; border: none; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
-                📊 Transferencia (I<sub>D</sub> vs V<sub>GS</sub> & g<sub>m</sub>)
+              <button id="btnVistaCurvasVgs" type="button" class="btn btn-sm mosfet-view-btn" onclick="setVistaCurvasMosfet('vgs')" style="background: transparent; color: #94a3b8;">
+                📊 Transferencia (g<sub>m</sub>)
               </button>
             </div>
-            <button id="btnExpandirMosfet" type="button" class="btn btn-sm" onclick="toggleModoAmpliadoMosfet()" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Alternar entre vista dividida y vista panorámica ampliada">
+            <button id="btnExpandirMosfet" type="button" class="btn btn-sm mosfet-btn-action btn-panoramico-desktop" onclick="toggleModoAmpliadoMosfet()" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc;" title="Alternar entre vista dividida y vista panorámica ampliada">
               ⛶ Vista Panorámica
             </button>
-            <button id="btnCompararDatasheet" type="button" class="btn btn-sm" onclick="abrirModal('assets/irlz44_curvas_datasheet_vishay.png', 'Datasheet Oficial Vishay IRLZ44 (Doc. 91328, Pág. 3): Fig. 1 Salida a 25°C, Fig. 2 Salida a 175°C, Fig. 3 Transferencia y Fig. 4 RDS(on) vs Temperatura')" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 600; font-size: 0.76rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Inspeccionar curvas oficiales del Datasheet Vishay IRLZ44 (Fig. 1 a 4)">
-              📑 Cotejo Datasheet Vishay (Fig. 1-4)
+            <button id="btnCompararDatasheet" type="button" class="btn btn-sm mosfet-btn-action" onclick="abrirModal('assets/irlz44_curvas_datasheet_vishay.png', 'Datasheet Oficial Vishay IRLZ44 (Doc. 91328, Pág. 3): Fig. 1 Salida a 25°C, Fig. 2 Salida a 175°C, Fig. 3 Transferencia y Fig. 4 RDS(on) vs Temperatura')" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;" title="Inspeccionar curvas oficiales del Datasheet Vishay IRLZ44 (Fig. 1 a 4)">
+              📑 Cotejo Datasheet Vishay
             </button>
           </div>
         </div>
 
         <!-- PANEL DE CONTROL DINÁMICO DEL EXPERIMENTO: SLIDERS DEDICADOS -->
-        <div style="background: rgba(2, 6, 23, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;">
+        <div class="mosfet-controls">
           <div class="grid-3" style="gap: 14px; margin-bottom: 10px;">
             <!-- Slider 1: VDD -->
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+              <div class="mosfet-slider-header">
                 <span style="color: #94a3b8; font-weight: 600;">⚡ Tensión Fuente V<sub>DD</sub>:</span>
                 <strong id="lblVddMosfet" style="color: #38bdf8; font-family: var(--code-font);">12.0 V</strong>
               </div>
               <input type="range" id="rngVddMosfet" min="5.0" max="24.0" step="0.5" value="12.0" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
-              <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
+              <div class="mosfet-slider-scale">
                 <span>5 V</span><span>12 V (Nominal)</span><span>24 V</span>
               </div>
             </div>
 
             <!-- Slider 2: V_carga (Celda Hull) -->
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
-                <span style="color: #94a3b8; font-weight: 600;">🧪 Voltaje en Carga (Celda Hull) V<sub>carga</sub>:</span>
+              <div class="mosfet-slider-header">
+                <span style="color: #94a3b8; font-weight: 600;">🧪 Voltaje en Carga V<sub>carga</sub>:</span>
                 <strong id="lblVloadMosfet" style="color: #f59e0b; font-family: var(--code-font);">5.60 V (R<sub>ap</sub> = 3.73 Ω)</strong>
               </div>
               <input type="range" id="rngVloadMosfet" min="0.0" max="20.0" step="0.1" value="5.6" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
-              <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
-                <span>0.0 V (Corto)</span><span>5.6 V (Exp. Real)</span><span>10.0 V</span><span>20.0 V (Máx)</span>
+              <div class="mosfet-slider-scale">
+                <span>0.0 V (Corto)</span><span>5.6 V (Exp)</span><span>10.0 V</span><span>20.0 V</span>
               </div>
             </div>
 
             <!-- Slider 3: Itotal / Vref -->
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+              <div class="mosfet-slider-header">
                 <span style="color: #94a3b8; font-weight: 600;">🎯 Corriente Total I<sub>total</sub> (V<sub>ref</sub>):</span>
                 <strong id="lblItotalMosfet" style="color: #10b981; font-family: var(--code-font);">1.50 A (V<sub>ref</sub> = 0.75V)</strong>
               </div>
               <input type="range" id="rngItotalMosfet" min="0.10" max="6.00" step="0.05" value="1.50" class="slider" oninput="actualizarCurvasMosfetInteractivo()">
-              <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-top: 2px;">
-                <span>0.10 A</span><span>1.50 A (Exp. Clave)</span><span>3.00 A (Alta Densidad)</span><span>6.00 A (Máx)</span>
+              <div class="mosfet-slider-scale">
+                <span>0.10 A</span><span>1.50 A (Clave)</span><span>3.00 A</span><span>6.00 A</span>
               </div>
             </div>
           </div>
 
           <!-- BOTONES DE PRESETS EXPERIMENTALES -->
-          <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
-            <span style="font-size: 0.73rem; color: #94a3b8; font-weight: 600;">Puntos de Ensayo del Experimento:</span>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 5.6, 1.50)" style="background: rgba(14, 165, 233, 0.2); border: 1px solid var(--primary); color: #38bdf8; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
-              📍 Experimento Clave: 1.50 A @ V<sub>carga</sub> = 5.6 V (VDD 12V)
+          <div class="mosfet-presets">
+            <span style="font-size: 0.73rem; color: #94a3b8; font-weight: 600;">Ensayos Clave:</span>
+            <button type="button" class="btn btn-sm mosfet-preset-btn" onclick="aplicarPresetMosfet(12.0, 5.6, 1.50)" style="background: rgba(14, 165, 233, 0.2); border: 1px solid var(--primary); color: #38bdf8;">
+              📍 Clave: 1.50 A @ V<sub>carga</sub> = 5.6 V (VDD 12V)
             </button>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 6.8, 3.00)" style="background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald); color: #10b981; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
+            <button type="button" class="btn btn-sm mosfet-preset-btn" onclick="aplicarPresetMosfet(12.0, 6.8, 3.00)" style="background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald); color: #10b981;">
               ⚡ Alta Densidad: 3.00 A @ V<sub>carga</sub> = 6.8 V (VDD 12V)
             </button>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(15.0, 5.6, 5.00)" style="background: rgba(168, 85, 247, 0.2); border: 1px solid var(--purple); color: #c084fc; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
-              🚀 Ensayo Potencia: 5.00 A @ V<sub>carga</sub> = 5.6 V (VDD 15V)
+            <button type="button" class="btn btn-sm mosfet-preset-btn" onclick="aplicarPresetMosfet(15.0, 5.6, 5.00)" style="background: rgba(168, 85, 247, 0.2); border: 1px solid var(--purple); color: #c084fc;">
+              🚀 Potencia: 5.00 A @ V<sub>carga</sub> = 5.6 V (VDD 15V)
             </button>
-            <button type="button" class="btn btn-sm" onclick="aplicarPresetMosfet(12.0, 10.8, 1.50)" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; font-size: 0.72rem; padding: 4px 11px; border-radius: 6px; cursor: pointer;">
-              ⚠️ Límite Óhmico / Colapso: 1.50 A @ V<sub>carga</sub> = 10.8 V (VDD 12V)
+            <button type="button" class="btn btn-sm mosfet-preset-btn" onclick="aplicarPresetMosfet(12.0, 10.8, 1.50)" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171;">
+              ⚠️ Límite Óhmico: 1.50 A @ V<sub>carga</sub> = 10.8 V (VDD 12V)
             </button>
           </div>
         </div>
 
-        <div id="layoutMosfetVis" style="display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); gap: 18px; align-items: start; transition: all 0.3s ease;">
+        <div id="layoutMosfetVis" class="mosfet-vis-layout">
           <!-- Columna Izquierda: Canvas del Gráfico Paramétrico (VENTANA AMPLIADA) -->
           <div>
-            <div style="background: #020617; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 12px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.6);">
-              <canvas id="canvasMosfetCurvas" style="width: 100%; height: 390px; display: block; border-radius: 6px;"></canvas>
+            <div class="mosfet-canvas-box">
+              <canvas id="canvasMosfetCurvas" class="mosfet-canvas"></canvas>
               <!-- Leyenda descriptiva -->
-              <div id="leyendaCurvasMosfet" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 0.76rem; color: #94a3b8; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
+              <div id="leyendaCurvasMosfet" class="mosfet-leyenda">
                 <span>Línea continua cian: Curva V<sub>GS</sub> comandada.</span>
                 <span>Línea magenta: Recta de Carga Dinámica.</span>
                 <span style="color: #10b981; font-weight: 700;">Punto Q: Saturación Activa OK</span>
@@ -2045,44 +2045,44 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
           <!-- Columna Derecha: Métricas en Tiempo Real de Operación del MOSFET -->
           <div>
-            <div class="grid-2" style="gap: 8px; margin-bottom: 10px;">
-              <div class="metric-tile" style="border-left: 3px solid #38bdf8;">
-                <div class="metric-label">Punto Quiescente Q (c/rama)</div>
-                <div class="metric-value" id="valPuntoQ" style="color: #38bdf8; font-size: 1.05rem;">Q(5.65V, 0.75A)</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>DS</sub> sobre drenador | I<sub>D</sub> por rama</div>
+            <div class="mosfet-metric-grid">
+              <div class="metric-tile mosfet-tile" style="border-left: 3px solid #38bdf8;">
+                <div class="metric-label">Punto Quiescente Q</div>
+                <div class="metric-value mosfet-metric-val" id="valPuntoQ" style="color: #38bdf8;">Q(5.65V, 0.75A)</div>
+                <div class="mosfet-tile-sub">V<sub>DS</sub> | I<sub>D</sub> / rama</div>
               </div>
-              <div class="metric-tile" style="border-left: 3px solid #a855f7;">
-                <div class="metric-label">Régimen del Semiconductor</div>
-                <div class="metric-value" id="valRegimenMosfet" style="color: #10b981; font-size: 0.92rem;">SATURACIÓN ACTIVA</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;" id="valSubregimen">Pinch-off V<sub>DS</sub> &ge; V<sub>DS,sat</sub></div>
+              <div class="metric-tile mosfet-tile" style="border-left: 3px solid #a855f7;">
+                <div class="metric-label">Régimen Semiconductor</div>
+                <div class="metric-value mosfet-metric-val" id="valRegimenMosfet" style="color: #10b981;">SATURACIÓN ACTIVA</div>
+                <div class="mosfet-tile-sub" id="valSubregimen">V<sub>DS</sub> &ge; V<sub>DS,sat</sub></div>
               </div>
-              <div class="metric-tile" style="border-left: 3px solid #f59e0b;">
-                <div class="metric-label">Caída en Carga (Celda Hull)</div>
-                <div class="metric-value" id="valVcargaMosfet" style="color: #fbbf24; font-size: 1.05rem;">5.60 V</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>carga</sub> medido en baño (8.4 W • 3.73 Ω)</div>
+              <div class="metric-tile mosfet-tile" style="border-left: 3px solid #f59e0b;">
+                <div class="metric-label">Caída en Carga (Celda)</div>
+                <div class="metric-value mosfet-metric-val" id="valVcargaMosfet" style="color: #fbbf24;">5.60 V</div>
+                <div class="mosfet-tile-sub">V<sub>carga</sub> medido en baño</div>
               </div>
-              <div class="metric-tile" style="border-left: 3px solid #10b981;">
-                <div class="metric-label">Salida Op-Amp V<sub>gate</sub> LM358N</div>
-                <div class="metric-value" id="valVgateOpamp" style="color: #10b981; font-size: 1.05rem;">2.94 V</div>
-                <div style="font-size: 0.68rem; color: #94a3b8;">V<sub>gate</sub> = V<sub>S</sub> + V<sub>GS</sub> &approx; V<sub>ref</sub> + V<sub>th</sub></div>
+              <div class="metric-tile mosfet-tile" style="border-left: 3px solid #10b981;">
+                <div class="metric-label">Salida Op-Amp V<sub>gate</sub></div>
+                <div class="metric-value mosfet-metric-val" id="valVgateOpamp" style="color: #10b981;">2.94 V</div>
+                <div class="mosfet-tile-sub">V<sub>gate</sub> = V<sub>S</sub> + V<sub>GS</sub></div>
               </div>
             </div>
 
             <!-- Fila informativa de tensión y margen -->
-            <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px; font-size: 0.76rem; color: #cbd5e1; margin-bottom: 8px;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <div class="mosfet-info-card">
+              <div class="mosfet-info-row">
                 <span>• Tensión en Shunt V<sub>S</sub> (Entrada V<sub>ref</sub> Op-Amp):</span>
                 <strong id="valVshuntMosfet" style="color: #38bdf8;">0.75 V (I<sub>D</sub> · 1.0 Ω)</strong>
               </div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <div class="mosfet-info-row">
                 <span>• Tensión Estrangulamiento V<sub>DS,sat</sub> (V<sub>GS</sub> − V<sub>th</sub>):</span>
                 <strong id="valVdsSat" style="color: #fbbf24;">0.68 V</strong>
               </div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <div class="mosfet-info-row">
                 <span>• Margen de Linealidad &Delta;V (V<sub>DS</sub> − V<sub>DS,sat</sub>):</span>
                 <strong id="valMargenVds" style="color: #10b981;">+2.17 V (Óptimo)</strong>
               </div>
-              <div style="display: flex; justify-content: space-between;">
+              <div class="mosfet-info-row">
                 <span>• Transconductancia g<sub>m</sub> IRLZ44N (c/rama):</span>
                 <strong id="valGmIntrinseco" style="color: #c084fc;">2.19 S (G<sub>m</sub> neta = 2.00 A/V)</strong>
               </div>

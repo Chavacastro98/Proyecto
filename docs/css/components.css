@@ -951,4 +951,293 @@ body.modo-tecnico .math-toggle-btn {
   }
 }
 
+/* SIMULADOR INTERACTIVO MOSFET IRLZ44N (RESPONSIVE MÓVIL Y ESCRITORIO) */
+.mosfet-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--purple);
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 18px;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.15);
+}
+
+.mosfet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mosfet-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.mosfet-view-switch {
+  display: inline-flex;
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.mosfet-view-btn {
+  border: none;
+  font-weight: 600;
+  font-size: 0.76rem;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mosfet-btn-action {
+  font-weight: 600;
+  font-size: 0.76rem;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mosfet-controls {
+  background: rgba(2, 6, 23, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.mosfet-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+}
+
+.mosfet-slider-scale {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.mosfet-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+}
+
+.mosfet-preset-btn {
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.mosfet-vis-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+  gap: 18px;
+  align-items: start;
+  transition: all 0.3s ease;
+}
+
+.mosfet-vis-layout.modo-panoramico {
+  grid-template-columns: 1fr;
+}
+
+.mosfet-canvas-box {
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px;
+  position: relative;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.mosfet-canvas {
+  width: 100%;
+  height: 390px;
+  display: block;
+  border-radius: 6px;
+}
+
+.mosfet-leyenda {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: #94a3b8;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.mosfet-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mosfet-tile {
+  padding: 10px 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mosfet-tile .metric-label {
+  font-size: 0.70rem;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.mosfet-tile .metric-value {
+  font-size: clamp(0.88rem, 3.2vw, 1.05rem) !important;
+  line-height: 1.25;
+  margin: 4px 0 2px 0;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.mosfet-tile-sub {
+  font-size: 0.66rem;
+  color: #94a3b8;
+  line-height: 1.25;
+}
+
+.mosfet-info-card {
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.mosfet-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 5px;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.mosfet-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.mosfet-info-row span {
+  color: #cbd5e1;
+  flex: 1 1 auto;
+}
+
+.mosfet-info-row strong {
+  font-family: var(--code-font);
+  white-space: nowrap;
+}
+
+/* RESPONSIVE MÓVIL (TABLETS Y SMARTPHONES) */
+@media (max-width: 900px) {
+  .mosfet-vis-layout,
+  .mosfet-vis-layout.modo-panoramico {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+  .btn-panoramico-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mosfet-card {
+    padding: 12px 10px;
+    margin-top: 14px;
+    border-radius: 10px;
+  }
+  .mosfet-toolbar {
+    width: 100%;
+  }
+  .mosfet-view-switch {
+    width: 100%;
+    display: flex;
+  }
+  .mosfet-view-btn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    white-space: normal;
+  }
+  .mosfet-btn-action {
+    width: 100%;
+    text-align: center;
+  }
+  .mosfet-canvas-box {
+    padding: 8px;
+  }
+  .mosfet-canvas {
+    height: 330px;
+  }
+  .mosfet-leyenda {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.72rem;
+  }
+  .mosfet-presets {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mosfet-preset-btn {
+    width: 100%;
+  }
+  .mosfet-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 5px;
+  }
+  .mosfet-info-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  .mosfet-info-row strong {
+    padding-left: 10px;
+    text-align: left;
+  }
+}
+
+@media (max-width: 380px) {
+  .mosfet-metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 
