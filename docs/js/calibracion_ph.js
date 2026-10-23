@@ -1,5 +1,5 @@
 /**
- * Showcase Técnico CTS-C51 | SMEQ 2026
+ * Sistema de Control Automático de Recubrimientos Electrolíticos
  * CALIBRACIÓN DE pH: Modelo de Doble Pendiente Asimétrico (3 Puntos Nernst)
  */
 

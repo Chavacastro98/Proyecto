@@ -1,5 +1,5 @@
 /**
- * Showcase Técnico CTS-C51 | SMEQ 2026
+ * Sistema de Control Automático de Recubrimientos Electrolíticos
  * SIMULADORES FÍSICOS: Control Térmico ZCS, Fuente Pulsada VCSS (SOA) y Faraday
  */
 

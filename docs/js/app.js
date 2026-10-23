@@ -1,5 +1,5 @@
 /**
- * Showcase Técnico CTS-C51 | SMEQ 2026
+ * Sistema de Control Automático de Recubrimientos Electrolíticos
  * MÓDULO PRINCIPAL: Navegación por pestañas, Lightbox de inspección y Ciclo de vida
  */
 
