@@ -1469,7 +1469,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
       <div class="math-card" style="border-left: 4px solid var(--amber); margin-top: 18px;">
         <div class="math-label">🔗 Acoplamiento Dinámico: Control por Tiempo Proporcional (ZCS) con la Función de Transferencia (FDT)</div>
         <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
-          Acoplamiento analítico entre la señal de control continua $u(t)$ calculada por el algoritmo PI y la conmutación discreta por paquetes de ciclos senoidales en cruce por cero ($V=0$):
+          Acoplamiento analítico entre la señal de control continua <i>u</i>(<i>t</i>) calculada por el algoritmo PI y la conmutación discreta por paquetes de ciclos senoidales en cruce por cero (<i>V</i> = 0):
         </p>
 
         <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
@@ -2550,8 +2550,8 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <div>
                   <div class="info-box info-box-warn" style="margin: 0 0 10px 0; font-size: 0.78rem; padding: 8px 12px;">
                     <strong style="color: #fbbf24;">⚠️ Distinción Metrológica Crucial de Escala:</strong><br>
-                    • <strong>Datasheet Vishay:</strong> Ejes en <em>escala logarítmica</em> ($10^{-1}$ a $10^{2}$ A) para abarcar todo el espectro de conmutación de potencia del semiconductor (hasta 50 A).<br>
-                    • <strong>Simulador Interactivo:</strong> Ejes en <em>escala lineal</em> (0 a 4.0 A) para resolución de instrumentación en el rango de trabajo de la Celda Hull ($I_D = 0.75$ A por rama, 1.50 A total).
+                    • <strong>Datasheet Vishay:</strong> Ejes en <em>escala logarítmica</em> (10<sup>&minus;1</sup> a 10<sup>2</sup> A) para abarcar todo el espectro de conmutación de potencia del semiconductor (hasta 50 A).<br>
+                    • <strong>Simulador Interactivo:</strong> Ejes en <em>escala lineal</em> (0 a 4.0 A) para resolución de instrumentación en el rango de trabajo de la Celda Hull (<i>I</i><sub>D</sub> = 0.75 A por rama, 1.50 A total).
                   </div>
 
                   <div style="overflow-x: auto;">
@@ -2566,9 +2566,9 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                       </thead>
                       <tbody>
                         <tr>
-                          <td><strong>$V_{GS}$ @ $I_D = 0.75$ A (25°C)</strong></td>
-                          <td>$\approx 2.25$ V (Fig. 3)</td>
-                          <td>$2.18$ V ($V_{\text{th}} = 1.5$V + $V_{\text{ov}}$)</td>
+                          <td><strong><i>V</i><sub>GS</sub> @ <i>I</i><sub>D</sub> = 0.75 A (25 °C)</strong></td>
+                          <td>&approx; 2.25 V (Fig. 3)</td>
+                          <td>2.18 V (<i>V</i><sub>th</sub> = 1.50 V + <i>V</i><sub>ov</sub>)</td>
                           <td><span style="color: #10b981; font-weight: bold;">97% (&lt; 3.5% error)</span></td>
                         </tr>
                         <tr>
@@ -2578,23 +2578,23 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                           <td><span style="color: #10b981; font-weight: bold;">Nominal Idéntica</span></td>
                         </tr>
                         <tr>
-                          <td><strong>Codo $V_{DS,\text{sat}}$ (Pinch-off)</strong></td>
-                          <td>$\approx 0.8$ V (Fig. 1)</td>
-                          <td>$0.68$ V ($V_{GS} - V_{\text{th}}$)</td>
+                          <td><strong>Codo <i>V</i><sub>DS,sat</sub> (Pinch-off)</strong></td>
+                          <td>&approx; 0.8 V (Fig. 1)</td>
+                          <td>0.68 V (<i>V</i><sub>GS</sub> &minus; <i>V</i><sub>th</sub>)</td>
                           <td><span style="color: #10b981; font-weight: bold;">Plena saturación</span></td>
                         </tr>
                         <tr>
-                          <td><strong>Deriva térmica a 175°C</strong></td>
-                          <td>Fig. 2 ($I_D$ cae &gt; 50% a $V_{GS}$ fijo)</td>
+                          <td><strong>Deriva térmica a 175 °C</strong></td>
+                          <td>Fig. 2 (<i>I</i><sub>D</sub> cae &gt; 50% a <i>V</i><sub>GS</sub> fijo)</td>
                           <td>Compensada por lazo cerrado Op-Amp</td>
-                          <td><span style="color: #38bdf8; font-weight: bold;">Regulación $I_D$ estable</span></td>
+                          <td><span style="color: #38bdf8; font-weight: bold;">Regulación <i>I</i><sub>D</sub> estable</span></td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
 
                   <p style="font-size: 0.77rem; color: #cbd5e1; line-height: 1.45; margin: 0;">
-                    💡 <strong>Conclusión de Ingeniería:</strong> La curva <code>BOTTOM 2.25V</code> de la Fig. 1 demuestra por qué el <strong>IRLZ44 es indispensable</strong>: con solo 2.25 V en compuerta entrega la corriente requerida de 0.75 A por rama. Un transistor convencional no-lógico (como el IRFZ44N) requeriría $V_{GS} > 4.5$ V, fuera del rango del LM358N (alimentado a 5V con salida máxima $\approx 3.7$ V).
+                    💡 <strong>Conclusión de Ingeniería:</strong> La curva <code>BOTTOM 2.25V</code> de la Fig. 1 demuestra por qué el <strong>IRLZ44 es indispensable</strong>: con solo 2.25 V en compuerta entrega la corriente requerida de 0.75 A por rama. Un transistor convencional no-lógico (como el IRFZ44N) requeriría <i>V</i><sub>GS</sub> &gt; 4.5 V, fuera del rango del LM358N (alimentado a 5V con salida máxima &approx; 3.7 V).
                   </p>
                 </div>
               </div>
@@ -3227,7 +3227,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             </p>
             <ul style="margin-left: 14px; font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
               <li><strong style="color: #cbd5e1;">Core 0 (Networking):</strong> Maneja la pila TCP/IP, servidor HTTP en puerto 80, SoftAP autónomo y servicio de actualización remota de firmware OTA.</li>
-              <li><strong style="color: #cbd5e1;">Core 1 (Control Crítico):</strong> Ejecuta determinísticamente los lazos PI térmicos (1 Hz), modulación analógica VCSS ($G_m = 2.00\text{ S}$), adquisición ADC A1 a 860 SPS y Fail-Safe (50 Hz).</li>
+              <li><strong style="color: #cbd5e1;">Core 1 (Control Crítico):</strong> Ejecuta determinísticamente los lazos PI térmicos (1 Hz), modulación analógica VCSS (<i>G</i><sub>m</sub> = 2.00 S), adquisición ADC A1 a 860 SPS y Fail-Safe (50 Hz).</li>
               <li><strong style="color: #cbd5e1;">Wi-Fi SoftAP Autónomo:</strong> Emite la red local <code style="color: #38bdf8;">SSID: Uli</code> (IP: <code style="color: #38bdf8;">192.168.4.1</code>) o se conecta a la LAN del laboratorio vía mDNS (<code style="color: #38bdf8;">http://interfaz.local</code>).</li>
             </ul>
           </div>
