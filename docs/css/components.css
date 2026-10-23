@@ -1239,5 +1239,191 @@ body.modo-tecnico .math-toggle-btn {
   }
 }
 
+/* ==========================================================================
+   ESTILOS ESPECIALES: GALERÍA Y SECCIÓN INNOVAFEST GUADALAJARA 2026
+   ========================================================================== */
+.innovafest-banner {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14) 0%, rgba(217, 119, 6, 0.06) 50%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-left: 5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin: 18px 0 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.1);
+}
 
+.innovafest-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
 
+.innovafest-filter-btn {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.innovafest-filter-btn:hover {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #fde68a;
+  transform: translateY(-1px);
+}
+
+.innovafest-filter-btn.active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-color: #f59e0b;
+  color: #0f172a;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.innovafest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.innovafest-item {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.innovafest-item:hover {
+  transform: translateY(-5px);
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 22px rgba(245, 158, 11, 0.2);
+}
+
+.innovafest-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #020617;
+  cursor: pointer;
+}
+
+.innovafest-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+  display: block;
+}
+
+.innovafest-item:hover .innovafest-thumb-wrap img {
+  transform: scale(1.05);
+}
+
+.innovafest-tag-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(7, 13, 25, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  color: #fbbf24;
+  font-size: 0.70rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.innovafest-zoom-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.innovafest-item:hover .innovafest-zoom-hint {
+  opacity: 1;
+}
+
+.innovafest-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.innovafest-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.innovafest-desc {
+  font-size: 0.83rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.innovafest-meta-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+  margin-top: auto;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.innovafest-kpi-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #fde68a;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}

@@ -374,3 +374,31 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Navegación rápida entre pestañas programática
+function activarTab(tabId) {
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  if (btn) {
+    btn.click();
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+}
+
+// Filtro interactivo de la Galería InnovaFest 2026
+function filtrarGaleriaInnovafest(cat, btnElem) {
+  const items = document.querySelectorAll('.innovafest-item');
+  const buttons = document.querySelectorAll('.innovafest-filter-btn');
+
+  buttons.forEach(b => b.classList.remove('active'));
+  if (btnElem) {
+    btnElem.classList.add('active');
+  }
+
+  items.forEach(item => {
+    if (cat === 'todos' || item.getAttribute('data-cat') === cat) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
