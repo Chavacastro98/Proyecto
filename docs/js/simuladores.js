@@ -255,75 +255,177 @@
     }
   }
 
-  // CALCULADORA DE BALANCE TÉRMICO VCSS (2 RAMAS CON SHUNT DE 1 Ω / 10W)
-  function actualizarCalculadoraVCSS(IpeakVal, IavgVal) {
-    const Ipeak = IpeakVal !== undefined ? IpeakVal : parseFloat(document.getElementById('rngIpeak').value);
-    const Iavg = IavgVal !== undefined ? IavgVal : (Ipeak * 0.5);
+  let Tj_actual = 33.5;
 
-    const Vfuente = parseFloat(document.getElementById('rngVfuente').value);
-    const Vcelda = parseFloat(document.getElementById('rngVcelda').value);
-    const Theta = parseFloat(document.getElementById('rngTheta').value);
+  /**
+   * Genera el color HSL y rótulo de estado térmico según la temperatura de juntura Tj.
+   * Escala cromática térmica continua:
+   * 25°C: Azul frío (hsl 215°) -> 50°C: Verde (hsl 145°) -> 75°C: Amarillo (hsl 55°) -> 95°C: Naranja (hsl 25°) -> >=115°C: Rojo fuego (hsl 0°)
+   */
+  function calcularColorTermico(Tj) {
+    const tMin = 25.0;
+    const tMax = 115.0;
+    const tClamped = Math.min(130.0, Math.max(20.0, Tj));
+    const factor = Math.min(1.0, Math.max(0.0, (tClamped - tMin) / (tMax - tMin)));
+    const hue = Math.round(215 * (1 - factor)); // 215 (Azul cielo) a 0 (Rojo fuego)
+    const color = `hsl(${hue}, 92%, 52%)`;
 
-    document.getElementById('lblVfuenteVal').textContent = Vfuente.toFixed(1) + ' V';
-    document.getElementById('lblVceldaVal').textContent = Vcelda.toFixed(1) + ' V';
-    document.getElementById('lblThetaVal').textContent = Theta.toFixed(1) + ' °C/W';
+    let badgeText = '';
+    let icono = '';
+    if (Tj < 32.0) {
+      badgeText = '❄️ Muy Frío (Ambiente)';
+      icono = '❄️';
+    } else if (Tj < 45.0) {
+      badgeText = '🧊 Frío (Margen Excelente)';
+      icono = '🧊';
+    } else if (Tj < 65.0) {
+      badgeText = '🟢 Templado (Operación Segura)';
+      icono = '🟢';
+    } else if (Tj < 85.0) {
+      badgeText = '🟡 Cálido (Supervisar Disipador)';
+      icono = '🟡';
+    } else if (Tj < 100.0) {
+      badgeText = '🟠 Caliente (Ventilación Forzada)';
+      icono = '🟠';
+    } else {
+      badgeText = '🔴 Muy Caliente (Alerta SOA / Crítico)';
+      icono = '🔴';
+    }
 
-    // Topología: 2 ramas simétricas con MOSFETs IRLZ44Z independientes.
-    // Cada MOSFET tiene su propio nodo de Source conectado a su propio shunt cerámico de 1.0 Ω (10W) a GND común.
-    // Los nodos de Source NO están en paralelo (evita embalamiento térmico por dispersión de Vth).
-    // Cada medio LM358N regula independientemente su rama (V_S1 = V_S2 = V_ref), forzando I_rama = I_total / 2.
-    // La caída en el Source de cada MOSFET es V_S = I_rama * Rshunt_rama = (I_total / 2) * 1.0 Ω = 0.5 * I_total [V].
-    const Rshunt_rama = 1.0; // 1.0 Ω cerámico (10W) en cada Source a GND
-    const I_rama_peak = Ipeak / 2;
-    const I_rama_avg = Iavg / 2;
+    return { color, hue, badgeText, icono, factor };
+  }
 
-    // Conforme a la deducción analítica del Paso 3 en la documentación:
-    // V_DS = V_fuente - V_celda - V_S = V_fuente - V_celda - (I_total / 2) * Rshunt_rama
-    // Evaluada a régimen nominal medio (I_total = I_avg = 2.0 A con shunt disipando 1.0 W):
-    // V_S = (2.0 A / 2) * 1.0 Ω = 1.0 V
-    // V_DS = 12.0 V - 2.8 V - 1.0 V = 8.20 V
-    const I_total_eval = (typeof modoCorrienteActual !== 'undefined' && modoCorrienteActual === 'dc') ? Ipeak : Iavg;
-    const I_rama_eval = I_total_eval / 2;
-    const Vshunt = I_rama_eval * Rshunt_rama; // Tensión en cada nodo de Source: 1.0 V a 2.0 A total (1.0 A por rama)
-    const Vds = Math.max(0, Vfuente - Vcelda - Vshunt); // 8.20 V
+  function actualizarColorTemperaturaTj(Tj) {
+    Tj_actual = Tj;
+    const elTj = document.getElementById('valTj');
+    const tileTj = document.getElementById('tileTj');
+    const subTj = document.getElementById('valTjSub');
+    const markerTj = document.getElementById('markerTj');
+    if (!elTj) return;
 
-    // Caída instantánea V_DS durante el pulso activo t_on (a corriente pico Ipeak)
-    const Vds_on_peak = Math.max(0, Vfuente - Vcelda - ((Ipeak / 2) * Rshunt_rama)); // 7.20 V @ 4.0 A
+    elTj.textContent = Tj.toFixed(1) + ' °C';
 
-    // Disipación: 2 MOSFETs IRLZ44Z se reparten equitativamente la corriente
-    const Pmosfet_total = Vds * I_total_eval;
-    const Pmosfet_rama = Pmosfet_total / 2; // Potencia disipada en cada MOSFET TO-220 (8.2 W)
+    const termico = calcularColorTermico(Tj);
+    elTj.style.color = termico.color;
 
-    // Disipación en cada resistencia shunt cerámica de 1 Ω (10W)
-    const Pshunt_rama = I_rama_avg * I_rama_avg * Rshunt_rama; // (1.0 A)^2 * 1.0 Ω = 1.0 W
+    if (subTj) {
+      subTj.textContent = termico.badgeText;
+      subTj.style.color = termico.color;
+    }
+
+    if (tileTj) {
+      tileTj.style.borderColor = termico.color;
+      tileTj.style.boxShadow = `0 0 16px hsla(${termico.hue}, 92%, 52%, 0.28)`;
+    }
+
+    if (markerTj) {
+      const pct = Math.min(95, Math.max(0, termico.factor * 95));
+      markerTj.style.left = pct.toFixed(1) + '%';
+      markerTj.style.backgroundColor = termico.color;
+    }
+  }
+
+  function recalcularMetricasSOA(Vfuente, Vcelda, Itotal) {
+    const elTheta = document.getElementById('rngTheta');
+    const Theta = elTheta ? parseFloat(elTheta.value) : 1.2;
+    const lblTheta = document.getElementById('lblThetaVal');
+    if (lblTheta) lblTheta.textContent = Theta.toFixed(1) + ' °C/W';
+
+    const Rshunt_rama = 1.0;
+    const I_rama = Math.max(0.01, Itotal / 2);
+    const Vshunt = I_rama * Rshunt_rama;
+    const Vds = Math.max(0, Vfuente - Vcelda - Vshunt);
+
+    const Pmosfet_total = Vds * Itotal;
+    const Pmosfet_rama = Pmosfet_total / 2;
+    const Pshunt_rama = I_rama * I_rama * Rshunt_rama;
 
     const Tamb = 25.0;
     const Theta_jc = 0.7; // TO-220 juntura-a-cápsula
     const Theta_cs = 0.5; // Grasa térmica aislante mica
-    // El disipador evacúa la potencia total de ambos MOSFETs
     const Tj = Tamb + Pmosfet_rama * (Theta_jc + Theta_cs) + Pmosfet_total * (Theta / 2);
 
-    document.getElementById('valVds').textContent = Vds.toFixed(2) + ' V';
-    document.getElementById('valPmosfet').textContent = Pmosfet_rama.toFixed(1) + ' W';
+    const elVds = document.getElementById('valVds');
+    if (elVds) elVds.textContent = Vds.toFixed(2) + ' V';
+
+    const elPmosfet = document.getElementById('valPmosfet');
+    if (elPmosfet) elPmosfet.textContent = Pmosfet_rama.toFixed(1) + ' W';
+
     const elPtotal = document.getElementById('valPmosfetTotal');
-    if (elPtotal) elPtotal.textContent = 'Total 2 ramas: ' + Pmosfet_total.toFixed(1) + ' W (Vds_on = ' + Vds_on_peak.toFixed(2) + ' V)';
-    document.getElementById('valTj').textContent = Tj.toFixed(1) + ' °C';
-    document.getElementById('valPshunt').textContent = Pshunt_rama.toFixed(1) + ' W';
+    if (elPtotal) elPtotal.textContent = 'Total 2 ramas: ' + Pmosfet_total.toFixed(1) + ' W (Vds_on = ' + Vds.toFixed(2) + ' V)';
+
+    const elPshunt = document.getElementById('valPshunt');
+    if (elPshunt) elPshunt.textContent = Pshunt_rama.toFixed(1) + ' W';
+
+    actualizarColorTemperaturaTj(Tj);
 
     const alertaBox = document.getElementById('boxAlertaSOA');
-    if (Tj > 125 || Pmosfet_rama > 40 || Pshunt_rama > 10) {
-      alertaBox.className = 'info-box info-box-danger';
-      alertaBox.innerHTML = '<strong>PELIGRO DE DESTRUCCIÓN TÉRMICA (SOA / SHUNT EXCEDIDO):</strong><br>La temperatura de unión Tj (' + Tj.toFixed(1) + ' °C) o la potencia en shunt (' + Pshunt_rama.toFixed(1) + ' W > 10 W) superan los límites seguros. Aumenta la ventilación forzada o reduce el voltaje de fuente.';
-    } else if (Tj > 90 || Pmosfet_rama > 25 || Pshunt_rama > 7.5) {
-      alertaBox.className = 'info-box info-box-warn';
-      alertaBox.innerHTML = '<strong>PRECAUCIÓN TÉRMICA:</strong><br>El circuito opera a régimen elevado (Tj = ' + Tj.toFixed(1) + ' °C, P_shunt = ' + Pshunt_rama.toFixed(1) + ' W / 10 W). Se requiere ventilación forzada activa sobre el disipador.';
-    } else {
-      alertaBox.className = 'info-box info-box-success';
-      alertaBox.innerHTML = '<strong>Estado SOA: OPERACIÓN SEGURA (2 RAMAS BALANCEADAS)</strong><br>Ambos transistores operan dentro de su Área de Operación Segura (Tj = ' + Tj.toFixed(1) + ' °C < 90 °C) y los shunts disipan ' + Pshunt_rama.toFixed(1) + ' W por rama (&lt; 10 W nominal).';
+    if (alertaBox) {
+      if (Tj > 125 || Pmosfet_rama > 40 || Pshunt_rama > 10) {
+        alertaBox.className = 'info-box info-box-danger';
+        alertaBox.innerHTML = '<strong>PELIGRO DE DESTRUCCIÓN TÉRMICA (SOA / SHUNT EXCEDIDO):</strong><br>La temperatura de unión Tj (' + Tj.toFixed(1) + ' °C) o la potencia en shunt (' + Pshunt_rama.toFixed(1) + ' W > 10 W) superan los límites seguros. Aumenta la ventilación forzada o reduce el voltaje de fuente.';
+      } else if (Tj > 90 || Pmosfet_rama > 25 || Pshunt_rama > 7.5) {
+        alertaBox.className = 'info-box info-box-warn';
+        alertaBox.innerHTML = '<strong>PRECAUCIÓN TÉRMICA:</strong><br>El circuito opera a régimen elevado (Tj = ' + Tj.toFixed(1) + ' °C, P_shunt = ' + Pshunt_rama.toFixed(1) + ' W / 10 W). Se requiere ventilación forzada activa sobre el disipador.';
+      } else {
+        alertaBox.className = 'info-box info-box-success';
+        alertaBox.innerHTML = '<strong>Estado SOA: OPERACIÓN SEGURA (2 RAMAS BALANCEADAS)</strong><br>Ambos transistores operan dentro de su Área de Operación Segura (Tj = ' + Tj.toFixed(1) + ' °C &lt; 90 °C) y los shunts disipan ' + Pshunt_rama.toFixed(1) + ' W por rama (&lt; 10 W nominal).';
+      }
     }
 
-    // Actualizar curvas paramétricas y punto Q del IRLZ44N
-    actualizarCurvasIRLZ44(I_rama_peak, Vds);
+    return { Vds, Tj, Pmosfet_rama, Pshunt_rama };
+  }
+
+  // CALCULADORA DE BALANCE TÉRMICO VCSS (2 RAMAS CON SHUNT DE 1 Ω / 10W)
+  function actualizarCalculadoraVCSS(IpeakVal, IavgVal) {
+    const elIpeak = document.getElementById('rngIpeak');
+    const Ipeak = IpeakVal !== undefined ? IpeakVal : (elIpeak ? parseFloat(elIpeak.value) : 1.50);
+    const elDuty = document.getElementById('rngDutyPulse');
+    const dutyRatio = (typeof modoCorrienteActual !== 'undefined' && modoCorrienteActual === 'dc') ? 1.0 : (elDuty ? parseInt(elDuty.value, 10) / 100 : 0.20);
+    const Iavg = IavgVal !== undefined ? IavgVal : (Ipeak * dutyRatio);
+
+    const elVfuente = document.getElementById('rngVfuente');
+    const elVcelda = document.getElementById('rngVcelda');
+
+    const Vfuente = elVfuente ? parseFloat(elVfuente.value) : 12.0;
+    const Vcelda = elVcelda ? parseFloat(elVcelda.value) : 2.8;
+
+    const lblVfuente = document.getElementById('lblVfuenteVal');
+    if (lblVfuente) lblVfuente.textContent = Vfuente.toFixed(1) + ' V';
+    const lblVcelda = document.getElementById('lblVceldaVal');
+    if (lblVcelda) lblVcelda.textContent = Vcelda.toFixed(1) + ' V';
+
+    const I_total_eval = (typeof modoCorrienteActual !== 'undefined' && modoCorrienteActual === 'dc') ? Ipeak : Iavg;
+
+    const resSOA = recalcularMetricasSOA(Vfuente, Vcelda, I_total_eval);
+    const Vds = resSOA.Vds;
+
+    // Sincronizar controles y etiquetas de "la parte de hasta abajo" (Curvas IRLZ44N)
+    const elVdd = document.getElementById('rngVddMosfet');
+    const elVload = document.getElementById('rngVloadMosfet');
+    const elItotal = document.getElementById('rngItotalMosfet');
+    if (elVdd) elVdd.value = Vfuente;
+    if (elVload) elVload.value = Vcelda;
+    if (elItotal) elItotal.value = Ipeak;
+
+    const lblVdd = document.getElementById('lblVddMosfet');
+    if (lblVdd) lblVdd.textContent = Vfuente.toFixed(1) + ' V';
+    const lblVload = document.getElementById('lblVloadMosfet');
+    if (lblVload) {
+      const R_ap = Vcelda / Math.max(0.01, Ipeak);
+      lblVload.textContent = Vcelda.toFixed(2) + ' V (R_ap = ' + R_ap.toFixed(2) + ' Ω)';
+    }
+    const lblItotal = document.getElementById('lblItotalMosfet');
+    if (lblItotal) {
+      const Vref = (Ipeak / 2) * 1.0;
+      lblItotal.textContent = Ipeak.toFixed(2) + ' A (Vref = ' + Vref.toFixed(2) + ' V)';
+    }
+
+    // Actualizar curvas paramétricas y punto Q del IRLZ44N con todos los parámetros
+    const I_rama_activa = Ipeak / 2;
+    const Vshunt_activo = I_rama_activa * 1.0;
+    const Vds_activo = Math.max(0, Vfuente - Vcelda - Vshunt_activo);
+    actualizarCurvasIRLZ44(I_rama_activa, Vds_activo, Vfuente, Vcelda, Ipeak);
   }
 
   // =========================================================================
@@ -375,7 +477,16 @@
     if (elVdd) elVdd.value = vdd;
     if (elVload) elVload.value = vcarga;
     if (elItotal) elItotal.value = itotal;
-    actualizarCurvasMosfetInteractivo();
+
+    // Sincronizar también con los controles superiores de SOA
+    const elVfuente = document.getElementById('rngVfuente');
+    const elVcelda = document.getElementById('rngVcelda');
+    const elIpeak = document.getElementById('rngIpeak');
+    if (elVfuente) elVfuente.value = vdd;
+    if (elVcelda) elVcelda.value = Math.min(15.0, Math.max(0.5, vcarga));
+    if (elIpeak) elIpeak.value = itotal;
+
+    actualizarCalculadoraVCSS(itotal, itotal * 0.5);
   }
 
   function actualizarCurvasMosfetInteractivo() {
@@ -402,6 +513,22 @@
 
     const lblItotal = document.getElementById('lblItotalMosfet');
     if (lblItotal) lblItotal.textContent = Itotal.toFixed(2) + ' A (Vref = ' + Vref.toFixed(2) + ' V)';
+
+    // Sincronizar hacia arriba con los controles superiores de SOA
+    const elVfuente = document.getElementById('rngVfuente');
+    const elVcelda = document.getElementById('rngVcelda');
+    if (elVfuente) {
+      elVfuente.value = Vdd;
+      const lblVf = document.getElementById('lblVfuenteVal');
+      if (lblVf) lblVf.textContent = Vdd.toFixed(1) + ' V';
+    }
+    if (elVcelda) {
+      elVcelda.value = Math.min(15.0, Math.max(0.5, Vcarga));
+      const lblVc = document.getElementById('lblVceldaVal');
+      if (lblVc) lblVc.textContent = parseFloat(elVcelda.value).toFixed(1) + ' V';
+    }
+
+    recalcularMetricasSOA(Vdd, Vcarga, Itotal);
 
     actualizarCurvasIRLZ44(I_rama, Vds, Vdd, Vcarga, Itotal);
   }
@@ -711,25 +838,30 @@
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Halo y punto Q
-    const qColor = Vds_Q >= Vds_sat ? '#10b981' : '#ef4444';
+    // Halo y punto Q dinámicos con escala térmica continua (azul muy frío -> rojo muy caliente)
+    const termicoQ = calcularColorTermico(Tj_actual);
+    const esSaturacion = Vds_Q >= Vds_sat;
+    const qColor = esSaturacion ? '#10b981' : '#ef4444';
+
+    // Halo térmico exterior que refleja la temperatura de juntura Tj (azul frío -> rojo caliente)
     ctx.beginPath();
-    ctx.fillStyle = qColor === '#10b981' ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.4)';
-    ctx.arc(qX, qY, isMobile ? 10 : 13, 0, 2 * Math.PI);
+    ctx.fillStyle = `hsla(${termicoQ.hue}, 92%, 52%, 0.32)`;
+    ctx.arc(qX, qY, isMobile ? 12 : 15, 0, 2 * Math.PI);
     ctx.fill();
 
+    // Punto Q central con indicación de régimen y borde térmico
     ctx.beginPath();
     ctx.fillStyle = qColor;
     ctx.arc(qX, qY, isMobile ? 5.5 : 6.5, 0, 2 * Math.PI);
     ctx.fill();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = termicoQ.color;
+    ctx.lineWidth = 2.4;
     ctx.stroke();
 
-    // Rótulo del Punto Q
+    // Rótulo del Punto Q con indicación de temperatura Tj
     ctx.fillStyle = '#ffffff';
     ctx.font = isMobile ? 'bold 9.5px "JetBrains Mono", Consolas, monospace' : 'bold 11px "JetBrains Mono", Consolas, monospace';
-    const labelQ = 'Q(' + Vds_Q.toFixed(2) + 'V, ' + I_Q.toFixed(2) + 'A)';
+    const labelQ = 'Q(' + Vds_Q.toFixed(2) + 'V, ' + I_Q.toFixed(2) + 'A) • ' + Tj_actual.toFixed(1) + '°C';
     const textWidth = ctx.measureText(labelQ).width;
     let textX = qX + 12;
     if (textX + textWidth > w - padRight) {
@@ -783,12 +915,15 @@
     ctx.font = isMobile ? 'bold 9.5px "Inter", sans-serif' : 'bold 11px "Inter", sans-serif';
     ctx.fillText(isMobile ? 'VDS (V)' : 'Tensión Drenador-Surtidor VDS (V)', padLeft + plotW / 2, h - (isMobile ? 5 : 8));
 
-    // Actualizar texto descriptivo bajo el canvas
+    // Actualizar texto descriptivo bajo el canvas con badge térmico dinámico
     const leyenda = document.getElementById('leyendaCurvasMosfet');
     if (leyenda) {
+      const termicoQ = calcularColorTermico(Tj_actual);
+      const badgeEstado = termicoQ.badgeText.replace(/^[^\s]+\s/, '');
       leyenda.innerHTML = '<span>Línea continua cian: V<sub>GS</sub> comandada (' + Vgs_Q.toFixed(2) + ' V).</span>' +
                           '<span style="color:#f43f5e; font-weight:600;">Línea magenta: Recta Carga (V<sub>carga</sub>=' + vcarga_val.toFixed(1) + ' V, R<sub>ap</sub>=' + rap_val.toFixed(2) + ' Ω).</span>' +
-                          '<span style="color:' + qColor + '; font-weight:700;">Punto Q: ' + (Vds_Q >= Vds_sat ? 'Saturación Activa OK' : 'Colapso Óhmico') + '</span>';
+                          '<span style="color:' + qColor + '; font-weight:700;">Punto Q: ' + (esSaturacion ? 'Saturación Activa OK' : 'Colapso Óhmico') + '</span>' +
+                          '<span style="color:' + termicoQ.color + '; font-weight:700; padding:2px 8px; border:1px solid ' + termicoQ.color + '; border-radius:6px; background:hsla(' + termicoQ.hue + ', 92%, 52%, 0.12);">' + termicoQ.icono + ' Tj=' + Tj_actual.toFixed(1) + ' °C (' + badgeEstado + ')</span>';
     }
   }
 
@@ -1016,20 +1151,31 @@
     ctx.font = isMobile ? 'bold 9.5px "Inter", sans-serif' : 'bold 11px "Inter", sans-serif';
     ctx.fillText(isMobile ? 'VGS (V)' : 'Tensión Compuerta-Surtidor VGS (V)', padLeft + plotW / 2, h - (isMobile ? 5 : 8));
 
-    // Leyenda descriptiva
+    // Leyenda descriptiva con badge térmico
     const leyenda = document.getElementById('leyendaCurvasMosfet');
     if (leyenda) {
+      const termicoQ = calcularColorTermico(Tj_actual);
+      const badgeEstado = termicoQ.badgeText.replace(/^[^\s]+\s/, '');
       leyenda.innerHTML = '<span style="color:#38bdf8; font-weight:600;">Línea continua cian: ID(VGS).</span>' +
                           '<span style="color:#10b981; font-weight:600;">Línea verde: gm=' + gm_Q.toFixed(2) + ' S.</span>' +
-                          '<span style="color:#c084fc; font-weight:600;">Vgate Op-Amp: ' + vgate_val.toFixed(2) + ' V (Gm=2.0 A/V).</span>';
+                          '<span style="color:#c084fc; font-weight:600;">Vgate Op-Amp: ' + vgate_val.toFixed(2) + ' V (Gm=2.0 A/V).</span>' +
+                          '<span style="color:' + termicoQ.color + '; font-weight:700; padding:2px 8px; border:1px solid ' + termicoQ.color + '; border-radius:6px; background:hsla(' + termicoQ.hue + ', 92%, 52%, 0.12);">' + termicoQ.icono + ' Tj=' + Tj_actual.toFixed(1) + ' °C (' + badgeEstado + ')</span>';
     }
   }
 
   // Exposición en ámbito global para eventos inline HTML
+  window.actualizarSimuladorTermico = actualizarSimuladorTermico;
+  window.setModoCorriente = setModoCorriente;
+  window.actualizarOndaCuadrada = actualizarOndaCuadrada;
+  window.actualizarCalculadoraVCSS = actualizarCalculadoraVCSS;
   window.setVistaCurvasMosfet = setVistaCurvasMosfet;
   window.toggleModoAmpliadoMosfet = toggleModoAmpliadoMosfet;
   window.aplicarPresetMosfet = aplicarPresetMosfet;
   window.actualizarCurvasMosfetInteractivo = actualizarCurvasMosfetInteractivo;
+  window.actualizarCalculadoraFaraday = actualizarCalculadoraFaraday;
+  window.calcularColorTermico = calcularColorTermico;
+  window.actualizarColorTemperaturaTj = actualizarColorTemperaturaTj;
+  window.actualizarCurvasIRLZ44 = actualizarCurvasIRLZ44;
 
   // =========================================================================
   // CALCULADORA 4: CULOMBIMETRÍA DE FARADAY
@@ -1062,3 +1208,33 @@
     document.getElementById('valMasaFaraday').textContent = m_mg.toFixed(1) + ' mg';
     document.getElementById('valEspesorFaraday').textContent = espesor_um.toFixed(2) + ' µm';
   }
+
+  // =========================================================================
+  // INICIALIZACIÓN AUTOMÁTICA & EVENTOS DE VENTANA
+  // =========================================================================
+  function inicializarTodosLosSimuladores() {
+    if (typeof actualizarSimuladorTermico === 'function' && document.getElementById('rngDuty')) {
+      actualizarSimuladorTermico();
+    }
+    if (typeof actualizarOndaCuadrada === 'function' && document.getElementById('rngIpeak')) {
+      actualizarOndaCuadrada();
+    }
+    if (typeof actualizarCalculadoraVCSS === 'function' && document.getElementById('rngVfuente')) {
+      actualizarCalculadoraVCSS();
+    }
+    if (typeof actualizarCalculadoraFaraday === 'function' && document.getElementById('rngIFaraday')) {
+      actualizarCalculadoraFaraday();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarTodosLosSimuladores);
+  } else {
+    inicializarTodosLosSimuladores();
+  }
+
+  window.addEventListener('resize', () => {
+    if (typeof actualizarCurvasIRLZ44 === 'function' && document.getElementById('canvasMosfetCurvas')) {
+      actualizarCurvasMosfetInteractivo();
+    }
+  });

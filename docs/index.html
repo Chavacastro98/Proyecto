@@ -2270,7 +2270,7 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <span>Caída Tensión en Celda (V_celda):</span>
                 <span id="lblVceldaVal">2.8 V</span>
               </div>
-              <input type="range" id="rngVcelda" min="1.0" max="6.0" step="0.1" value="2.8" oninput="actualizarCalculadoraVCSS()">
+              <input type="range" id="rngVcelda" min="0.5" max="15.0" step="0.1" value="2.8" oninput="actualizarCalculadoraVCSS()">
             </div>
 
             <div class="control-group">
@@ -2293,9 +2293,14 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
                 <div class="metric-value" id="valPmosfet" style="color: var(--amber);">8.2 W</div>
                 <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 2px;" id="valPmosfetTotal">Total 2 ramas: 16.4 W</div>
               </div>
-              <div class="metric-tile">
+              <div class="metric-tile" id="tileTj" style="transition: border-color 0.3s ease, box-shadow 0.3s ease; position: relative;">
                 <div class="metric-label">Temp. Juntura Tj</div>
-                <div class="metric-value" id="valTj" style="color: var(--emerald);">44.7 °C</div>
+                <div class="metric-value" id="valTj" style="color: #38bdf8; transition: color 0.3s ease;">33.5 °C</div>
+                <div style="font-size: 0.70rem; font-weight: 600; margin-top: 3px; color: #38bdf8; transition: color 0.3s ease;" id="valTjSub">❄️ Frío (Margen Excelente)</div>
+                <!-- Barra de Escala Térmica Continua: Azul Muy Frío (25 °C) -> Rojo Muy Caliente (>=115 °C) -->
+                <div style="width: 100%; height: 5px; border-radius: 3px; background: linear-gradient(to right, #0284c7 0%, #10b981 30%, #f59e0b 65%, #ef4444 100%); margin-top: 6px; position: relative;" title="Escala térmica continua: 25 °C (Azul muy frío) a 115 °C (Rojo muy caliente)">
+                  <div id="markerTj" style="position: absolute; top: -3px; left: 10%; width: 5px; height: 11px; background: #38bdf8; border-radius: 2px; box-shadow: 0 0 4px rgba(0,0,0,0.8); transition: left 0.3s ease, background-color 0.3s ease;"></div>
+                </div>
               </div>
               <div class="metric-tile">
                 <div class="metric-label">Potencia Shunt (c/u)</div>
@@ -3385,6 +3390,22 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
               </div>
             </div>
 
+            <!-- MÉTRICAS EN TIEMPO REAL FARADAY -->
+            <div class="grid-3" style="gap: 10px; margin: 12px 0;">
+              <div class="metric-tile">
+                <div class="metric-label">Carga Total Q</div>
+                <div class="metric-value" id="valQFaraday" style="color: var(--primary);">450.0 C</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Masa de Zinc</div>
+                <div class="metric-value" id="valMasaFaraday" style="color: var(--amber);">129.6 mg</div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-label">Espesor Teórico</div>
+                <div class="metric-value" id="valEspesorFaraday" style="color: var(--emerald);">3.63 µm</div>
+              </div>
+            </div>
+
             <!-- CONTENEDOR COLAPSABLE CON LAS DEDUCCIONES DE FARADAY -->
             <div id="faraday-math-steps" class="math-collapsible collapsed">
               <div class="math-card" style="margin-top: 0;">
@@ -3508,21 +3529,6 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
               </div>
             </div>
           </div> <!-- Cierre de #faraday-math-steps -->
-
-            <div class="grid-3" style="gap: 10px;">
-              <div class="metric-tile">
-                <div class="metric-label">Carga Total Q</div>
-                <div class="metric-value" id="valQFaraday" style="color: var(--primary);">450.0 C</div>
-              </div>
-              <div class="metric-tile">
-                <div class="metric-label">Masa de Zinc</div>
-                <div class="metric-value" id="valMasaFaraday" style="color: var(--amber);">129.6 mg</div>
-              </div>
-              <div class="metric-tile">
-                <div class="metric-label">Espesor Teórico</div>
-                <div class="metric-value" id="valEspesorFaraday" style="color: var(--emerald);">3.63 µm</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
