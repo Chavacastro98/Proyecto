@@ -212,13 +212,13 @@ const ARCH_NODOS = {
     chip: 'Optoacoplador 4N35 / PC817 + Circuito Detector Pasivo',
     pines: 'Entrada AC 127V / 60 Hz ➔ Salida Colector Abierto a INT MCU',
     bus: 'Interrupción Externa por flanco descendente (8.33 ms)',
-    desc: 'Detecta el instante exacto en que la senoide de red pasa por 0V. Permite al firmware disparar los TRIACs y conmutar el relé de +12V exclusivamente en el cruce por cero, eliminando picos di/dt, protegiendo los contactos contra arco eléctrico y suprimiendo interferencias EMI sobre la sonda de pH.'
+    desc: 'Detecta el instante exacto en que la senoide de red pasa por 0V. Permite al firmware disparar los TRIACs y conmutar el relé de +12V exclusivamente en el cruce por cero, reduciendo picos di/dt, protegiendo los contactos contra arco eléctrico y minimizando interferencias EMI sobre la sonda de pH.'
   },
   vcss: {
     titulo: 'Sumidero Lineal VCSS (Voltage-Controlled Current Sink)',
     chip: 'LM358N (Op-Amp Error) + 2x IRLZ44Z MOSFETs + MCP4725 DAC',
     pines: 'Consigna DAC MCP4725 (0-3.53V) ➔ Gate MOSFETs ➔ Cátodo Celda Hull',
-    bus: 'Lazo Analógico Ultrarrápido (< 50 µs) + I²C DAC @ 400 kHz',
+    bus: 'Lazo Analógico de Rápida Respuesta (< 50 µs) + I²C DAC @ 400 kHz',
     desc: 'Circuito sumidero de precisión diseñado bajo la nota técnica Texas Instruments SLAA868A. Regula la densidad de corriente catódica (0 a 3.50 A continuo / pulsado a 10 Hz) hacia la probeta de zincado en la Celda Hull con transconductancia neta de 2.00 A/V y dos shunts cerámicos de 1.0 Ω / 10W.'
   },
   triacs: {
@@ -239,7 +239,7 @@ const ARCH_NODOS = {
     titulo: 'Sensor de Acidez: Sonda Combinada + Módulo PH-4502C en Modo Diferencial (A0-A1)',
     chip: 'Electrodo Combinado Vidrio-Ag/AgCl + Módulo Transmisor PH-4502C',
     pines: 'Conector coaxial BNC ➔ Señal analógica Po vs Vref ➔ Canales A0-A1 Diferencial ADS1115',
-    bus: 'Ultra-Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta + Calibración NVS Tri-Modo',
+    bus: 'Alta Impedancia (> 10¹² Ω) + Conversión I²C Sigma-Delta + Calibración NVS Tri-Modo',
     desc: 'Cadena de medición potenciométrica de pH in-operando en Celda Hull y tinas. Se conecta en modo diferencial entre los Canales A0 y A1 del convertidor ADS1115 a 860 SPS para rechazar bucles de tierra e interferencias galvánicas del baño, con filtrado digital adaptativo IIR en cascada (α = 0.30 en transitorios, α = 0.08 en reposo) y calibración multipunto independiente persistida en Flash NVS.'
   },
   scada: {

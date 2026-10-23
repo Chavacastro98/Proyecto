@@ -501,9 +501,9 @@
       if (elSubregimen) elSubregimen.textContent = 'Canal estrangulado VDS (' + Vds.toFixed(2) + 'V) ≥ VDS,sat (' + Vds_sat.toFixed(2) + 'V)';
       if (elAlertaMargen) {
         elAlertaMargen.className = 'info-box info-box-success';
-        elAlertaMargen.innerHTML = '<strong>MODO DE SUMIDERO IDEAL GARANTIZADO:</strong><br>' +
-                                   'El MOSFET opera en la región plana de saturación activa (r<sub>o</sub> &approx; &infin;, V<sub>DS</sub> = ' + Vds.toFixed(2) + ' V &ge; V<sub>DS,sat</sub> = ' + Vds_sat.toFixed(2) + ' V). ' +
-                                   'La corriente I<sub>D</sub> = ' + I_rama.toFixed(2) + ' A por rama depende exclusivamente de la consigna comandada (V<sub>gate</sub> = ' + Vgate_opamp.toFixed(2) + ' V) y es inmune a perturbaciones en la Celda Hull.';
+        elAlertaMargen.innerHTML = '<strong>RÉGIMEN ACTIVO LINEAL ADECUADO:</strong><br>' +
+                                   'El MOSFET opera en la región de saturación activa (r<sub>o</sub> elevada, V<sub>DS</sub> = ' + Vds.toFixed(2) + ' V &ge; V<sub>DS,sat</sub> = ' + Vds_sat.toFixed(2) + ' V). ' +
+                                   'La corriente I<sub>D</sub> = ' + I_rama.toFixed(2) + ' A por rama sigue la consigna comandada (V<sub>gate</sub> = ' + Vgate_opamp.toFixed(2) + ' V) con alta atenuación de fluctuaciones en la Celda Hull.';
       }
     }
 
