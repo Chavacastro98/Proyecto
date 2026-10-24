@@ -41,6 +41,7 @@ class GestorEnsayosMixin:
     def _cargar_datos_excel(self, ruta_custom=None):
         ruta = ruta_custom or self.excel_path
         self.lista_placas = []
+        self.avisos_validacion = []
         if not ruta or not os.path.exists(ruta):
             for i in range(1, 33):
                 self.lista_placas.append({
@@ -91,6 +92,41 @@ class GestorEnsayosMixin:
                         amp_raw = row.get("Corriente_Zin_A") or row.get("Amps_Zin")
                         amp_z_val = 1.50 if (pd.isna(amp_raw) or amp_raw == "") else float(amp_raw)
 
+                        # Validación preventiva con auto-clamp a límites físicos seguros (SSOT):
+                        if temp_z_val > 60.0:
+                            self.avisos_validacion.append(
+                                f"Placa {placa_num} ({sheet}): Temp Zn {temp_z_val}°C excede límite Hull (60°C). Auto-clamp a 60°C."
+                            )
+                            temp_z_val = 60.0
+                        elif temp_z_val < 15.0:
+                            self.avisos_validacion.append(
+                                f"Placa {placa_num} ({sheet}): Temp Zn {temp_z_val}°C inferior al mínimo (15°C). Auto-clamp a 15°C."
+                            )
+                            temp_z_val = 15.0
+
+                        if amp_z_val > 3.50:
+                            self.avisos_validacion.append(
+                                f"Placa {placa_num} ({sheet}): Corriente {amp_z_val:.2f}A excede límite VCSS (3.50A). Auto-clamp a 3.50A."
+                            )
+                            amp_z_val = 3.50
+                        elif amp_z_val < 0.0:
+                            amp_z_val = 0.0
+
+                        if duty_val > 95:
+                            duty_val = 95
+                        elif duty_val < 5:
+                            duty_val = 5
+
+                        if freq_val > 50:
+                            freq_val = 50
+                        elif freq_val < 1:
+                            freq_val = 1
+
+                        limp_s = max(0, limp_s)
+                        mat_s = max(0, mat_s)
+                        tiem_z_val = max(0, tiem_z_val)
+                        tiem_niq_val = max(0, tiem_niq_val)
+
                         tag = f"pH {ph_val} — {temp_z_val}°C"
 
                         self.lista_placas.append({
@@ -109,6 +145,8 @@ class GestorEnsayosMixin:
                             "tag_filtro": tag
                         })
             self.excel_path = ruta
+            if self.avisos_validacion:
+                print(f"[AUTO-CLAMP SSOT] Se aplicaron {len(self.avisos_validacion)} ajustes preventivos de seguridad a la matriz Excel cargada.")
         except Exception as e:
             print(f"[AVISO] Error al leer Excel ({e}). Se usarán valores predeterminados.")
 

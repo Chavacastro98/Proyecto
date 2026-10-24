@@ -1096,7 +1096,7 @@ A continuación se detalla la asignación completa de pines GPIO del nodo maestr
 
 > [!IMPORTANT]
 > **Parámetros Oficiales del Sistema:**
-> La siguiente matriz consolida los valores numéricos y límites de diseño certificados de toda la plataforma ciberfísica. Todos los ensayos de laboratorio, códigos de firmware y manuales de procedimiento se rigen por esta referencia.
+> La siguiente matriz consolida los valores numéricos y límites de diseño certificados de toda la plataforma ciberfísica (Hardware, Firmware, DoE y Red). Todos los ensayos de laboratorio, códigos de firmware y manuales de procedimiento se rigen por esta referencia.
 
 ## ⚡ 1. Dominio Eléctrico, Potencia y Dimensionamiento de PCB
 
@@ -1153,6 +1153,28 @@ A continuación se detalla la asignación completa de pines GPIO del nodo maestr
 | **Tina 3: Celda Hull Zincado** | **`267 mL`** (ASTM) | Baño ácido: $\text{ZnCl}_2$ (60 g/L) + $\text{KCl}$ (200 g/L) + $\text{H}_3\text{BO}_3$ (25 g/L) | **$25.0\ ^\circ\text{C}$** (Ambiente) | **`4.8 – 5.2`** | **$0.00 – 3.00\text{ A}$** (DC o Pulsado 10 Hz) | Ánodo de Zinc (99.99%) $\rightarrow$ Cátodo Al 6061 |
 | **Tina 4: Niquelado sobre Zinc**| `2.5 L` | Formulación Watts: $\text{NiSO}_4 \cdot 6\text{H}_2\text{O}$ (240 g/L) + $\text{NiCl}_2$ (45 g/L) + $\text{H}_3\text{BO}_3$ (30 g/L) | **$50.0\ ^\circ\text{C}$** ($45\text{--}55^\circ\text{C}$) | **`4.0 – 4.5`** | **$0.50 – 3.00\text{ A}$** (DC galvanostático) | Ánodo de Níquel $\rightarrow$ Cátodo con capa Zn |
 
+### 📊 3.1 Contrato Dinámico de la Matriz de Diseño de Experimentos (DoE $N \times M$ Flexible)
+
+La plataforma **no restringe la experimentación a un número fijo de ensayos ni a dimensiones rígidas**. El software de supervisión (`gestor_ensayos.py`) procesa libros de Excel (`.xlsx`) con dimensiones abiertas ($N$ filas de probetas $\times$ $M$ columnas de parámetros), iterando a través de todas las hojas disponibles.
+
+| Columna en Excel | Tipo / Unidad | Rango Seguro Admitido | Valor por Defecto (Fallback) | Rol en el Proceso | Acción en Validación Preventiva |
+| :--- | :---: | :---: | :---: | :--- | :--- |
+| **`Placas`** | Entero (`ID`) | $1 \le N < \infty$ | Secuencial ($1, 2, \dots$) | Identificador único de probeta o lote | Requerido para registrar la fila |
+| **`Limpieza`** | Segundos (`s`) | $0 – 1800\text{ s}$ | `240 s` (4.0 min) | Tiempo de inmersión en Desengrase Alcalino | Si $< 0$, satura a $0\text{ s}$ |
+| **`Tiempo de mat.`** | Segundos (`s`) | $0 – 600\text{ s}$ | `120 s` (2.0 min) | Tiempo de ataque en Decapado Químico | Si $< 0$, satura a $0\text{ s}$ |
+| **`pH`** | Escala pH | $1.0 – 14.0$ | `2.0` o `4.0` | Consigna química de referencia del electrolito | Informativo / filtro de ensayo |
+| **`Temperatura de zin.`**| Grados Celsius (`°C`)| $15.0 – 60.0\ ^\circ\text{C}$ | `25.0 °C` (Ambiente) | Consigna térmica de la Celda Hull (Tina 3) | **Auto-clamp preventivo** a $[15.0, 60.0]^\circ\text{C}$ |
+| **`Tiempo de zin.`** | Segundos (`s`) | $0 – 1800\text{ s}$ | `120 s` (o `300 s`) | Tiempo de electrodeposición de zinc | Si $< 0$, satura a $0\text{ s}$ |
+| **`Corriente Pul.`** | Booleano (`0 / 1`) | `0` (DC) o `1` (Pulso) | `0` (DC puro) | Selector de régimen de corriente VCSS | Si no es 1, asume 0 (DC) |
+| **`Corriente_Zin_A`** | Amperios (`A`) | $0.00 – 3.50\text{ A}$ | `1.50 A` | Amplitud de corriente catódica solicitada | **Auto-clamp preventivo** a $[0.00, 3.50]\text{ A}$ |
+| **`Frecuencia`** | Hertz (`Hz`) | $1 – 50\text{ Hz}$ | `10 Hz` | Frecuencia de modulación por pulso VCSS | Satura al rango seguro $[1, 50]\text{ Hz}$ |
+| **`Duty`** | Porcentaje (`%`) | $5 – 95\text{ \%}$ | `20 %` | Ciclo de trabajo en régimen pulsado | Satura al rango seguro $[5, 95]\text{ \%}$ |
+| **`Tiem. Niquelado`** | Segundos (`s`) | $0 – 3600\text{ s}$ | `600 s` (10.0 min) | Tiempo de baño Watts en Tina 4 | Si $< 0$, satura a $0\text{ s}$ |
+| **Campos de Metrología** | Text / Numérico | Libre | N/A (Opcional) | `Peso Inicial`, `Peso Final`, `Cal. Visual`, `Adherencia ASTM B571` | Extensible sin afectar el control |
+
+> [!NOTE]
+> **Política de Validación Preventiva con Auto-Clamp:** Al cargar cualquier matriz Excel personalizada, el gestor valida todas las celdas contra los límites físicos de la SSOT. Si algún parámetro excede la capacidad de la planta (por ejemplo, solicitar $4.0\text{ A}$ o $70^\circ\text{C}$ en Celda Hull), el sistema emite un aviso en consola y recorta automáticamente el valor al umbral físico seguro sin interrumpir la carga del lote.
+
 ---
 
 ## 🛡️ 4. Dominio de Seguridad Funcional, Interlocks y Límites Fail-Safe
@@ -1180,26 +1202,36 @@ A continuación se detalla la asignación completa de pines GPIO del nodo maestr
 
 ---
 
-*Fin del Documento Maestro · E.L.E.C.T.R.O.D.O-32 · Universidad de Guadalajara (CUCEI)*
+## 🌐 5. Dominio de Red, Conectividad API REST y Almacenamiento NVS
 
+| Parámetro / Recurso | Configuración Nominal | Rango / Valores Válidos | Protocolo / Transporte | Función en la Plataforma |
+| :--- | :---: | :---: | :---: | :--- |
+| **Modo WiFi Access Point (AP)** | SSID: `Uli` / Pass: `12345678` | WPA2-PSK (Canal 1) | 802.11 b/g/n (2.4 GHz) | Red autónoma generada por ESP32 para conexión directa de laptop en campo. |
+| **Dirección IP en Modo AP** | `192.168.4.1` | Máscara `255.255.255.0` | IPv4 Estático | Puerta de enlace predeterminada para el cliente SCADA y el navegador web. |
+| **Modo WiFi Estación (STA)** | Configurable vía NVS | DHCP / IP Estática LAN | 802.11 b/g/n (2.4 GHz) | Integración con intranet de laboratorio universitario para monitoreo remoto. |
+| **Puerto del Servidor Web REST** | `80` (HTTP) | TCP / HTTP 1.1 | HTTP RESTful | Puerto estándar de escucha de la API y de las páginas de control HTML embebidas. |
+| **Header de Autenticación** | `X-Auth-Token: admin` | String alfanumérico | Cabecera HTTP | Seguridad requerida para todos los métodos mutadores (`POST`, `PUT`). |
+| **Frecuencia de Polling SCADA** | `1.0 Hz` ($1000\text{ ms}$) | $0.2 – 5.0\text{ Hz}$ | HTTP GET `/api/telemetria` | Cadencia determinista de refresco de variables térmicas, eléctricas y de estado. |
+| **Partición Flash NVS** | `0x9000` ($20\text{ KB}$) | Memoria Flash SPI (16 MB) | Non-Volatile Storage (ESP-IDF) | Guarda offsets de transconductancia, calibraciones de pH y consignas seguras. |
+| **Partición de Firmware OTA** | `ota_0` / `ota_1` ($2\times 3.5\text{ MB}$) | Doble banco ping-pong | ESP32 OTA Bootloader | Permite actualización inalámbrica segura de firmware con rollback automático. |
+
+### Endpoints REST Principales del Firmware RTOS 2.0
+
+| Ruta HTTP | Método | Cabeceras Requeridas | Parámetros / Payload JSON | Respuesta Típica | Descripción Operativa |
+| :--- | :---: | :---: | :--- | :---: | :--- |
+| `/api/telemetria` | `GET` | Ninguna | Ninguno | `{"t":[...],"f":{...},"ph":{...}}` | Retorna el estado global completo de sensores, actuadores y alarmas. |
+| `/act_t` | `POST` | `X-Auth-Token: admin` | `{"id":0..3, "estado":0..1}` | `{"ok":true, "canal":i, "estado":s}` | Habilita o desactiva el lazo de control PI térmico de la tina indicada. |
+| `/set_t` | `POST` | `X-Auth-Token: admin` | `{"id":0..3, "sp":temp}` | `{"ok":true, "canal":i, "sp":val}` | Asigna nueva consigna de temperatura (sujeta a topes INT-03). |
+| `/act_f` | `POST` | `X-Auth-Token: admin` | `{"estado":0..1}` | `{"ok":true, "fuente":s}` | Enciende/apaga la fuente VCSS con secuencia de apertura/cierre ZCS. |
+| `/set_f` | `POST` | `X-Auth-Token: admin` | `{"sp":amps, "modo":0..1, ...}`| `{"ok":true, "corriente":amps}` | Establece consigna de corriente ($0\text{--}3.50\text{ A}$), frecuencia y duty. |
+| `/cal_ph` | `POST` | `X-Auth-Token: admin` | `{"punto":4\|7\|10}` | `{"ok":true, "punto":p, "mV":v}` | Registra punto de calibración potenciométrica en memoria flash NVS. |
+| `/cal_vcss` | `POST` | `X-Auth-Token: admin` | `{"corriente_medida":amps}` | `{"ok":true, "gm":valor}` | Calibra ganancia de transconductancia del sumidero lineal VCSS. |
+| `/failsafe_reset` | `POST` | `X-Auth-Token: admin` | Ninguno | `{"ok":true, "estado":"NORMAL"}` | Desenclava manualmente el estado de alarma tras resolver la condición de falla. |
 
 ---
 
+*Fin del Documento Maestro · E.L.E.C.T.R.O.D.O-32 · Universidad de Guadalajara (CUCEI)*
 
-A continuación se resumen las especificaciones y límites operacionales nominales del prototipo:
-
-| Parámetro / Subsistema | Especificación Técnica Nominal | Observaciones de Ingeniería |
-| :--- | :--- | :--- |
-| **Alimentación Primaria** | 120 VAC / 60 Hz, entrada directa en 1 paso | Fuente industrial conmutada 12V / 10A DC con fusible interno de protección. |
-| **Calefacción AC (Tinas 1, 2 y 4)** | 3× Resistencias de inmersión de 450 W blindadas en acero inoxidable | Conmutación por Tiempo Proporcional (Burst Firing ZCS a ciclos completos sin recorte de fase, firmware Nano2 + JELDimmer2) para supresión total de ruido EMI. |
-| **Calefacción AC (Tina 3 - Celda Hull)** | 1× Calentador de cartucho de precisión de 18 W (267 mL) | Sintonizado analíticamente sin sobretiro (Kₚ = 16.71, Kᵢ = 0.0239). |
-| **Demanda Eléctrica Máxima Total** | ≈ 1368 W pico (≈ 11.4 A a 120 VAC) | Perfectamente compatible con tomacorrientes estándar de laboratorio (15A). |
-| **Sumidero de Corriente VCSS** | Rango: 0.00 a 3.50 A DC continuo / pulsado a 10 Hz | 2× MOSFETs IRLZ44N en paralelo sobre disipador con ventilador de 12V. |
-| **Resolución del Sumidero VCSS** | Consigna: 12 bits (MCP4725) \| Sensado: 16 bits (ADS1115) | Shunts cerámicos de 1.0 Ω / 10W por rama (caída 1.0 V/A). |
-| **Canales de Temperatura** | 4× Termopares Tipo K multiplexados por SPI (MAX6675) | Resolución de 0.25°C, compensación de unión fría integrada. |
-| **Canales Electroquímicos** | 1× Sonda analógica de pH (PH-4502C + ADS1115 Canal A1 dedicado) | Rango 0 a 14 pH | Exactitud ±0.05 pH (Calibración NVS Tri-Modo) |
-| **Sensado Meteorológico** | Sensor dual I2C AHT20 (Humedad ± 2%) + BMP280 (Presión ± 1 hPa) | Monitoreo ambiental de cabina de control. |
-| **Interfaz de Red y Telemetría** | Wi-Fi 802.11 b/g/n (SoftAP `Uli` + Station) + USB Serial 115200 bps | Servidor web asíncrono en Core 0, SCADA en Python a 10 Hz. |
 
 ---
 
