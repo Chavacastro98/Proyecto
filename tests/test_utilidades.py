@@ -10,7 +10,7 @@ Pruebas unitarias para los módulos de utilidades:
 import os
 import sys
 import time
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
@@ -43,22 +43,31 @@ from utilidades.verificar_lut import (
 
 
 class TestAlarma:
-    """Pruebas del módulo de alarma acústica."""
+    """Pruebas del módulo de alarma acústica (compatibles con Windows y Linux)."""
 
     def test_reproducir_alarma_fin_etapa(self):
-        with patch("winsound.Beep", return_value=None):
+        mock_beep = MagicMock()
+        mock_ws = MagicMock(Beep=mock_beep)
+        with patch.object(alarma, "winsound", mock_ws), patch("sys.platform", "win32"):
             alarma.reproducir_alarma_sonora("fin_etapa")
             time.sleep(0.05)
+            assert mock_beep.called
 
     def test_reproducir_alarma_fin_ensayo(self):
-        with patch("winsound.Beep", return_value=None):
+        mock_beep = MagicMock()
+        mock_ws = MagicMock(Beep=mock_beep)
+        with patch.object(alarma, "winsound", mock_ws), patch("sys.platform", "win32"):
             alarma.reproducir_alarma_sonora("fin_ensayo")
             time.sleep(0.05)
+            assert mock_beep.called
 
     def test_reproducir_alarma_test(self):
-        with patch("winsound.Beep", return_value=None):
+        mock_beep = MagicMock()
+        mock_ws = MagicMock(Beep=mock_beep)
+        with patch.object(alarma, "winsound", mock_ws), patch("sys.platform", "win32"):
             alarma.reproducir_alarma_sonora("test")
             time.sleep(0.05)
+            assert mock_beep.called
 
     def test_play_chime(self):
         with patch.object(alarma, "reproducir_alarma_sonora") as mock_rep:
@@ -66,14 +75,16 @@ class TestAlarma:
             mock_rep.assert_called_once_with("fin_etapa")
 
     def test_reproducir_alarma_excepcion_manejada(self):
-        with patch("winsound.Beep", side_effect=RuntimeError("Audio error")):
+        mock_ws = MagicMock(Beep=MagicMock(side_effect=RuntimeError("Audio error")))
+        with patch.object(alarma, "winsound", mock_ws), patch("sys.platform", "win32"):
             alarma.reproducir_alarma_sonora("test")
             time.sleep(0.05)
 
     def test_reproducir_alarma_no_windows(self):
-        with patch("sys.platform", "linux"), patch("builtins.print"):
+        with patch("sys.platform", "linux"), patch("builtins.print") as mock_print:
             alarma.reproducir_alarma_sonora("test")
             time.sleep(0.05)
+            assert mock_print.called
 
 
 class TestVerificarLUT:
