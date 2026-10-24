@@ -1,0 +1,254 @@
+Resultados del DDE
+CTS-C51 | Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6
+V.U. Gutiérrez Ramírez¹, F.S. Samayoa Martínez³, S. Castro Pérez³, N. Casillas Santana², O. A. González-Meza²
+¹Depto. Ingeniería Química, ²Depto. Química, ³Depto. Ingeniería Electro-Fotónica, CUCEI, Universidad de Guadalajara.
+E-mail: Omar.Gonzalez3420@academicos.udg.mx
+RESUMEN
+1
+La
+empresa
+Volta
+Plating
+Solutions
+(Guadalajara,
+Jal.)
+realiza
+depositos
+de
+níquel a ﬁn de obtener piezas decorativas
+para diferentes ﬁnes. Los recubrimientos de
+níquel
+que
+aplican
+de
+níquel
+sobre
+el
+sustrato
+de
+aluminio
+presentan
+falta
+de
+adherencia, un acabado opaco y textura
+quebradiza.
+Como
+observación
+inicial
+se
+identiﬁcó
+que
+el
+recubrimiento
+de
+zinc
+provoca los aspectos película defectuosa y
+heterogénea
+posteriores
+al
+níquelado.
+El
+trabajo que se llevó con el objetivo
+de
+identiﬁcar que factores afectan el acabado
+ﬁnal
+donde
+se
+aplico
+un
+Diseño
+de
+Experimentos
+(DDE)
+que
+comprende
+un
+diseño
+factorial
+multinivel
+25∙4
+(128
+Corridas Experimentales).
+HIPÓTESIS
+3
+Evaluar el proceso de recubrimiento de zincado
+sobre aluminio en medio ácido, a través de
+un diseño de experimentos (DDE) con el propósito
+de conseguir un modelo predictivo que
+identiﬁque
+los
+factores críticos
+a
+partir de
+la
+adherencia (ASTM D3359) al igual que el acabado
+visual (variables de respuesta) y determinar los
+parámetros adecuados de operación.
+METODOLOGÍA
+4
+Diagrama de proceso
+Diseño Factorial Multinivel 25∙4 (128 Corridas Experimentales)
+RESULTADOS Y DISCUSIÓN
+f) Tabla 2. Utilizar la solución 1 asegura una alta adherencia y una
+excelente calidad visual
+d) Figura 3. El efecto combinado de la corriente pulsada con la
+densidad de corriente tiene más efecto la adherencia
+El DDE utilizado muestra que existe una dependencia principal clara para tener un
+aspecto visual y adherencia alta.
+El sistema de control implementado para realizar el DDE puede suponer no solo
+una experimentación in situ sino como in operando para aplicaciones industriales.
+Al laboratorio de Electroquímica de CUCEI por su apoyo en la
+elaboración del proyecto y por demostrarme que el trabajo arduo y
+bien hecho, genera resultados sorprendentes.
+A la Universidad de Veracruz por la oportunidad dada para
+mostrar nuestro trabajo.
+Referencias y
+Diseño de control
+a) Figura 1. Piezas de aluminio antes del proceso de zincado
+(izquierda), posterior al zincado proceso de zincado (central) y
+posterior al proceso de niquelado (derecha).
+Fase 1:
+Preparación
+superficial
+1.
+Lijado y
+pulido
+Aluminio
+6061-T6
+2. Desengrase
+Alcalino
+80-95 °C
+3. Primer
+enjuague
+post D.A.
+Agua
+Destilada
+4. Segundo
+enjuague D.A.
+Agua Destilada
+5. Decapado
+❖
+80-95°C
+❖
+1 factor
+Fase 2:
+Deposición de
+zinc
+6. Primer
+enjuague
+post
+decapado
+Agua
+Destilada
+7. Segundo
+enjuague
+post
+decapado
+Agua
+Destilada
+8. Deposición
+de zinc
+❖
+Celda Hull
+❖
+5 factores
+Fase 3:
+Deposición de
+níquel
+8. Primer
+enjuague
+post zinc
+Agua
+Destilada
+9. Segundo
+enjuague
+post
+zincado
+Agua
+Destilada
+10. Niquelado
+❖
+1.13 A/dm²
+❖
+ 10 min
+❖
+6 cm entre
+electrodos
+Fase 4:
+Secado y
+aplicación de
+pruebas
+11. Primer
+enjuague
+post
+niquelado
+Agua
+Destilada
+12. Segundo
+enjuague
+post
+niquelado
+Agua
+Destilada
+13. Secado
+Aplicación de
+corriente
+continua de
+aire seco.
+14. Aplicación
+de pruebas de
+adherencia e
+inspección
+visual.
+b)
+a) Figura 2. Diagrama de línea de electrodeposición y evaluación
+Matriz de Factores Controlables y Niveles
+Factor / Variable
+Unidad
+Nivel Bajo (-)
+Nivel Alto (+)
+A: Tiempo de Matizado
+s
+120
+180
+B: pH del Baño de Zinc
+pH
+2.0
+4.0
+C: Temperatura del
+Baño
+°C
+25
+40
+D: Tiempo de Zincado
+s
+120
+300
+E: Modo de Corriente
+Tipo
+Continua (0)
+Pulsada (1)
+F: Densidad de
+Corriente
+A/dm²
+Zona  A
+6.960
+Zona  B
+3.210
+Zona C
+1.460
+Zona D
+0.315
+e) Figura 4. El efecto de la corriente pulsada tiene más efecto en
+la caliʨicación visual.
+c) Tabla 1. Diseño de experimento con los factores contemplados.
+c)
+d)
+e)
+AGRADECIMIENTOS
+7
+5
+2
+OBJETIVO
+6
+CONCLUSIONES Y PERSPECTIVAS

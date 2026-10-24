@@ -16,7 +16,7 @@ import pytest
 
 DIR_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 JSON_CONSTANTES = os.path.join(DIR_ROOT, "software", "telemetria2.0", "utilidades", "constantes_sistema.json")
-HTML_SHOWCASE = os.path.join(DIR_ROOT, "documentos", "academicos", "showcase_web", "index.html")
+HTML_SHOWCASE = os.path.join(DIR_ROOT, "docs", "index.html")
 
 
 @pytest.fixture(scope="module")

@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-10-24T10:37:05",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error"
+    ],
+    "kicad_version": "10.0.7",
+    "schematic_parity": [],
+    "source": "placa_madre_esp32s3_uno.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Conexión de alivio térmico a la zona incompleta (capa B.Cu; 2 radios conectados a una isla aislada)",
+            "items": [
+                {
+                    "description": "Zona [PGND] en B.Cu, prioridad 1",
+                    "pos": {
+                        "x": 51.5,
+                        "y": 66.5
+                    },
+                    "uuid": "0cc8f618-6d32-4977-ac0c-37d1547c0045"
+                },
+                {
+                    "description": "Pad PTH 5 [PGND] de K_ZCS2",
+                    "pos": {
+                        "x": 99.95,
+                        "y": 138.05
+                    },
+                    "uuid": "4014e80d-65d4-4100-ab62-0004d92d5a43"
+                }
+            ],
+            "severity": "error",
+            "type": "starved_thermal"
+        }
+    ]
+}

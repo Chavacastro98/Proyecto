@@ -42,6 +42,7 @@
     - [10.2 Distribución de Pines y Conexión en Zócalos Hembra](#102-distribución-de-pines-y-conexión-en-zócalos-hembra)
     - [10.3 Guía de Remplazabilidad y Mantenimiento en Campo](#103-guía-de-remplazabilidad-y-mantenimiento-en-campo)
     - [10.4 Galería Fotográfica de la Planta en Operación](#104-galería-fotográfica-de-la-planta-en-operación)
+    - [10.5 Especificación y Renders 3D de Circuitos Impresos (PCB Rev 5.0 y Rev 5.1)](#105-especificación-y-renders-3d-de-circuitos-impresos-pcb-rev-50-y-rev-51)
 11. [Preguntas Frecuentes (FAQ)](#11-preguntas-frecuentes-faq)
 12. [Glosario de Términos Técnicos](#12-glosario-de-términos-técnicos)
 13. [Reconocimientos a Proyectos Open Source & Términos de Uso Libre](#13-reconocimientos-a-proyectos-open-source--términos-de-uso-libre)
@@ -452,6 +453,27 @@ e_Zn = [ m(real_Zn) / (ρ_Zn · A) ] · 10⁴   [μm]   (ρ_Zn = 7.14 g/cm³)
 e_Ni = [ m(real_Ni) / (ρ_Ni · A) ] · 10⁴   [μm]   (ρ_Ni = 8.90 g/cm³)
 e_total = e_Zn + e_Ni   [μm]
 ```
+
+---
+
+
+### 5.4 Resultados de Validación Experimental en Laboratorio (ASTM D3359 & Eficiencia Faradaica)
+
+Durante la campaña de validación experimental en la línea piloto de galvanoplastia, se contrastaron los depósitos obtenidos mediante corriente continua convencional (DC) frente al control pulsado en lazo cerrado a 10 Hz mediante el sumidero analógico VCSS:
+
+| ID Corrida Experimental | Modo y Frecuencia | Densidad Local Celda Hull | Carga Integrada (Q) | Masa Teórica (Faraday) | Masa Gravimétrica Real | Eficiencia Catódica (η) | Adherencia ASTM D3359 | Calificación y Acabado Visual |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Run #01 (DC Convencional)** | DC Puro (0 Hz) | Zona D (0.32 A/dm²) | 90.0 C | 30.49 mg | 23.11 mg | **75.8%** | **2B** (>35% desprendimiento) | Gris mate, recubrimiento heterogéneo |
+| **Run #03 (DC Convencional)** | DC Puro (0 Hz) | Zona B (3.21 A/dm²) | 300.0 C | 101.63 mg | 82.83 mg | **81.5%** | **3B** (~15% desprendimiento) | Semibrillante con picaduras locales |
+| **Run #09 (Pulsada VCSS)** | Pulsada 10 Hz (20% duty) | Zona C (1.46 A/dm²) | 18.0 C (promedio) | 6.10 mg | 5.43 mg | **89.0%** | **4B** (<5% desprendimiento) | Brillante homogéneo, sin porosidad |
+| **Run #16 (Pulsada VCSS)** | Pulsada 10 Hz (20% duty) | Zona B (3.21 A/dm²) | 60.0 C (promedio) | 20.33 mg | 18.66 mg | **91.8%** | **5B** (0% desprendimiento) | Espejo brillante, grano cristalino fino |
+| **Run #24 (Pulsada VCSS)** | Pulsada 10 Hz (20% duty) | Zona A (6.96 A/dm²) | 83.5 C (promedio) | 28.30 mg | 25.86 mg | **91.4%** | **5B** (0% desprendimiento) | Excelente sin quemado en bordes |
+| **Depósito Final (Ni/Zn)** | DC 1.13 A/dm² @ 35°C | Placa Completa (1.0 dm²) | 678.0 C (10 min) | 206.18 mg | 194.43 mg | **94.3%** | **5B** (Máxima adhesión Al-Zn-Ni) | Espejo continuo libre de ampollas |
+
+**Conclusiones de la Validación de Tesis:**
+1. **Adherencia Mecánica (ASTM D3359):** El modo pulsado a 10 Hz disipa la capa límite de difusión durante el tiempo en reposo ($T_{\text{off}} = 80\text{ ms}$), inhibiendo dendritas y alcanzando la clasificación **Grado 5B (0% desprendimiento)**.
+2. **Eficiencia Faradaica:** La rampa de arranque suave (soft-start de 500 ms) y la estabilización térmica a $\pm 0.4^\circ\text{C}$ con conmutación ZCS elevan la eficiencia faradaica útil hasta **91.8% en Zinc** y **94.3% en Níquel**.
+3. **Validación PyME:** Los recubrimientos bicapa Zn/Ni superaron satisfactoriamente los criterios de calidad y adherencia de la empresa *Volta Plating Solutions* (Guadalajara, Jal.).
 
 ---
 
@@ -1103,6 +1125,61 @@ A continuación se presentan las **7 infografías técnicas en ultra-alta resolu
 | **Termopares K (MAX6675)** | 4× Zócalos Hembra de 5 Pines | `SO \| CS \| CLK \| VCC \| GND` | **Alineación directa 1:1 al colocar el módulo de frente al zócalo**.<br>• **SO:** ESP32-S3 GPIO 19 (MISO compartido).<br>• **CS:** Chip Select dedicado (Tina 1: G5, Tina 2: G4, Tina 3: G13, Tina 4: G14).<br>• **CLK:** ESP32-S3 GPIO 18 (SCK compartido a 4 MHz).<br>• **VCC / GND:** +5.0V/+3.3V / GND con **capacitor cerámico de 100 nF soldado bajo cada zócalo**. |
 | **Módulo Relé 2 Canales (5V)** | Cabezal Macho 3 Pines `Socket Power ZCS` (Filas 32–34) | **Lado Bobina Aislada:** `5V \| 5V Rele \| 5GND`<br>**Lado Control Lógico:** `GND \| IN1 \| IN2 \| VCC` | **Jumper JD-VCC / VCC retirado obligatoriamente**.<br>• Pin 1 (5V): +5V Lógica optos.<br>• Pin 2 (5V Rele): +5V Alimentación bobinas (JD-VCC).<br>• Pin 3 (5GND): Masa aislada de bobina.<br>• Lado Lógico: `IN1` = GPIO 20 (`PIN_RELE_VCSS`), `IN2` = GPIO 21.<br>• *Suprime transitorios inductivos que provocarían reseteos en microcontroladores*. |
 | **Sensor de pH (PH-4502C)** | Cabezal Sensor pH 6 Pines &rarr; Zócalo ADC ADS1115 (Pin A1) | Cabezal Módulo: `TO \| DO \| PO \| GNDA \| GND \| VCC`<br>Destino: `PO` &rarr; ADS1115 Pin `A1` | • Pin `PO` conectado a **Canal A1 del ADS1115 vía Filtro Pasabajos RC dedicado (10 k&Omega; + 10 &mu;F)**.<br>• `GNDA` conectado a AGND de instrumentación.<br>• Prohibido medir pH en vivo durante electrólisis (apertura de relés obligatoria). |
+
+---
+
+### 10.5 Especificación y Renders 3D de Circuitos Impresos (PCB Rev 5.0 y Rev 5.1)
+
+Para trascender la fase de prototipo sobre placa perforada y cableado manual, el sistema **E.L.E.C.T.R.O.D.O-32** cuenta con diseños de circuito impreso (PCB) de grado industrial estandarizados en KiCad, listos para fabricación masiva y ensamble automatizado (PCBA) en JLCPCB.
+
+#### 10.5.1 Placa Madre Industrial Rev 5.0 (ESP32-S3 + Arduino Nano)
+
+La **Placa Madre Rev 5.0** centraliza en una sola tarjeta de 2 capas todo el ruteo de señales de baja impedancia, el aislamiento galvánico de potencia y los zócalos de inserción directa para los módulos de control.
+
+![Placa Madre Industrial Rev 5.0 - Vista Isométrica 3D](imagenes/pcb/render_3d_placa_madre_esp32s3_uno_iso.png)  
+*Figura 10.11: Render fotorrealista 3D (Vista Isométrica) de la Placa Madre Industrial Rev 5.0. Se observan los zócalos de inserción para ESP32-S3 DevKit y Arduino Nano, los módulos MAX6675 para termometría SPI, el conversor ADC ADS1115 (16 bits) con filtros pasabajos integrados, los MOSFETs de potencia IRLZ44N con plano térmico masivo, y el relé de aislamiento ZCS.*
+
+![Placa Madre Industrial Rev 5.0 - Vista Superior Top](imagenes/pcb/render_3d_placa_madre_esp32s3_uno_top.png)  
+*Figura 10.12: Vista superior (Top View) de la Placa Madre Rev 5.0 con serigrafía técnica industrial. Cada clema, jumper y cabezal cuenta con identificación unívoca para evitar errores de conexión durante el mantenimiento en planta.*
+
+![Esquemático KiCad de la Placa Madre](imagenes/pcb/sch_preview_placa_madre_esp32s3_uno.png)  
+*Figura 10.13: Vista general del esquemático electrónico en KiCad. Detalla la separación de planos de masa analógica (AGND) y digital (DGND), protecciones TVS y desacoplo en cruce por cero.*
+
+**Especificaciones de Fabricación JLCPCB (Placa Madre Rev 5.0):**
+
+| Parámetro | Valor de Ingeniería | Justificación de Laboratorio |
+| :--- | :--- | :--- |
+| **Dimensiones** | $100\text{ mm} \times 100\text{ mm}$ | Formato estándar de costo optimizado y montaje en riel DIN / gabinete. |
+| **Capas de Cobre** | 2 Capas (Top / Bottom) | Cara inferior dedicada a plano de masa masivo para blindaje EMI. |
+| **Material Base** | FR-4 TG155 (High TG) | Resistencia térmica superior ante la disipación de shunts y MOSFETs. |
+| **Grosor de Cobre** | 1 oz ($35\ \mu\text{m}$) externo | Pistas de potencia ensanchadas (&gt;2.5 mm) con máscara expuesta para estañado. |
+| **Acabado Superficial** | ENIG (Oro por Inmersión) o HASL con plomo | Protección anticorrosiva frente a vapores de decapado y sales de zinc. |
+| **Archivos de Manufactura** | [Directorio de Hardware PCB](../../hardware/pcb/placa_madre_esp32s3_uno/) | Incluye Gerbers Rev 5.0 ZIP, BOM JLCPCB, CPL Pick & Place y modelo 3D STEP. |
+
+---
+
+#### 10.5.2 Carrier Shield Industrial Rev 5.1 para Arduino UNO Q (Next-Gen Edge Computing)
+
+Diseñado para la variante **E.L.E.C.T.R.O.D.O-32 Edge**, este shield apilable de 4 capas acopla directamente el nuevo **Arduino UNO Q** (Qualcomm QRB2210 Quad-Core A53 @ 2.0 GHz + STM32U585 Cortex-M33 @ 160 MHz).
+
+![Carrier Shield Uno Q Rev 5.1 - Vista Isométrica 3D](imagenes/pcb/render_3d_carrier_shield_uno_q_iso.png)  
+*Figura 10.14: Render fotorrealista 3D (Vista Isométrica) del Carrier Shield Industrial Rev 5.1 para Arduino UNO Q. Integra entrada coaxial BNC para sonda de pH con blindaje Faradaico, cabezales de termometría blindados y acondicionamiento analógico de alta velocidad.*
+
+![Carrier Shield Uno Q Rev 5.1 - Vista Superior Top](imagenes/pcb/render_3d_carrier_shield_uno_q_top.png)  
+*Figura 10.15: Vista superior del Carrier Shield Rev 5.1. Acabado en negro mate industrial con serigrafía blanca de alta definición para laboratorio electroquímico.*
+
+![Esquemático KiCad del Carrier Shield](imagenes/pcb/sch_preview_carrier_shield_uno_q.png)  
+*Figura 10.16: Vista general del esquemático KiCad del Carrier Shield Uno Q con búfers de alta velocidad 74HCT541 y filtrado LC en entradas analógicas.*
+
+**Especificaciones de Fabricación JLCPCB (Carrier Shield Rev 5.1):**
+
+| Parámetro | Valor de Ingeniería | Justificación de Laboratorio |
+| :--- | :--- | :--- |
+| **Dimensiones** | $100\text{ mm} \times 100\text{ mm}$ | Factor de forma apilable compatible con el pinout del Arduino UNO Q. |
+| **Número de Capas** | 4 Capas (L1 Señal, L2 GND, L3 VCC, L4 Señal) | Blindaje integral para el bus de alta velocidad entre el MPU y el MCU. |
+| **Material Base** | FR-4 TG170 (Grado Industrial) | Máxima rigidez dieléctrica y estabilidad operativa continua 24/7. |
+| **Acabado Superficial** | ENIG (Electroless Nickel Immersion Gold) | Planaridad submicrométrica para zócalos de alta densidad. |
+| **Archivos de Manufactura** | [Directorio Carrier Shield](../../../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/) | Incluye Gerbers Rev 5.1 ZIP, BOM JLCPCB, CPL y modelo 3D STEP. |
 
 ---
 

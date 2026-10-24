@@ -1,0 +1,125 @@
+Comment,Designator,Footprint,LCSC Part #,Description
+ESP32_S3_LEFT,J_S3_L,PinSocket_1x20_P2.54mm_Vertical,C124382,Zócalo Hembra 1x20 Izquierdo ESP32-S3-DevKitC-1
+ESP32_S3_RIGHT,J_S3_R,PinSocket_1x20_P2.54mm_Vertical,C124382,Zócalo Hembra 1x20 Derecho ESP32-S3-DevKitC-1
+WS2812B-B,LED_RGB,LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm,C114586,LED RGB Inteligente Direccionable Baliza RTOS (GPIO 48)
+330R_1%,R_RGB,R_0805_2012Metric,C17630,Resistencia Serie Datos Din WS2812B (GPIO 48)
+100nF_X7R,C_RGB,C_0805_2012Metric,C49678,Desacople Local LED RGB WS2812B
+4.7k_1%,R_SCL,R_0805_2012Metric,C17673,Pull-Up Bus I2C SCL (GPIO 9)
+4.7k_1%,R_SDA,R_0805_2012Metric,C17673,Pull-Up Bus I2C SDA (GPIO 8)
+33R_1%,R_SCK,R_0805_2012Metric,C17638,Amortiguador Serie Reloj SPI SCK (GPIO 18)
+4x_TERMOPAR_K,J_TC,"TerminalBlock_Phoenix_MKDS-1,5-8-5.08_1x08_P5.08mm_Horizontal",C8465,Bornera Industrial 8P 4x Termopar Tipo K
+MAX6675ISA+,U3,SOIC-8_3.9x4.9mm_P1.27mm,C16030,Digitalizador Termopar Tipo K Tina 1 SPI
+100nF,C3,C_0805_2012Metric,C49678,Desacople Local MAX6675 Tina 1
+MAX6675ISA+,U4,SOIC-8_3.9x4.9mm_P1.27mm,C16030,Digitalizador Termopar Tipo K Tina 2 SPI
+100nF,C4,C_0805_2012Metric,C49678,Desacople Local MAX6675 Tina 2
+MAX6675ISA+,U5,SOIC-8_3.9x4.9mm_P1.27mm,C16030,Digitalizador Termopar Tipo K Tina 3 SPI
+100nF,C5,C_0805_2012Metric,C49678,Desacople Local MAX6675 Tina 3
+MAX6675ISA+,U6,SOIC-8_3.9x4.9mm_P1.27mm,C16030,Digitalizador Termopar Tipo K Tina 4 SPI
+100nF,C6,C_0805_2012Metric,C49678,Desacople Local MAX6675 Tina 4
+AHT20_BMP280_I2C,J_ENV,PinSocket_1x04_P2.54mm_Vertical,C124375,Zócalo 4P Sensor Ambiental I2C AHT20+BMP280 (0x38/0x76)
+MODULO_PH_4502C,J_PH4502C,PinSocket_1x06_P2.54mm_Vertical,C124376,"Zócalo 6P Módulo Acondicionador PH-4502C (To,Do,Po,GND2,AGND,V+5V)"
+100k_0.1%,R_PH1A,R_0805_2012Metric,C17407,Divisor Kelvin Superior Po PH-4502C (100k 0.1%)
+200k_0.1%,R_PH1B,R_0805_2012Metric,C25809,Divisor Kelvin Inferior Po PH-4502C (200k 0.1%)
+100nF_X7R,C_PH1,C_0805_2012Metric,C49678,Filtro Antialiasing RC Canal A1 pH
+100k_0.1%,R_PH0A,R_0805_2012Metric,C17407,Divisor Kelvin Superior Referencia GND2 PH-4502C (100k 0.1%)
+200k_0.1%,R_PH0B,R_0805_2012Metric,C25809,Divisor Kelvin Inferior Referencia GND2 PH-4502C (200k 0.1%)
+100nF_X7R,C_PH0,C_0805_2012Metric,C49678,Filtro Antialiasing RC Canal A0 Kelvin Ref
+ADS1115IDGSR,U2,MSOP-10_3x3mm_P0.5mm,C37593,"ADC 16-Bit 860SPS (A1-A0: pH Kelvin, A2: Shunt1, A3: Shunt2)"
+100nF,C2,C_0805_2012Metric,C49678,Desacople Local ADS1115
+MCP4725A0T-E/CH,U7,SOT-23-6,C144198,DAC 12-Bit I2C Consigna VCSS (0..3.53V)
+100nF,C7,C_0805_2012Metric,C49678,Desacople Local MCP4725
+BLM21PG221SN1,FB1,L_0805_2012Metric,C85832,Ferrita Unión Estrella AGND a DGND
+0R_STAR_TIE,R_STAR,R_0805_2012Metric,C17477,Puente Estrella Punto Único DGND a PGND
+ARDUINO_NANO_V3,U_NANO,Arduino_Nano,C124380,Zócalo DIP-30 Esclavo Potencia Térmica Arduino Nano (nano2.ino)
+1.0k_1%,R_NANO_RX1,R_0805_2012Metric,C17513,Resistencia Serie Divisor 5V a 3.3V Nano TX a ESP32 RX2
+2.0k_1%,R_NANO_RX2,R_0805_2012Metric,C25805,Resistencia Shunt Divisor a DGND (Vout = 3.33V)
+LM2596S-5.0,U_BUCK,TO-263-5_TabPin3,C116713,Regulador Buck Step-Down 12V a +5.0V Directo 3A (TI LM2596S-5.0)
+SS34,D_BUCK,D_SMB,C8678,Diodo Schottky rueda libre 3A 40V Buck LM2596
+33uH_3A,L_BUCK,L_Bourns_SRR1260,C408335,Inductor Potencia Blindado 33uH 3A Salida +5.0V
+100uF_25V,C_BUCK,CP_Elec_6.3x7.7,C134731,Capacitor Electrolítico Salida Buck +5.0V
+LM1117IMPX-3.3,U_REG3V3,SOT-223-3_TabPin2,C6186,Regulador Lineal LDO +3.3V Precisión
+10uF_X5R,C_3V3,C_0805_2012Metric,C15850,Filtro Salida LDO +3.3V
+74HCT541D,U1,SOIC-20W_7.5x12.8mm_P1.27mm,C5584,Buffer Octal Aislamiento Digital de Compuertas y Relé
+OPA2171AIDR,U8,SOIC-8_3.9x4.9mm_P1.27mm,C75253,Amplificador Operacional Dual RRIO Precisión 36V Lazo Corriente VCSS
+100nF,C_M1,C_0805_2012Metric,C49678,Compensacion Miller lazo VCSS rama 1
+100nF,C_M2,C_0805_2012Metric,C49678,Compensacion Miller lazo VCSS rama 2
+100R_1%,R_G1,R_0805_2012Metric,C17408,Resistencia Compuerta Rama 1 MOSFET Q_VCSS1
+100R_1%,R_G2,R_0805_2012Metric,C17408,Resistencia Compuerta Rama 2 MOSFET Q_VCSS2
+IRLZ44NPBF,Q_VCSS1,TO-220-3_Vertical,C209995,MOSFET N Lógico 55V 47A 22mR Rama 1 VCSS + Disipador TO-220
+IRLZ44NPBF,Q_VCSS2,TO-220-3_Vertical,C209995,MOSFET N Lógico 55V 47A 22mR Rama 2 VCSS + Disipador TO-220
+SQP_10W_1R0_J,R_SH1,R_Axial_Power_L50.0mm_W9.0mm_P55.88mm,C165812,Resistencia Bloque Cerámico Blanco Cemento 10W 1.0 Ohm Rama 1
+SQP_10W_1R0_J,R_SH2,R_Axial_Power_L50.0mm_W9.0mm_P55.88mm,C165812,Resistencia Bloque Cerámico Blanco Cemento 10W 1.0 Ohm Rama 2
+100R_0.1%,R_KS1,R_0805_2012Metric,C23186,Toma Kelvin Sensado Corriente Shunt 1 (Hacia OPA2171:2 y ADS1115:AIN2)
+100R_0.1%,R_KS2,R_0805_2012Metric,C23186,Toma Kelvin Sensado Corriente Shunt 2 (Hacia OPA2171:6 y ADS1115:AIN3)
+SRD-05VDC-SL-C,K_ZCS,Relay_SPDT_SANYOU_SRD_Series_Form_C,C35449,Relé 1 de Corte Bipolar: Abre el ÁNODO (+12V) de la Celda Hull (GPIO 20)
+SMBJ18CA,D_TVS_CELL,D_SMB,C123805,Diodo TVS Bidireccional 600W Protección Celda Hull
+SMBJ15A,D_TVS1,D_SMB,C123828,Diodo TVS Unidireccional 600W Supresor Riel +12V
+100uF_25V,C_BULK1,CP_Elec_6.3x7.7,C134731,Capacitor Electrolítico Entrada Principal +12V
+CELDA_HULL_OUT,J_CELL,"TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal",C8459,Bornera Alta Corriente Salida Celda Hull (OUT+ Ánodo / OUT- Cátodo)
+ENTRADA_12V_10A,J_PWR_12V,"TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal",C8459,Bornera Entrada Principal Fuente SMPS 12V / 10A
+SRD-05VDC-SL-C,K_ZCS2,Relay_SPDT_SANYOU_SRD_Series_Form_C,C35449,Rele 2 de corte bipolar: abre el CATODO (Drain MOSFET) de la celda Hull
+AO3401A,Q_RLY,SOT-23,C15127,"PMOS high-side driver de bobinas de rele (activo-BAJO, 142 mA)"
+1k,R_QG,R_0805_2012Metric,C17513,Resistencia serie compuerta PMOS rele
+10k,R_QPU,R_0805_2012Metric,C17414,Pull-up compuerta PMOS (reposo = rele abierto)
+1N4007W,D_FLY,D_SMA,C95872,Diodo flyback de ambas bobinas de rele (catodo a RLY_DRV)
+OPA2171AIDR,U9,SOIC-8_3.9x4.9mm_P1.27mm,C75253,OpAmp dual RRIO 36V: diferencial Vcell (A) + sumador I total (B)
+100nF,C_U9,C_0805_2012Metric,C49678,Desacople OPA2171 de instrumentacion
+100k,R_D1,R_0805_2012Metric,C17407,Diferencial: CATODO de celda a entrada inversora
+100k,R_D2,R_0805_2012Metric,C17407,Diferencial: realimentacion
+100k,R_D3,R_0805_2012Metric,C17407,Diferencial: ANODO de celda a entrada no inversora
+100k,R_D4,R_0805_2012Metric,C17407,Diferencial: referencia a PGND
+100k,R_S1,R_0805_2012Metric,C17407,Sumador: rama shunt 1
+100k,R_S2,R_0805_2012Metric,C17407,Sumador: rama shunt 2
+100k,R_SG,R_0805_2012Metric,C17407,Sumador: resistencia a PGND (ganancia 2)
+100k,R_SF,R_0805_2012Metric,C17407,Sumador: realimentacion (ganancia 2)
+1k,R_MO1,R_0805_2012Metric,C17513,Proteccion salida V celda hacia voltimetro
+1k,R_MO2,R_0805_2012Metric,C17513,Proteccion salida I total hacia voltimetro
+ADS1115IDGSR,U10,MSOP-10_3x3mm_P0.5mm,C37593,"ADC 16-bit #2 (0x49): A0 = V celda real, A1 = I total real"
+100nF,C_U10,C_0805_2012Metric,C49678,Desacople local ADS1115 #2
+100k,R_DV1,R_0805_2012Metric,C17407,Divisor V celda: superior (1/6)
+20k,R_DV2,R_0805_2012Metric,C4328,Divisor V celda: inferior
+100nF,C_DV,C_0805_2012Metric,C49678,Filtro anti-alias V celda
+100k,R_DI1,R_0805_2012Metric,C17407,Divisor I total: superior (1/6)
+20k,R_DI2,R_0805_2012Metric,C4328,Divisor I total: inferior
+100nF,C_DI,C_0805_2012Metric,C49678,Filtro anti-alias I total
+VOLTIMETRO_PANEL_3P,J_METER_V,"TerminalBlock_Phoenix_MKDS-1,5-3-5.08_1x03_P5.08mm_Horizontal",C8461,Salida a voltimetro de panel: VOLTAJE REAL de celda (1 V/V)
+VOLTIMETRO_PANEL_3P,J_METER_I,"TerminalBlock_Phoenix_MKDS-1,5-3-5.08_1x03_P5.08mm_Horizontal",C8461,Salida a voltimetro de panel: CORRIENTE REAL total (1 V/A)
+2k,R_LH1,R_0805_2012Metric,C4109,Limitadora LED estado calentador 1
+AMARILLO,LED_H1,LED_0805_2012Metric,C2296,LED estado calentador tina 1
+2k,R_LH2,R_0805_2012Metric,C4109,Limitadora LED estado calentador 2
+AMARILLO,LED_H2,LED_0805_2012Metric,C2296,LED estado calentador tina 2
+2k,R_LH3,R_0805_2012Metric,C4109,Limitadora LED estado calentador 3
+AMARILLO,LED_H3,LED_0805_2012Metric,C2296,LED estado calentador tina 3
+2k,R_LH4,R_0805_2012Metric,C4109,Limitadora LED estado calentador 4
+AMARILLO,LED_H4,LED_0805_2012Metric,C2296,LED estado calentador tina 4
+1k,R_LRLY,R_0805_2012Metric,C17513,Limitadora LED: Rele de celda cerrado (bobinas energizadas)
+AZUL,LED_RLY,LED_0805_2012Metric,C2293,LED indicador: Rele de celda cerrado (bobinas energizadas)
+4.7k,R_L12V,R_0805_2012Metric,C17673,Limitadora LED: Riel +12V presente
+ROJO,LED_12V,LED_0805_2012Metric,C84256,LED indicador: Riel +12V presente
+1k,R_L5V,R_0805_2012Metric,C17513,Limitadora LED: Riel +5V presente
+VERDE,LED_5V,LED_0805_2012Metric,C2297,LED indicador: Riel +5V presente
+1k,R_L3V3,R_0805_2012Metric,C17513,Limitadora LED: Riel +3.3V presente
+VERDE,LED_3V3,LED_0805_2012Metric,C2297,LED indicador: Riel +3.3V presente
+330R,R_OPT1,R_0805_2012Metric,C17630,Resistencia Limitadora LED Optotriac Tina 1
+MOC3021M,U_OPT1,DIP-6_W7.62mm,C123202,Optotriac Aislamiento Galvánico 5000Vrms Tina 1
+360R_1206,R_TR1,R_1206_3216Metric,C17930,Resistencia Disparo Compuerta TRIAC BTA24 Tina 1
+BTA24-800BW,TR1,TO-220-3_Vertical,C76203,TRIAC Potencia 25A 800V Calentador Tina 1 + Disipador Aletado
+39R_1W,R_SN1,R_2512_6332Metric,C25410,Resistencia Snubber dV/dt 39 Ohm 1W Tina 1
+330R,R_OPT2,R_0805_2012Metric,C17630,Resistencia Limitadora LED Optotriac Tina 2
+MOC3021M,U_OPT2,DIP-6_W7.62mm,C123202,Optotriac Aislamiento Galvánico 5000Vrms Tina 2
+360R_1206,R_TR2,R_1206_3216Metric,C17930,Resistencia Disparo Compuerta TRIAC BTA24 Tina 2
+BTA24-800BW,TR2,TO-220-3_Vertical,C76203,TRIAC Potencia 25A 800V Calentador Tina 2 + Disipador Aletado
+39R_1W,R_SN2,R_2512_6332Metric,C25410,Resistencia Snubber dV/dt 39 Ohm 1W Tina 2
+330R,R_OPT3,R_0805_2012Metric,C17630,Resistencia Limitadora LED Optotriac Tina 3
+MOC3021M,U_OPT3,DIP-6_W7.62mm,C123202,Optotriac Aislamiento Galvánico 5000Vrms Tina 3
+360R_1206,R_TR3,R_1206_3216Metric,C17930,Resistencia Disparo Compuerta TRIAC BTA24 Tina 3
+BTA24-800BW,TR3,TO-220-3_Vertical,C76203,TRIAC Potencia 25A 800V Calentador Tina 3 + Disipador Aletado
+39R_1W,R_SN3,R_2512_6332Metric,C25410,Resistencia Snubber dV/dt 39 Ohm 1W Tina 3
+330R,R_OPT4,R_0805_2012Metric,C17630,Resistencia Limitadora LED Optotriac Tina 4
+MOC3021M,U_OPT4,DIP-6_W7.62mm,C123202,Optotriac Aislamiento Galvánico 5000Vrms Tina 4
+360R_1206,R_TR4,R_1206_3216Metric,C17930,Resistencia Disparo Compuerta TRIAC BTA24 Tina 4
+BTA24-800BW,TR4,TO-220-3_Vertical,C76203,TRIAC Potencia 25A 800V Calentador Tina 4 + Disipador Aletado
+39R_1W,R_SN4,R_2512_6332Metric,C25410,Resistencia Snubber dV/dt 39 Ohm 1W Tina 4
+4N35,U_ZC,DIP-6_W7.62mm,C575341,Optoacoplador Sincronismo Cruce por Cero AC (Pin D3)
+ALIMENTACION_RED_AC,J_AC_IN,"TerminalBlock_Phoenix_MKDS-1,5-3-5.08_1x03_P5.08mm_Horizontal",C8461,"Bornera 3P Entrada Red 120/220V AC (Fase L, Neutro N, Tierra PE)"
+SALIDA_4_CALENTADORES,J_HEATERS,"TerminalBlock_Phoenix_MKDS-1,5-8-5.08_1x08_P5.08mm_Horizontal",C8465,Bornera 8P Calentadores 4 Tinas (Pares Fase/Neutro)

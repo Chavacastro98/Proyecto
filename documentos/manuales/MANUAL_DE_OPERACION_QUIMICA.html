@@ -726,6 +726,7 @@
       <a href="#arquitectura" class="active">🔌 1. Conectividad & Modos</a>
       <a href="#guia-cableado">⚡ 1.2 Guía de Cableado & Pines</a>
       <a href="#infografia-pines" style="padding-left:24px;font-size:0.78rem;color:#38bdf8;">📌 1.2.0 Correspondencia 1:1</a>
+      <a href="#pcb-industrial" style="padding-left:24px;font-size:0.78rem;color:#10b981;font-weight:700;">⚡ 1.2.8 PCB Industrial Rev 5.0/5.1</a>
       <a href="#limites-diseno">⚠️ 1.3 Límites de Diseño & Disclaimers</a>
       <a href="#interfaz-web">🌐 2. Interfaz Web del ESP32 (Móvil / Browser)</a>
       <a href="#interfaz-general">🖥️ 3. Monitor SCADA en Python (Escritorio)</a>
@@ -773,6 +774,7 @@
       <div class="hero-actions">
         <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir Manual / Guardar PDF</button>
         <a href="#guia-cableado" class="btn btn-outline">⚡ Cableado & Pinout</a>
+        <a href="#pcb-industrial" class="btn btn-outline" style="border-color:#10b981;color:#34d399;">⚡ PCBs & Renders 3D</a>
         <a href="#limites-diseno" class="btn btn-outline">⚠️ Límites de Diseño</a>
         <a href="#troubleshooting" class="btn btn-outline">🛠️ Resolver Fallas</a>
         <a href="#interfaz-web" class="btn btn-outline">🌐 Interfaz Web Móvil</a>
@@ -1890,6 +1892,220 @@
             </tr>
           </tbody>
         </table>
+
+      <!-- 1.2.8 ESPECIFICACIONES Y RENDERS 3D DE CIRCUITOS IMPRESOS INDUSTRIALES -->
+      <div id="pcb-industrial" style="margin-top: 36px; margin-bottom: 26px;">
+        <div class="infographic-header" style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(15, 23, 42, 0.95) 100%); border-left: 4px solid #8b5cf6;">
+          <div>
+            <h3 style="color: #c4b5fd; display: flex; align-items: center; gap: 8px;">
+              <span>⚡</span> 1.2.8 Módulos de Circuito Impreso Industrial (PCB Rev 5.0 y Carrier Shield Rev 5.1)
+            </h3>
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 4px;">
+              Diseños estandarizados en KiCad 8 para manufactura y ensamble automatizado (PCBA) en JLCPCB • Supresión de EMI y Aislamiento ZCS
+            </p>
+          </div>
+          <span class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid #8b5cf6;">KiCad 8 &amp; JLCPCB</span>
+        </div>
+
+        <p style="color: #cbd5e1; font-size: 0.88rem; line-height: 1.55; margin: 16px 0;">
+          Para trascender la etapa de prototipo experimental sobre placa perforada y cableado manual, el sistema <strong>E.L.E.C.T.R.O.D.O-32</strong> cuenta con diseños de circuitos impresos profesionales de grado industrial con verificación DRC estricta (0 errores, 0 advertencias), planos de masa dedicados para blindaje de instrumentación analógica y zócalos de inserción directa para mantenimiento en caliente.
+        </p>
+
+        <!-- TARJETA PLACA MADRE REV 5.0 -->
+        <div class="card" style="border: 1px solid #334155; margin-bottom: 22px; background: rgba(15, 23, 42, 0.65);">
+          <div class="card-header" style="border-bottom: 1px solid #334155; padding-bottom: 10px;">
+            <h4 style="color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+              <span>🎛️</span> Placa Madre Industrial: ESP32-S3 + Arduino Nano (Rev 5.0)
+            </h4>
+            <span class="badge badge-primary">Producción RTOS 2.0</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-top: 14px;">
+            <!-- Vistas y Renders 3D -->
+            <div>
+              <div class="figure-box" style="margin: 0; background: #070d19; text-align: center; padding: 10px; border-radius: 8px;">
+                <img src="imagenes/pcb/render_3d_placa_madre_esp32s3_uno_iso.png" 
+                     alt="Render 3D Isométrico Placa Madre Rev 5.0" 
+                     onclick="openModal(this.src)" 
+                     style="width: 100%; max-height: 240px; object-fit: contain; cursor: pointer; border-radius: 6px;">
+                <div class="figure-caption" style="margin-top: 6px; font-size: 0.76rem;">
+                  Figura 1.6a: Render 3D fotorrealista (Vista Isométrica) de la Placa Madre Rev 5.0 con zócalos para ESP32-S3 DevKit, Arduino Nano, convertidores I2C/SPI y MOSFETs con plano de disipación térmica.
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <div class="figure-box" style="margin: 0; background: #070d19; text-align: center; padding: 6px; border-radius: 6px;">
+                  <img src="imagenes/pcb/render_3d_placa_madre_esp32s3_uno_top.png" 
+                       alt="Vista Top Placa Madre" 
+                       onclick="openModal(this.src)" 
+                       style="width: 100%; height: 110px; object-fit: contain; cursor: pointer;">
+                  <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 4px;">Vista Top (Serigrafía)</div>
+                </div>
+                <div class="figure-box" style="margin: 0; background: #070d19; text-align: center; padding: 6px; border-radius: 6px;">
+                  <img src="imagenes/pcb/sch_preview_placa_madre_esp32s3_uno.png" 
+                       alt="Esquemático KiCad Placa Madre" 
+                       onclick="openModal(this.src)" 
+                       style="width: 100%; height: 110px; object-fit: contain; cursor: pointer;">
+                  <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 4px;">Esquemático KiCad 8</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ficha Técnica de Fabricación -->
+            <div>
+              <p style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+                La <strong>Placa Madre Rev 5.0</strong> centraliza en formato estándar de 100×100 mm todo el conexionado del sistema. Incluye pistas ensanchadas (&gt;2.5 mm) con máscara de soldadura expuesta para estañado reforzado en la línea de 3.5 A, filtros pasabajos RC bajo los canales A0–A3 del ADS1115 y cabezal con corte bipolar aislado ZCS para celda.
+              </p>
+
+              <table class="info-table" style="font-size: 0.80rem; margin-bottom: 14px;">
+                <thead>
+                  <tr>
+                    <th>Parámetro</th>
+                    <th>Especificación de Ingeniería</th>
+                    <th>Justificación Operativa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Dimensiones</strong></td>
+                    <td>100 mm × 100 mm (1.6 mm espesor)</td>
+                    <td>Estándar JLCPCB de costo optimizado y montaje en riel DIN / gabinete.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Capas de Cobre</strong></td>
+                    <td>2 Capas (Top / Bottom)</td>
+                    <td>Cara inferior dedicada a plano de masa ininterrumpido (blindaje EMI).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Material Base</strong></td>
+                    <td>FR-4 TG155 (High TG)</td>
+                    <td>Alta estabilidad térmica frente a disipación de shunts de 10W y MOSFETs.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Grosor Cobre</strong></td>
+                    <td>1 oz (35 µm) externo reforzado</td>
+                    <td>Soporte continuo de corriente de electrodeposición de hasta 3.50 A.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Acabado</strong></td>
+                    <td>ENIG o HASL con plomo</td>
+                    <td>Máxima protección frente a corrosión por vapores químicos y sales de zinc.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Archivos</strong></td>
+                    <td><code>hardware/pcb/placa_madre_esp32s3_uno/</code></td>
+                    <td>Gerbers Rev 5.0 ZIP, Lista BOM JLCPCB, CPL Pick&amp;Place y Esquemático PDF.</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                <a href="../../hardware/pcb/placa_madre_esp32s3_uno/placa_madre_esp32s3_uno_sch.pdf" target="_blank" class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 12px; border-color: #38bdf8; color: #38bdf8;">📄 Ver Esquemático PDF</a>
+                <a href="../../hardware/pcb/placa_madre_esp32s3_uno/GERBERS_PLACA_MADRE_ESP32S3_UNO_REV5.zip" download class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 12px; border-color: #10b981; color: #10b981;">📦 Descargar Gerbers Rev 5.0</a>
+                <a href="../../hardware/pcb/placa_madre_esp32s3_uno/BOM_JLCPCB_ESP32S3_UNO_REV5.csv" download class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 12px; border-color: #fbbf24; color: #fbbf24;">📋 BOM JLCPCB (CSV)</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TARJETA CARRIER SHIELD ARDUINO UNO Q -->
+        <div class="card" style="border: 1px solid #334155; margin-bottom: 22px; background: rgba(15, 23, 42, 0.65);">
+          <div class="card-header" style="border-bottom: 1px solid #334155; padding-bottom: 10px;">
+            <h4 style="color: #c4b5fd; display: flex; align-items: center; gap: 8px;">
+              <span>🛡️</span> Carrier Shield Industrial: Arduino UNO Q (Rev 5.1)
+            </h4>
+            <span class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid #8b5cf6;">Next-Gen Edge AI</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-top: 14px;">
+            <!-- Vistas y Renders 3D -->
+            <div>
+              <div class="figure-box" style="margin: 0; background: #070d19; text-align: center; padding: 10px; border-radius: 8px;">
+                <img src="imagenes/pcb/render_3d_carrier_shield_uno_q_iso.png" 
+                     alt="Render 3D Isométrico Carrier Shield Uno Q" 
+                     onclick="openModal(this.src)" 
+                     style="width: 100%; max-height: 240px; object-fit: contain; cursor: pointer; border-radius: 6px;">
+                <div class="figure-caption" style="margin-top: 6px; font-size: 0.76rem;">
+                  Figura 1.6b: Render 3D fotorrealista (Vista Isométrica) del Carrier Shield Industrial Rev 5.1 apilable para Arduino UNO Q con entrada BNC para pH blindada y bus de alta velocidad.
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <div class="figure-box" style="margin: 0; background: #070d19; text-align: center; padding: 6px; border-radius: 6px;">
+                  <img src="imagenes/pcb/render_3d_carrier_shield_uno_q_top.png" 
+                       alt="Vista Top Carrier Shield Uno Q" 
+                       onclick="openModal(this.src)" 
+                       style="width: 100%; height: 110px; object-fit: contain; cursor: pointer;">
+                  <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 4px;">Vista Top (Serigrafía)</div>
+                </div>
+                <div class="figure-box" style="margin: 0; background: #070d19; text-align: center; padding: 6px; border-radius: 6px;">
+                  <img src="imagenes/pcb/sch_preview_carrier_shield_uno_q.png" 
+                       alt="Esquemático KiCad Carrier Shield" 
+                       onclick="openModal(this.src)" 
+                       style="width: 100%; height: 110px; object-fit: contain; cursor: pointer;">
+                  <div style="font-size: 0.70rem; color: #94a3b8; margin-top: 4px;">Esquemático KiCad 8</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ficha Técnica de Fabricación -->
+            <div>
+              <p style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+                El <strong>Carrier Shield Rev 5.1</strong> es una tarjeta apilable multicapa (4 capas de cobre) concebida para el subproyecto <strong>ELECTRODO_32_Uno</strong>. Acopla el microprocesador heterogéneo Qualcomm QRB2210 + STM32U585, permitiendo albergar el SCADA en un sistema Linux embebido autónomo y gobernar la instrumentación analógica con máxima inmunidad al ruido.
+              </p>
+
+              <table class="info-table" style="font-size: 0.80rem; margin-bottom: 14px;">
+                <thead>
+                  <tr>
+                    <th>Parámetro</th>
+                    <th>Especificación de Ingeniería</th>
+                    <th>Justificación Operativa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Dimensiones</strong></td>
+                    <td>100 mm × 100 mm</td>
+                    <td>Factor de forma apilable compatible con el cabezal del Arduino UNO Q.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Capas de Cobre</strong></td>
+                    <td>4 Capas (L1 Señal, L2 GND, L3 VCC, L4 Retornos)</td>
+                    <td>Blindaje electromagnético completo para buses de datos de alta frecuencia.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Material Base</strong></td>
+                    <td>FR-4 TG170 (Grado Industrial)</td>
+                    <td>Máxima rigidez dieléctrica y estabilidad operativa continua 24/7.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Acabado Superficial</strong></td>
+                    <td>ENIG (Electroless Nickel Immersion Gold)</td>
+                    <td>Planaridad submicrométrica para zócalos de alta densidad y contactos BNC.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Entrada pH</strong></td>
+                    <td>Conector BNC con anillo de guarda Faradaico</td>
+                    <td>Inmunidad superior ante corrientes de fuga electrostáticas en la sonda de vidrio.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Archivos</strong></td>
+                    <td><code>ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/</code></td>
+                    <td>Gerbers Rev 5.1 ZIP, Esquemático PDF, BOM JLCPCB y PINOUT_MAP.md.</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                <a href="../../../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/carrier_shield_uno_q_sch.pdf" target="_blank" class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 12px; border-color: #c4b5fd; color: #c4b5fd;">📄 Ver Esquemático PDF</a>
+                <a href="../../../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/GERBERS_CARRIER_SHIELD_UNO_Q_REV5.zip" download class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 12px; border-color: #10b981; color: #10b981;">📦 Descargar Gerbers Rev 5.1</a>
+                <a href="../../../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/PINOUT_MAP.md" target="_blank" class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 12px; border-color: #38bdf8; color: #38bdf8;">🗺️ Mapa de Pines Uno Q</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       </div>
     </section>
 
@@ -3377,7 +3593,122 @@
         <p style="font-size:0.87rem; line-height:1.6; margin-bottom:0;">
           <strong>📖 Operación práctica:</strong> El usuario puede mantener el selector en <strong>Auto (según receta)</strong> o forzar Zinc o Níquel individualmente, ingresa peso inicial (<code>42.1524</code> g), peso final (<code>42.1702</code> g) y área de probeta (predeterminado <code>65.0</code> cm<sup>2</sup> para Celda Hull estándar). El SCADA integra la corriente efectiva en vivo durante las fases galvánicas activas, calcula la carga eléctrica total (Coulombs), masa teórica (mg), masa real neta depositada (&Delta;<i>m</i>), eficiencia faradaica (&eta;%) y espesor medio (&mu;m). Con el botón <span class="badge-btn">Registrar en Ficha del Ensayo</span>, los resultados se guardan permanentemente en el archivo de metadatos del lote.
         </p>
+
+      <!-- 8.2 RESULTADOS DE VALIDACIÓN EXPERIMENTAL (ASTM D3359 & BALANZA FARADAY) -->
+      <h3 class="subsection-title" id="validacion-experimental">8.2 Resultados de Validación Experimental en Planta Piloto (SMEQ CTS-C51 & InnovaFest)</h3>
+      <p style="font-size:0.87rem; line-height:1.6; margin-bottom:12px;">
+        Durante la campaña experimental del protocolo VUGR y la ponencia formal presentada en el 41º Congreso de la Sociedad Mexicana de Electroquímica (SMEQ 2026, Folio CTS-C51), se procesaron probetas de aleación de Aluminio 6061-T6 bajo el diseño factorial multinivel 2⁵·4¹. A continuación se detallan las correlaciones metrológicas entre los parámetros regulados por <strong>E.L.E.C.T.R.O.D.O-32</strong> y las respuestas obtenidas en laboratorio (adherencia según <strong>ASTM D3359</strong> y rendimiento faradaico):
+      </p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Corrida Experimental</th>
+              <th>Modo y Frecuencia</th>
+              <th>Zona Celda Hull (j)</th>
+              <th>Carga Integrada (Q)</th>
+              <th>Masa Teórica (Faraday)</th>
+              <th>Masa Gravimétrica Real</th>
+              <th>Eficiencia (&eta;)</th>
+              <th>Adherencia ASTM D3359</th>
+              <th>Calificación y Acabado Visual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Run #01 (DC Convencional)</strong></td>
+              <td>DC Puro (0 Hz)</td>
+              <td>Zona D (0.32 A/dm²)</td>
+              <td>90.0 C</td>
+              <td>30.49 mg</td>
+              <td>23.11 mg</td>
+              <td><span class="badge badge-warning">75.8%</span></td>
+              <td><span style="color: #fbbf24; font-weight:700;">2B</span> (&gt;35% desprendimiento)</td>
+              <td>Gris mate, película heterogénea</td>
+            </tr>
+            <tr>
+              <td><strong>Run #03 (DC Convencional)</strong></td>
+              <td>DC Puro (0 Hz)</td>
+              <td>Zona B (3.21 A/dm²)</td>
+              <td>300.0 C</td>
+              <td>101.63 mg</td>
+              <td>82.83 mg</td>
+              <td><span class="badge badge-primary">81.5%</span></td>
+              <td><span style="color: #fbbf24; font-weight:700;">3B</span> (&sim;15% desprendimiento)</td>
+              <td>Semibrillante con rugosidad local</td>
+            </tr>
+            <tr>
+              <td><strong>Run #09 (Pulsada VCSS)</strong></td>
+              <td>Pulsada 10 Hz (20% duty)</td>
+              <td>Zona C (1.46 A/dm²)</td>
+              <td>18.0 C (promedio)</td>
+              <td>6.10 mg</td>
+              <td>5.43 mg</td>
+              <td><span class="badge badge-success">89.0%</span></td>
+              <td><span style="color: #34d399; font-weight:700;">4B</span> (&lt;5% desprendimiento)</td>
+              <td>Brillante homogéneo, sin poro</td>
+            </tr>
+            <tr>
+              <td><strong>Run #16 (Pulsada VCSS)</strong></td>
+              <td>Pulsada 10 Hz (20% duty)</td>
+              <td>Zona B (3.21 A/dm²)</td>
+              <td>60.0 C (promedio)</td>
+              <td>20.33 mg</td>
+              <td>18.66 mg</td>
+              <td><span class="badge badge-success">91.8%</span></td>
+              <td><span style="color: #10b981; font-weight:700;">5B</span> (0% desprendimiento)</td>
+              <td>Brillante especular, grano ultrafino</td>
+            </tr>
+            <tr>
+              <td><strong>Run #24 (Pulsada VCSS)</strong></td>
+              <td>Pulsada 10 Hz (20% duty)</td>
+              <td>Zona A (6.96 A/dm²)</td>
+              <td>83.5 C (promedio)</td>
+              <td>28.30 mg</td>
+              <td>25.86 mg</td>
+              <td><span class="badge badge-success">91.4%</span></td>
+              <td><span style="color: #10b981; font-weight:700;">5B</span> (0% desprendimiento)</td>
+              <td>Excelente sin quemado en aristas</td>
+            </tr>
+            <tr>
+              <td><strong>Depósito Final (Ni sobre Zn)</strong></td>
+              <td>DC 1.13 A/dm² @ 35°C</td>
+              <td>Placa Completa (1.0 dm²)</td>
+              <td>678.0 C (10 min)</td>
+              <td>206.18 mg</td>
+              <td>194.43 mg</td>
+              <td><span class="badge badge-success">94.3%</span></td>
+              <td><span style="color: #10b981; font-weight:700;">5B</span> (Excelente adhesión Al-Zn-Ni)</td>
+              <td>Espejo reflectante continuo (Volta)</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
+      <div class="card-grid" style="margin-top: 14px; margin-bottom: 8px;">
+        <div class="card" style="border-left: 4px solid #10b981; padding: 14px;">
+          <h4 style="color:#10b981; margin-bottom:4px; font-size:0.90rem;">✅ Disipación de Capa Difusa a 10 Hz</h4>
+          <p style="font-size:0.82rem; line-height:1.45; color:#cbd5e1; margin:0;">
+            El tiempo de relajación ($T_{\text{off}} = 80\text{ ms}$) permite la difusión de iones $Zn^{2+}$ hacia la superficie, suprimiendo gradientes locales que originaban desprendimiento en bancos manuales (2B/3B) y alcanzando la máxima clasificación <strong>ASTM D3359 Grado 5B (0% desprendimiento)</strong>.
+          </p>
+        </div>
+
+        <div class="card" style="border-left: 4px solid #38bdf8; padding: 14px;">
+          <h4 style="color:#38bdf8; margin-bottom:4px; font-size:0.90rem;">⚖️ Eficiencia Faradaica &gt; 90%</h4>
+          <p style="font-size:0.82rem; line-height:1.45; color:#cbd5e1; margin:0;">
+            La integración continua a 10 Hz del conversor ADS1115 y el soft-start de 500 ms suprimen la evolución parásita de hidrógeno ($H_2$), elevando la eficiencia faradaica útil hasta un <strong>91.8% en Zinc</strong> y <strong>94.3% en Níquel</strong>.
+          </p>
+        </div>
+
+        <div class="card" style="border-left: 4px solid #fbbf24; padding: 14px;">
+          <h4 style="color:#fbbf24; margin-bottom:4px; font-size:0.90rem;">🏭 Homologación Industrial Volta</h4>
+          <p style="font-size:0.82rem; line-height:1.45; color:#cbd5e1; margin:0;">
+            Las probetas bicapa Zn/Ni procesadas en este tren de tinas superaron satisfactoriamente la inspección visual y mecánica de la empresa <em>Volta Plating Solutions</em> (Guadalajara, Jal.), eliminando el problema de ampollamiento en piezas decorativas.
+          </p>
+        </div>
+      </div>
+
     </section>
 
     <!-- SECCIÓN 9: VENTANA DE CALIBRACIÓN Y VERIFICACIÓN DE pH -->
@@ -4266,14 +4597,13 @@
       </p>
 
       <pre class="code-box" style="background:#0f172a; color:#f8fafc; font-size:0.80rem; line-height:1.45; border:1px solid #334155; border-radius:8px; padding:16px; overflow-x:auto;">
-Proyecto/
+ELECTRODO_32/                        # 🚀 E.L.E.C.T.R.O.D.O-32: Repositorio Principal (Producción RTOS 2.0)
 ├── Iniciar_Sistema.bat              # 🚀 Launcher unificado interactivo (Consola, Telemetría 2.0, Previews)
 ├── Iniciar_Telemetria_2.0.bat       # 🚀 Acceso Directo: SCADA en vivo activo (RTOS 2.0)
-├── Iniciar_Telemetria.bat           # Acceso SCADA v1.0 (Compatibilidad histórica)
-├── Manual de Uso.bat                # Acceso directo al manual interactivo de operación
-├── Ver_Diagramas.bat                # Servidor local y visor de la suite de 11 diagramas Mermaid
-├── requirements.txt                 # Dependencias Python (requests, pandas, matplotlib, numpy, openpyxl)
+├── launcher.py                      # Menú principal CLI con accesos directos a SCADA, PCB y Eventos
+├── MAPA_DEL_PROYECTO.md             # Índice arquitectónico integral del ecosistema
 ├── README.md                        # Documento maestro con arquitectura y especificaciones RTOS 2.0
+├── constantes_sistema.json          # Parámetros termodinámicos y constantes físicas normalizadas
 │
 ├── firmware/                        # ⚡ Firmwares de Microcontroladores
 │   ├── esp32/                       # Nodo Maestro (SoC Espressif ESP32-S3 N16R8 Dual-Core 240 MHz)
@@ -4328,16 +4658,28 @@ Proyecto/
 │   ├── telemetria/                  # SCADA v1.0 (Versión base de referencia mantenida como archivo)
 │   └── exportar_graficas_offline.py # Suite de 8 figuras científicas a 300 DPI (perfil, IAE, TRIACs, Faraday...)
 │
-├── visualizacion/                   # 📊 Suite de Visualización, Simuladores y Diagramas
-│   ├── preview/                     # Suite de Réplicas Web Locales para Pruebas sin Hardware
-│   │   ├── index.html               # Portal interactivo maestro con selector de versiones e iframe
-│   │   ├── RTOS2.0/                 # ⭐ Suite Insignia Activa (réplica 1:1 de las vistas del firmware RTOS 2.0)
-│   │   └── RTOS1.3/ ... Original/   # Réplicas históricas de versiones previas
-│   └── diagramas/                   # 11 Diagramas Técnicos ISA-88 / FreeRTOS SMP y Visor Interactivo
+├── hardware/                        # 🔌 Ingeniería de Hardware y Circuitos
+│   ├── pcb/                         # ⚡ Circuitos Impresos Industriales (KiCad 8)
+│   │   └── placa_madre_esp32s3_uno/ # Placa Madre Rev 5.0 (Gerbers, BOM JLCPCB, Esquemático PDF, Modelo 3D)
+│   └── esquemas_electricos/         # BOM.md, esquemas electrónicos VCSS y diagramas de conexionado
+│
+├── eventos/                         # 🏛️ Difusión Científica y Exposiciones Tecnológicas
+│   ├── innovafest/                  # InnovaFest Guadalajara 2026 (Montaje, Celdas, Pitch, Medios)
+│   └── smeq_2026/                   # 41º Congreso SMEQ (Folio CTS-C51, Cartel Científico, Memoria In Extenso)
+│
+├── docs/                            # 🌐 Portal Web Oficial y GitHub Pages (Showcase Interactivo)
+│   ├── assets/pcb/                  # Renders 3D fotorrealistas y esquemáticos en ultra-alta definición
+│   └── js/                          # Simuladores de Celda Hull, cinéticas térmicas y calculadoras
 │
 ├── control/                         # Modelado Matemático y Simulación en MATLAB (Control_termico.m, graficar_matlab.m)
-├── hardware/                        # BOM.md, esquemas electrónicos VCSS.png y conexionado sistema.png
+├── visualizacion/                   # Suite de Réplicas Web Locales y Diagramas Técnicos ISA-88
 └── documentos/                      # Manuales de laboratorio, guías de instalación, changelog y datasheets PDF
+
+ELECTRODO_32_Uno/                    # 🚀 Subproyecto Hermano: Next-Gen Edge AI con Arduino UNO Q
+├── hardware/pcb/
+│   └── carrier_shield_uno_q/        # Carrier Shield Multicapa Rev 5.1 (4 Capas, ENIG, Gerbers JLCPCB)
+├── PROYECTO_UNO_BLUEPRINT.md        # Plan de migración y arquitectura Edge Linux + FreeRTOS
+└── README.md                        # Documentación técnica de la variante Edge AI
 </pre>
 
       <h4 style="margin-top:20px; color:#e2e8f0;">Resumen Funcional por Módulo del Repositorio</h4>

@@ -1,0 +1,48 @@
+Comment,Designator,Footprint,LCSC Part #,Description
+ESP32_S3_LEFT_22P,H_ESP_L,PinSocket_1x22_P2.54mm_Vertical,C2838502,Socket Hembra 1x22 2.54mm ESP32-S3 Izquierda
+ESP32_S3_RIGHT_22P,H_ESP_R,PinSocket_1x22_P2.54mm_Vertical,C2838502,Socket Hembra 1x22 2.54mm ESP32-S3 Derecha
+4.7k_1%,R_SDA,R_0805_2012Metric,C17673,Pull-Up Bus I2C SDA 400kHz
+4.7k_1%,R_SCL,R_0805_2012Metric,C17673,Pull-Up Bus I2C SCL 400kHz
+33R_1%,R_SCK,R_0805_2012Metric,C17638,Amortiguador Serie Antirringing Reloj SPI SCK
+10k_1%,R_UART1,R_0805_2012Metric,C17414,Resistor Divisor UART 5V a 3.3V Serie 10k
+20k_1%,R_UART2,R_0805_2012Metric,C4310,Resistor Divisor UART 5V a 3.3V Pull-Down 20k
+UNO_SLAVE_PWR,H_UNO_PWR,PinSocket_1x08_P2.54mm_Vertical,C124378,Socket Hembra 1x08 Alimentación Arduino UNO
+UNO_SLAVE_D0_D7,H_UNO_DIGL,PinSocket_1x08_P2.54mm_Vertical,C124378,Socket Hembra 1x08 Pines D7..D0 Esclavo AC
+MAX6675ISA+,U3,SOIC-8_3.9x4.9mm_P1.27mm,C11047,Digitalizador Termopar Tipo K Tina 1 SPI
+100nF,C1,C_0805_2012Metric,C49678,Capacitor Desacoplo 100nF 50V X7R 0805
+MAX6675ISA+,U4,SOIC-8_3.9x4.9mm_P1.27mm,C11047,Digitalizador Termopar Tipo K Tina 2 SPI
+100nF,C2,C_0805_2012Metric,C49678,Capacitor Desacoplo 100nF 50V X7R 0805
+MAX6675ISA+,U5,SOIC-8_3.9x4.9mm_P1.27mm,C11047,Digitalizador Termopar Tipo K Tina 3 SPI
+100nF,C3,C_0805_2012Metric,C49678,Capacitor Desacoplo 100nF 50V X7R 0805
+MAX6675ISA+,U6,SOIC-8_3.9x4.9mm_P1.27mm,C11047,Digitalizador Termopar Tipo K Tina 4 SPI
+100nF,C4,C_0805_2012Metric,C49678,Capacitor Desacoplo 100nF 50V X7R 0805
+ADS1115IDGSR,U2,MSOP-10_3x3mm_P0.5mm,C38553,ADC 16-Bit I2C pH Diferencial Kelvin + Shunts
+MCP4725A0T,U7,SOT-23-6,C95410,DAC 12-Bit I2C Consigna Analógica VCSS
+LM358DR,U8,SOIC-8_3.9x4.9mm_P1.27mm,C7950,Op-Amp Regulador Lazo Corriente VCSS
+IRLZ44NPBF,Q_VCSS,TO-220-3_Vertical,C111590,MOSFET Potencia Sumidero Corriente VCSS (Disipador 24W)
+1.0R_1%_1W,R_SH1,R_2512_6332Metric,C25394,Shunt Potencia 1.0 Ohm 1% 2512 Rama 1 (Pista 2.5mm)
+100R_0.1%,R_K1,R_0805_2012Metric,C23186,Toma Kelvin 4-Hilos Sensado Diferencial Shunt 1
+1.0R_1%_1W,R_SH2,R_2512_6332Metric,C25394,Shunt Potencia 1.0 Ohm 1% 2512 Rama 2 (Pista 2.5mm)
+100R_0.1%,R_K2,R_0805_2012Metric,C23186,Toma Kelvin 4-Hilos Sensado Diferencial Shunt 2
+BLM21PG221SN1,FB1,L_0805_2012Metric,C85832,Ferrita Star-Ground AGND-DGND 220 Ohm
+0R_STAR_TIE,R_STAR,R_0805_2012Metric,C17477,Puente Estrella Punto Único DGND-PGND
+74HCT541D,U1,SOIC-20W_7.5x12.8mm_P1.27mm,C5584,Buffer Octal 5V Compuertas TRIAC y Relé ZCS
+330R,R1,R_0805_2012Metric,C17630,Resistencia LED Optotriac Tina 1
+MOC3021M,U9,DIP-6_W7.62mm,C116220,Optotriac Aislamiento 5000Vrms Tina 1
+BTA24-800BW,Q_TC1,TO-220-3_Vertical,C128264,TRIAC 24A 800V Snubberless Tina 1
+330R,R2,R_0805_2012Metric,C17630,Resistencia LED Optotriac Tina 2
+MOC3021M,U10,DIP-6_W7.62mm,C116220,Optotriac Aislamiento 5000Vrms Tina 2
+BTA24-800BW,Q_TC2,TO-220-3_Vertical,C128264,TRIAC 24A 800V Snubberless Tina 2
+330R,R3,R_0805_2012Metric,C17630,Resistencia LED Optotriac Tina 3
+MOC3021M,U11,DIP-6_W7.62mm,C116220,Optotriac Aislamiento 5000Vrms Tina 3
+BTA24-800BW,Q_TC3,TO-220-3_Vertical,C128264,TRIAC 24A 800V Snubberless Tina 3
+330R,R4,R_0805_2012Metric,C17630,Resistencia LED Optotriac Tina 4
+MOC3021M,U12,DIP-6_W7.62mm,C116220,Optotriac Aislamiento 5000Vrms Tina 4
+BTA24-800BW,Q_TC4,TO-220-3_Vertical,C128264,TRIAC 24A 800V Snubberless Tina 4
+4N35,U13,DIP-6_W7.62mm,C18613,Optoacoplador Detector Cruce por Cero AC
+FINDER_40.52_5V,K1,Relay_DPDT_Finder_40.52,C19197,Relé Industrial DPDT Corte en Frío ZCS VCSS
+4x_TERMOPAR_K,J_TC,"TerminalBlock_Phoenix_MKDS-1,5-8-5.08_1x08_P5.08mm_Horizontal",C8465,Bornera Industrial 8P 4x Termopar Tipo K
+BNC_PH_KELVIN,J_PH,BNC_Amphenol_B6252HB-NPP3G-50_Horizontal,C496551,Conector Coaxial BNC Electrodo pH Kelvin
+ENTRADA_DC_12V_5V,J_PWR_DC,"TerminalBlock_Phoenix_MKDS-1,5-4-5.08_1x04_P5.08mm_Horizontal",C8461,Bornera Dedicada Fuente DC (+12V VCSS / +5V Lógica)
+POTENCIA_AC_4xTINA,J_AC,"TerminalBlock_Phoenix_MKDS-1,5-6-5.08_1x06_P5.08mm_Horizontal",C8463,Bornera Aislada 250V AC Salidas 4 TRIACs + ZC
+CELDA_HULL_VCSS,J_HULL,"TerminalBlock_Phoenix_MKDS-1,5-4-5.08_1x04_P5.08mm_Horizontal",C8461,Bornera Alta Corriente 5A Celda Hull 267mL

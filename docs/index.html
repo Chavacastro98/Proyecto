@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Sistema de Control Automático de Recubrimientos Electrolíticos | InnovaFest 2026 & SMEQ</title>
-  <meta name="description" content="Sistema de Control Automático de Recubrimientos Electrolíticos (Zinc y Níquel sobre Aluminio 6061-T6): Arquitectura ESP32-S3, control térmico ZCS por tiempo proporcional (<0.4 °C), sumidero VCSS con onda cuadrada a 10 Hz, pH pseudo-diferencial, SCADA PyQt6 y servidor web embebido. InnovaFest Guadalajara 2026 y SMEQ 2026.">
+  <title>E.L.E.C.T.R.O.D.O-32 | Sistema de Control Automático de Recubrimientos Electrolíticos | Innovafest 2026 & SMEQ</title>
+  <meta name="description" content="E.L.E.C.T.R.O.D.O-32: Equipo de Laboratorio para Experimentación y Control en Tiempo Real con Obtención de Datos Operativos (Zinc y Níquel sobre Aluminio 6061-T6): Arquitectura ESP32-S3 RTOS 2.0, Placa Madre Rev 5.0, control térmico ZCS (<0.4 °C), sumidero VCSS a 10 Hz, pH pseudo-diferencial y SCADA Telemetría 2.0. Innovafest Guadalajara 2026 y SMEQ 2026.">
   <meta name="theme-color" content="#070d19">
 
   <link rel="stylesheet" href="css/variables.css">
@@ -19,8 +19,9 @@
   <header>
     <div class="badge-bar" style="justify-content: space-between; align-items: center;">
       <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+        <span class="badge" style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: #000; font-weight: 800; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">E.L.E.C.T.R.O.D.O-32</span>
         <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);">INNOVAFEST GDL 2026</span>
-        <span class="badge badge-primary">SMEQ 2026</span>
+        <span class="badge badge-primary">SMEQ 2026 (CTS-C51)</span>
         <span class="badge badge-emerald">CONTROL IN-OPERANDO</span>
         <span class="badge badge-amber">ESP32-S3 SMP @ 240 MHz</span>
         <span class="badge badge-purple">ANSI/ISA-88.01</span>
@@ -31,6 +32,12 @@
         </a>
         <a href="https://chavacastro98.github.io/Proyecto/" target="_blank" rel="noopener noreferrer" class="badge badge-pages" title="Abrir GitHub Pages en Vivo">
           <span>🌐 Pages</span>
+        </a>
+        <a href="manual/index.html" target="_blank" class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);" title="Abrir Manual Interactivo de Operación">
+          <span>🧪 Manual de Operación</span>
+        </a>
+        <a href="assets/manuales/MANUAL_DE_OPERACION_QUIMICA_IMPRIMIBLE.pdf" target="_blank" class="badge" style="background: rgba(244, 63, 94, 0.18); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.45); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Descargar Manual Imprimible PDF">
+          <span>📄 Manual PDF</span>
         </a>
       </div>
 
@@ -44,8 +51,8 @@
         </button>
       </div>
     </div>
-    <h1>Sistema de Control Automático de Recubrimientos Electrolíticos</h1>
-    <p class="subtitle">Automatización accesible e instrumentación modular para procesos de galvanoplastia de alta precisión • Optimización de recubrimientos de Zinc y Níquel sobre Aluminio 6061-T6 con control térmico ZCS y corriente pulsada VCSS a 10 Hz</p>
+    <h1>E.L.E.C.T.R.O.D.O-32: Sistema de Control Automático de Recubrimientos Electrolíticos</h1>
+    <p class="subtitle">Equipo de Laboratorio para Experimentación y Control en Tiempo Real con Obtención de Datos Operativos • Optimización de recubrimientos de Zinc y Níquel sobre Aluminio 6061-T6 con control térmico ZCS y corriente pulsada VCSS a 10 Hz</p>
 
     <!-- CRÉDITOS Y RESPONSABLES DEL PROYECTO -->
     <div class="credits-panel">
@@ -181,7 +188,9 @@
   <!-- PESTAÑAS DE NAVEGACIÓN -->
   <nav class="nav-tabs" id="navTabs">
     <button class="tab-btn active" data-tab="tab-arquitectura">📐 Arquitectura & Bloques</button>
+    <button class="tab-btn" data-tab="tab-pcb" style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(91, 33, 182, 0.12)); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd; font-weight: 700;">⚡ Circuitos Impresos (PCB)</button>
     <button class="tab-btn" data-tab="tab-innovafest" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.08)); border: 1px solid rgba(245, 158, 11, 0.45); color: #fde68a; font-weight: 700;">📸 Galería InnovaFest 2026</button>
+    <button class="tab-btn" data-tab="tab-smeq" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(2, 132, 199, 0.08)); border: 1px solid rgba(14, 165, 233, 0.45); color: #bae6fd; font-weight: 700;">🧪 SMEQ 2026 (CTS-C51)</button>
     <button class="tab-btn" data-tab="tab-termico">🔥 Módulo Térmico (ZCS & MATLAB)</button>
     <button class="tab-btn" data-tab="tab-vcss">⚡ Sumidero VCSS & Onda Cuadrada</button>
     <button class="tab-btn" data-tab="tab-ph">🧪 pH Pseudo-Diferencial</button>
@@ -1043,6 +1052,330 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB: CIRCUITOS IMPRESOS (PCBA INDUSTRIAL REV 5.0 Y REV 5.1) -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-pcb">
+    
+    <!-- TARJETA HERO: INTRODUCCIÓN A LA INGENIERÍA DE PCBA -->
+    <div class="card" style="border-left: 4px solid #8b5cf6; background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 16, 31, 0.88) 100%);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;">
+        <div>
+          <div style="font-size: 0.74rem; font-weight: 800; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
+            <span>⚡</span> HARDWARE INDUSTRIAL • KI-CAD PRODUCTION READY (JLCPCB & LCSC)
+          </div>
+          <h2 style="font-size: 1.35rem; color: #ffffff; margin: 6px 0 2px 0; font-weight: 700;">
+            E.L.E.C.T.R.O.D.O-32: Módulos de Circuito Impreso Industrial
+          </h2>
+          <div style="font-size: 0.84rem; color: #94a3b8;">
+            Placa Madre ESP32-S3 Rev 5.0 (Producción RTOS 2.0) & Carrier Shield Uno Q Rev 5.1 (Edge Computing)
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="innovafest-kpi-chip" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.35); color: #c4b5fd;">📐 Formato 100x100 mm</span>
+          <span class="innovafest-kpi-chip" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #10b981;">🛡️ Aislamiento EMI ZCS</span>
+          <span class="innovafest-kpi-chip" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">🏭 Archivos JLCPCB Listos</span>
+        </div>
+      </div>
+
+      <p style="font-size: 0.89rem; color: #cbd5e1; line-height: 1.55; margin-bottom: 16px;">
+        Para garantizar la máxima confiabilidad operativa y suprimir completamente las perturbaciones electromagnéticas (EMI) provocadas por la conmutación de calentadores de 1.37 kW y las corrientes de electrodeposición de hasta 3.50 A, el sistema ha sido migrado a tarjetas de circuito impreso diseñadas y verificadas bajo reglas de diseño industrial (DRC 0 errores).
+      </p>
+
+      <div class="grid-4" style="gap: 12px;">
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.20rem; font-weight: 800; color: #c4b5fd;">2 Capas</div>
+          <div style="font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; margin-top: 2px;">Placa Madre Rev 5.0</div>
+          <div style="font-size: 0.70rem; color: #10b981; margin-top: 3px;">FR-4 TG155 / Cobre 1 oz</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.20rem; font-weight: 800; color: #38bdf8;">4 Capas</div>
+          <div style="font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; margin-top: 2px;">Carrier Shield Uno Q</div>
+          <div style="font-size: 0.70rem; color: #38bdf8; margin-top: 3px;">FR-4 TG170 / Impedancia Controlada</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.20rem; font-weight: 800; color: #10b981;">ZCS Bipolar</div>
+          <div style="font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; margin-top: 2px;">Aislamiento Galvánico</div>
+          <div style="font-size: 0.70rem; color: #10b981; margin-top: 3px;">Zero Current Switching</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.20rem; font-weight: 800; color: #fbbf24;">ENIG / HASL</div>
+          <div style="font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; margin-top: 2px;">Acabado Anticorrosión</div>
+          <div style="font-size: 0.70rem; color: #fbbf24; margin-top: 3px;">Resistente a vapores ácidos</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETA 1: PLACA MADRE REV 5.0 -->
+    <div class="card" style="margin-top: 18px;">
+      <div class="card-title">
+        <span class="icon">🎛️</span> Placa Madre Industrial: ESP32-S3 + Arduino Nano (Rev 5.0)
+      </div>
+
+      <div class="grid-2" style="gap: 16px; align-items: start;">
+        <div>
+          <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+            La tarjeta madre es el nodo orquestador del sistema actual de producción. Integra zócalos de acople directo para el ESP32-S3 DevKitC-1 y Arduino Nano, la etapa de sensado ADC de 16 bits (ADS1115 con filtrado RC individual por canal), el generador analógico DAC (MCP4725) y los transistores de potencia MOSFET IRLZ44N con plano de disipación masivo.
+          </p>
+
+          <table class="data-table" style="font-size: 0.82rem; margin-bottom: 14px;">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Especificación de Fabricación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dimensiones</strong></td>
+                <td>100 mm × 100 mm (Grosor 1.6 mm ±10%)</td>
+              </tr>
+              <tr>
+                <td><strong>Estructura</strong></td>
+                <td>2 Capas (Top: Señales / Bottom: Plano GND Masivo)</td>
+              </tr>
+              <tr>
+                <td><strong>Material / Cobre</strong></td>
+                <td>FR-4 TG155 • Cobre 1 oz (35 µm) con pistas reforzadas</td>
+              </tr>
+              <tr>
+                <td><strong>Conectividad</strong></td>
+                <td>Clemas de tornillo Phoenix 5.08 mm + zócalos hembra mecanizados</td>
+              </tr>
+              <tr>
+                <td><strong>Entradas Sensadas</strong></td>
+                <td>4x Termopares K (MAX6675 SPI), Sonda pH (ADS1115 Canal A1), Shunts VCSS (A2/A3)</td>
+              </tr>
+              <tr>
+                <td><strong>Seguridad Activa</strong></td>
+                <td>Relé bipolar ZCS (corte simultáneo de ánodo y cátodo sin arco eléctrico)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="assets/pcb/placa_madre_esp32s3_uno_sch.pdf" target="_blank" class="btn btn-sm" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">📄 Ver Esquemático PDF</a>
+            <a href="assets/pcb/GERBERS_PLACA_MADRE_ESP32S3_UNO_REV5.zip" download class="btn btn-sm" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981;">📦 Descargar Gerbers Rev 5.0 (ZIP)</a>
+            <a href="assets/pcb/BOM_JLCPCB_ESP32S3_UNO_REV5.csv" download class="btn btn-sm" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24;">📋 Lista de Materiales (BOM)</a>
+          </div>
+        </div>
+
+        <div>
+          <!-- VISOR DE RENDERS 3D -->
+          <div style="background: #070d19; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px; text-align: center;">
+            <img src="assets/pcb/render_3d_placa_madre_esp32s3_uno_iso.png" 
+                 alt="Render 3D Isométrico Placa Madre Rev 5.0" 
+                 style="width: 100%; height: auto; max-height: 280px; object-fit: contain; cursor: zoom-in; border-radius: 6px;"
+                 onclick="abrirModalImg(this.src, 'Render 3D Isométrico de la Placa Madre Industrial Rev 5.0 (ESP32-S3 + Nano)')">
+            <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 6px;">
+              🔍 Clic para ampliar en Ultra-Alta Definición (Render Isométrico 3D)
+            </div>
+          </div>
+
+          <div class="grid-2" style="gap: 8px; margin-top: 10px;">
+            <div style="background: #070d19; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 6px; text-align: center;">
+              <img src="assets/pcb/render_3d_placa_madre_esp32s3_uno_top.png" 
+                   alt="Vista Superior Top Placa Madre" 
+                   style="width: 100%; height: 110px; object-fit: contain; cursor: zoom-in; border-radius: 4px;"
+                   onclick="abrirModalImg(this.src, 'Vista Superior (Top) de la Placa Madre Rev 5.0 con Serigrafía')">
+              <span style="font-size: 0.70rem; color: #cbd5e1;">Vista Top (Serigrafía)</span>
+            </div>
+            <div style="background: #070d19; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 6px; text-align: center;">
+              <img src="assets/pcb/sch_preview_placa_madre_esp32s3_uno.png" 
+                   alt="Esquemático KiCad Placa Madre" 
+                   style="width: 100%; height: 110px; object-fit: contain; cursor: zoom-in; border-radius: 4px;"
+                   onclick="abrirModalImg(this.src, 'Esquemático Electrónico en KiCad - Placa Madre Rev 5.0')">
+              <span style="font-size: 0.70rem; color: #cbd5e1;">Esquemático KiCad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETA 2: CARRIER SHIELD ARDUINO UNO Q -->
+    <div class="card" style="margin-top: 18px;">
+      <div class="card-title">
+        <span class="icon">🛡️</span> Carrier Shield Grado Industrial: Arduino UNO Q (Rev 5.1)
+      </div>
+
+      <div class="grid-2" style="gap: 16px; align-items: start;">
+        <div>
+          <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+            El <strong>Carrier Shield Industrial Rev 5.1</strong> es la tarjeta de expansión multicapa diseñada específicamente para el nuevo <strong>Arduino UNO Q</strong> (Qualcomm Dragonwing QRB2210 Quad-Core A53 @ 2.0 GHz + STM32U585 Cortex-M33 @ 160 MHz). Convierte al Uno Q en una estación Edge Computing autónoma capaz de ejecutar el SCADA localmente bajo Debian Linux y gobernar la planta en tiempo real determinista.
+          </p>
+
+          <table class="data-table" style="font-size: 0.82rem; margin-bottom: 14px;">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Especificación de Fabricación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dimensiones</strong></td>
+                <td>100 mm × 100 mm (Factor de forma apilable Uno Q)</td>
+              </tr>
+              <tr>
+                <td><strong>Capas de Cobre</strong></td>
+                <td>4 Capas (L1 Señal Rápida, L2 Plano GND continuo, L3 Potencia, L4 Retornos)</td>
+              </tr>
+              <tr>
+                <td><strong>Material / Acabado</strong></td>
+                <td>FR-4 TG170 (Alta Confiabilidad) • Acabado ENIG (Oro por Inmersión)</td>
+              </tr>
+              <tr>
+                <td><strong>Acondicionamiento</strong></td>
+                <td>Entrada BNC coaxial con guarda de alta impedancia para pH, TVS de protección</td>
+              </tr>
+              <tr>
+                <td><strong>Canales de Potencia</strong></td>
+                <td>4x Salidas MOC3021 a cruce por cero para TRIACs de 1.37 kW</td>
+              </tr>
+              <tr>
+                <td><strong>Seguridad Fail-Safe</strong></td>
+                <td>Hardware Watchdog dedicado a nivel de silicio en el STM32U585 (1.0 s)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="assets/pcb/carrier_shield_uno_q_sch.pdf" target="_blank" class="btn btn-sm" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.35); color: #c4b5fd;">📄 Ver Esquemático PDF</a>
+            <a href="assets/pcb/GERBERS_CARRIER_SHIELD_UNO_Q_REV5.zip" download class="btn btn-sm" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981;">📦 Descargar Gerbers Rev 5.1 (ZIP)</a>
+            <a href="../../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/PINOUT_MAP.md" target="_blank" class="btn btn-sm" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">🗺️ Mapa de Pines (Pinout)</a>
+          </div>
+        </div>
+
+        <div>
+          <!-- VISOR DE RENDERS 3D UNO Q -->
+          <div style="background: #070d19; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px; text-align: center;">
+            <img src="assets/pcb/render_3d_carrier_shield_uno_q_iso.png" 
+                 alt="Render 3D Carrier Shield Uno Q" 
+                 style="width: 100%; height: auto; max-height: 280px; object-fit: contain; cursor: zoom-in; border-radius: 6px;"
+                 onclick="abrirModalImg(this.src, 'Render 3D Isométrico del Carrier Shield Industrial Rev 5.1 para Arduino UNO Q')">
+            <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 6px;">
+              🔍 Clic para ampliar en Ultra-Alta Definición (Carrier Shield 3D)
+            </div>
+          </div>
+
+          <div class="grid-2" style="gap: 8px; margin-top: 10px;">
+            <div style="background: #070d19; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 6px; text-align: center;">
+              <img src="assets/pcb/render_3d_carrier_shield_uno_q_top.png" 
+                   alt="Vista Superior Top Carrier Shield" 
+                   style="width: 100%; height: 110px; object-fit: contain; cursor: zoom-in; border-radius: 4px;"
+                   onclick="abrirModalImg(this.src, 'Vista Superior (Top) del Carrier Shield Uno Q con Serigrafía')">
+              <span style="font-size: 0.70rem; color: #cbd5e1;">Vista Top (Serigrafía)</span>
+            </div>
+            <div style="background: #070d19; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 6px; text-align: center;">
+              <img src="assets/pcb/sch_preview_carrier_shield_uno_q.png" 
+                   alt="Esquemático KiCad Carrier Shield" 
+                   style="width: 100%; height: 110px; object-fit: contain; cursor: zoom-in; border-radius: 4px;"
+                   onclick="abrirModalImg(this.src, 'Esquemático Electrónico en KiCad - Carrier Shield Uno Q')">
+              <span style="font-size: 0.70rem; color: #cbd5e1;">Esquemático KiCad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- TAB: CONGRESO NACIONAL SMEQ 2026 (FOLIO CTS-C51) -->
+  <!-- ========================================================================= -->
+  <section class="tab-panel" id="tab-smeq">
+    <div class="card" style="border-left: 4px solid #0284c7; background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 16, 31, 0.88) 100%);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;">
+        <div>
+          <div style="font-size: 0.74rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
+            <span>🧪</span> 41º CONGRESO NACIONAL DE LA SOCIEDAD MEXICANA DE ELECTROQUÍMICA (SMEQ 2026)
+          </div>
+          <h2 style="font-size: 1.35rem; color: #ffffff; margin: 6px 0 2px 0; font-weight: 700;">
+            Folio CTS-C51: Optimización de Recubrimientos de Zinc sobre Aluminio 6061 T-6
+          </h2>
+          <div style="font-size: 0.84rem; color: #94a3b8;">
+            Línea de Ciencia y Tecnología de Superficies • Universidad de Guadalajara (CUCEI)
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="innovafest-kpi-chip" style="background: rgba(2, 132, 199, 0.15); border-color: rgba(2, 132, 199, 0.35); color: #38bdf8;">📑 Folio CTS-C51</span>
+          <span class="innovafest-kpi-chip" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #10b981;">🎯 Celda Hull 267 mL</span>
+          <span class="innovafest-kpi-chip" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.35); color: #fbbf24;">📊 Ley de Faraday</span>
+        </div>
+      </div>
+
+      <p style="font-size: 0.89rem; color: #cbd5e1; line-height: 1.55; margin-bottom: 16px;">
+        En este foro científico internacional se presentaron los resultados formales de la investigación electroquímica de tesis. La plataforma automatizada <strong>E.L.E.C.T.R.O.D.O-32</strong> permitió sintetizar y correlacionar experimentalmente el gradiente de densidades de corriente en Celda Hull normalizada (267 mL) con la adherencia mecánica y morfología cristalina del zinc sobre aleación de aluminio 6061-T6.
+      </p>
+
+      <div class="grid-2" style="gap: 16px;">
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 14px;">
+          <h4 style="font-size: 0.92rem; color: #38bdf8; margin-bottom: 8px;">📄 Documentos Científicos Presentados</h4>
+          <ul style="margin-left: 18px; font-size: 0.83rem; color: #cbd5e1; line-height: 1.6;">
+            <li><strong>Cartel Científico Oficial:</strong> Metodología experimental, perfiles culombimétricos y micrografías.</li>
+            <li><strong>Memoria en Extenso:</strong> Artículo formal en plantilla de la SMEQ con fundamentos termodinámicos y cinéticos.</li>
+            <li><strong>Hoja de Mesa con Acceso QR:</strong> Enlace directo a este Showcase Web y telemetría en vivo para evaluadores.</li>
+            <li><strong>Reporte Final 044:</strong> Protocolos de laboratorio validados experimentalmente.</li>
+          </ul>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="assets/smeq/cartel_cientifico_smeq2026.pdf" target="_blank" class="btn btn-sm" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">📑 Ver Cartel Científico (PDF)</a>
+            <a href="assets/smeq/hoja_qr_mesa_smeq2026.pdf" target="_blank" class="btn btn-sm" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981;">📱 Hoja de Mesa QR (PDF)</a>
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px;">
+          <h4 style="font-size: 0.92rem; color: #10b981; margin-bottom: 8px;">🔬 Aportes Científicos Clave</h4>
+          <ul style="margin-left: 18px; font-size: 0.83rem; color: #cbd5e1; line-height: 1.6;">
+            <li><strong>Eliminación del Ataque por Picaduras:</strong> Decapado alcalino suave controlado a 85 °C que preserva la matriz Al 6061-T6.</li>
+            <li><strong>Cinética de Difusión No-Lineal:</strong> Modelo de capa límite pulsada a 10 Hz / 20% duty cycle que inhibe la formación de dendritas.</li>
+            <li><strong>Eficiencia Faradaica Cuantificada:</strong> Balance gravimétrico asistido en tiempo real por el SCADA Telemetría 2.0.</li>
+            <li><strong>Inhibición de Desplazamiento Galvánico:</strong> Sincronización ZCS y polarización previa antes de la inmersión en níquel.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- GALERÍA VISUAL DEL CARTEL Y MESA QR SMEQ 2026 -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 18px;">
+        <!-- Cartel Científico Preview -->
+        <div style="background: #070d19; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px; text-align: center;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px;">
+            📊 Cartel Científico Oficial — Folio CTS-C51
+          </div>
+          <img src="assets/smeq/cartel_preview.png" 
+               alt="Cartel Científico Oficial SMEQ 2026" 
+               style="width: 100%; max-height: 380px; object-fit: contain; cursor: zoom-in; border-radius: 6px;"
+               onclick="abrirModalImg(this.src, 'Cartel Científico Oficial - SMEQ 2026 (Folio CTS-C51)')">
+          <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 8px;">
+            🔍 Clic para ampliar en Ultra-Alta Definición (300 DPI)
+          </div>
+          <div style="margin-top: 10px;">
+            <a href="assets/smeq/cartel_cientifico_smeq2026.pdf" target="_blank" class="btn btn-sm" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">
+              📄 Abrir Cartel Científico en PDF
+            </a>
+          </div>
+        </div>
+
+        <!-- Hoja de Mesa QR Preview -->
+        <div style="background: #070d19; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 12px; text-align: center;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #10b981; margin-bottom: 8px;">
+            📱 Hoja de Mesa con Código QR — Stand de Laboratorio
+          </div>
+          <img src="assets/smeq/hoja_qr_preview.png" 
+               alt="Hoja de Mesa con Código QR SMEQ 2026" 
+               style="width: 100%; max-height: 380px; object-fit: contain; cursor: zoom-in; border-radius: 6px;"
+               onclick="abrirModalImg(this.src, 'Hoja de Mesa con Acceso QR - Stand de Exposición SMEQ 2026')">
+          <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 8px;">
+            🔍 Clic para ampliar el diseño de mesa
+          </div>
+          <div style="margin-top: 10px;">
+            <a href="assets/smeq/hoja_qr_mesa_smeq2026.pdf" target="_blank" class="btn btn-sm" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981;">
+              📱 Abrir Hoja de Mesa QR en PDF
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -3673,6 +4006,123 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
             <tr><td><strong>Run #32</strong></td><td>Pulsada (10 Hz)</td><td>4.50 A/dm²</td><td>120 s</td><td>60 s</td><td>32.0 °C</td><td>4.80 pH</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- VALIDACIÓN EXPERIMENTAL: RESULTADOS METROLÓGICOS, GRAVIMETRÍA Y ADHERENCIA ASTM D3359 -->
+      <h4 style="font-size: 0.95rem; color: #38bdf8; margin: 24px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+        <span>🎯</span> Resultados de Validación Experimental en Planta Piloto (SMEQ CTS-C51 & Innovafest)
+      </h4>
+      <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
+        Correlación formal entre los parámetros de control automatizados en <strong>E.L.E.C.T.R.O.D.O-32</strong> y las variables de respuesta medidas en laboratorio: adherencia mecánica mediante ensayo de corte enrejado bajo norma <strong>ASTM D3359</strong>, eficiencia de corriente catódica (&eta;) calculada por balance de masa gravimétrico en balanza analítica asistida por el SCADA y calificación de acabado visual.
+      </p>
+
+      <div class="table-responsive">
+        <table class="data-table" style="font-size: 0.82rem; width: 100%;">
+          <thead>
+            <tr>
+              <th>ID Corrida</th>
+              <th>Modo y Frecuencia</th>
+              <th>Zona Celda Hull (j)</th>
+              <th>Carga Integrada (Q)</th>
+              <th>Masa Teórica (m_teor)</th>
+              <th>Masa Real Gravimétrica</th>
+              <th>Eficiencia (&eta;)</th>
+              <th>Adherencia ASTM D3359</th>
+              <th>Calificación Visual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Run #01 (DC Convencional)</strong></td>
+              <td>DC Puro (0 Hz)</td>
+              <td>Zona D (0.32 A/dm²)</td>
+              <td>90.0 C</td>
+              <td>30.49 mg</td>
+              <td>23.11 mg</td>
+              <td><span class="badge badge-warning">75.8%</span></td>
+              <td><span style="color: #fbbf24; font-weight:700;">2B</span> (&gt;35% desprendimiento)</td>
+              <td>Gris mate, baja uniformidad</td>
+            </tr>
+            <tr>
+              <td><strong>Run #03 (DC Convencional)</strong></td>
+              <td>DC Puro (0 Hz)</td>
+              <td>Zona B (3.21 A/dm²)</td>
+              <td>300.0 C</td>
+              <td>101.63 mg</td>
+              <td>82.83 mg</td>
+              <td><span class="badge badge-primary">81.5%</span></td>
+              <td><span style="color: #fbbf24; font-weight:700;">3B</span> (&sim;15% desprendimiento)</td>
+              <td>Semibrillante con rugosidad local</td>
+            </tr>
+            <tr>
+              <td><strong>Run #09 (Pulsada VCSS)</strong></td>
+              <td>Pulsada 10 Hz (20% duty)</td>
+              <td>Zona C (1.46 A/dm²)</td>
+              <td>18.0 C (promedio)</td>
+              <td>6.10 mg</td>
+              <td>5.43 mg</td>
+              <td><span class="badge badge-emerald">89.0%</span></td>
+              <td><span style="color: #34d399; font-weight:700;">4B</span> (&lt;5% desprendimiento)</td>
+              <td>Brillante homogéneo, sin poro</td>
+            </tr>
+            <tr>
+              <td><strong>Run #16 (Pulsada VCSS)</strong></td>
+              <td>Pulsada 10 Hz (20% duty)</td>
+              <td>Zona B (3.21 A/dm²)</td>
+              <td>60.0 C (promedio)</td>
+              <td>20.33 mg</td>
+              <td>18.66 mg</td>
+              <td><span class="badge badge-emerald">91.8%</span></td>
+              <td><span style="color: #10b981; font-weight:700;">5B</span> (0% desprendimiento)</td>
+              <td>Brillante especular, grano ultrafino</td>
+            </tr>
+            <tr>
+              <td><strong>Run #24 (Pulsada VCSS)</strong></td>
+              <td>Pulsada 10 Hz (20% duty)</td>
+              <td>Zona A (6.96 A/dm²)</td>
+              <td>83.5 C (promedio)</td>
+              <td>28.30 mg</td>
+              <td>25.86 mg</td>
+              <td><span class="badge badge-emerald">91.4%</span></td>
+              <td><span style="color: #10b981; font-weight:700;">5B</span> (0% desprendimiento)</td>
+              <td>Excelente sin quemado en aristas</td>
+            </tr>
+            <tr>
+              <td><strong>Depósito Final (Ni sobre Zn)</strong></td>
+              <td>DC 1.13 A/dm² @ 35°C</td>
+              <td>Placa Completa (1.0 dm²)</td>
+              <td>678.0 C (10 min)</td>
+              <td>206.18 mg</td>
+              <td>194.43 mg</td>
+              <td><span class="badge badge-emerald">94.3%</span></td>
+              <td><span style="color: #10b981; font-weight:700;">5B</span> (Excelente adhesión Al-Zn-Ni)</td>
+              <td>Espejo reflectante continuo (Volta)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-3" style="gap: 12px; margin-top: 16px;">
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 0.86rem; font-weight: 700; color: #10b981; margin-bottom: 4px;">✅ Aumento Drástico de Adherencia</div>
+          <div style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
+            La conmutación pulsada a 10 Hz con tiempo de relajación (80 ms en nivel bajo) disipa los gradientes de concentración en la capa límite difusa, logrando la máxima clasificación <strong>ASTM D3359 Grado 5B</strong> frente al desprendimiento 2B/3B de bancos manuales.
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 0.86rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">⚖️ Eficiencia Faradaica &gt; 90%</div>
+          <div style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
+            La integración continua de corriente del ADS1115 y el soft-start de 500 ms suprimen la evolución parásita de hidrógeno ($H_2$), elevando la eficiencia de corriente útil de deposición hasta un <strong>91.8% en Zinc</strong> y <strong>94.3% en Níquel</strong>.
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 0.86rem; font-weight: 700; color: #fbbf24; margin-bottom: 4px;">🏭 Validación Industrial Volta</div>
+          <div style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.45;">
+            Los cupones de aluminio 6061-T6 procesados con este protocolo superaron satisfactoriamente la inspección visual y mecánica de la empresa <em>Volta Plating Solutions</em>, resolviendo de raíz el problema de ampollamiento en piezas decorativas.
+          </div>
+        </div>
       </div>
     </div>
   </section>

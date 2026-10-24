@@ -4,11 +4,19 @@
 
 # Archivos Comprimidos y Respaldos Manuales
 *.zip
+!hardware/pcb/**/*.zip
+!docs/assets/**/*.zip
 *.rar
 *.7z
 *.tar.gz
 *.bak
 *.txt.bak
+
+# Archivos de Video Pesados (Presentaciones y Pitch locales)
+*.mp4
+*.mov
+*.avi
+*.mkv
 
 # Compilación y Artefactos de Microcontroladores (ESP32-S3 / Arduino)
 build/

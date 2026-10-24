@@ -1,22 +1,24 @@
-# Planta Piloto de Electrodeposición y Galvanoplastia
-### Control Ciberfísico en Tiempo Real (ESP32-S3 RTOS 2.0 + ATmega328P + SCADA PC)
+# E.L.E.C.T.R.O.D.O-32: Planta Piloto de Electrodeposición y Galvanoplastia
+### Equipo de Laboratorio para Experimentación y Control en Tiempo Real con Obtención de Datos Operativos
 
-[![Status: WIP](https://img.shields.io/badge/Status-Work%20In%20Progress%20(WIP)-amber?style=for-the-badge&logo=git)](https://github.com/Chavacastro98/Proyecto)
+[![Status: Production Ready](https://img.shields.io/badge/Status-RTOS%202.0%20%7C%20Rev%205.0-success?style=for-the-badge&logo=git)](https://github.com/Chavacastro98/Proyecto)
 [![Showcase: Live](https://img.shields.io/badge/Showcase%20Web-GitHub%20Pages-0ea5e9?style=for-the-badge&logo=github)](https://chavacastro98.github.io/Proyecto/)
+[![Manual: HTML5 & PDF](https://img.shields.io/badge/Manual-HTML5%20%7C%20PDF-10b981?style=for-the-badge&logo=readthedocs)](https://chavacastro98.github.io/Proyecto/manual/)
 [![Tests: 62 Passed](https://img.shields.io/badge/Tests-62%20Passed-10b981?style=for-the-badge&logo=pytest)](tests/)
 [![Coverage: 95%](https://img.shields.io/badge/Coverage-95%25-brightgreen?style=for-the-badge)](tests/)
-[![MCU: ESP32-S3 + Nano](https://img.shields.io/badge/Hardware-ESP32--S3%20%7C%20ATmega328P-8b5cf6?style=for-the-badge)](firmware/)
+[![Hardware: Placa Madre Rev 5.0](https://img.shields.io/badge/Hardware-Placa%20Madre%20Rev%205.0-8b5cf6?style=for-the-badge)](hardware/pcb/placa_madre_esp32s3_uno/)
+[![SMEQ 2026: Folio CTS--C51](https://img.shields.io/badge/SMEQ%202026-CTS--C51-0284c7?style=for-the-badge)](eventos/smeq_2026/)
+[![InnovaFest 2026: Seleccionado](https://img.shields.io/badge/InnovaFest%202026-Expo%20GDL-f59e0b?style=for-the-badge)](eventos/innovafest/)
+[![Next--Gen: Uno Q Edge](https://img.shields.io/badge/Edge%20AI-Arduino%20UNO%20Q-8b5cf6?style=for-the-badge)](../ELECTRODO_32_Uno/README.md)
 
-> [!WARNING]
-> ### 🚧 Repositorio en Desarrollo Activo / Work In Progress (WIP)
-> **Este repositorio se encuentra actualmente en proceso de desarrollo, documentación y reestructuración activa.**  
-> El equipo técnico se encuentra trabajando en:
-> 1. **Elaboración y estandarización del Manual Técnico y Operativo de Laboratorio.**
-> 2. **Consolidación y limpieza estructural de las páginas web públicas (GitHub Pages) y herramientas de despliegue.**
+> [!NOTE]
+> **E.L.E.C.T.R.O.D.O-32** es una plataforma ciberfísica de instrumentación y automatización electroquímica desarrollada en la Universidad de Guadalajara (CUCEI). Integra control térmico determinista en tiempo real, generador de corriente constante/pulsada en Celda Hull, supervisión SCADA con culombimetría faradaica y servidores web embebidos.
 >
+> 🗺️ **Mapa Integral de Arquitectura y Navegación:** [MAPA_DEL_PROYECTO.md](MAPA_DEL_PROYECTO.md)  
 > 🌐 **Showcase Técnico Interactivo (GitHub Pages):** [https://chavacastro98.github.io/Proyecto/](https://chavacastro98.github.io/Proyecto/)  
-> 📁 **Repositorio Oficial de Código (GitHub):** [https://github.com/Chavacastro98/Proyecto](https://github.com/Chavacastro98/Proyecto)  
-> 📑 **Cartel Científico SMEQ 2026 — Folio CTS-C51:** *Optimización Electroquímica de Recubrimientos de Zinc sobre Aluminio 6061 T-6.*
+> 🧪 **Manual de Operación Química & Laboratorio:** [documentos/manuales/MANUAL_DE_OPERACION_QUIMICA.html](documentos/manuales/MANUAL_DE_OPERACION_QUIMICA.html) | [En línea en Pages](https://chavacastro98.github.io/Proyecto/manual/)  
+> 📑 **Congreso Nacional SMEQ 2026 (Folio CTS-C51):** [eventos/smeq_2026/](eventos/smeq_2026/)  
+> 🏆 **InnovaFest 2026 (Expo Guadalajara):** [eventos/innovafest/](eventos/innovafest/)  
 
 ---
 
@@ -24,9 +26,9 @@
 
 La galvanoplastia sobre aluminio es un proceso notoriamente delicado: el aluminio forma espontáneamente una película pasivante de óxido que arruina la adherencia, mientras que los electrolitos ácidos y las altas corrientes de deposición generan ruido electromagnético y caídas de tensión parásitas que desestabilizan cualquier sensor estándar.
 
-Este proyecto resuelve ese reto construyendo una **planta piloto automatizada de 3 tinas de tratamiento químico + Celda Hull (267 mL)**, gobernada por una arquitectura distribuida donde el hardware, el firmware en tiempo real y el software de supervisión en PC trabajan como una sola unidad:
+**E.L.E.C.T.R.O.D.O-32** resuelve ese reto construyendo una **planta piloto automatizada de 3 tinas de tratamiento químico + Celda Hull (267 mL)**, gobernada por una arquitectura distribuida donde el hardware, el circuito impreso maestro, el firmware en tiempo real y el software de supervisión en PC trabajan como una sola unidad:
 
-1. **Etapa 1 — Desengrase Alcalino (85-90 °C, 240 s):** Limpieza termoquímica superficial con Na₃PO₄, Na₂SiO₃ y PEG-400.
+1. **Etapa 1 — Desengrase Alcalino (85-90 °C, 240 s):** Limpieza termoquímica superficial con $\text{Na}_3\text{PO}_4$, $\text{Na}_2\text{SiO}_3$ y PEG-400.
 2. **Etapa 2 — Decapado y Activación Alcalina (85-90 °C, 120 s):** Remoción selectiva de la película pasivante de alúmina sin atacar el metal base.
 3. **Etapa 3 — Zincado en Celda Hull (25 °C o 40 °C, 120 o 300 s):** Electrodeposición en celda trapezoidal normalizada de 267 mL con corriente continua (1.50 A DC) o pulsada (10 Hz / 20% duty cycle) para evaluar el gradiente de densidad de corriente sobre toda la longitud de la probeta.
 4. **Etapa 4 — Niquelado Electrolítico sobre Zinc (30-40 °C, 600 s):** Depósito protector final a 1.13 A DC con baño estabilizado para inhibir el desplazamiento galvánico espontáneo sobre el zinc subyacente.
@@ -79,209 +81,145 @@ flowchart TD
     style ESP fill:#0284c7,stroke:#38bdf8,stroke-width:3px,color:#ffffff
     style SCADA fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
     style WEB fill:#0369a1,stroke:#38bdf8,stroke-width:2px,color:#ffffff
-
     style NANO fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
     style TRIACS fill:#1e293b,stroke:#f59e0b,stroke-width:1px,color:#f8fafc
     style CALENTADORES fill:#0f172a,stroke:#f59e0b,stroke-width:1px,color:#f8fafc
-
     style DAC fill:#1e293b,stroke:#8b5cf6,stroke-width:1px,color:#f8fafc
     style VCSS fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
     style RELE fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#f8fafc
     style CELDA fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
     style ADS_CURRENT fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
-
     style ELECTRODO fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#f8fafc
     style ADS_PH fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#f8fafc
-
     style TERMOS fill:#0f172a,stroke:#ef4444,stroke-width:1px,color:#f8fafc
     style MAXS fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#f8fafc
-
     style AMB fill:#1e293b,stroke:#06b6d4,stroke-width:2px,color:#f8fafc
 ```
 
 ---
 
-### Galería de Interfaces de Usuario (SCADA PC y Web Móvil)
+## 3. Sección de Hardware y PCBs: Placa Madre Rev 5.0
 
-| Estación SCADA de Escritorio (Telemetría 2.0 en Python) | Interfaz Web Móvil Embebida (ESP32-S3 a Pie de Tina) |
-| :---: | :---: |
-| ![SCADA Telemetría 2.0](docs/assets/scada_01_principal.jpg) | ![Web Móvil ESP32](docs/assets/web_01_hub.jpg) |
-| *Supervisión multivariable ISA-88, lazos térmicos de 4 tinas, culombimetría faradaica, osciloscopio virtual y balanza analítica.* | *Control táctil responsivo servido directamente por el Core 0 vía Wi-Fi SoftAP ('Uli') sin necesidad de conexión a Internet.* |
+La electrónica de control físico ha madurado a un diseño industrial estandarizado en KiCad, disponible en [`hardware/pcb/placa_madre_esp32s3_uno/`](hardware/pcb/placa_madre_esp32s3_uno/):
 
----
+<p align="center">
+  <img src="hardware/pcb/placa_madre_esp32s3_uno/render_3d_placa_madre_esp32s3_uno_iso.png" alt="Render 3D Isométrico Placa Madre Industrial Rev 5.0" width="820">
+</p>
 
-### Nodo Maestro ESP32-S3 (Dual-Core @ 240 MHz, Flash 4 MB de compilación, Módulo DevKit)
-* **Concurrencia Simétrica FreeRTOS:**
-  * **Core 1 (Tiempo Real Estricto):** Lazos de control térmico PI (1 Hz), modulación analógica de corriente VCSS, muestreo continuo a 860 SPS en ADC ADS1115 y máquina de seguridad Fail-Safe (50 Hz).
-  * **Core 0 (Comunicaciones y Red):** Servidor HTTP embebido, endpoints REST JSON (`/data_all`, `/data_f`, `/data_t`, `/ph`), servidor de telemetría y actualización OTA (Over-The-Air) a través del punto de acceso Wi-Fi SoftAP ("Uli"). Esto permite operación totalmente autónoma e inalámbrica, eliminando cables USB hacia la computadora durante los ensayos electroquímicos.
-* **Medición de pH en Modo Pseudo-Diferencial (Canales A1-A0, ADS1115):**  
-  La señal potenciométrica del módulo PH-4502C se adquiere en modo pseudo-diferencial (Canales A1 y A0) a través del convertidor ADS1115 a **860 SPS** para maximizar el rechazo de modo común y eliminar offset galvánico de masa. Aplica un filtro en cascada en Core 1: promedio por bloques, mediana móvil y filtro pasabajas IIR adaptativo (α = 0.30 en transitorios, α = 0.08 en reposo), con calibración multipunto independiente por modo persistida en Flash NVS.
-* **Lazo de Corriente VCSS Reconfigurable (Sumidero Analógico Gm = 2.00 S):**  
-  Fuente de corriente compartida y reconfigurable mediante DAC MCP4725 de 12 bits para **Tina 3 (Zincado en Celda Hull de 267 mL)** y **Tina 4 (Niquelado sobre Zinc)**. El lazo analógico (OpAmp LM358N + 2x MOSFETs IRLZ44Z) bifurca la corriente en dos ramas simétricas con shunt cerámico individual de 1.0 Ω / 10W conectado a su propio nodo de Source a GND común (previniendo embalamiento térmico por dispersión de $V_{\text{th}}$), con lectura Kelvin en los canales **A2 y A3 en modo single-ended** del ADS1115 y diagnóstico continuo de salud de celda (`SaludCelda_t`).
+<p align="center">
+  <em>Figura 3.1: Render 3D fotorrealista (Vista Isométrica) de la Placa Madre Industrial Rev 5.0 para ESP32-S3 y Arduino Nano.</em>
+</p>
 
-  | Control de Corriente Pulsada (Web Móvil) |
-  | :---: |
-  | ![Fuente VCSS Pulsada](docs/assets/web_03_fuente_pulsada.jpg) | 
-  | *Modulación continua DC (1.50 A) o pulsada a 10 Hz con ciclo de trabajo óptimo del 20%.* |
+* **Dimensiones y Capas:** $100\text{ mm} \times 100\text{ mm}$, 2 capas en FR-4 TG155, cobre de 1 oz ($35\ \mu\text{m}$) con pistas de potencia ensanchadas (>2.5 mm) y acabado ENIG / HASL con plomo.
+* **Aislamiento de Ruido:** Separación física de planos de masa analógica (AGND) e instrumentación digital (DGND), desacoplamiento óptico para los 4 TRIACs (MOC3021 + 4N35) y conmutación en cruce por cero (ZCS a 60 Hz).
+* **Entregables de Fabricación:**
+  * [Esquemático Electrónico en PDF](hardware/pcb/placa_madre_esp32s3_uno/placa_madre_esp32s3_uno_sch.pdf)
+  * [Paquete de Gerbers para JLCPCB (ZIP)](hardware/pcb/placa_madre_esp32s3_uno/GERBERS_PLACA_MADRE_ESP32S3_UNO_REV5.zip)
+  * [Lista de Materiales BOM](hardware/pcb/placa_madre_esp32s3_uno/BOM_JLCPCB_ESP32S3_UNO_REV5.csv) y [Coordenadas Pick & Place CPL](hardware/pcb/placa_madre_esp32s3_uno/CPL_JLCPCB_ESP32S3_UNO_REV5.csv)
+  * [Modelo 3D CAD STEP](hardware/pcb/placa_madre_esp32s3_uno/placa_madre_esp32s3_uno_3d.step)
+  * Renders 3D en Ultra-Alta Definición: [Vista Isométrica](hardware/pcb/placa_madre_esp32s3_uno/render_3d_placa_madre_esp32s3_uno_iso.png) | [Vista Superior](hardware/pcb/placa_madre_esp32s3_uno/render_3d_placa_madre_esp32s3_uno_top.png)
 
-* **Aislamiento Bipolar y Conmutación en Frío (Cold Switching) con Relé de 2 Canales:**  
-  Al detener la fuente o finalizar el cronómetro de la etapa, el firmware anula primero la consigna del DAC a 0V, espera 30 ms para disipar la corriente remanente en la celda ($I = 0.00\text{ A}$) y posteriormente abre el relé mecánico de 2 canales. Esta maniobra de **conmutación en frío (Cold Switching / interlock por software)** corta simultáneamente tanto la línea positiva (+12V VDD) como la línea negativa de retorno catódico, dejando la celda 100% aislada flotante y eliminando arcos eléctricos y desgaste de contactos mecánicos.
-
-### Coprocesador de Potencia AC (Arduino Nano2 ATmega328P @ 16 MHz)
-* **Módulo de TRIACs de Fabricación Propia:** Etapa de potencia de 4 canales diseñada por el equipo con 4x TRIACs BTA24-800BW y optoacopladores MOC3021, gobernando 3 resistencias de inmersión de 450 W (Tinas 1, 2 y 4) y 1 calentador de cartucho de 18 W (Tina 3 - Celda Hull de 267 mL).
-* **Firmware Nano2 (Modulación por Tiempo Proporcional en Ventanas Fijas de 3000 ms - Burst Firing):** Modula la potencia térmica en ventanas temporales fijas de 3000 ms mediante la librería `JELDimmer2`. La modulación por ráfagas de tiempo proporcional por software evita la generación de ruido electromagnético (EMI) de alta frecuencia característico del recorte de fase. El pin D3 (ZC_PIN) se mantiene conectado al optoacoplador y reservado en hardware para futura sincronización por interrupción en banco (S11).
-* **Seguridad Dual (Watchdog de Hardware WDTO_1S + Perro Guardián UART):** Si el lazo principal se congela, el microcontrolador se reinicia automáticamente y fuerza las compuertas a nivel BAJO (LOW). Si el enlace serie con el ESP32 se interrumpe por más de 4000 ms, el Nano apaga inmediatamente todas las compuertas de los TRIACs (D7 a D10).
-
-### SCADA Telemetría 2.0 (Python / Windows)
-* **Gestión de Recetas ISA-88 desde Excel:** Carga dinámica de la matriz experimental (`matriz_experimentos.xlsx`) para 32 probetas, con selección automática de tiempos, consignas de temperatura y modos de corriente (DC continuo o Pulsado a 10 Hz / 20% duty cycle, con soporte para columnas personalizadas de frecuencia y ciclo de trabajo).
-* **Culombimetría Faradaica en Lazo Cerrado:** Integración activa únicamente durante la cuenta del cronómetro de etapas galvánicas (`etapa_corriendo == True` y `act == 1`), ponderando por ciclo de trabajo en corriente pulsada (`I_efectiva = I_pico × Duty/100`) y congelando la acumulación al llegar a 00:00 o en pausas.
-* **Modelo Aditivo Bicapa Zn + Ni:** Cálculo de masa teórica total `m_teo = Q_Zn × 0.33880 mg/C + Q_Ni × 0.30414 mg/C` acoplado con pesaje en balanza analítica para determinar la eficiencia catódica global (η%) y los espesores individuales y totales de película (μm).
-* **Motor de Exportación Científica:** Generación de figuras publication-ready a 300 DPI y registro en CSV estructurado con marcas ISA-88 y tiempos muertos de transferencia.
-* **Datos Demostrativos y Validación Funcional:** Las curvas y registros CSV incluidos actualmente en el repositorio corresponden a corridas de validación funcional en banco para estandarización del manual operativo y del showcase científico (SMEQ 2026). La campaña experimental formal de 32 probetas completas se encuentra bajo custodia del equipo de investigación de tesis.
+> [!TIP]
+> Para la variante de alta velocidad basada en **Arduino UNO Q (Edge Computing)**, consulta el [Carrier Shield Industrial Rev 5.1](../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q/README.md).
 
 ---
 
-## 3. Estructura del Repositorio
+## 4. Exposiciones, Congresos y Eventos Tecnológicos
 
-El árbol de archivos está organizado de manera modular, separando firmware, software de escritorio, ingeniería de hardware, pruebas y despliegue web:
+El proyecto cuenta con un espacio dedicado a la divulgación, transferencia tecnológica y memoria científica en [`eventos/`](eventos/):
 
-```text
-Proyecto/
-├── Iniciar_Sistema.bat        <- Lanzador interactivo principal (doble clic)
-├── Iniciar_Telemetria_2.0.bat <- Acceso directo a la estacion SCADA en vivo
-├── launcher.py                <- Panel maestro de inicio en Python (GUI y consola)
-├── README.md                  <- Documentacion tecnica y de arquitectura (WIP)
-├── AGENTS.md                  <- Estandares de codificacion, estilo y formato
-├── requirements.txt           <- Dependencias oficiales de Python
-├── pytest.ini                 <- Configuracion de la suite de pruebas unitarias
-├── conftest.py                <- Resolucion limpia de rutas para tests
-├── .gitignore                 <- Reglas de exclusion y proteccion de datos sensibles
+* **[InnovaFest Guadalajara 2026 (`eventos/innovafest/`)](eventos/innovafest/):**
+  * Presentación oficial en **Expo Guadalajara** (23 de Octubre de 2026) en la categoría **Industria 4.0 y Automatización**.
+  * Expediente de postulación, [Ficha Técnica Oficial](eventos/innovafest/documentos/FICHA_TECNICA_INNOVAFEST_2026.pdf), video pitch ejecutivo y galería de más de 670 registros fotográficos clasificados del prototipo in-operando.
+* **[41º Congreso Nacional SMEQ 2026 (`eventos/smeq_2026/`)](eventos/smeq_2026/):**
+  * Ponencia formal de investigación: **Folio CTS-C51** (*Optimización de Recubrimientos de Zinc sobre Aluminio 6061 T-6*).
+  * [Cartel Científico Oficial en PDF](eventos/smeq_2026/cartel_cientifico/Cartel%20PModular%20044.pptx.pdf) y [Hoja de Mesa con Código QR en PDF](eventos/smeq_2026/cartel_cientifico/HOJA_QR_MESA_SMEQ2026.pdf).
+  * [Memoria en Extenso](eventos/smeq_2026/documentos_oficiales/) y reporte final de cinéticas electroquímicas.
+
+---
+
+## 5. Estructura del Repositorio
+
+```
+ELECTRODO_32/
+├── MAPA_DEL_PROYECTO.md       <- Índice maestro y matriz de navegación técnica
+├── Iniciar_Sistema.bat        <- Panel de control unificado por consola
+├── Iniciar_Telemetria_2.0.bat <- Lanzador directo del SCADA Telemetría 2.0
+├── launcher.py                <- Interfaz gráfica lanzadora en Python
+├── MATRIZ_INTERLOCKS.md       <- Enclavamientos y seguridad ISA-84 / SIL-2
 │
-├── docs/                      <- Publicacion web oficial GitHub Pages (Arquitectura modular)
-│   ├── index.html             <- Punto de entrada del Showcase Tecnico e Interactivo
-│   ├── css/                   <- Estilos CSS modulares (tokens, layout, components, responsive)
-│   ├── js/                    <- Modulos de logica JS (app, simuladores, galeria, telemetria)
-│   └── assets/                <- Evidencia fotografica, diagramas e instrumentacion
+├── hardware/                  <- Electrónica e ingeniería física
+│   ├── pcb/                   <- Circuitos impresos de producción (KiCad, Gerbers, BOM, 3D)
+│   │   └── placa_madre_esp32s3_uno/
+│   ├── esquemas_electricos/   <- Diagramas de cableado y alambrado de potencia
+│   └── control_matlab/        <- Modelos de transferencia de calor y control PI
 │
-├── firmware/                  <- Codigo fuente de microcontroladores
-│   ├── esp32/
-│   │   ├── RTOS2.0/           <- Firmware de produccion activo (FreeRTOS Dual-Core SMP)
-│   │   └── historico/         <- Registro historico de versiones (RTOS 1.0-1.4 y Superloop)
-│   └── arduino_nano/
-│       ├── nano2/             <- Firmware de calentamiento activo: Tiempo proporcional (Burst Firing 3s)
-│       ├── nano/              <- Variante alternativa con control por recorte de fase (LUT 60Hz)
-│       └── historico/         <- Prototipos previos (Nano Beta)
+├── eventos/                   <- Hub de exposiciones y congresos
+│   ├── innovafest/            <- Postulación, pitch, ficha oficial y galería
+│   └── smeq_2026/             <- Cartel Folio CTS-C51, memorias y hoja QR
 │
-├── software/                  <- Software SCADA y procesamiento en PC
-│   ├── telemetria2.0/         <- SCADA activo (Matriz ISA-88, Faraday, Balanza analitica)
-│   ├── telemetria/            <- SCADA base v1.0 (referencia)
-│   └── exportar_graficas_offline.py <- Generador de figuras cientificas a 300 DPI
+├── software/                  <- Software de estación y supervisión
+│   ├── telemetria2.0/         <- SCADA de producción (Tkinter, Faraday, Recetas ISA-88)
+│   └── exportar_graficas_offline.py <- Generador de figuras científicas a 300 DPI
 │
-├── tests/                     <- Suite de pruebas automatizadas (Pytest)
-│   ├── test_calculos.py       <- Culombimetria de Faraday, duty cycle y linealizacion del TRIAC
-│   ├── test_interlocks.py     <- Validacion de interlocks ISA-88 y secuencia ZCS
-│   └── test_telemetria_json.py <- Esquemas y contratos JSON entre ESP32 y SCADA
+├── firmware/                  <- Código embebido de tiempo real
+│   ├── esp32s3/               <- Firmware ESP32-S3 RTOS 2.0 (FreeRTOS SMP)
+│   └── nano2/                 <- Firmware esclavo ATmega328P (JELDimmer2)
 │
-├── hardware/                  <- Documentacion fisica y electronica
-│   ├── esquemas_y_bom/        <- Lista de materiales (BOM.md) y diagramas de conexion
-│   └── control_matlab/        <- Modelado termico y cinetico en MATLAB
+├── documentos/                <- Manuales y literatura técnica
+│   ├── manuales/              <- Manual de Operación Química y Protocolos
+│   ├── guias/                 <- Guías de desarrollo y CHANGELOG
+│   └── academicos/            <- Protocolos de titulación y referencias
 │
-├── herramientas/              <- Utilidades de automatizacion y soporte CI/CD
-│   └── sincronizar_pages.py   <- Pipeline automatico de empaquetado y despliegue a docs/
-│
-├── documentos/                <- Documentacion tecnica y manuales de operacion
-│   ├── manuales/              <- Manual interactivo de operacion quimica (HTML y Markdown)
-│   ├── guias/                 <- Guia de configuracion y compilacion de herramientas
-│   ├── datasheets/            <- Hojas de datos de componentes electronicos y sensores
-│   ├── imagenes/              <- Capturas de interfaz y diagramas
-│   └── instaladores/          <- Scripts de configuracion de dependencias
-│
-└── visualizacion/             <- Diagramas y simuladores
-    ├── diagramas/             <- Visor interactivo y modelos Mermaid de arquitectura
-    └── preview/               <- Simuladores web offline de las interfaces del ESP32
+├── docs/                      <- Web pública para GitHub Pages (Showcase Web)
+└── tests/                     <- Suite automatizada de pruebas (62 passed)
 ```
 
 ---
 
-## 4. Aseguramiento de Calidad y Pruebas Automatizadas
+## 6. Aseguramiento de Calidad y Pruebas Automatizadas
 
-El proyecto cuenta con una suite de **34 pruebas unitarias automatizadas** que se ejecutan en menos de 0.05 segundos con `pytest`:
+El proyecto cuenta con una suite de **62 pruebas unitarias y de integración** que se ejecutan con `pytest` alcanzando un **95% de cobertura de código**:
 
 ```bash
 python -m pytest -v
 ```
 
-* **Física y Metrología ([tests/test_calculos.py](tests/test_calculos.py)):** Verificación matemática de la masa teórica faradaica en DC y pulsado ponderado por ciclo de trabajo, inmunidad de integración en reposo, modelo bicapa aditivo Zn+Ni, espesores micrométricos y linealización de retardo TRIAC de 60 Hz (0 a 8333 μs).
+* **Física y Metrología ([tests/test_calculos.py](tests/test_calculos.py)):** Verificación matemática de la masa teórica faradaica en DC y pulsado ponderado por ciclo de trabajo, inmunidad de integración en reposo, modelo bicapa aditivo Zn+Ni, espesores micrométricos y linealización de retardo TRIAC de 60 Hz.
 * **Interlocks de Seguridad ([tests/test_interlocks.py](tests/test_interlocks.py)):** Verificación del aislamiento entre electrodo de pH y lazo de corriente, enclavamiento por Fail-Safe, restricciones de calibración y conmutación ZCS.
 * **Contratos de Telemetría ([tests/test_telemetria_json.py](tests/test_telemetria_json.py)):** Validación de rangos del DAC (0 a 4095), transconductancia Gm, resolución de sensores y manejo defensivo ante pérdidas parciales de paquetes.
-* **Pre-Commit Hook (.git/hooks/pre-commit):** Cada commit en Git corre automáticamente la suite completa; si se introduce una regresión matemática o lógica, el commit se detiene.
+* **Consistencia Web ([tests/test_constantes_web.py](tests/test_constantes_web.py)):** Asegura que las constantes de ingeniería del SCADA coincidan con la web pública en `docs/index.html`.
 
 ---
 
-## 5. Puesta en Marcha
+## 7. Puesta en Marcha
 
 ### Requisitos:
 * Sistema operativo Windows 10 u 11.
 * Python 3.9 o superior.
 
-### Instalación en 2 pasos:
-1. Clonar el repositorio e instalar las dependencias:
+### Ejecución:
+1. Instalar dependencias:
    ```bash
-   git clone https://github.com/Chavacastro98/Proyecto.git
-   cd Proyecto
    pip install -r requirements.txt
    ```
-2. Ejecutar el panel de control:
-   * Hacer doble clic en [`Iniciar_Sistema.bat`](Iniciar_Sistema.bat), o
-   * Ejecutar en terminal:
-     ```bash
-     python launcher.py
-     ```
-
-Para iniciar directamente la estación de monitoreo SCADA en vivo, haz doble clic en [`Iniciar_Telemetria_2.0.bat`](Iniciar_Telemetria_2.0.bat).
+2. Iniciar el Panel Maestro:
+   * Doble clic en [`Iniciar_Sistema.bat`](Iniciar_Sistema.bat), o
+   * Ejecutar: `python launcher.py`
+3. Iniciar directamente el SCADA de Telemetría 2.0:
+   * Doble clic en [`Iniciar_Telemetria_2.0.bat`](Iniciar_Telemetria_2.0.bat)
 
 ---
 
-## 6. Generación de Figuras Científicas (300 DPI)
-
-Para generar el paquete de figuras científicas de alta resolución para la memoria de resultados:
-
-```bash
-python software/exportar_graficas_offline.py
-```
-
-Genera automáticamente las 8 figuras normalizadas:
-1. **01:** Perfil electroquímico y térmico simultáneo de las 4 tinas.
-2. **02:** Error de seguimiento térmico instantáneo `e(t) = SP - PV` con bandas de tolerancia de ±0.5 °C e índice IAE.
-3. **03:** Ángulos de disparo del TRIAC α (°), retardos de compuerta (μs) y potencia RMS calculada.
-4. **04:** Culombimetría faradaica integrada `Q(t) = ∫ I dt`, comparación gravimétrica y plano de fase.
-5. **05:** Diagnóstico integral de proceso (consumo energético acumulado en Wh, gravimetría y condiciones meteorológicas).
-6. **06:** Diagrama de Gantt de fases operativas ISA-88 y tiempos muertos de transferencia.
-7. **07:** Reconstrucción ETS (Equivalent Time Sampling) de la forma de onda de corriente a 100 Hz.
-8. **08:** Distribución longitudinal de densidad de corriente J(x) en Celda Hull y perfil de espesor de zinc.
-
----
-
-## 7. Equipo de Investigación y Desarrollo
+## 8. Equipo de Investigación y Desarrollo
 
 ### 🧪 Investigación Electroquímica & Tesis de Grado
-* **Víctor Ulises Gutiérrez Ramírez**  
-  * Correo Institucional: [victor.gutierrez7221@alumnos.udg.mx](mailto:victor.gutierrez7221@alumnos.udg.mx)  
-  * **Áreas:** Investigación electroquímica, formulación de baños químicos y aditivos, diseño de experimentos (DoE 2⁵·4 / Taguchi), análisis gravimétrico, metalografía y conclusiones de grado.
+* **Víctor Ulises Gutiérrez Ramírez** — [victor.gutierrez7221@alumnos.udg.mx](mailto:victor.gutierrez7221@alumnos.udg.mx)  
+  * *Investigación electroquímica, formulación de baños, diseño experimental Celda Hull y gravimetría.*
 
-### ⚙️ Plataforma de Ensayos & Automatización (Salvador² C Dev Team)
-* **Salvador Castro Pérez**  
-  * Correo Institucional: [salvador.castro7435@alumnos.udg.mx](mailto:salvador.castro7435@alumnos.udg.mx)  
-* **Fernando Salvador Samayoa Martínez**  
-  * Correo Institucional: [fernando.samayoa0621@alumnos.udg.mx](mailto:fernando.samayoa0621@alumnos.udg.mx) | [fsamayoamarinez@gmail.com](mailto:fsamayoamarinez@gmail.com)  
-
-**Desarrollos de la Plataforma:**
-* **Instrumentación y Sensores:** Acondicionamiento de pH pseudo-diferencial con aislamiento galvánico, termometría multizona y monitoreo ambiental.
-* **Firmware Embebido:** ESP32-S3 (RTOS 2.0 bajo FreeRTOS SMP) y Arduino Nano2 (tiempo proporcional en ventanas de 3 s con Watchdog de hardware WDTO_1S).
-* **Electrónica de Potencia:** Sumidero reconfigurable VCSS (DAC + OpAmps + MOSFETs con shunts single-ended) y relé bipolar ZCS.
-* **Modelado y Control:** Modelo térmico de tinas y sintonización analítica de lazos PI.
-* **Software y UI/UX:** SCADA Telemetría 2.0 (Tkinter / Python) y servidor Web embebido.
-* **Aseguramiento de Calidad:** [Matriz de interlocks de seguridad](MATRIZ_INTERLOCKS.md), [Lista de Materiales y Componentes (BOM)](hardware/esquemas_y_bom/BOM.md) y suite automatizada de pruebas (62 pruebas unitarias y de integración).
+### ⚙️ Automatización, Hardware e Instrumentación (Salvador² C Dev Team)
+* **Salvador Castro Pérez** — [salvador.castro7435@alumnos.udg.mx](mailto:salvador.castro7435@alumnos.udg.mx)  
+* **Fernando Salvador Samayoa Martínez** — [fernando.samayoa0621@alumnos.udg.mx](mailto:fernando.samayoa0621@alumnos.udg.mx)  
 
 ### 🎓 Directores de Tesis
 * **Dr. Omar Alejandro González Meza** — Profesor Investigador, CUCEI, Universidad de Guadalajara.
@@ -290,5 +228,4 @@ Genera automáticamente las 8 figuras normalizadas:
 ---
 
 **Salvador² C Dev Team**  
-*Ingeniería de Automatización, Sistemas Embebidos, Electrónica de Potencia e Instrumentación Científica.*  
 *Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI) — Universidad de Guadalajara.*
