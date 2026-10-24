@@ -52,7 +52,26 @@
 
 ## 1. Guía de Inicio Rápido (Getting Started: Conectar, Encender, Iniciar y Operar)
 
-Esta guía condensa en **5 pasos directos** el procedimiento operativo para poner en marcha la estación electroquímica y de telemetría SCADA desde cero. Siga esta secuencia para energizar la planta, enlazar la computadora de control y ejecutar un ensayo de laboratorio en menos de 3 minutos.
+Esta guía condensa en **5 pasos directos** el procedimiento operativo
+
+
+### Mapa Ciberfísico Maestro del Sistema: Arquitectura Distribuida y Concurrencia RTOS 2.0
+
+> [!NOTE]
+> **Plano Base de Ingeniería de la Plataforma:**
+> El siguiente esquema representa la base ciberfísica unificada de todo el proyecto. Muestra la partición simétrica de tareas entre los dos núcleos del ESP32-S3 (Core 0: Red/Web vs Core 1: Control Crítico), los buses de sensores analógicos y digitales, la comunicación UART hacia el Arduino Nano para modulación de TRIACs y el lazo de corriente continua VCSS para la celda Hull.
+
+![Diagrama Maestro 00: Arquitectura Distribuida y Concurrencia RTOS 2.0](imagenes/00_arquitectura_distribuida.png)
+
+* **Microcontrolador Maestro:** ESP32-S3 WROOM-1 N16R8 Dual-Core Xtensa LX7 @ 240 MHz (FreeRTOS SMP v2.0).
+  * **Core 0 (Conectividad & Telemetría):** Servidor Web HTTP embebido, REST API (`/api/data_all`), difusor Server-Sent Events (SSE) a 10 Hz y punto de acceso Wi-Fi local `Uli` (192.168.4.1).
+  * **Core 1 (Control en Tiempo Real & Seguridad):** Lazos PI térmicos de 4 tinas, secuenciador de etapas de receta ISA-88, integración culombimétrica de Faraday y supervisor de fallas (Neopixel WS2812).
+* **Nodo Esclavo Dimmer:** Arduino Nano ATmega328P @ 16 MHz gobernando el módulo de 4 TRIACs BTA24-600B sincronizados al cruce por cero (ZCS 60 Hz).
+* **Etapa Galvánica VCSS:** Sumidero de corriente lineal (DAC MCP4725 I²C + LM358 + MOSFET IRLZ44N + Shunt Kelvin) con protección de corte bipolar por relé.
+* **Buses de Instrumentación:** Bus SPI con 4 líneas CS independientes para termopares MAX6675 y bus I²C Fast-Mode (400 kHz) para ADC ADS1115 (pH y corriente de celda) y sensor ambiental AHT20/BMP280.
+
+---
+ para poner en marcha la estación electroquímica y de telemetría SCADA desde cero. Siga esta secuencia para energizar la planta, enlazar la computadora de control y ejecutar un ensayo de laboratorio en menos de 3 minutos.
 
 ---
 

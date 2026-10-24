@@ -803,6 +803,40 @@
         Esta guía condensa en <strong>5 pasos directos</strong> la puesta en marcha de la estación de telemetría y supervisión SCADA. 
         Siga esta secuencia para energizar el equipo, enlazar la computadora o dispositivo móvil y arrancar un ensayo en menos de 3 minutos.
       </p>
+      <!-- MAPA CIBERFÍSICO MAESTRO DEL SISTEMA (BASE DE LA PLATAFORMA) -->
+      <div class="figure-box" style="background: radial-gradient(circle at center, #070e1e 0%, #020617 100%); border: 2px solid #0284c7; border-radius: 12px; padding: 20px; margin: 24px 0; box-shadow: 0 10px 40px rgba(2, 132, 199, 0.25);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+          <div>
+            <span style="font-size:0.72rem; font-weight:700; color:#38bdf8; text-transform:uppercase; letter-spacing:0.08em; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3);">
+              Plano de Ingeniería 00 · Base Ciberfísica del Sistema
+            </span>
+            <h3 style="font-size:1.20rem; color:#ffffff; margin:6px 0 0 0; font-weight:700;">
+              Arquitectura Distribuida y Concurrencia RTOS 2.0 (Dual-Core SMP)
+            </h3>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <a href="imagenes/00_arquitectura_distribuida.svg" target="_blank" class="btn btn-outline" style="font-size:0.78rem; padding:6px 12px; border-color:#38bdf8; color:#38bdf8;">
+              🔍 Abrir SVG Original
+            </a>
+            <a href="imagenes/00_arquitectura_distribuida.png" download class="btn btn-outline" style="font-size:0.78rem; padding:6px 12px; border-color:#10b981; color:#34d399;">
+              📥 Descargar PNG HD
+            </a>
+          </div>
+        </div>
+
+        <img src="imagenes/00_arquitectura_distribuida.svg" alt="Diagrama Maestro 00: Arquitectura Distribuida y Concurrencia RTOS 2.0" onclick="openModal(this.src)" style="width:100%; max-height:640px; object-fit:contain; border-radius:8px; filter:drop-shadow(0 6px 25px rgba(0,0,0,0.7)); cursor:pointer; transition:transform 0.2s;">
+        
+        <div class="figure-caption" style="margin-top:14px; font-size:0.86rem; color:#cbd5e1; text-align:left; line-height:1.6; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
+          <strong style="color:#38bdf8;">Figura 1.0: Mapa Maestro Ciberfísico de la Estación Electroquímica y Concurrencia RTOS 2.0.</strong><br>
+          Este plano representa la <strong>base unificada de todo el sistema</strong>: modelado de concurrencia multitarea en el ESP32-S3 Dual-Core SMP 
+          (<strong>Core 0:</strong> Servidor Web HTTP, REST API y difusión SSE a 10 Hz; <strong>Core 1:</strong> Lazos de control térmico en tiempo real, máquina de estados ISA-88 e interlocks de seguridad), 
+          enlace Wi-Fi SoftAP autónomo (<code>Uli</code>) hacia la estación SCADA PC, lazo de disparo térmico hacia el nodo esclavo Arduino Nano con detección de cruce por cero (ZCS) y 4 TRIACs BTA24-600B, 
+          sumidero de corriente de precisión VCSS (DAC MCP4725, amplificador de error LM358, MOSFET de potencia IRLZ44N y shunt Kelvin de 0.05 Ω hacia Celda Hull), relé de corte bipolar por hardware y buses de instrumentación 
+          SPI (4 termopares MAX6675 aislados) e I²C (ADC ADS1115 de 16 bits para electrodo de pH combinado y retroalimentación de corriente).<br>
+          <em style="color:#94a3b8; font-size:0.80rem;">💡 Haga clic sobre la imagen para inspeccionar con zoom interactivo en alta resolución.</em>
+        </div>
+      </div>
+
 
       <!-- PASO 1: CONECTAR -->
       <div id="inicio-paso1" style="background:#0f172a; border:1px solid #334155; border-left:4px solid #38bdf8; border-radius:8px; padding:20px; margin-bottom:20px;">
