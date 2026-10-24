@@ -15,41 +15,120 @@
 ---
 
 ## 📑 Índice de Contenidos
-1. [Fundamentos Electroquímicos del Sustrato de Aluminio](#1-fundamentos-electroquímicos-del-sustrato-de-aluminio)
-2. [Formulación y Preparación de Soluciones Químicas por Tina](#2-formulación-y-preparación-de-soluciones-químicas-por-tina)
+1. [Guía de Inicio Rápido (Getting Started: Conectar, Encender, Iniciar y Operar)](#1-guía-de-inicio-rápido-getting-started-conectar-encender-iniciar-y-operar)
+2. [Fundamentos Electroquímicos del Sustrato de Aluminio](#2-fundamentos-electroquímicos-del-sustrato-de-aluminio)
+3. [Formulación y Preparación de Soluciones Químicas por Tina](#3-formulación-y-preparación-de-soluciones-químicas-por-tina)
    - [Tina 1: Desengrase Alcalino](#tina-1-desengrase-alcalino-limpieza-superficial)
    - [Tina 2: Decapado Alcalino](#tina-2-decapado-alcalino-activación-superficial)
    - [Tina 3: Celda Hull — Zincado Ácido](#tina-3-celda-hull-de-267-ml--zincado-en-medio-ácido)
    - [Tina 4: Niquelado sobre Zinc](#tina-4-niquelado-sobre-zinc-recubrimiento-final)
-3. [Protocolo Operativo Estándar (Paso a Paso en Laboratorio)](#3-protocolo-operativo-estándar-paso-a-paso-en-laboratorio)
-4. [Guía del Operador: Supervisión SCADA en Tiempo Real y Suite Científica Post-Proceso](#4-guía-del-operador-supervisión-scada-en-tiempo-real-y-suite-científica-post-proceso)
-   - [4.1 Entorno SCADA en Tiempo Real](#41-entorno-scada-de-escritorio-en-tiempo-real-supervisión-viva-con-buffer-fifo-limitado)
-   - [4.2 Suite de Graficación Científica Post-Ensayo](#42-suite-de-graficación-científica-post-ensayo-a-300-dpi-softwareexportar_graficas_offlinepy)
-5. [Modelado y Cálculos de Eficiencia de Corriente y Espesor](#5-modelado-y-cálculos-de-eficiencia-de-corriente-y-espesor)
-6. [Calibración de Instrumentación (pH, Temperatura y Corriente VCSS)](#6-calibración-de-instrumentación-ph-temperatura-y-corriente-vcss)
-   - [6.1 Calibración de Electrodos de pH](#calibración-de-electrodos-de-ph-soluciones-buffer-401-700-y-1001)
-   - [6.2 Verificación de Termopares Tipo K](#62-verificación-de-termopares-tipo-k-max6675)
-   - [6.3 Verificación de Corriente VCSS (Multímetro)](#63-verificación-del-sumidero-de-corriente-vcss-prueba-práctica-con-multímetro)
-7. [Guía de Diagnóstico y Solución de Problemas (Química, Hardware y Firmware)](#7-guía-de-diagnóstico-y-solución-de-problemas-química-hardware-y-firmware)
-   - [7.1 Sintonía de Lazos PI Térmicos](#71-tabla-de-sintonía-de-lazos-pi-térmicos)
-   - [7.2 Resolución de Anomalías de Hardware, Señal y Firmware](#72-resolución-de-anomalías-de-hardware-señal-y-firmware)
-8. [Seguridad Química y Gestión de Residuos](#8-seguridad-química-y-gestión-de-residuos)
-9. [Arquitectura del Software, Librerías y Entornos de Desarrollo](#9-arquitectura-del-software-librerías-y-entornos-de-desarrollo)
-   - [9.6 Ingeniería Electrónica y Esquemáticos](#96-ingeniería-electrónica-circuitos-y-lista-de-materiales-carpeta-hardware)
-   - [9.11 Mapa de Pines (Pinout) del ESP32-S3 y Arduino Nano](#911-mapa-de-pines-pinout-del-hardware)
-10. [Planta Física, Ficha Técnica y Modularidad de Hardware](#10-planta-física-ficha-técnica-y-modularidad-de-hardware)
-    - [10.1 Ficha Técnica Consolidada de la Plataforma](#101-ficha-técnica-consolidada-de-la-plataforma)
-    - [10.2 Distribución de Pines y Conexión en Zócalos Hembra](#102-distribución-de-pines-y-conexión-en-zócalos-hembra)
-    - [10.3 Guía de Remplazabilidad y Mantenimiento en Campo](#103-guía-de-remplazabilidad-y-mantenimiento-en-campo)
-    - [10.4 Galería Fotográfica de la Planta en Operación](#104-galería-fotográfica-de-la-planta-en-operación)
-    - [10.5 Especificación y Renders 3D de Circuitos Impresos (PCB Rev 5.0 y Rev 5.1)](#105-especificación-y-renders-3d-de-circuitos-impresos-pcb-rev-50-y-rev-51)
-11. [Preguntas Frecuentes (FAQ)](#11-preguntas-frecuentes-faq)
-12. [Glosario de Términos Técnicos](#12-glosario-de-términos-técnicos)
-13. [Reconocimientos a Proyectos Open Source & Términos de Uso Libre](#13-reconocimientos-a-proyectos-open-source--términos-de-uso-libre)
+4. [Protocolo Operativo Estándar (Paso a Paso en Laboratorio)](#4-protocolo-operativo-estándar-paso-a-paso-en-laboratorio)
+5. [Guía del Operador: Supervisión SCADA en Tiempo Real y Suite Científica Post-Proceso](#5-guía-del-operador-supervisión-scada-en-tiempo-real-y-suite-científica-post-proceso)
+   - [5.1 Entorno SCADA en Tiempo Real](#51-entorno-scada-de-escritorio-en-tiempo-real-supervisión-viva-con-buffer-fifo-limitado)
+   - [5.2 Suite de Graficación Científica Post-Ensayo](#52-suite-de-graficación-científica-post-ensayo-a-300-dpi-softwareexportar_graficas_offlinepy)
+6. [Modelado y Cálculos de Eficiencia de Corriente y Espesor](#6-modelado-y-cálculos-de-eficiencia-de-corriente-y-espesor)
+7. [Calibración de Instrumentación (pH, Temperatura y Corriente VCSS)](#7-calibración-de-instrumentación-ph-temperatura-y-corriente-vcss)
+   - [7.1 Calibración de Electrodos de pH](#calibración-de-electrodos-de-ph-soluciones-buffer-401-700-y-1001)
+   - [7.2 Verificación de Termopares Tipo K](#72-verificación-de-termopares-tipo-k-max6675)
+   - [7.3 Verificación de Corriente VCSS (Multímetro)](#73-verificación-del-sumidero-de-corriente-vcss-prueba-práctica-con-multímetro)
+8. [Guía de Diagnóstico y Solución de Problemas (Química, Hardware y Firmware)](#8-guía-de-diagnóstico-y-solución-de-problemas-química-hardware-y-firmware)
+   - [8.1 Sintonía de Lazos PI Térmicos](#81-tabla-de-sintonía-de-lazos-pi-térmicos)
+   - [8.2 Resolución de Anomalías de Hardware, Señal y Firmware](#82-resolución-de-anomalías-de-hardware-señal-y-firmware)
+9. [Seguridad Química y Gestión de Residuos](#9-seguridad-química-y-gestión-de-residuos)
+10. [Arquitectura del Software, Librerías y Entornos de Desarrollo](#10-arquitectura-del-software-librerías-y-entornos-de-desarrollo)
+    - [10.6 Ingeniería Electrónica y Esquemáticos](#106-ingeniería-electrónica-circuitos-y-lista-de-materiales-carpeta-hardware)
+    - [10.11 Mapa de Pines (Pinout) del ESP32-S3 y Arduino Nano](#1011-mapa-de-pines-pinout-del-hardware)
+11. [Planta Física, Ficha Técnica y Modularidad de Hardware](#11-planta-física-ficha-técnica-y-modularidad-de-hardware)
+    - [11.1 Ficha Técnica Consolidada de la Plataforma](#111-ficha-técnica-consolidada-de-la-plataforma)
+    - [11.2 Distribución de Pines y Conexión en Zócalos Hembra](#112-distribución-de-pines-y-conexión-en-zócalos-hembra)
+    - [11.3 Guía de Remplazabilidad y Mantenimiento en Campo](#113-guía-de-remplazabilidad-y-mantenimiento-en-campo)
+    - [11.4 Galería Fotográfica de la Planta en Operación](#114-galería-fotográfica-de-la-planta-en-operación)
+    - [11.5 Especificación y Renders 3D de Circuitos Impresos (PCB Rev 5.0 y Rev 5.1)](#115-especificación-y-renders-3d-de-circuitos-impresos-pcb-rev-50-y-rev-51)
+12. [Preguntas Frecuentes (FAQ)](#12-preguntas-frecuentes-faq)
+13. [Glosario de Términos Técnicos](#13-glosario-de-términos-técnicos)
+14. [Reconocimientos a Proyectos Open Source & Términos de Uso Libre](#14-reconocimientos-a-proyectos-open-source--términos-de-uso-libre)
 
 ---
 
-## 1. Fundamentos Electroquímicos del Sustrato de Aluminio
+## 1. Guía de Inicio Rápido (Getting Started: Conectar, Encender, Iniciar y Operar)
+
+Esta guía condensa en **5 pasos directos** el procedimiento operativo para poner en marcha la estación electroquímica y de telemetría SCADA desde cero. Siga esta secuencia para energizar la planta, enlazar la computadora de control y ejecutar un ensayo de laboratorio en menos de 3 minutos.
+
+---
+
+### Paso 1: Conexión Física y Cableado de Alimentación
+Antes de accionar cualquier interruptor, verifique que los siguientes arneses y clemas se encuentren firmemente conectados:
+
+1. **Alimentación DC Principal (12 VDC / 10 A):**
+   * Conecte el conector Jack de 5.5×2.1 mm (o clema de alimentación de la placa madre) a la fuente conmutada industrial. Esta línea energiza el regulador reductor Buck LM2596 (etapa lógica) y la etapa de potencia del sumidero de corriente VCSS.
+2. **Alimentación AC de Calefactores (120 VAC / 60 Hz):**
+   * Conecte el cable de red eléctrica trifilar (Fase, Neutro y Tierra física) al bloque de distribución de potencia AC. Esta línea suministra energía a las 4 resistencias calefactoras sumergibles (300 W c/u).
+3. **Arnés de Control de Potencia TRIAC (7 Hilos):**
+   * Asegure el cable cinta plano (ribbon) de 7 hilos entre el cabezal macho de la placa principal y el conector hembra del módulo de 4 TRIACs BTA24-600B con detección de cruce por cero (ZCS).
+4. **Termopares Tipo K (MAX6675):**
+   * Verifique la inserción de las vainas de acero inoxidable de los 4 sensores de temperatura en los manguitos de inmersión de las Tinas 1, 2, 3 y 4 (bus SPI compartido con CS dedicados).
+5. **Sensor Electroquímico de pH:**
+   * Conecte el cable coaxial BNC de la sonda de vidrio al módulo acondicionador analógico, y asegure el cable Dupont de señal hacia el canal **A1** del convertidor ADC ADS1115 (bus I2C).
+6. **Celda Hull de Electrodeposición (VCSS):**
+   * Conecte la pinza cocodrilo roja (+) al **ánodo metálico** (Zn o Ni de alta pureza) y la pinza negra (-) al **cátodo / probeta** de sustrato de aluminio 6061-T6 (área útil: 1.0 dm²).
+
+---
+
+### Paso 2: Encendido y Verificación de Estado (Checklist de 5 Segundos)
+Accione el interruptor de encendido general ubicado en el panel frontal del gabinete y compruebe los siguientes 4 indicadores visuales inmediatos:
+
+| Indicador | Estado Esperado | Significado Operativo |
+|:---|:---|:---|
+| **Display Buck LM2596** | `6.80 V ± 0.05 V` | Tensión pre-regulada óptima hacia el zócalo `VIN` del ESP32-S3 y Arduino Nano. |
+| **LEDs de Tensión Lógica** | `5.0 V` y `3.3 V` fijos | Líneas de polarización lógica y sensores I2C/SPI operativas sin oscilaciones. |
+| **Baliza Neopixel WS2812** | **Azul Fijo** (`MODO_STANDBY`) | Supervisor FreeRTOS activo; buses I2C y SPI validados; sistema en espera de consigna. |
+| **Red Wi-Fi Emitida** | SSID `Uli` visible | Punto de acceso autónomo del ESP32-S3 emitiendo sin depender de routers externos. |
+
+---
+
+### Paso 3: Conectar a la Red Wi-Fi e Iniciar el Software de Control
+El sistema permite supervisión tanto desde una computadora de escritorio como desde dispositivos móviles:
+
+#### Opción A: SCADA de Escritorio en PC (PyQt6 / Python) — Modo Recomendado para Laboratorio
+1. En la computadora de control, conéctese a la red Wi-Fi: **SSID: `Uli`** | **Contraseña: `12345678`**.
+2. Abra la carpeta raíz del proyecto y haga doble clic en el archivo `Iniciar_Sistema.bat` (o abra una terminal y ejecute `python software/scada_gui.py`).
+3. En el menú del lanzador, seleccione la **Opción [1] SCADA Telemetría 2.0**.
+4. En la barra superior de la ventana SCADA, compruebe que la IP indique `192.168.4.1` y presione el botón **"Conectar / Ping"**. El indicador de estado pasará a **VERDE (`Conectado — RTOS 2.0 OK`)**.
+
+#### Opción B: Interfaz Web Embebida (Celular, Tablet o Laptop)
+1. Conéctese a la red Wi-Fi **SSID: `Uli`** (Clave: `12345678`).
+2. Abra cualquier navegador web moderno (Google Chrome, Apple Safari, Microsoft Edge o Mozilla Firefox).
+3. Ingrese a la dirección: `http://192.168.4.1` (o alternativamente `http://interfaz.local`).
+4. Cargará de inmediato el panel táctil responsivo con telemetría en vivo, conmutación de actuadores y visualización de curvas.
+
+---
+
+### Paso 4: Carga de Receta ISA-88 y Calibración Rápida
+Antes de iniciar el proceso térmico y electroquímico:
+
+1. **Inspección de Sensores en Frío:** Compruebe que las 4 temperaturas reporten el valor ambiental del laboratorio (~18 °C a 25 °C).
+2. **Carga de Receta:** En el selector de recetas del SCADA, cargue el archivo estándar: `recetas/receta_zinc_niquel_estandar.json`.
+3. **Consignas de Proceso (Setpoints):**
+   * **Tina 1 (Desengrase Alcalino):** $85.0 \, ^\circ\text{C}$
+   * **Tina 2 (Decapado Alcalino):** $65.0 \, ^\circ\text{C}$
+   * **Tina 3 (Celda Hull Zn Ácido):** $25.0 \, ^\circ\text{C}$ (temperatura ambiente) · Consigna de corriente: Rampa $0.0 \rightarrow 3.0 \, \text{A}$
+   * **Tina 4 (Niquelado sobre Zinc):** $50.0 \, ^\circ\text{C}$
+4. **Verificación de pH:** Mida el pH del electrolito en la Tina 3 con la celda desenergizada (el valor nominal debe ubicarse entre 4.0 y 5.5). *Importante: Nunca calibre ni mida pH con el sumidero VCSS aplicando corriente continua para evitar offsets galvánicos.*
+
+---
+
+### Paso 5: Puesta en Marcha y Parada de Emergencia (E-STOP)
+
+* **Inicio del Ensayo:** Presione el botón verde **"Iniciar Ensayo"** (o **"RUN"**). Los lazos PI de control térmico comenzarán la modulación por paquetes de ciclos (Burst Firing) hacia los calentadores. La baliza Neopixel cambiará a **Verde Respirante** durante la ejecución normal o a **Amarillo** durante transitorios de calentamiento.
+* **Seguimiento del Cronómetro:** Observe en pantalla el temporizador de fases conforme al estándar ANSI/ISA-88 (Desengrase $\rightarrow$ Enjuague $\rightarrow$ Decapado $\rightarrow$ Zincado Hull $\rightarrow$ Niquelado).
+* **Parada de Emergencia Inmediata:** Ante cualquier derrame químico, anomalía térmica o sobrecorriente:
+  * **Física:** Presione con fuerza el **botón de golpe tipo hongo rojo** en el frente del gabinete.
+  * **Software:** Pulse el botón rojo **"PARO DE EMERGENCIA"** en el panel SCADA o en la Interfaz Web.
+  * *Acción del sistema:* Se desenergizan instantáneamente los 4 TRIACs y el sumidero MOSFET (<10 ms), y la baliza Neopixel parpadea en **Rojo Estroboscópico**.
+
+---
+
+## 2. Fundamentos Electroquímicos del Sustrato de Aluminio
 
 El **Aluminio 6061-T6** es una aleación ligera de alta resistencia mecánica (Al-Mg-Si), pero presenta dos desafíos fundamentales para la galvanoplastia:
 1. **Película Pasiva de Alúmina (Al₂O₃):** Al contacto con el aire, el aluminio forma espontáneamente una capa de óxido anfótero, dieléctrico y químicamente inerte que inhibe la adhesión de cualquier depósito metálico.
@@ -61,7 +140,7 @@ El **Aluminio 6061-T6** es una aleación ligera de alta resistencia mecánica (A
 
 ---
 
-## 2. Formulación y Preparación de Soluciones Químicas por Tina
+## 3. Formulación y Preparación de Soluciones Químicas por Tina
 
 ### Tina 1: Desengrase Alcalino (Limpieza Superficial)
 * **Objetivo:** Remoción de aceites lubricantes de maquinado, grasa orgánica y contaminantes particulados.
@@ -135,7 +214,7 @@ Al₂O₃ + 2 PO₄³⁻ + 3 H₂O → 2 AlPO₄(ac) + 6 OH⁻
 
 ---
 
-## 3. Protocolo Operativo Estándar (Paso a Paso en Laboratorio)
+## 4. Protocolo Operativo Estándar (Paso a Paso en Laboratorio)
 
 ```mermaid
 flowchart TD
@@ -159,7 +238,7 @@ flowchart TD
 
 ---
 
-## 4. Guía del Operador: Supervisión SCADA en Tiempo Real y Suite Científica Post-Proceso
+## 5. Guía del Operador: Supervisión SCADA en Tiempo Real y Suite Científica Post-Proceso
 
 La estación instrumental cuenta con dos entornos de software complementarios diseñados con propósitos analíticos distintos:
 1. **Entorno SCADA de Escritorio en Tiempo Real (`software/telemetria2.0/`):** Supervisión viva a 10 Hz, pilotaje del banco de trabajo, soporte para sensor de pH dedicado en Canal A1 y control de fases ISA-88.
@@ -167,7 +246,7 @@ La estación instrumental cuenta con dos entornos de software complementarios di
 
 ---
 
-### 4.1 Entorno SCADA de Escritorio en Tiempo Real (Supervisión Viva con Buffer FIFO Limitado)
+### 5.1 Entorno SCADA de Escritorio en Tiempo Real (Supervisión Viva con Buffer FIFO Limitado)
 
 #### Pasos para Ejecutar un Ensayo en Laboratorio:
 1. **Encendido General (Alimentación Directa en 1 Paso):**
@@ -273,7 +352,7 @@ La estación instrumental cuenta con dos entornos de software complementarios di
 
 ---
 
-### 4.2 Suite de Graficación Científica Post-Ensayo a 300 DPI (`software/exportar_graficas_offline.py`)
+### 5.2 Suite de Graficación Científica Post-Ensayo a 300 DPI (`software/exportar_graficas_offline.py`)
 
 > [!IMPORTANT]
 > **CLARIFICACIÓN ARQUITECTÓNICA: SUPERVISIÓN SCADA EN VIVO vs. SUITE DE GRAFICACIÓN CIENTÍFICA**  
@@ -409,7 +488,7 @@ El compilador lee el CSV sin pérdida de resolución temporal, calcula derivadas
 
 ---
 
-## 5. Modelado y Cálculos de Eficiencia de Corriente y Espesor
+## 6. Modelado y Cálculos de Eficiencia de Corriente y Espesor
 
 El software SCADA ejecuta en tiempo real los balances de carga eléctrica y peso basados en las Leyes de Faraday, adaptándose de forma continua a los parámetros del ensayo:
 
@@ -457,7 +536,7 @@ e_total = e_Zn + e_Ni   [μm]
 ---
 
 
-### 5.4 Resultados de Validación Experimental en Laboratorio (ASTM D3359 & Eficiencia Faradaica)
+### 6.4 Resultados de Validación Experimental en Laboratorio (ASTM D3359 & Eficiencia Faradaica)
 
 Durante la campaña de validación experimental en la línea piloto de galvanoplastia, se contrastaron los depósitos obtenidos mediante corriente continua convencional (DC) frente al control pulsado en lazo cerrado a 10 Hz mediante el sumidero analógico VCSS:
 
@@ -477,9 +556,9 @@ Durante la campaña de validación experimental en la línea piloto de galvanopl
 
 ---
 
-## 6. Calibración de Instrumentación (pH, Temperatura y Corriente VCSS)
+## 7. Calibración de Instrumentación (pH, Temperatura y Corriente VCSS)
 
-### 6.1 Calibración de Electrodos de pH (Canal A1 ADS1115)
+### 7.1 Calibración de Electrodos de pH (Canal A1 ADS1115)
 
 > [!IMPORTANT]
 > **Medición Potenciométrica de pH en Canal A1 (ADS1115):**  
@@ -496,7 +575,7 @@ Durante la campaña de validación experimental en la línea piloto de galvanopl
 
 ---
 
-### 6.2 Verificación de Termopares Tipo K (MAX6675)
+### 7.2 Verificación de Termopares Tipo K (MAX6675)
 
 Los digitalizadores MAX6675 proporcionan compensación interna de unión fría y resolución de 0.25°C. Para verificar la cadena de medición completa (termopar + MAX6675 + firmware) se recomienda el siguiente procedimiento bianual o tras cualquier sustitución de sensor:
 
@@ -522,7 +601,7 @@ Los digitalizadores MAX6675 proporcionan compensación interna de unión fría y
 
 ---
 
-### 6.3 Verificación del Sumidero de Corriente VCSS (Prueba Práctica con Multímetro)
+### 7.3 Verificación del Sumidero de Corriente VCSS (Prueba Práctica con Multímetro)
 
 Para auditar y verificar periódicamente la exactitud de la corriente inyectada por el sumidero analógico VCSS frente a la lectura digital del conversor ADS1115 de 16 bits y las resistencias de shunt cerámicas de 1.0 Ω / 10W, se establece el siguiente procedimiento de verificación:
 
@@ -549,7 +628,7 @@ Para auditar y verificar periódicamente la exactitud de la corriente inyectada 
 
 ---
 
-## 7. Guía de Diagnóstico y Solución de Problemas (Química, Hardware y Firmware)
+## 8. Guía de Diagnóstico y Solución de Problemas (Química, Hardware y Firmware)
 
 | Síntoma en Probeta / Celda | Causa Fisicoquímica Probable | Acción Correctiva de Laboratorio |
 | :--- | :--- | :--- |
@@ -561,7 +640,7 @@ Para auditar y verificar periódicamente la exactitud de la corriente inyectada 
 
 ---
 
-### 7.1 Tabla de Sintonía de Lazos PI Térmicos
+### 8.1 Tabla de Sintonía de Lazos PI Térmicos
 
 Los parámetros de control proporcional-integral fueron obtenidos mediante sintonización analítica en MATLAB (`control/Control_termico.m`) con un margen de fase de **75°** (Kd = 0.0, respuesta críticamente amortiguada sin sobretiro). Los valores están codificados en [`Modulo_Termico.h`](../../firmware/esp32/RTOS2.0/Modulo_Termico.h) y son referenciados por `Modulo_Termico.cpp`:
 
@@ -587,7 +666,7 @@ Los parámetros de control proporcional-integral fueron obtenidos mediante sinto
 
 ---
 
-### 7.2 Resolución de Anomalías de Hardware, Señal y Firmware
+### 8.2 Resolución de Anomalías de Hardware, Señal y Firmware
 
 Durante la operación en laboratorio, ruidos por conmutación AC, falsos contactos o desconexiones pueden manifestarse en el sistema. A continuación se detallan las anomalías instrumentales más comunes y su protocolo de resolución:
 
@@ -624,7 +703,7 @@ La baliza Neopixel WS2812 (GPIO 48) es comandada en tiempo real por la tarea `Ta
 
 ---
 
-## 8. Seguridad Química y Gestión de Residuos
+## 9. Seguridad Química y Gestión de Residuos
 
 ### Equipo de Protección Personal (EPP) Obligatorio:
 * **Gafas de seguridad** con protección lateral contra salpicaduras químicas (Norma ANSI Z87.1).
@@ -651,13 +730,13 @@ La baliza Neopixel WS2812 (GPIO 48) es comandada en tiempo real por la tarea `Ta
 
 ---
 
-## 9. Arquitectura del Software, Librerías y Entornos de Desarrollo
+## 10. Arquitectura del Software, Librerías y Entornos de Desarrollo
 
 Para desarrolladores, ingenieros de software o investigadores interesados en auditar o extender el sistema de control, a continuación se detallan la organización modular, disposición exhaustiva de carpetas, arquitectura del firmware C++, entorno de pruebas web, herramientas matemáticas en MATLAB, diseño de hardware, instaladores de librerías y la recomendación de uso de **Antigravity IDE**.
 
 ---
 
-### 9.1 Disposición Completa y Exhaustiva de Carpetas del Proyecto (Versión 2.0)
+### 10.1 Disposición Completa y Exhaustiva de Carpetas del Proyecto (Versión 2.0)
 
 El repositorio está estructurado bajo una estricta separación de responsabilidades de control determinista en tiempo real, potencia eléctrica de corriente alterna, simulación físico-química, supervisión SCADA y documentación técnica:
 
@@ -757,7 +836,7 @@ Proyecto/
 
 ---
 
-### 9.2 Arquitectura del Firmware ESP32 RTOS 2.0: Desglose de los 40 Archivos y 6 Vistas Embebidas
+### 10.2 Arquitectura del Firmware ESP32 RTOS 2.0: Desglose de los 40 Archivos y 6 Vistas Embebidas
 
 El firmware del microcontrolador maestro (ESP32-S3 N16R8) se compone de 40 archivos de implementación en C++ estructurados bajo el patrón de diseño **Modelo-Vista-Controlador (MVC)**, apoyado en el kernel simétrico de FreeRTOS:
 
@@ -795,7 +874,7 @@ El firmware del microcontrolador maestro (ESP32-S3 N16R8) se compone de 40 archi
 
 ---
 
-### 9.3 Suite de Réplicas Web y Pruebas de Interfaz sin Hardware (Carpeta `visualizacion/preview/`)
+### 10.3 Suite de Réplicas Web y Pruebas de Interfaz sin Hardware (Carpeta `visualizacion/preview/`)
 
 La carpeta `visualizacion/preview/` proporciona un entorno de prueba desacoplado que reproduce con total fidelidad la interfaz web del sistema:
 * **Portal de Navegación Maestro (`visualizacion/preview/index.html`):** Permite abrir en cualquier navegador convencional un selector de versiones con iframe responsivo para alternar entre todas las generaciones de la interfaz (`Original`, `Beta`, `2.0`, `3.0`, `3.5`, `4.0`, `RTOS1.0` a `RTOS 2.0`, y la insignia activa `RTOS2.0`).
@@ -804,7 +883,7 @@ La carpeta `visualizacion/preview/` proporciona un entorno de prueba desacoplado
 
 ---
 
-### 9.4 Modelado Físico-Matemático y Post-Procesamiento Científico (Carpeta `control/`)
+### 10.4 Modelado Físico-Matemático y Post-Procesamiento Científico (Carpeta `control/`)
 
 El directorio `control/` reúne los modelos teóricos de transferencia de calor y las herramientas de análisis de datos desarrolladas en **MATLAB**:
 
@@ -827,7 +906,7 @@ m = (I · t · M) / (z · F)
 
 ---
 
-### 9.5 Nodo Esclavo Arduino Nano: Alternativas de Dimerización y Evolución de Versiones Legadas
+### 10.5 Nodo Esclavo Arduino Nano: Alternativas de Dimerización y Evolución de Versiones Legadas
 
 La modulación de potencia en corriente alterna (110V/220V a 60 Hz) se delega a un microcontrolador esclavo ATmega328P. En `arduino_nano/` se conservan tanto el firmware de producción como arquitecturas alternativas analizadas durante la investigación:
 
@@ -848,7 +927,7 @@ La modulación de potencia en corriente alterna (110V/220V a 60 Hz) se delega a 
 
 ---
 
-### 9.6 Ingeniería Electrónica, Circuitos y Lista de Materiales (Carpeta `hardware/`)
+### 10.6 Ingeniería Electrónica, Circuitos y Lista de Materiales (Carpeta `hardware/`)
 
 La carpeta `hardware/` documenta el diseño eléctrico y dimensionamiento de la instrumentación física:
 * **`BOM.md` (Bill of Materials):** Detalla los componentes seleccionados, destacando la justificación de las **resistencias de shunt cerámicas de cemento de 10W** (disipación pico P = I² R = 12.25 W, nominal 6.25 W), diodos flyback 1N4007 en relés Emexbit, regulación híbrida Buck LM2596 (24V a 5V) + LDOs AMS1117 (3.3V) con planos de masa separados para blindar el ADC ADS1115 contra ruidos, y disipadores de aluminio para TRIACs BTA24.
@@ -867,7 +946,7 @@ La carpeta `hardware/` documenta el diseño eléctrico y dimensionamiento de la 
 
 ---
 
-### 9.7 Instalador Automatizado y Gestor de Librerías de Arduino IDE
+### 10.7 Instalador Automatizado y Gestor de Librerías de Arduino IDE
 
 Para compilar los firmwares de bajo nivel se requiere contar con las librerías oficiales de comunicación y sensado:
 
@@ -898,7 +977,7 @@ El proyecto incluye un script de instalación desatendida:
 
 ---
 
-### 9.8 Librerías de C++ del Firmware y Cómo Profundizar
+### 10.8 Librerías de C++ del Firmware y Cómo Profundizar
 
 Si tienes conocimientos de software embebido o control en tiempo real, puedes auditar directamente las siguientes librerías de código abierto en `firmware/esp32/RTOS2.0/`:
 
@@ -911,7 +990,7 @@ Si tienes conocimientos de software embebido o control en tiempo real, puedes au
 
 ---
 
-### 9.9 Entornos de Desarrollo Utilizados y Recomendación de Antigravity IDE
+### 10.9 Entornos de Desarrollo Utilizados y Recomendación de Antigravity IDE
 
 Para compilar, ejecutar o auditar las distintas capas del sistema, se emplean los siguientes entornos:
 
@@ -926,7 +1005,7 @@ Para compilar, ejecutar o auditar las distintas capas del sistema, se emplean lo
 
 ---
 
-### 9.10 Comparativa de Métodos de Control: ¿Por qué existen 2 Alternativas?
+### 10.10 Comparativa de Métodos de Control: ¿Por qué existen 2 Alternativas?
 
 El proyecto implementa una dualidad fundamentada de métodos tanto en el control físico de potencia como en la supervisión operativa:
 
@@ -944,7 +1023,7 @@ El proyecto implementa una dualidad fundamentada de métodos tanto en el control
 
 ---
 
-### 9.11 Mapa de Pines (Pinout) del Hardware
+### 10.11 Mapa de Pines (Pinout) del Hardware
 
 A continuación se detalla la asignación completa de pines GPIO del nodo maestro ESP32-S3 y del nodo esclavo Arduino Nano, extraída directamente de [`config.h`](../../firmware/esp32/RTOS2.0/config.h) y [`nano2.ino`](../../firmware/arduino_nano/nano2/nano2.ino):
 
@@ -990,9 +1069,9 @@ A continuación se detalla la asignación completa de pines GPIO del nodo maestr
 
 ---
 
-## 10. Planta Física, Ficha Técnica y Modularidad de Hardware
+## 11. Planta Física, Ficha Técnica y Modularidad de Hardware
 
-### 10.1 Ficha Técnica Consolidada de la Plataforma
+### 11.1 Ficha Técnica Consolidada de la Plataforma
 
 A continuación se resumen las especificaciones y límites operacionales nominales del prototipo:
 
@@ -1011,7 +1090,7 @@ A continuación se resumen las especificaciones y límites operacionales nominal
 
 ---
 
-### 10.2 Distribución de Pines y Conexión en Zócalos Hembra
+### 11.2 Distribución de Pines y Conexión en Zócalos Hembra
 
 Para maximizar la robustez y facilitar el mantenimiento, la arquitectura física del prototipo implementa una estrategia de **montaje sobre zócalos hembra** para todos los microcontroladores y circuitos integrados sensores, combinada con **clemas de tornillo** para líneas de potencia y **cables Dupont reforzados** para buses de señal:
 
@@ -1044,7 +1123,7 @@ Construida en placa de circuito según el diagrama de ingeniería analógica con
 
 ---
 
-### 10.3 Guía de Remplazabilidad y Mantenimiento en Campo
+### 11.3 Guía de Remplazabilidad y Mantenimiento en Campo
 
 Gracias al diseño modular en zócalos hembra y clemas, cualquier intervención de servicio se realiza en minutos sin herramientas de soldadura:
 
@@ -1065,7 +1144,7 @@ Gracias al diseño modular en zócalos hembra y clemas, cualquier intervención 
 
 ---
 
-### 10.4 Galería de Infografías Técnicas de la Planta Física y Conexionado 1:1
+### 11.4 Galería de Infografías Técnicas de la Planta Física y Conexionado 1:1
 
 A continuación se presentan las **7 infografías técnicas en ultra-alta resolución (4096 px)** generadas directamente sobre la planta física y sus módulos de instrumentación. Este registro gráfico constituye la referencia de ingeniería definitiva para montaje, cableado, diagnóstico y verificación de correspondencia física de pines:
 
@@ -1128,7 +1207,7 @@ A continuación se presentan las **7 infografías técnicas en ultra-alta resolu
 
 ---
 
-### 10.5 Especificación y Renders 3D de Circuitos Impresos (PCB Rev 5.0 y Rev 5.1)
+### 11.5 Especificación y Renders 3D de Circuitos Impresos (PCB Rev 5.0 y Rev 5.1)
 
 Para trascender la fase de prototipo sobre placa perforada y cableado manual, el sistema **E.L.E.C.T.R.O.D.O-32** cuenta con diseños de circuito impreso (PCB) de grado industrial estandarizados en KiCad, listos para fabricación masiva y ensamble automatizado (PCBA) en JLCPCB.
 
@@ -1183,7 +1262,7 @@ Diseñado para la variante **E.L.E.C.T.R.O.D.O-32 Edge**, este shield apilable d
 
 ---
 
-## 11. Preguntas Frecuentes (FAQ)
+## 12. Preguntas Frecuentes (FAQ)
 
 1. **¿Por qué el Arduino Nano no se actualiza por la interfaz web OTA (`/update`)?**  
    Porque el servidor web y el gestor OTA residen físicamente en la memoria Flash del ESP32-S3. El Arduino Nano (ATmega328P) es un microcontrolador esclavo independiente aislado galvánicamente que solo se comunica por UART2 y no cuenta con líneas de reset (DTR) conectadas al ESP32 para activar el bootloader remoto. Debe actualizarse mediante cable USB directo desde Arduino IDE.
@@ -1215,11 +1294,11 @@ Diseñado para la variante **E.L.E.C.T.R.O.D.O-32 Edge**, este shield apilable d
 
 ---
 
-## 12. Glosario de Términos Técnicos
+## 13. Glosario de Términos Técnicos
 
 Esta sección explica de forma clara y directa los términos técnicos utilizados a lo largo de este manual, organizados por área temática.
 
-### 12.1 Electrónica y Hardware
+### 13.1 Electrónica y Hardware
 
 * **ADC (Convertidor Analógico a Digital):** Chip que traduce un voltaje continuo del mundo real (como el de un sensor de pH o un shunt) a números enteros comprensibles por un microcontrolador. En este equipo se usa el ADS1115 de 16 bits.
 * **Celda Hull:** Tina de laboratorio de 267 mL con geometría trapezoidal normalizada. Al colocar el ánodo y el cátodo en ángulo inclinado, genera un gradiente continuo de corriente a lo largo de la probeta, permitiendo evaluar en una sola prueba cómo responde el baño químico a diferentes densidades de corriente.
@@ -1237,7 +1316,7 @@ Esta sección explica de forma clara y directa los términos técnicos utilizado
 * **Termopar Tipo K:** Sensor compuesto por dos alambres metálicos de distinta aleación (cromel y alumel) soldados en su extremo. Al calentarse generan una fuerza electromotriz en milivoltios proporcional a la temperatura, permitiendo medir desde bajo cero hasta más de 1000 °C.
 * **TRIAC:** Semiconductor de potencia para corriente alterna que funciona como un interruptor electrónico bidireccional. Permite modular la energía que reciben las resistencias calefactoras disparándose en instantes controlados de la onda senoidal.
 
-### 12.2 Firmware e Informática Embebida
+### 13.2 Firmware e Informática Embebida
 
 * **Buffer Circular FIFO (First-In, First-Out):** Zona de memoria donde los datos más antiguos se sobreescriben automáticamente al ingresar lecturas nuevas. Permite graficar en tiempo real sin acumular millones de registros que agoten la memoria RAM.
 * **Deadlock (Interbloqueo):** Condición de bloqueo mutuo en la que dos o más tareas quedan esperando indefinidamente recursos retenidos entre sí, paralizando la ejecución. Se previene implementando tiempos límite de espera (*timeouts*).
@@ -1256,7 +1335,7 @@ Esta sección explica de forma clara y directa los términos técnicos utilizado
 * **Stack (Pila de Ejecución):** Memoria rápida asignada de forma estática a cada tarea de FreeRTOS para guardar variables locales y direcciones de retorno de funciones. Un consumo excesivo puede ocasionar desbordamiento de pila (*stack overflow*).
 * **Watchdog (Perro Guardián):** Temporizador de seguridad por hardware que el software debe refrescar periódicamente. Si el firmware se detiene o congela, el temporizador expira y fuerza un reinicio automático para restablecer la operación.
 
-### 12.3 Control e Instrumentación
+### 13.3 Control e Instrumentación
 
 * **Blanking (Ventana de Gracia):** Lapso temporal durante el cual el sistema suspende de forma transitoria la lectura de un sensor tras la conmutación de una carga eléctrica, evitando lecturas erróneas causadas por transitorios eléctricos.
 * **Burst Firing (Paquetes de Ciclos):** Modalidad de control de potencia en corriente alterna que entrega energía conduciendo trenes de ciclos completos conmutados en el cruce por cero, eliminando interferencias de alta frecuencia.
@@ -1274,7 +1353,7 @@ Esta sección explica de forma clara y directa los términos técnicos utilizado
 * **Variable de Proceso (PV):** Magnitud física real medida en la planta en un instante determinado a través de la instrumentación (por ejemplo, temperatura actual leída en el baño químico).
 * **VCSS (Voltage-Controlled Current Sink):** Sumidero de corriente regulado por voltaje. Circuito analógico en lazo cerrado que absorbe una corriente precisa y proporcional a una tensión de consigna, independientemente de variaciones en la resistencia de la celda.
 
-### 12.4 Comunicaciones y Protocolos
+### 13.4 Comunicaciones y Protocolos
 
 * **Baudios (Baud Rate):** Unidad que representa la tasa de símbolos o transiciones por segundo en una línea de comunicación serie (por ejemplo, 115200 baudios en el puerto USB o 9600 baudios en el enlace entre microcontroladores).
 * **GPIO (General Purpose Input/Output):** Terminales digitales de propósito general de un microcontrolador configurables por programa como entradas de sensado o salidas de control.
@@ -1285,7 +1364,7 @@ Esta sección explica de forma clara y directa los términos técnicos utilizado
 
 ---
 
-## 13. Reconocimientos a Proyectos Open Source & Términos de Uso Libre
+## 14. Reconocimientos a Proyectos Open Source & Términos de Uso Libre
 
 * **Reconocimiento a Librerías y Proyectos de Código Abierto:**
   * **Espressif Systems:** Framework ESP-IDF y Arduino ESP32 Core.
