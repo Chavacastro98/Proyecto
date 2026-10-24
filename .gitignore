@@ -57,6 +57,8 @@ dist/
 # IDEs, Editores y Sistema Operativo
 .vscode/
 .idea/
+.history/
+scratch/
 *.swp
 *.swo
 *~

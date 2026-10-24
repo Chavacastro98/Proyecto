@@ -831,7 +831,7 @@
           Este plano representa la <strong>base unificada de todo el sistema</strong>: modelado de concurrencia multitarea en el ESP32-S3 Dual-Core SMP 
           (<strong>Core 0:</strong> Servidor Web HTTP, REST API y difusión SSE a 10 Hz; <strong>Core 1:</strong> Lazos de control térmico en tiempo real, máquina de estados ISA-88 e interlocks de seguridad), 
           enlace Wi-Fi SoftAP autónomo (<code>Uli</code>) hacia la estación SCADA PC, lazo de disparo térmico hacia el nodo esclavo Arduino Nano con detección de cruce por cero (ZCS) y 4 TRIACs BTA24-600B, 
-          sumidero de corriente de precisión VCSS (DAC MCP4725, amplificador de error LM358, MOSFET de potencia IRLZ44N y shunt Kelvin de 0.05 Ω hacia Celda Hull), relé de corte bipolar por hardware y buses de instrumentación 
+          sumidero de corriente de precisión VCSS (DAC MCP4725, amplificador de error LM358, MOSFET de potencia IRLZ44N y shunt Kelvin de 0.50 Ω hacia Celda Hull), relé de corte bipolar por hardware y buses de instrumentación 
           SPI (4 termopares MAX6675 aislados) e I²C (ADC ADS1115 de 16 bits para electrodo de pH combinado y retroalimentación de corriente).<br>
           <em style="color:#94a3b8; font-size:0.80rem;">💡 Haga clic sobre la imagen para inspeccionar con zoom interactivo en alta resolución.</em>
         </div>
@@ -1036,7 +1036,829 @@
         <div class="figure-caption">Figura 1.1: Diagrama de interconexión eléctrica del sistema (Alimentación única 12V 10A, Pre-regulador Buck 6.80V, LDOs, ESP32 y sensores).</div>
       </div>
 
-      <!-- SUBSECCIÓN 1.2: GUÍA DE CABLEADO Y PINOUT FÍSICO -->
+      
+      <!-- SUBSECCIÓN: TABLA MAESTRA CONSOLIDADA DE PARÁMETROS (SSOT) -->
+      <div id="tabla-maestra-ssot" style="background:#0f172a; border:2px solid #0284c7; border-radius:12px; padding:22px; margin:28px 0; box-shadow:0 8px 30px rgba(2, 132, 199, 0.20);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
+          <div>
+            <span style="font-size:0.72rem; font-weight:700; color:#38bdf8; text-transform:uppercase; letter-spacing:0.08em; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3);">
+              Fuente Única de Verdad · Single Source of Truth (SSOT)
+            </span>
+            <h3 style="font-size:1.25rem; color:#ffffff; margin:6px 0 0 0; font-weight:700;">
+              📋 Tabla Maestra Consolidada de Parámetros de Ingeniería y Planta
+            </h3>
+          </div>
+          <a href="../../TABLA_MAESTRA_PARAMETROS.md" target="_blank" class="btn btn-outline" style="font-size:0.78rem; padding:6px 12px; border-color:#38bdf8; color:#38bdf8; text-decoration:none;">
+            📄 Ver Documento Maestro .md
+          </a>
+        </div>
+        <p style="font-size:0.86rem; color:#94a3b8; line-height:1.55; margin-bottom:18px;">
+          Esta tabla consolida las especificaciones numéricas exactas y certificadas de la plataforma ciberfísica (ESP32-S3 RTOS 2.0 + Arduino Nano + PCB Rev 5.0).
+          Cualquier cálculo experimental, sintonía de lazos o dimensionamiento de hardware debe regirse por estos valores oficiales:
+        </p>
+
+        <!-- 1. DOMINIO ELÉCTRICO Y PCB -->
+        <h4 style="color:#38bdf8; font-size:1.0rem; margin:16px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          ⚡ 1. Dominio Eléctrico, Potencia y Dimensionamiento de Pistas PCB
+        </h4>
+        <div class="table-container" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Subsistema / Parámetro</th>
+                <th style="text-align:center;">Valor Nominal</th>
+                <th style="text-align:center;">Rango Seguro</th>
+                <th style="text-align:center;">Límite / Disparo</th>
+                <th>Hardware / Componente</th>
+                <th>Justificación Técnica &amp; IPC-2152</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Alimentación Principal DC</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8;">12.0 VDC</code></td>
+                <td style="text-align:center;">11.5 – 12.8 VDC</td>
+                <td style="text-align:center; color:#f87171;">15.0 V (TVS)</td>
+                <td>Fuente SMPS 12V / 10A (Jack 5.5×2.1 mm)</td>
+                <td>Alimenta etapa Buck y circuito anódico de celda Hull.</td>
+              </tr>
+              <tr>
+                <td><strong>Pre-Regulador Buck Lógico</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">6.80 VDC</code></td>
+                <td style="text-align:center;">6.75 – 6.85 VDC</td>
+                <td style="text-align:center;">7.50 V</td>
+                <td>LM2596S-ADJ con voltímetro display</td>
+                <td>Alivio térmico óptimo para LDOs lineales (VIN de ESP32 y Nano).</td>
+              </tr>
+              <tr>
+                <td><strong>Riel de Alimentación 5V</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">+5.00 VDC</code></td>
+                <td style="text-align:center;">4.85 – 5.15 VDC</td>
+                <td style="text-align:center;">5.50 V</td>
+                <td>LM7805CT (TO-220) con disipador</td>
+                <td>Polariza Arduino Nano, relé, op-amps y búfer 74HCT541.</td>
+              </tr>
+              <tr>
+                <td><strong>Riel de Sensores 3.3V</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8;">+3.30 VDC</code></td>
+                <td style="text-align:center;">3.25 – 3.35 VDC</td>
+                <td style="text-align:center;">3.60 V</td>
+                <td>AMS1117-3.3 (SOT-223)</td>
+                <td>Tensión de referencia analógica limpia para ESP32-S3 y ADC/DAC.</td>
+              </tr>
+              <tr>
+                <td><strong>Red Eléctrica AC Calefactores</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24;">120 VAC</code></td>
+                <td style="text-align:center;">108 – 132 VAC (60 Hz)</td>
+                <td style="text-align:center; color:#f87171;">Fusible 15A</td>
+                <td>Línea monofásica trifilar (F, N, Tierra)</td>
+                <td>Alimentación exclusiva para resistencias calefactoras.</td>
+              </tr>
+              <tr>
+                <td><strong>Calentadores Tinas 1, 2 y 4</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24; font-weight:700;">450 W c/u</code></td>
+                <td style="text-align:center;">0 – 450 W (Burst Firing)</td>
+                <td style="text-align:center;">3.75 A RMS c/u</td>
+                <td>Resistencias blindadas inox 316L (Tinas 2.5 L)</td>
+                <td>$I = 450\text{ W} / 120\text{ V} = 3.75\text{ A RMS}$. Lazos PI independientes.</td>
+              </tr>
+              <tr>
+                <td><strong>Calentador Tina 3 (Celda Hull)</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24; font-weight:700;">18 W</code></td>
+                <td style="text-align:center;">0 – 18 W (o ambiente)</td>
+                <td style="text-align:center;">0.15 A RMS</td>
+                <td>Cartucho cerámico miniatura (Celda 267 mL)</td>
+                <td>Volumen reducido (267 mL); potencia de 450W causaría sobretiro incontrolable.</td>
+              </tr>
+              <tr>
+                <td><strong>Potencia Térmica Total Nominal</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24; font-weight:700;">1.368 kW</code></td>
+                <td style="text-align:center;">0 – 1.37 kW</td>
+                <td style="text-align:center; color:#f87171;">Inrush 11.4 A</td>
+                <td>3× 450W + 1× 18W en modulación escalonada</td>
+                <td>Interlock INT-17 desfasa los ciclos a 0, 750, 1500 y 2250 ms.</td>
+              </tr>
+              <tr>
+                <td><strong>TRIACs de Potencia AC</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">25 A RMS</code></td>
+                <td style="text-align:center;">0 – 3.75 A RMS (15% carga)</td>
+                <td style="text-align:center;">800 V pico</td>
+                <td>4× BTA24-800BW (TO-220 disipador aletado)</td>
+                <td>Margen térmico del 85%; conmutación en cruce por cero (ZCS).</td>
+              </tr>
+              <tr>
+                <td><strong>Pistas PCB de Potencia AC</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">1.80 – 2.00 mm</code></td>
+                <td style="text-align:center;">0 – 3.75 A RMS</td>
+                <td style="text-align:center;">6.0 A continuos</td>
+                <td>Cobre 1 oz (35 µm) capas Top y Bottom</td>
+                <td>Cumple IPC-2152 (elevación térmica &Delta;T &le; 20°C con >45% de reserva).</td>
+              </tr>
+              <tr>
+                <td><strong>Sumidero Lineal VCSS (MOSFETs)</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8;">47 A cont.</code></td>
+                <td style="text-align:center;">0.00 – 3.50 A (proceso)</td>
+                <td style="text-align:center; color:#f87171;">Clamp 3.50 A</td>
+                <td>2× IRLZ44NPBF en paralelo (TO-220)</td>
+                <td>$R_{DS(on)} = 0.022\ \Omega$; conmutación lineal sin armónicos EMI.</td>
+              </tr>
+              <tr>
+                <td><strong>Shunts de Corriente de Retorno</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8; font-weight:700;">0.50 Ω eq.</code></td>
+                <td style="text-align:center;">0.00 – 3.50 A</td>
+                <td style="text-align:center;">Máx 20 W</td>
+                <td>2× 1.0 Ω 10W cerámicas SQP en paralelo</td>
+                <td>A 3.50 A disipan $P = I^2 R = 6.12\text{ W}$ (<31% de capacidad, 69% derating).</td>
+              </tr>
+              <tr>
+                <td><strong>Transconductancia VCSS ($G_m$)</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8; font-weight:700;">2.00 S</code> (A/V)</td>
+                <td style="text-align:center;">0.00 – 1.75 V en DAC</td>
+                <td style="text-align:center;">Clamp en 1.75 V</td>
+                <td>Op-Amp OPA2171 / LM358 + lazo Kelvin</td>
+                <td>$I = V_{\text{DAC}} \times 2.0\text{ A/V} = 1.75\text{ V} \times 2.0 = 3.50\text{ A}$ máx.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2. DOMINIO DE PINES Y BUSES -->
+        <h4 style="color:#a78bfa; font-size:1.0rem; margin:18px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          📌 2. Dominio de Pines, Buses y Protocolos de Comunicación
+        </h4>
+        <div class="table-container" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Señal / Función</th>
+                <th style="text-align:center;">Pin Microcontrolador</th>
+                <th style="text-align:center;">Bus / Protocolo</th>
+                <th style="text-align:center;">Dirección / Chip</th>
+                <th>Función Operativa &amp; Mapeo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>I2C SDA / SCL</strong></td>
+                <td style="text-align:center;"><code>GPIO 8 / GPIO 9</code> (ESP32-S3)</td>
+                <td style="text-align:center;">I2C Fast-Mode 400 kHz</td>
+                <td style="text-align:center;">Línea compartida</td>
+                <td>Bus de instrumentación analógica con resistencias pull-up de 4.7k a 3.3V.</td>
+              </tr>
+              <tr>
+                <td><strong>ADC 16-bit (pH &amp; Shunts)</strong></td>
+                <td style="text-align:center;">Bus I2C</td>
+                <td style="text-align:center;">I2C Continuo (860 SPS)</td>
+                <td style="text-align:center;"><code>0x48</code> (ADS1115)</td>
+                <td><strong>Canal A1:</strong> Electrodo pH (Po). <strong>A0:</strong> Ref GND2. <strong>A2-A3:</strong> Shunts VCSS.</td>
+              </tr>
+              <tr>
+                <td><strong>DAC 12-bit (Consigna VCSS)</strong></td>
+                <td style="text-align:center;">Bus I2C</td>
+                <td style="text-align:center;">I2C Rápido</td>
+                <td style="text-align:center;"><code>0x60</code> (MCP4725)</td>
+                <td>Entrega consigna $V_{\text{ref}}$ al sumidero VCSS ($0.00\text{--}3.50\text{ A}$).</td>
+              </tr>
+              <tr>
+                <td><strong>Sensor Ambiental</strong></td>
+                <td style="text-align:center;">Bus I2C</td>
+                <td style="text-align:center;">I2C Estándar</td>
+                <td style="text-align:center;"><code>0x38</code> / <code>0x76</code></td>
+                <td>AHT20 (Humedad/Temp cabina) + BMP280 (Presión barométrica).</td>
+              </tr>
+              <tr>
+                <td><strong>SPI SCK / MISO</strong></td>
+                <td style="text-align:center;"><code>GPIO 18 / GPIO 19</code> (ESP32-S3)</td>
+                <td style="text-align:center;">SPI Read-Only (4 MHz)</td>
+                <td style="text-align:center;">Línea común 4× MAX6675</td>
+                <td>Reloj y datos compartidos de termopares sin línea MOSI.</td>
+              </tr>
+              <tr>
+                <td><strong>Chip Selects CS0–CS3</strong></td>
+                <td style="text-align:center;"><code>GPIO 5, 4, 13, 14</code> (ESP32-S3)</td>
+                <td style="text-align:center;">SPI Chip Select (Active-LOW)</td>
+                <td style="text-align:center;">U3, U4, U5, U6</td>
+                <td>Lectura térmica: CS0=Tina 1, CS1=Tina 2, CS2=Tina 3, CS3=Tina 4.</td>
+              </tr>
+              <tr>
+                <td><strong>Relé ZCS Bipolar Celda</strong></td>
+                <td style="text-align:center;"><code>GPIO 20</code> (ESP32-S3)</td>
+                <td style="text-align:center;">Salida Digital (Active-LOW)</td>
+                <td style="text-align:center;">Módulo Relé Songle 5V</td>
+                <td>Corte físico simultáneo de +12V Ánodo y Retorno Cátodo en corriente nula.</td>
+              </tr>
+              <tr>
+                <td><strong>Baliza Neopixel WS2812B</strong></td>
+                <td style="text-align:center;"><code>GPIO 48</code> (ESP32-S3)</td>
+                <td style="text-align:center;">Monocable 800 kHz</td>
+                <td style="text-align:center;">LED RGB 5050 integrado</td>
+                <td>Señalización industrial ISA-18.2 (Azul Standby, Verde Run, Rojo Falla).</td>
+              </tr>
+              <tr>
+                <td><strong>Enlace Maestro $ightarrow$ Esclavo</strong></td>
+                <td style="text-align:center;"><code>GPIO 17 TX</code> (ESP32-S3)</td>
+                <td style="text-align:center;">UART Serie (9600 bps)</td>
+                <td style="text-align:center;">Pin D0 RX (Arduino Nano)</td>
+                <td>Transmisión de tramas de potencia térmica con checksum CRC-8.</td>
+              </tr>
+              <tr>
+                <td><strong>Detector Cruce por Cero (ZC)</strong></td>
+                <td style="text-align:center;"><code>Pin D3 / INT1</code> (Nano)</td>
+                <td style="text-align:center;">Interrupción Externa</td>
+                <td style="text-align:center;">Opto 4N35 en red 120 VAC</td>
+                <td>Sincronismo de red a 60 Hz en registros directos de hardware AVR.</td>
+              </tr>
+              <tr>
+                <td><strong>Disparos TRIAC D7–D10</strong></td>
+                <td style="text-align:center;"><code>D7, D8, D9, D10</code> (Nano)</td>
+                <td style="text-align:center;">Salidas Digitales 5V</td>
+                <td style="text-align:center;">4× Opto-TRIAC MOC3021M</td>
+                <td>Modulación por tiempo proporcional (Ventana 3000 ms, JELDimmer2).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3. DOMINIO QUÍMICO Y PROCESO -->
+        <h4 style="color:#34d399; font-size:1.0rem; margin:18px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          🧪 3. Dominio Químico, Tinas y Fases de Proceso (ANSI/ISA-88)
+        </h4>
+        <div class="table-container" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tina / Etapa</th>
+                <th style="text-align:center;">Capacidad</th>
+                <th>Solución Química Principal</th>
+                <th style="text-align:center;">Temperatura SP</th>
+                <th style="text-align:center;">pH Nominal</th>
+                <th style="text-align:center;">Corriente VCSS</th>
+                <th>Sustrato / Probeta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tina 1: Desengrase Alcalino</strong></td>
+                <td style="text-align:center;">2.5 L</td>
+                <td>$	ext{Na}_3	ext{PO}_4 \cdot 12	ext{H}_2	ext{O}$ (25 g/L) + Carbonato de Sodio (20 g/L)</td>
+                <td style="text-align:center; font-weight:700; color:#fbbf24;">85.0 °C</td>
+                <td style="text-align:center;">11.0 – 12.5</td>
+                <td style="text-align:center;">N/A (Térmico)</td>
+                <td>Al 6061-T6 (1.0 dm² útil)</td>
+              </tr>
+              <tr>
+                <td><strong>Tina 2: Decapado Alcalino</strong></td>
+                <td style="text-align:center;">2.5 L</td>
+                <td>$	ext{Na}_3	ext{PO}_4$ suave (30 g/L) disuelve alúmina sin atacar matriz Al</td>
+                <td style="text-align:center; font-weight:700; color:#fbbf24;">65.0 °C</td>
+                <td style="text-align:center;">10.5 – 11.5</td>
+                <td style="text-align:center;">N/A (Térmico)</td>
+                <td>Aluminio activo libre de óxido</td>
+              </tr>
+              <tr>
+                <td><strong>Tina 3: Celda Hull Zincado</strong></td>
+                <td style="text-align:center; font-weight:700; color:#38bdf8;">267 mL</td>
+                <td>$	ext{ZnCl}_2$ (60 g/L) + $	ext{KCl}$ (200 g/L) + $	ext{H}_3	ext{BO}_3$ (25 g/L)</td>
+                <td style="text-align:center; font-weight:700;">25.0 °C (Ambiente)</td>
+                <td style="text-align:center; font-weight:700; color:#34d399;">4.8 – 5.2</td>
+                <td style="text-align:center; font-weight:700; color:#38bdf8;">0.00 – 3.00 A</td>
+                <td>Ánodo Zn (99.99%) $ightarrow$ Cátodo Al</td>
+              </tr>
+              <tr>
+                <td><strong>Tina 4: Niquelado sobre Zinc</strong></td>
+                <td style="text-align:center;">2.5 L</td>
+                <td>Watts: $	ext{NiSO}_4$ (240 g/L) + $	ext{NiCl}_2$ (45 g/L) + $	ext{H}_3	ext{BO}_3$ (30 g/L)</td>
+                <td style="text-align:center; font-weight:700; color:#fbbf24;">50.0 °C</td>
+                <td style="text-align:center; font-weight:700; color:#34d399;">4.0 – 4.5</td>
+                <td style="text-align:center; font-weight:700; color:#38bdf8;">0.50 – 3.00 A</td>
+                <td>Ánodo Ni $ightarrow$ Cátodo bicapa</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4. DOMINIO DE INTERLOCKS Y SEGURIDAD -->
+        <h4 style="color:#f87171; font-size:1.0rem; margin:18px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          🛡️ 4. Dominio de Seguridad Funcional, Interlocks y Límites Fail-Safe
+        </h4>
+        <div class="table-container" style="margin-bottom:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:center;">ID</th>
+                <th>Mecanismo de Interlock</th>
+                <th>Condición Numérica de Disparo</th>
+                <th>Acción Automática del Firmware</th>
+                <th style="text-align:center;">Código Error</th>
+                <th style="text-align:center;">Tipo de Rearme</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:center;"><strong>INT-01</strong></td>
+                <td>Sobretemperatura Sostenida</td>
+                <td>$T > SP + 3.0\ ^\circ	ext{C}$ durante $> 3.0	ext{ s}$ continuos</td>
+                <td>Dispara Fail-Safe: TRIACs al 0%, DAC a 0V, abre relé bipolar GPIO20.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">14</code></td>
+                <td style="text-align:center;">Latch Manual (Token)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-02</strong></td>
+                <td>Termopar Abierto / NAN</td>
+                <td>MAX6675 reporta `NAN`, $T < 0^\circ	ext{C}$ o $T > 150^\circ	ext{C}$</td>
+                <td>Apaga 4 calentadores inmediatamente, abre relé VCSS y baliza en Rojo.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">11</code></td>
+                <td style="text-align:center;">Latch Manual tras reconexión</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-04</strong></td>
+                <td>Clamp de Corriente VCSS</td>
+                <td>Consigna DAC solicita $I > 3.50	ext{ A}$ ($> 2030	ext{ LSB}$)</td>
+                <td>Saturación estricta por firmware a <strong>3.50 A</strong>. Protege shunts cerámicos.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (Operación segura)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-05</strong></td>
+                <td>Sobrecorriente Medida VCSS</td>
+                <td>$I_{\text{medida}} > 3.50	ext{ A}$ sostenida durante $> 200	ext{ ms}$</td>
+                <td>Corte ZCS determinista (<35 ms), relé abierto, calentadores al 0%.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">22</code></td>
+                <td style="text-align:center;">Latch Manual (Token)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-06</strong></td>
+                <td>Celda Abierta / Falsa Carga</td>
+                <td>$I < 0.05	ext{ A}$ con $SP > 0.30	ext{ A}$ durante $> 1000	ext{ ms}$ en DC</td>
+                <td>Desenergiza DAC, abre relé bipolar para evitar voltajes flotantes.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">23</code></td>
+                <td style="text-align:center;">Latch Manual</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-08</strong></td>
+                <td>Secuencia Zero-Current (ZCS)</td>
+                <td>Orden de apagado de celda o disparo de cualquier interlock</td>
+                <td>Rampa DAC a 0V $ightarrow$ retardo 30 ms (extinción arco) $ightarrow$ abre relé.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (<35 ms)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-10</strong></td>
+                <td>Watchdog FreeRTOS Maestro</td>
+                <td>Cualquier tarea RTOS sin latido durante $> 5000	ext{ ms}$</td>
+                <td>Supervisor fuerza corte general de actuadores y enclava Fail-Safe.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">10</code></td>
+                <td style="text-align:center;">Latch Manual / Reboot</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-11</strong></td>
+                <td>Aislamiento Galvánico pH</td>
+                <td>Intento de medir pH con celda VCSS o calefactores energizados</td>
+                <td>Suspende lectura analógica de pH para evitar lazos de retorno por tierra.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (En reposo)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-13</strong></td>
+                <td>Watchdog Hardware Nano2</td>
+                <td>Bucle `loop()` del Nano2 bloqueado $> 1.0	ext{ s}$ (`WDTO_1S`)</td>
+                <td>Reset físico por hardware AVR; compuertas D7–D10 forzadas a LOW.</td>
+                <td style="text-align:center;">Reset AVR</td>
+                <td style="text-align:center;">Automático (<15 ms)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-14</strong></td>
+                <td>Watchdog UART Nano2</td>
+                <td>Nano2 no recibe trama válida desde ESP32 durante $> 4000	ext{ ms}$</td>
+                <td>Apaga inmediatamente los 4 canales de potencia (potencias al 0%).</td>
+                <td style="text-align:center;">Silencio</td>
+                <td style="text-align:center;">Automático (Al recibir trama)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-17</strong></td>
+                <td>Escalonamiento Burst Firing</td>
+                <td>Modulación simultánea de calentadores de 450 W</td>
+                <td>Desfase determinista de 750 ms: $\{0, 750, 1500, 2250\}	ext{ ms}$ en ciclo 3s.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (Anti-inrush)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      
+      <!-- SUBSECCIÓN: TABLA MAESTRA CONSOLIDADA DE PARÁMETROS (SSOT) -->
+      <div id="tabla-maestra-ssot" style="background:#0f172a; border:2px solid #0284c7; border-radius:12px; padding:22px; margin:28px 0; box-shadow:0 8px 30px rgba(2, 132, 199, 0.20);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
+          <div>
+            <span style="font-size:0.72rem; font-weight:700; color:#38bdf8; text-transform:uppercase; letter-spacing:0.08em; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3);">
+              Fuente Única de Verdad · Single Source of Truth (SSOT)
+            </span>
+            <h3 style="font-size:1.25rem; color:#ffffff; margin:6px 0 0 0; font-weight:700;">
+              📋 Tabla Maestra Consolidada de Parámetros de Ingeniería y Planta
+            </h3>
+          </div>
+          <a href="../../TABLA_MAESTRA_PARAMETROS.md" target="_blank" class="btn btn-outline" style="font-size:0.78rem; padding:6px 12px; border-color:#38bdf8; color:#38bdf8; text-decoration:none;">
+            📄 Ver Documento Maestro .md
+          </a>
+        </div>
+        <p style="font-size:0.86rem; color:#94a3b8; line-height:1.55; margin-bottom:18px;">
+          Esta tabla consolida las especificaciones numéricas exactas y certificadas de la plataforma ciberfísica (ESP32-S3 RTOS 2.0 + Arduino Nano + PCB Rev 5.0).
+          Cualquier cálculo experimental, sintonía de lazos o dimensionamiento de hardware debe regirse por estos valores oficiales:
+        </p>
+
+        <!-- 1. DOMINIO ELÉCTRICO Y PCB -->
+        <h4 style="color:#38bdf8; font-size:1.0rem; margin:16px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          ⚡ 1. Dominio Eléctrico, Potencia y Dimensionamiento de Pistas PCB
+        </h4>
+        <div class="table-container" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Subsistema / Parámetro</th>
+                <th style="text-align:center;">Valor Nominal</th>
+                <th style="text-align:center;">Rango Seguro</th>
+                <th style="text-align:center;">Límite / Disparo</th>
+                <th>Hardware / Componente</th>
+                <th>Justificación Técnica &amp; IPC-2152</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Alimentación Principal DC</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8;">12.0 VDC</code></td>
+                <td style="text-align:center;">11.5 – 12.8 VDC</td>
+                <td style="text-align:center; color:#f87171;">15.0 V (TVS)</td>
+                <td>Fuente SMPS 12V / 10A (Jack 5.5×2.1 mm)</td>
+                <td>Alimenta etapa Buck y circuito anódico de celda Hull.</td>
+              </tr>
+              <tr>
+                <td><strong>Pre-Regulador Buck Lógico</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">6.80 VDC</code></td>
+                <td style="text-align:center;">6.75 – 6.85 VDC</td>
+                <td style="text-align:center;">7.50 V</td>
+                <td>LM2596S-ADJ con voltímetro display</td>
+                <td>Alivio térmico óptimo para LDOs lineales (VIN de ESP32 y Nano).</td>
+              </tr>
+              <tr>
+                <td><strong>Riel de Alimentación 5V</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">+5.00 VDC</code></td>
+                <td style="text-align:center;">4.85 – 5.15 VDC</td>
+                <td style="text-align:center;">5.50 V</td>
+                <td>LM7805CT (TO-220) con disipador</td>
+                <td>Polariza Arduino Nano, relé, op-amps y búfer 74HCT541.</td>
+              </tr>
+              <tr>
+                <td><strong>Riel de Sensores 3.3V</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8;">+3.30 VDC</code></td>
+                <td style="text-align:center;">3.25 – 3.35 VDC</td>
+                <td style="text-align:center;">3.60 V</td>
+                <td>AMS1117-3.3 (SOT-223)</td>
+                <td>Tensión de referencia analógica limpia para ESP32-S3 y ADC/DAC.</td>
+              </tr>
+              <tr>
+                <td><strong>Red Eléctrica AC Calefactores</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24;">120 VAC</code></td>
+                <td style="text-align:center;">108 – 132 VAC (60 Hz)</td>
+                <td style="text-align:center; color:#f87171;">Fusible 15A</td>
+                <td>Línea monofásica trifilar (F, N, Tierra)</td>
+                <td>Alimentación exclusiva para resistencias calefactoras.</td>
+              </tr>
+              <tr>
+                <td><strong>Calentadores Tinas 1, 2 y 4</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24; font-weight:700;">450 W c/u</code></td>
+                <td style="text-align:center;">0 – 450 W (Burst Firing)</td>
+                <td style="text-align:center;">3.75 A RMS c/u</td>
+                <td>Resistencias blindadas inox 316L (Tinas 2.5 L)</td>
+                <td>$I = 450\text{ W} / 120\text{ V} = 3.75\text{ A RMS}$. Lazos PI independientes.</td>
+              </tr>
+              <tr>
+                <td><strong>Calentador Tina 3 (Celda Hull)</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24; font-weight:700;">18 W</code></td>
+                <td style="text-align:center;">0 – 18 W (o ambiente)</td>
+                <td style="text-align:center;">0.15 A RMS</td>
+                <td>Cartucho cerámico miniatura (Celda 267 mL)</td>
+                <td>Volumen reducido (267 mL); potencia de 450W causaría sobretiro incontrolable.</td>
+              </tr>
+              <tr>
+                <td><strong>Potencia Térmica Total Nominal</strong></td>
+                <td style="text-align:center;"><code style="color:#fbbf24; font-weight:700;">1.368 kW</code></td>
+                <td style="text-align:center;">0 – 1.37 kW</td>
+                <td style="text-align:center; color:#f87171;">Inrush 11.4 A</td>
+                <td>3× 450W + 1× 18W en modulación escalonada</td>
+                <td>Interlock INT-17 desfasa los ciclos a 0, 750, 1500 y 2250 ms.</td>
+              </tr>
+              <tr>
+                <td><strong>TRIACs de Potencia AC</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">25 A RMS</code></td>
+                <td style="text-align:center;">0 – 3.75 A RMS (15% carga)</td>
+                <td style="text-align:center;">800 V pico</td>
+                <td>4× BTA24-800BW (TO-220 disipador aletado)</td>
+                <td>Margen térmico del 85%; conmutación en cruce por cero (ZCS).</td>
+              </tr>
+              <tr>
+                <td><strong>Pistas PCB de Potencia AC</strong></td>
+                <td style="text-align:center;"><code style="color:#34d399;">1.80 – 2.00 mm</code></td>
+                <td style="text-align:center;">0 – 3.75 A RMS</td>
+                <td style="text-align:center;">6.0 A continuos</td>
+                <td>Cobre 1 oz (35 µm) capas Top y Bottom</td>
+                <td>Cumple IPC-2152 (elevación térmica &Delta;T &le; 20°C con >45% de reserva).</td>
+              </tr>
+              <tr>
+                <td><strong>Sumidero Lineal VCSS (MOSFETs)</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8;">47 A cont.</code></td>
+                <td style="text-align:center;">0.00 – 3.50 A (proceso)</td>
+                <td style="text-align:center; color:#f87171;">Clamp 3.50 A</td>
+                <td>2× IRLZ44NPBF en paralelo (TO-220)</td>
+                <td>$R_{DS(on)} = 0.022\ \Omega$; conmutación lineal sin armónicos EMI.</td>
+              </tr>
+              <tr>
+                <td><strong>Shunts de Corriente de Retorno</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8; font-weight:700;">0.50 Ω eq.</code></td>
+                <td style="text-align:center;">0.00 – 3.50 A</td>
+                <td style="text-align:center;">Máx 20 W</td>
+                <td>2× 1.0 Ω 10W cerámicas SQP en paralelo</td>
+                <td>A 3.50 A disipan $P = I^2 R = 6.12\text{ W}$ (<31% de capacidad, 69% derating).</td>
+              </tr>
+              <tr>
+                <td><strong>Transconductancia VCSS ($G_m$)</strong></td>
+                <td style="text-align:center;"><code style="color:#38bdf8; font-weight:700;">2.00 S</code> (A/V)</td>
+                <td style="text-align:center;">0.00 – 1.75 V en DAC</td>
+                <td style="text-align:center;">Clamp en 1.75 V</td>
+                <td>Op-Amp OPA2171 / LM358 + lazo Kelvin</td>
+                <td>$I = V_{\text{DAC}} \times 2.0\text{ A/V} = 1.75\text{ V} \times 2.0 = 3.50\text{ A}$ máx.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2. DOMINIO DE PINES Y BUSES -->
+        <h4 style="color:#a78bfa; font-size:1.0rem; margin:18px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          📌 2. Dominio de Pines, Buses y Protocolos de Comunicación
+        </h4>
+        <div class="table-container" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Señal / Función</th>
+                <th style="text-align:center;">Pin Microcontrolador</th>
+                <th style="text-align:center;">Bus / Protocolo</th>
+                <th style="text-align:center;">Dirección / Chip</th>
+                <th>Función Operativa &amp; Mapeo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>I2C SDA / SCL</strong></td>
+                <td style="text-align:center;"><code>GPIO 8 / GPIO 9</code> (ESP32-S3)</td>
+                <td style="text-align:center;">I2C Fast-Mode 400 kHz</td>
+                <td style="text-align:center;">Línea compartida</td>
+                <td>Bus de instrumentación analógica con resistencias pull-up de 4.7k a 3.3V.</td>
+              </tr>
+              <tr>
+                <td><strong>ADC 16-bit (pH &amp; Shunts)</strong></td>
+                <td style="text-align:center;">Bus I2C</td>
+                <td style="text-align:center;">I2C Continuo (860 SPS)</td>
+                <td style="text-align:center;"><code>0x48</code> (ADS1115)</td>
+                <td><strong>Canal A1:</strong> Electrodo pH (Po). <strong>A0:</strong> Ref GND2. <strong>A2-A3:</strong> Shunts VCSS.</td>
+              </tr>
+              <tr>
+                <td><strong>DAC 12-bit (Consigna VCSS)</strong></td>
+                <td style="text-align:center;">Bus I2C</td>
+                <td style="text-align:center;">I2C Rápido</td>
+                <td style="text-align:center;"><code>0x60</code> (MCP4725)</td>
+                <td>Entrega consigna $V_{\text{ref}}$ al sumidero VCSS ($0.00\text{--}3.50\text{ A}$).</td>
+              </tr>
+              <tr>
+                <td><strong>Sensor Ambiental</strong></td>
+                <td style="text-align:center;">Bus I2C</td>
+                <td style="text-align:center;">I2C Estándar</td>
+                <td style="text-align:center;"><code>0x38</code> / <code>0x76</code></td>
+                <td>AHT20 (Humedad/Temp cabina) + BMP280 (Presión barométrica).</td>
+              </tr>
+              <tr>
+                <td><strong>SPI SCK / MISO</strong></td>
+                <td style="text-align:center;"><code>GPIO 18 / GPIO 19</code> (ESP32-S3)</td>
+                <td style="text-align:center;">SPI Read-Only (4 MHz)</td>
+                <td style="text-align:center;">Línea común 4× MAX6675</td>
+                <td>Reloj y datos compartidos de termopares sin línea MOSI.</td>
+              </tr>
+              <tr>
+                <td><strong>Chip Selects CS0–CS3</strong></td>
+                <td style="text-align:center;"><code>GPIO 5, 4, 13, 14</code> (ESP32-S3)</td>
+                <td style="text-align:center;">SPI Chip Select (Active-LOW)</td>
+                <td style="text-align:center;">U3, U4, U5, U6</td>
+                <td>Lectura térmica: CS0=Tina 1, CS1=Tina 2, CS2=Tina 3, CS3=Tina 4.</td>
+              </tr>
+              <tr>
+                <td><strong>Relé ZCS Bipolar Celda</strong></td>
+                <td style="text-align:center;"><code>GPIO 20</code> (ESP32-S3)</td>
+                <td style="text-align:center;">Salida Digital (Active-LOW)</td>
+                <td style="text-align:center;">Módulo Relé Songle 5V</td>
+                <td>Corte físico simultáneo de +12V Ánodo y Retorno Cátodo en corriente nula.</td>
+              </tr>
+              <tr>
+                <td><strong>Baliza Neopixel WS2812B</strong></td>
+                <td style="text-align:center;"><code>GPIO 48</code> (ESP32-S3)</td>
+                <td style="text-align:center;">Monocable 800 kHz</td>
+                <td style="text-align:center;">LED RGB 5050 integrado</td>
+                <td>Señalización industrial ISA-18.2 (Azul Standby, Verde Run, Rojo Falla).</td>
+              </tr>
+              <tr>
+                <td><strong>Enlace Maestro $ightarrow$ Esclavo</strong></td>
+                <td style="text-align:center;"><code>GPIO 17 TX</code> (ESP32-S3)</td>
+                <td style="text-align:center;">UART Serie (9600 bps)</td>
+                <td style="text-align:center;">Pin D0 RX (Arduino Nano)</td>
+                <td>Transmisión de tramas de potencia térmica con checksum CRC-8.</td>
+              </tr>
+              <tr>
+                <td><strong>Detector Cruce por Cero (ZC)</strong></td>
+                <td style="text-align:center;"><code>Pin D3 / INT1</code> (Nano)</td>
+                <td style="text-align:center;">Interrupción Externa</td>
+                <td style="text-align:center;">Opto 4N35 en red 120 VAC</td>
+                <td>Sincronismo de red a 60 Hz en registros directos de hardware AVR.</td>
+              </tr>
+              <tr>
+                <td><strong>Disparos TRIAC D7–D10</strong></td>
+                <td style="text-align:center;"><code>D7, D8, D9, D10</code> (Nano)</td>
+                <td style="text-align:center;">Salidas Digitales 5V</td>
+                <td style="text-align:center;">4× Opto-TRIAC MOC3021M</td>
+                <td>Modulación por tiempo proporcional (Ventana 3000 ms, JELDimmer2).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3. DOMINIO QUÍMICO Y PROCESO -->
+        <h4 style="color:#34d399; font-size:1.0rem; margin:18px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          🧪 3. Dominio Químico, Tinas y Fases de Proceso (ANSI/ISA-88)
+        </h4>
+        <div class="table-container" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tina / Etapa</th>
+                <th style="text-align:center;">Capacidad</th>
+                <th>Solución Química Principal</th>
+                <th style="text-align:center;">Temperatura SP</th>
+                <th style="text-align:center;">pH Nominal</th>
+                <th style="text-align:center;">Corriente VCSS</th>
+                <th>Sustrato / Probeta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tina 1: Desengrase Alcalino</strong></td>
+                <td style="text-align:center;">2.5 L</td>
+                <td>$	ext{Na}_3	ext{PO}_4 \cdot 12	ext{H}_2	ext{O}$ (25 g/L) + Carbonato de Sodio (20 g/L)</td>
+                <td style="text-align:center; font-weight:700; color:#fbbf24;">85.0 °C</td>
+                <td style="text-align:center;">11.0 – 12.5</td>
+                <td style="text-align:center;">N/A (Térmico)</td>
+                <td>Al 6061-T6 (1.0 dm² útil)</td>
+              </tr>
+              <tr>
+                <td><strong>Tina 2: Decapado Alcalino</strong></td>
+                <td style="text-align:center;">2.5 L</td>
+                <td>$	ext{Na}_3	ext{PO}_4$ suave (30 g/L) disuelve alúmina sin atacar matriz Al</td>
+                <td style="text-align:center; font-weight:700; color:#fbbf24;">65.0 °C</td>
+                <td style="text-align:center;">10.5 – 11.5</td>
+                <td style="text-align:center;">N/A (Térmico)</td>
+                <td>Aluminio activo libre de óxido</td>
+              </tr>
+              <tr>
+                <td><strong>Tina 3: Celda Hull Zincado</strong></td>
+                <td style="text-align:center; font-weight:700; color:#38bdf8;">267 mL</td>
+                <td>$	ext{ZnCl}_2$ (60 g/L) + $	ext{KCl}$ (200 g/L) + $	ext{H}_3	ext{BO}_3$ (25 g/L)</td>
+                <td style="text-align:center; font-weight:700;">25.0 °C (Ambiente)</td>
+                <td style="text-align:center; font-weight:700; color:#34d399;">4.8 – 5.2</td>
+                <td style="text-align:center; font-weight:700; color:#38bdf8;">0.00 – 3.00 A</td>
+                <td>Ánodo Zn (99.99%) $ightarrow$ Cátodo Al</td>
+              </tr>
+              <tr>
+                <td><strong>Tina 4: Niquelado sobre Zinc</strong></td>
+                <td style="text-align:center;">2.5 L</td>
+                <td>Watts: $	ext{NiSO}_4$ (240 g/L) + $	ext{NiCl}_2$ (45 g/L) + $	ext{H}_3	ext{BO}_3$ (30 g/L)</td>
+                <td style="text-align:center; font-weight:700; color:#fbbf24;">50.0 °C</td>
+                <td style="text-align:center; font-weight:700; color:#34d399;">4.0 – 4.5</td>
+                <td style="text-align:center; font-weight:700; color:#38bdf8;">0.50 – 3.00 A</td>
+                <td>Ánodo Ni $ightarrow$ Cátodo bicapa</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4. DOMINIO DE INTERLOCKS Y SEGURIDAD -->
+        <h4 style="color:#f87171; font-size:1.0rem; margin:18px 0 8px 0; display:flex; align-items:center; gap:6px;">
+          🛡️ 4. Dominio de Seguridad Funcional, Interlocks y Límites Fail-Safe
+        </h4>
+        <div class="table-container" style="margin-bottom:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:center;">ID</th>
+                <th>Mecanismo de Interlock</th>
+                <th>Condición Numérica de Disparo</th>
+                <th>Acción Automática del Firmware</th>
+                <th style="text-align:center;">Código Error</th>
+                <th style="text-align:center;">Tipo de Rearme</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:center;"><strong>INT-01</strong></td>
+                <td>Sobretemperatura Sostenida</td>
+                <td>$T > SP + 3.0\ ^\circ	ext{C}$ durante $> 3.0	ext{ s}$ continuos</td>
+                <td>Dispara Fail-Safe: TRIACs al 0%, DAC a 0V, abre relé bipolar GPIO20.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">14</code></td>
+                <td style="text-align:center;">Latch Manual (Token)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-02</strong></td>
+                <td>Termopar Abierto / NAN</td>
+                <td>MAX6675 reporta `NAN`, $T < 0^\circ	ext{C}$ o $T > 150^\circ	ext{C}$</td>
+                <td>Apaga 4 calentadores inmediatamente, abre relé VCSS y baliza en Rojo.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">11</code></td>
+                <td style="text-align:center;">Latch Manual tras reconexión</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-04</strong></td>
+                <td>Clamp de Corriente VCSS</td>
+                <td>Consigna DAC solicita $I > 3.50	ext{ A}$ ($> 2030	ext{ LSB}$)</td>
+                <td>Saturación estricta por firmware a <strong>3.50 A</strong>. Protege shunts cerámicos.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (Operación segura)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-05</strong></td>
+                <td>Sobrecorriente Medida VCSS</td>
+                <td>$I_{\text{medida}} > 3.50	ext{ A}$ sostenida durante $> 200	ext{ ms}$</td>
+                <td>Corte ZCS determinista (<35 ms), relé abierto, calentadores al 0%.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">22</code></td>
+                <td style="text-align:center;">Latch Manual (Token)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-06</strong></td>
+                <td>Celda Abierta / Falsa Carga</td>
+                <td>$I < 0.05	ext{ A}$ con $SP > 0.30	ext{ A}$ durante $> 1000	ext{ ms}$ en DC</td>
+                <td>Desenergiza DAC, abre relé bipolar para evitar voltajes flotantes.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">23</code></td>
+                <td style="text-align:center;">Latch Manual</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-08</strong></td>
+                <td>Secuencia Zero-Current (ZCS)</td>
+                <td>Orden de apagado de celda o disparo de cualquier interlock</td>
+                <td>Rampa DAC a 0V $ightarrow$ retardo 30 ms (extinción arco) $ightarrow$ abre relé.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (<35 ms)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-10</strong></td>
+                <td>Watchdog FreeRTOS Maestro</td>
+                <td>Cualquier tarea RTOS sin latido durante $> 5000	ext{ ms}$</td>
+                <td>Supervisor fuerza corte general de actuadores y enclava Fail-Safe.</td>
+                <td style="text-align:center;"><code style="color:#f87171;">10</code></td>
+                <td style="text-align:center;">Latch Manual / Reboot</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-11</strong></td>
+                <td>Aislamiento Galvánico pH</td>
+                <td>Intento de medir pH con celda VCSS o calefactores energizados</td>
+                <td>Suspende lectura analógica de pH para evitar lazos de retorno por tierra.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (En reposo)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-13</strong></td>
+                <td>Watchdog Hardware Nano2</td>
+                <td>Bucle `loop()` del Nano2 bloqueado $> 1.0	ext{ s}$ (`WDTO_1S`)</td>
+                <td>Reset físico por hardware AVR; compuertas D7–D10 forzadas a LOW.</td>
+                <td style="text-align:center;">Reset AVR</td>
+                <td style="text-align:center;">Automático (<15 ms)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-14</strong></td>
+                <td>Watchdog UART Nano2</td>
+                <td>Nano2 no recibe trama válida desde ESP32 durante $> 4000	ext{ ms}$</td>
+                <td>Apaga inmediatamente los 4 canales de potencia (potencias al 0%).</td>
+                <td style="text-align:center;">Silencio</td>
+                <td style="text-align:center;">Automático (Al recibir trama)</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><strong>INT-17</strong></td>
+                <td>Escalonamiento Burst Firing</td>
+                <td>Modulación simultánea de calentadores de 450 W</td>
+                <td>Desfase determinista de 750 ms: $\{0, 750, 1500, 2250\}	ext{ ms}$ en ciclo 3s.</td>
+                <td style="text-align:center;">N/A</td>
+                <td style="text-align:center;">Automático (Anti-inrush)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUBSECCIÓN 2.2: GUÍA DE CABLEADO Y PINOUT FÍSICO -->
       <h3 class="subsection-title" id="guia-cableado">2.2 Guía Completa de Conexiones y Pinout Físico ("¿Qué va conectado a qué?")</h3>
       <p>
         Para facilitar el ensamble, mantenimiento, diagnóstico y reproducción del equipo sin ambigüedades,
