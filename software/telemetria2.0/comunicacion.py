@@ -10,7 +10,6 @@ import random
 import threading
 import time
 from datetime import datetime
-from tkinter import messagebox
 
 import requests
 from utilidades.calculos import calcular_disparo_triac

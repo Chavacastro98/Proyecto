@@ -24,13 +24,15 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov ruff numpy matplotlib
+          pip install pytest pytest-cov ruff numpy matplotlib -r requirements.txt
 
       - name: Verificación de estilo y linter (Ruff)
         run: |
           ruff check tests software/telemetria2.0/utilidades
 
       - name: Ejecución de pruebas unitarias y cobertura (pytest)
+        env:
+          MPLBACKEND: Agg
         run: |
           pytest --cov=software/telemetria2.0/utilidades --cov-fail-under=70
 
