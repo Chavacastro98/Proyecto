@@ -81,7 +81,7 @@ Antes de accionar cualquier interruptor, verifique que los siguientes arneses y 
 1. **Alimentación DC Principal (12 VDC / 10 A):**
    * Conecte el conector Jack de 5.5×2.1 mm (o clema de alimentación de la placa madre) a la fuente conmutada industrial. Esta línea energiza el regulador reductor Buck LM2596 (etapa lógica) y la etapa de potencia del sumidero de corriente VCSS.
 2. **Alimentación AC de Calefactores (120 VAC / 60 Hz):**
-   * Conecte el cable de red eléctrica trifilar (Fase, Neutro y Tierra física) al bloque de distribución de potencia AC. Esta línea suministra energía a las 4 resistencias calefactoras sumergibles (300 W c/u).
+   * Conecte el cable de red eléctrica trifilar (Fase, Neutro y Tierra física) al bloque de distribución de potencia AC. Esta línea suministra energía a las resistencias de inmersión: Tinas 1, 2 y 4 (**450 W c/u**, 3.75 A RMS nominal) y Tina 3 Celda Hull (**18 W**), totalizando 1.37 kW gestionados mediante modulación ZCS y escalonamiento de ventanas temporales (Interlock INT-17).
 3. **Arnés de Control de Potencia TRIAC (7 Hilos):**
    * Asegure el cable cinta plano (ribbon) de 7 hilos entre el cabezal macho de la placa principal y el conector hembra del módulo de 4 TRIACs BTA24-600B con detección de cruce por cero (ZCS).
 4. **Termopares Tipo K (MAX6675):**
