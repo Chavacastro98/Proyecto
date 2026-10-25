@@ -41,11 +41,11 @@ La aplicación interactiva está diseñada de forma **100% autónoma y ultralige
 Para colocar sobre la mesa frente al cartel o pegarlo como apoyo físico adicional:
 
 - **Archivo PDF para imprimir en papel bond blanco (Tamaño Carta / Letter):**  
-  [`HOJA_QR_MESA_SMEQ2026.pdf`](file:///C:/Proyecto/Proyecto/documentos/academicos/HOJA_QR_MESA_SMEQ2026.pdf)
+  [`HOJA_QR_MESA_SMEQ2026.pdf`](../cartel_cientifico/HOJA_QR_MESA_SMEQ2026.pdf)
 - **Previsualización de verificación:**  
-  [`HOJA_QR_MESA_preview.png`](file:///C:/Proyecto/Proyecto/documentos/academicos/HOJA_QR_MESA_preview.png)
+  [`HOJA_QR_MESA_preview.png`](../cartel_cientifico/HOJA_QR_MESA_preview.png)
 - **Script generador:**  
-  [`generar_hoja_qr_imprimible.py`](file:///C:/Proyecto/Proyecto/documentos/academicos/generar_hoja_qr_imprimible.py)
+  [`generar_hoja_qr_imprimible.py`](../scripts/generar_hoja_qr_imprimible.py)
 
 ---
 
@@ -128,7 +128,7 @@ Abre PowerShell o CMD en `C:\Proyecto\Proyecto` y ejecuta los siguientes comando
 
 ```bash
 # 1. Asegúrate de estar en la raíz del repositorio
-cd C:\Proyecto\Proyecto
+cd C:\Proyecto\ELECTRODO_32
 
 # 2. Crear una rama huérfana limpia llamada gh-pages (sin historial ni archivos fuente)
 git checkout --orphan gh-pages
@@ -167,8 +167,8 @@ git checkout main
 El código QR fue incrustado con precisión milimétrica en el cartel oficial:
 
 - **Archivo PDF listo para imprenta:**  
-  [`DOC-20261004-WA0001_con_QR.pdf`](file:///C:/Proyecto/Proyecto/documentos/academicos/DOC-20261004-WA0001_con_QR.pdf)
+  [`DOC-20261004-WA0001_con_QR.pdf`](DOC-20261004-WA0001_con_QR.pdf)
 - **Imagen del QR de alta resolución (300 DPI):**  
-  [`codigo_qr_cartel.png`](file:///C:/Proyecto/Proyecto/documentos/academicos/codigo_qr_cartel.png)
+  [`codigo_qr_cartel.png`](../cartel_cientifico/codigo_qr_cartel.png)
 - **Previsualización de verificación:**  
-  [`cartel_con_qr_preview.png`](file:///C:/Proyecto/Proyecto/documentos/academicos/cartel_con_qr_preview.png)
+  [`cartel_con_qr_preview.png`](../cartel_cientifico/cartel_con_qr_preview.png)

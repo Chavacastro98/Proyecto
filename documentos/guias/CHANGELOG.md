@@ -41,7 +41,7 @@ Todas las notas notables de cambios para este proyecto están documentadas en es
 ---
 
 ## 🚀 [RTOS 2.0.0] - Firmware Flagship, Sensor de pH Dedicado en Canal A1 y SCADA Telemetría 2.0 (2026)
-**Ubicación del código:** `firmware/esp32/RTOS2.0/` | **Nano:** `firmware/arduino_nano/nano2/` | **Telemetría:** `software/telemetria2.0/` | **Diagramas:** `visualizacion/diagramas/` | **Manual Químico:** `documentos/manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`
+**Ubicación del código:** `firmware/esp32/RTOS2.0/` | **Nano:** `firmware/arduino_nano/nano2/` | **Telemetría:** `software/telemetria2.0/` | **Diagramas:** `visualizacion/diagramas/` | **Manual Químico:** `documentos/manuales/../manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`
 
 ### 🌟 Added & Enhanced (Sensor de pH Dedicado, Calibración por Modos y SCADA 2.0)
 - **Eliminación Definitiva del Canal A0 de pH y Dedicación Exclusiva del Canal A1**:
@@ -88,7 +88,7 @@ Todas las notas notables de cambios para este proyecto están documentadas en es
   - Pre-regulador conmutado Buck LM2596 con display (12V $\rightarrow$ 6.80V) para alivio térmico del LM7805 ($\Delta V = 1.80\text{V}$, disipación $< 1\text{ W}$).
   - Resistencias de shunt actualizadas a **10W (cerámica de cemento wirewound blanca)** con margen térmico $> 60\%$.
 - **Nuevo Manual Técnico para Químicos**:
-  - Incorporación de [`MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`](MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md) con recetas completas, procedimientos SOP, cálculos de Faraday y troubleshooting.
+  - Incorporación de [`../manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md`](../manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md) con recetas completas, procedimientos SOP, cálculos de Faraday y troubleshooting.
 
 ---
 

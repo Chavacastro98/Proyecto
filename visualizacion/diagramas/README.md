@@ -29,7 +29,7 @@ Los diagramas están organizados en **dos suites independientes y completas**, e
 ## 🚀 Formas de Uso Rápido (1 Clic)
 
 ### 1. Aplicación de Escritorio Python con Selector Dinámico
-* Ejecuta **[`iniciar_visor_diagramas.bat`](iniciar_visor_diagramas.bat)** (o el lanzador raíz **[`Ver_Diagramas.bat`](../Ver_Diagramas.bat)**).
+* Ejecuta **[`iniciar_visor_diagramas.bat`](iniciar_visor_diagramas.bat)** (o el lanzador raíz **[`Ver_Diagramas.bat`](iniciar_visor_diagramas.bat)**).
 * **Selector en Vivo**: Permite alternar en cualquier momento entre **Super-Loop (v4.0)** y **FreeRTOS SMP (RTOS 2.0)** mediante el desplegable en la cabecera.
 * **Funciones**:
   * 🪟 **Abrir Todos en Ventanas Separadas**: Despliega los 11 diagramas simultáneamente en ventanas flotantes para comparación multimonitor.

@@ -31,9 +31,9 @@ Para facilitar la preparación del entorno sin necesidad de ingresar comandos en
 | :--- | :--- |
 | **[`Iniciar_Telemetria_2.0.bat`](../../Iniciar_Telemetria_2.0.bat)** | 🚀 **Lanzador Directo**: Inicia la aplicación SCADA / Telemetría 2.0 en vivo (RTOS 2.0). |
 | **[`Iniciar_Sistema.bat`](../../Iniciar_Sistema.bat)** | 🎛️ **Panel Maestro**: Menú centralizado para lanzar Telemetría 2.0, Exportador de Gráficas, Manual Químico o Diagramas. |
-| **[`Ver_Diagramas.bat`](../../Ver_Diagramas.bat)** | 🧭 **Visor de Arquitectura**: Despliega la suite de diagramas interactivos de hardware y concurrencia RTOS 2.0. |
-| **[`instalar_python_y_librerias.bat`](instaladores/instalar_python_y_librerias.bat)** | 📦 **Instalador Python**: Detecta o descarga e instala Python oficial para Windows (agregándolo al PATH) e instala dependencias (`requests`, `matplotlib`, `pandas`, `openpyxl`, etc.). |
-| **[`instalar_librerias_arduino.bat`](instaladores/instalar_librerias_arduino.bat)** | 🔌 **Instalador de Hardware**: Descarga e instala directamente todas las librerías C++ para ESP32 en tu carpeta `%USERPROFILE%\Documents\Arduino\libraries`. |
+| **[`Ver_Diagramas.bat`](../../Iniciar_Sistema.bat)** | 🧭 **Visor de Arquitectura**: Despliega la suite de diagramas interactivos de hardware y concurrencia RTOS 2.0. |
+| **[`instalar_python_y_librerias.bat`](../instaladores/instalar_python_y_librerias.bat)** | 📦 **Instalador Python**: Detecta o descarga e instala Python oficial para Windows (agregándolo al PATH) e instala dependencias (`requests`, `matplotlib`, `pandas`, `openpyxl`, etc.). |
+| **[`instalar_librerias_arduino.bat`](../instaladores/instalar_librerias_arduino.bat)** | 🔌 **Instalador de Hardware**: Descarga e instala directamente todas las librerías C++ para ESP32 en tu carpeta `%USERPROFILE%\Documents\Arduino\libraries`. |
 
 ---
 
@@ -71,7 +71,7 @@ El código fuente del nodo maestro se encuentra en **[`firmware/esp32/RTOS2.0/`]
 4. Ve a `Tools` → `Board` → `Boards Manager...`, busca **`esp32`** (por *Espressif Systems*) e instala la versión más reciente.
 
 ### Paso 2: Instalar Librerías Requeridas
-Ejecuta el script **[`instalar_librerias_arduino.bat`](instaladores/instalar_librerias_arduino.bat)** o instálalas manualmente desde el **Library Manager** (`Sketch` → `Include Library` → `Manage Libraries...`):
+Ejecuta el script **[`instalar_librerias_arduino.bat`](../instaladores/instalar_librerias_arduino.bat)** o instálalas manualmente desde el **Library Manager** (`Sketch` → `Include Library` → `Manage Libraries...`):
 - `Adafruit ADS1X15`
 - `Adafruit AHTX0`
 - `Adafruit BMP280 Library`

@@ -23,4 +23,4 @@ hardware/
 * **[Diagramas Eléctricos y Lista de Materiales (BOM)](esquemas_electricos/BOM.md)**
 * **[Simulaciones y Modelos de Control](control_matlab/)**
 
-*Para la versión basada en Arduino UNO Q, consulta [ELECTRODO_32_Uno/hardware/pcb/](../../Proyecto_Uno/hardware/pcb/carrier_shield_uno_q).*
+*Para la versión basada en Arduino UNO Q, consulta [ELECTRODO_32_Uno/hardware/pcb/](../../ELECTRODO_32_Uno/hardware/pcb/carrier_shield_uno_q).*

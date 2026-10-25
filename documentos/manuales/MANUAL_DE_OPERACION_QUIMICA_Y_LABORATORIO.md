@@ -971,7 +971,7 @@ Para compilar los firmwares de bajo nivel se requiere contar con las librerías 
 
 #### Método A: Script Automatizado de 1 Clic (Recomendado)
 El proyecto incluye un script de instalación desatendida:
-* **Ruta:** [`documentos/instaladores/instalar_librerias_arduino.bat`](instaladores/instalar_librerias_arduino.bat)
+* **Ruta:** [`documentos/../instaladores/instalar_librerias_arduino.bat`](../instaladores/instalar_librerias_arduino.bat)
 * **Operación:**
   1. Detecta automáticamente la ruta local de librerías del usuario en `%USERPROFILE%\Documents\Arduino\libraries`.
   2. Si `arduino-cli` está presente en el sistema, ejecuta `arduino-cli lib install` para cada dependencia.

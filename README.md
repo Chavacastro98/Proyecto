@@ -130,7 +130,7 @@ El proyecto cuenta con un espacio dedicado a la divulgación, transferencia tecn
 
 * **[InnovaFest Guadalajara 2026 (`eventos/innovafest/`)](eventos/innovafest/):**
   * Presentación oficial en **Expo Guadalajara** (23 de Octubre de 2026) en la categoría **Industria 4.0 y Automatización**.
-  * Expediente de postulación, [Ficha Técnica Oficial](eventos/innovafest/documentos/FICHA_TECNICA_INNOVAFEST_2026.pdf), video pitch ejecutivo y galería de más de 670 registros fotográficos clasificados del prototipo in-operando.
+  * Expediente de postulación, [Ficha Técnica Oficial](eventos/innovafest/documentos_oficiales/Ficha_Innovafest_2026_ELECTRODO32.pdf), video pitch ejecutivo y galería de más de 670 registros fotográficos clasificados del prototipo in-operando.
 * **[41º Congreso Nacional SMEQ 2026 (`eventos/smeq_2026/`)](eventos/smeq_2026/):**
   * Ponencia formal de investigación: **Folio CTS-C51** (*Optimización de Recubrimientos de Zinc sobre Aluminio 6061 T-6*).
   * [Cartel Científico Oficial en PDF](eventos/smeq_2026/cartel_cientifico/Cartel%20PModular%20044.pptx.pdf) y [Hoja de Mesa con Código QR en PDF](eventos/smeq_2026/cartel_cientifico/HOJA_QR_MESA_SMEQ2026.pdf).

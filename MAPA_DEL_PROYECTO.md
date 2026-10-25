@@ -16,8 +16,8 @@ Este documento sirve como el **índice central de ingeniería** para el ecosiste
 | **Eventos: Innovafest 2026** | [`eventos/innovafest/`](eventos/innovafest/) | Expediente de postulación, video pitch 3 min, ficha técnica y fotos. | [README Innovafest](eventos/innovafest/README.md) |
 | **Eventos: SMEQ 2026** | [`eventos/smeq_2026/`](eventos/smeq_2026/) | Cartel científico **Folio CTS-C51**, memoria in extenso y hoja QR. | [README SMEQ](eventos/smeq_2026/README.md) |
 | **SCADA Telemetría 2.0** | [`software/telemetria2.0/`](software/telemetria2.0/) | Aplicación de monitoreo en tiempo real, culombimetría y recetas ISA-88. | [constantes_sistema.json](software/telemetria2.0/utilidades/constantes_sistema.json) |
-| **Firmware ESP32-S3** | [`firmware/esp32s3/`](firmware/esp32s3/) | Control en tiempo real (Core 1) y servidor HTTP/JSON SoftAP (Core 0). | [main.cpp](firmware/esp32s3/src/main.cpp) |
-| **Firmware Arduino Nano2** | [`firmware/nano2/`](firmware/nano2/) | Disparo determinista de 4 TRIACs por tiempo proporcional (3000 ms). | [JELDimmer2.ino](firmware/nano2/JELDimmer2/JELDimmer2.ino) |
+| **Firmware ESP32-S3** | [`firmware/esp32/RTOS2.0/`](firmware/esp32/RTOS2.0/) | Control en tiempo real (Core 1) y servidor HTTP/JSON SoftAP (Core 0). | [RTOS2.0.ino](firmware/esp32/RTOS2.0/RTOS2.0.ino) |
+| **Firmware Arduino Nano2** | [`firmware/arduino_nano/nano2/`](firmware/arduino_nano/nano2/) | Disparo determinista de 4 TRIACs por tiempo proporcional (3000 ms). | [nano2.ino](firmware/arduino_nano/nano2/nano2.ino) |
 | **Manual de Operación Química** | [`documentos/manuales/`](documentos/manuales/) | Protocolos de preparación de soluciones, seguridad química y Celda Hull. | [MANUAL_DE_OPERACION.md](documentos/manuales/MANUAL_DE_OPERACION_QUIMICA_Y_LABORATORIO.md) |
 | **Showcase Web (GitHub Pages)** | [`docs/`](docs/) | Aplicación web pública con simulador interactivo y dashboard móvil. | [index.html](docs/index.html) |
 | **Suite de Pruebas (pytest)** | [`tests/`](tests/) | 62 pruebas de metrología, interlocks, JSON y validación web (95% cov). | [pytest.ini](pytest.ini) |
