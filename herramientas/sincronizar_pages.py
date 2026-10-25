@@ -15,7 +15,7 @@ def sincronizar():
     docs_dir = os.path.join(repo_root, "docs")
 
     if not os.path.exists(src_dir):
-        print(f"[AVISO] No se encontró la carpeta fuente: {src_dir}")
+        print("[INFO] La carpeta docs/ es la fuente principal para GitHub Pages.")
         return
 
     os.makedirs(docs_dir, exist_ok=True)
