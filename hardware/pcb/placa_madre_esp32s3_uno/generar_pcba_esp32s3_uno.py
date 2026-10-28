@@ -170,7 +170,7 @@ def construir_pcba_esp32s3_uno_rev4(directorio_base: str):
     designer.add_component(
         "Connector_PinSocket_2.54mm", "PinSocket_1x04_P2.54mm_Vertical",
         "J_ENV", "AHT20_BMP280_I2C", "C124375", "Zócalo 4P Sensor Ambiental I2C AHT20+BMP280 (0x38/0x76)",
-        32.0, 60.0, 0.0,
+        32.0, 120.0, 0.0,
         {"1": "+3V3", "2": "DGND", "3": "I2C_SCL", "4": "I2C_SDA"},
     )
     designer.add_component(
@@ -705,20 +705,6 @@ def construir_pcba_esp32s3_uno_rev4(directorio_base: str):
         textos_fab=textos_fab,
     )
     print(f"[DRC ESP32-S3 + UNO REV 5.0] Violaciones: {resumen['violations']} | Sin conectar: {resumen['unconnected']}")
-
-    # Sincronizar con C:\Proyecto\Proyecto\hardware_pcb
-    dir_proyecto_orig = r"C:\Proyecto\Proyecto\hardware_pcb"
-    os.makedirs(dir_proyecto_orig, exist_ok=True)
-    for item in os.listdir(directorio_base):
-        s_path = os.path.join(directorio_base, item)
-        d_path = os.path.join(dir_proyecto_orig, item)
-        if os.path.isdir(s_path):
-            if os.path.exists(d_path):
-                shutil.rmtree(d_path)
-            shutil.copytree(s_path, d_path)
-        else:
-            shutil.copy2(s_path, d_path)
-
 
 if __name__ == "__main__":
     dir_actual = os.path.dirname(os.path.abspath(__file__))

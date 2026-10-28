@@ -1,0 +1,43 @@
+Comment,Designator,Footprint,LCSC Part #,Manufacturer,Description,Quantity
+0R_STAR_TIE,R_STAR,Resistor_SMD:R_0805_2012Metric,C17477,Uniroyal,Resistor SMD 0R Jumper Estrella 0805,1
+1.0k_1%,R_NANO_RX1,Resistor_SMD:R_0805_2012Metric,C17513,Uniroyal,Resistor SMD 1.0k 1% 1/8W 0805 Divisor UART,1
+100R_0.1%,"R_KS1,R_KS2",Resistor_SMD:R_0805_2012Metric,C23186,Yageo,Resistor Precisión 100R 0.1% Kelvin Shunt,2
+100R_1%,"R_G1,R_G2",Resistor_SMD:R_0805_2012Metric,C22775,Uniroyal,Resistor SMD 100R 1% 1/8W 0805 Gate MOSFET,2
+100k,"R_D1,R_D2,R_D3,R_D4,R_DI1,R_DV1,R_S1,R_S2,R_SF,R_SG",Resistor_SMD:R_0805_2012Metric,C17407,Uniroyal,Resistor SMD 100k 1% 1/8W 0805 Divisor Celda,10
+100k_0.1%,"R_PH0A,R_PH1A",Resistor_SMD:R_0805_2012Metric,C22784,Yageo,Resistor Precisión 100k 0.1% Atenuador pH,2
+100nF,"C2,C3,C4,C5,C6,C7,C_DI,C_DV,C_M1,C_M2,C_U10,C_U9",Capacitor_SMD:C_0805_2012Metric,C49678,Samsung,Capacitor Multicapa 100nF 50V X7R 0805,12
+100nF_X7R,"C_PH0,C_PH1,C_RGB",Capacitor_SMD:C_0805_2012Metric,C49678,Samsung,Capacitor Multicapa 100nF 50V X7R 0805,3
+100uF_25V,"C_BUCK,C_BULK1",Capacitor_SMD:CP_Elec_6.3x7.7,C134551,Lelon,Capacitor Electrolítico SMD 100uF 25V 6.3x7.7,2
+10k,R_QPU,Resistor_SMD:R_0805_2012Metric,C17414,Uniroyal,Resistor SMD 10k 1% 1/8W 0805 Pull-Up Gate,1
+10uF_X5R,C_3V3,Capacitor_SMD:C_0805_2012Metric,C15850,Samsung,Capacitor Cerámico 10uF 25V X5R 0805,1
+1N4007W,D_FLY,Diode_SMD:D_SMA,C181055,MDD,Diodo Rectificador 1000V 1A Flyback Bobina,1
+1k,"R_L3V3,R_L5V,R_LRLY,R_MO1,R_MO2,R_QG",Resistor_SMD:R_0805_2012Metric,C17513,Uniroyal,Resistor SMD 1k 1% 1/8W 0805,6
+2.0k_1%,R_NANO_RX2,Resistor_SMD:R_0805_2012Metric,C17464,Uniroyal,Resistor SMD 2.0k 1% 1/8W 0805 Divisor UART,1
+200k_0.1%,"R_PH0B,R_PH1B",Resistor_SMD:R_0805_2012Metric,C22792,Yageo,Resistor Precisión 200k 0.1% Atenuador pH,2
+20k,"R_DI2,R_DV2",Resistor_SMD:R_0805_2012Metric,C4310,Uniroyal,Resistor SMD 20k 1% 1/8W 0805 Divisor Celda,2
+2k,"R_LH1,R_LH2,R_LH3,R_LH4",Resistor_SMD:R_0805_2012Metric,C17464,Uniroyal,Resistor SMD 2k 1% 1/8W 0805 LED Indicador,4
+330R,"R_OPT1,R_OPT2,R_OPT3,R_OPT4",Resistor_SMD:R_0805_2012Metric,C17630,Uniroyal,Resistor SMD 330R 1% 1/8W 0805 LED Opto,4
+330R_1%,R_RGB,Resistor_SMD:R_0805_2012Metric,C17630,Uniroyal,Resistor SMD 330R 1% 1/8W 0805 Din WS2812B,1
+33R_1%,R_SCK,Resistor_SMD:R_0805_2012Metric,C17638,Uniroyal,Resistor SMD 33R 1% 1/8W 0805 Amortig SPI,1
+33uH_3A,L_BUCK,Inductor_SMD:L_Bourns_SRR1260,C168340,Bourns,Inductor de Potencia Blindado 33uH 3.3A,1
+360R_1206,"R_TR1,R_TR2,R_TR3,R_TR4",Resistor_SMD:R_1206_3216Metric,C17924,Uniroyal,Resistor Potencia 360R 1/4W 1206 Disparo TRIAC,4
+39R_1W,"R_SN1,R_SN2,R_SN3,R_SN4",Resistor_SMD:R_2512_6332Metric,C17392,Uniroyal,Resistor Snubber 39R 1W 2512 Snubber TRIAC,4
+4.7k,R_L12V,Resistor_SMD:R_0805_2012Metric,C17673,Uniroyal,Resistor SMD 4.7k 1% 1/8W 0805 LED 12V,1
+4.7k_1%,"R_SCL,R_SDA",Resistor_SMD:R_0805_2012Metric,C17673,Uniroyal,Resistor SMD 4.7k 1% 1/8W 0805 Pull-Up I2C,2
+74HCT541D,U1,Package_SO:SOIC-20W_7.5x12.8mm_P1.27mm,C5584,Nexperia,Octal Buffer/Line Driver 3-State 5V,1
+ADS1115IDGSR,"U10,U2",Package_SO:MSOP-10_3x3mm_P0.5mm,C38553,Texas Instruments,ADC 16-Bit 860SPS I2C (pH / Shunts),2
+AMARILLO,"LED_H1,LED_H2,LED_H3,LED_H4",LED_SMD:LED_0805_2012Metric,C2297,Everlight,LED Amarillo 0805 Indicador Calentador,4
+AO3401A,Q_RLY,Package_TO_SOT_SMD:SOT-23,C15127,Alpha & Omega,MOSFET Canal P -30V -4.2A Driver Relé,1
+AZUL,LED_RLY,LED_SMD:LED_0805_2012Metric,C2293,Everlight,LED Azul 0805 Indicador Relé VCSS,1
+BLM21PG221SN1,FB1,Inductor_SMD:L_0805_2012Metric,C85832,Murata,Ferrite Bead 0805 220R @ 100MHz 2A,1
+LM1117IMPX-3.3,U_REG3V3,Package_TO_SOT_SMD:SOT-223-3_TabPin2,C6186,Texas Instruments,Regulador LDO Lineal 3.3V 800mA,1
+LM2596S-5.0,U_BUCK,Package_TO_SOT_SMD:TO-263-5_TabPin3,C12937,Texas Instruments,Regulador Buck Step-Down 3A 5V,1
+MAX6675ISA+,"U3,U4,U5,U6",Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,C11047,Maxim Integrated,Digitalizador Termopar Tipo K SPI 12b,4
+MCP4725A0T-E/CH,U7,Package_TO_SOT_SMD:SOT-23-6,C95410,Microchip Tech,DAC 12-Bit I2C con EEPROM Consigna VCSS,1
+OPA2171AIDR,"U8,U9",Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,C136706,Texas Instruments,OpAmp Rail-to-Rail 36V 2.7MHz VCSS,2
+ROJO,LED_12V,LED_SMD:LED_0805_2012Metric,C2286,Everlight,LED Rojo 0805 Indicador Power 12V,1
+SMBJ15A,D_TVS1,Diode_SMD:D_SMB,C78648,Littelfuse,Diodo TVS Unidireccional 15V Entrada DC,1
+SMBJ18CA,D_TVS_CELL,Diode_SMD:D_SMB,C78652,Littelfuse,Diodo TVS Bidireccional 18V Celda Hull,1
+SS34,D_BUCK,Diode_SMD:D_SMB,C15860,SMC Diode Solutions,Diodo Schottky 40V 3A Buck Diode,1
+VERDE,"LED_3V3,LED_5V",LED_SMD:LED_0805_2012Metric,C2296,Everlight,LED Verde 0805 Indicador Power 5V/3.3V,2
+WS2812B-B,LED_RGB,LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm,C114586,Worldsemi,LED RGB Direccionable 5050 Baliza RTOS,1

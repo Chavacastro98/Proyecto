@@ -16,7 +16,7 @@ U5,MAX6675ISA+,SOIC-8_3.9x4.9mm_P1.27mm,23.00mm,61.00mm,0.0,top
 C5,100nF,C_0805_2012Metric,23.00mm,65.50mm,0.0,top
 U6,MAX6675ISA+,SOIC-8_3.9x4.9mm_P1.27mm,23.00mm,49.50mm,0.0,top
 C6,100nF,C_0805_2012Metric,23.00mm,54.00mm,0.0,top
-J_ENV,AHT20_BMP280_I2C,PinSocket_1x04_P2.54mm_Vertical,32.00mm,99.00mm,0.0,top
+J_ENV,AHT20_BMP280_I2C,PinSocket_1x04_P2.54mm_Vertical,32.00mm,39.00mm,0.0,top
 J_PH4502C,MODULO_PH_4502C,PinSocket_1x06_P2.54mm_Vertical,32.00mm,57.00mm,0.0,top
 R_PH1A,100k_0.1%,R_0805_2012Metric,33.00mm,77.00mm,0.0,top
 R_PH1B,200k_0.1%,R_0805_2012Metric,33.00mm,72.50mm,0.0,top

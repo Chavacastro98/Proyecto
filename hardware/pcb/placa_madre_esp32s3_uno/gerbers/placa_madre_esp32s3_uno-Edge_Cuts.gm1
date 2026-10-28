@@ -1,11 +1,11 @@
 %TF.GenerationSoftware,KiCad,Pcbnew,10.0.7*%
-%TF.CreationDate,2026-10-24T10:41:17-06:00*%
+%TF.CreationDate,2026-10-24T21:17:00-06:00*%
 %TF.ProjectId,placa_madre_esp32s3_uno,706c6163-615f-46d6-9164-72655f657370,5.0-TURNKEY*%
 %TF.SameCoordinates,Original*%
 %TF.FileFunction,Profile,NP*%
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW 10.0.7) date 2026-10-24 10:41:17*
+G04 Created by KiCad (PCBNEW 10.0.7) date 2026-10-24 21:17:00*
 %MOMM*%
 %LPD*%
 G01*
