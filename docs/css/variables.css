@@ -1,10 +1,10 @@
 /* ==========================================================================
-   VARIABLES DE DISEÑO & TOKENS GLOBALES (Anti-AI Slop Engineering System)
+   VARIABLES DE DISEÑO & TOKENS GLOBALES (Dark Industrial Instrument System)
    Sistema de Control Automático de Recubrimientos Electrolíticos
-   Tema Dual: VS Dark (Predeterminado) & COMSOL Scientific Light (Día)
+   Tema Único de Precisión: VS Dark / Keysight Industrial Dark
    ========================================================================== */
 
-:root, [data-theme="dark"] {
+:root, [data-theme="dark"], [data-theme="light"] {
   --bg: #1e1e1e;
   --card-bg: #252526;
   --card-subpanel: #2d2d2d;

@@ -1260,24 +1260,13 @@ var lastOk = Date.now();
    GESTIÓN DE TEMA DUAL: VS Dark (Predeterminado) & COMSOL Light (Día)
    ========================================================================== */
 function initTheme() {
-    var saved = localStorage.getItem('electrodo32_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    updateThemeBtn(saved);
-}
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('electrodo32_theme', 'dark');
+        }
 
-function toggleTheme() {
-    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-    var next = (cur === 'dark') ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('electrodo32_theme', next);
-    updateThemeBtn(next);
-}
 
-function updateThemeBtn(th) {
-    var btn = document.getElementById('theme-btn-lbl');
-    if (!btn) return;
-    btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
-}
+
+
 
 initTheme();
 

@@ -475,7 +475,7 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
 <div class='container'>
     <!-- Header -->
     <div class='hdr'>
-        <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute; Principal</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span></button></div>
+        <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute; Principal</a></div>
         <div style='text-align:right;'>
             <div class='hdr-title'>Red Wi-Fi SoftAP</div>
             <span class='hdr-sub'>ESP32-S3 FreeRTOS RTOS 2.0</span>
@@ -567,24 +567,13 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
        GESTIÓN DE TEMA DUAL
        ========================================================================== */
     function initTheme() {
-        var saved = localStorage.getItem('electrodo32_theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', saved);
-        updateThemeBtn(saved);
-    }
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('electrodo32_theme', 'dark');
+        }
 
-    function toggleTheme() {
-        var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-        var next = (cur === 'dark') ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('electrodo32_theme', next);
-        updateThemeBtn(next);
-    }
+    
 
-    function updateThemeBtn(th) {
-        var btn = document.getElementById('theme-btn-lbl');
-        if (!btn) return;
-        btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
-    }
+    
 
     initTheme();
 

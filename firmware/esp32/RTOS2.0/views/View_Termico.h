@@ -570,9 +570,6 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
     <div class='container'>
         <div class='hub-bar'>
             <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
-            <button class='theme-btn' onclick='toggleTheme()' title='Alternar Modo Día / Noche'>
-                <span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span>
-            </button>
         </div>
 
         <div class='hdr'>
@@ -619,9 +616,8 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
            GESTIÓN DE TEMA DUAL
            ========================================================================== */
         function initTheme() {
-            var saved = localStorage.getItem('electrodo32_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
-            updateThemeBtn(saved);
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('electrodo32_theme', 'dark');
         }
 
         function toggleTheme() {
@@ -633,11 +629,7 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
             loadThermal();
         }
 
-        function updateThemeBtn(th) {
-            var btn = document.getElementById('theme-btn-lbl');
-            if (!btn) return;
-            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
-        }
+        
 
         initTheme();
 
