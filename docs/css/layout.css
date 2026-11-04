@@ -1,5 +1,6 @@
 /* ==========================================================================
-   LAYOUT, HEADER, TABS, FOOTER Y RESPONSIVIDAD MÓVIL (SAMSUNG GALAXY)
+   LAYOUT, HEADER, TABS, FOOTER Y RESPONSIVIDAD (Anti-AI Slop)
+   Diseño de Instrumento de Ingeniería (Keysight / Rohde & Schwarz / COMSOL)
    ========================================================================== */
 
 .container {
@@ -10,14 +11,11 @@
 
 /* HEADER & BANNER ACADÉMICO */
 header {
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
-  padding: 22px;
+  border-radius: 4px;
+  padding: 18px 20px;
   margin-bottom: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
 .badge-bar {
@@ -31,40 +29,90 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.74rem;
+  font-family: var(--code-font);
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 9999px;
+  padding: 3px 8px;
+  border-radius: 2px;
   border: 1px solid transparent;
 }
 
-.badge-primary { background: rgba(14, 165, 233, 0.15); color: var(--primary); border-color: rgba(14, 165, 233, 0.35); }
-.badge-amber   { background: rgba(245, 158, 11, 0.15); color: var(--amber); border-color: rgba(245, 158, 11, 0.35); }
-.badge-emerald { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border-color: rgba(16, 185, 129, 0.35); }
-.badge-purple  { background: rgba(139, 92, 246, 0.15); color: var(--purple); border-color: rgba(139, 92, 246, 0.35); }
+.badge-primary { background: var(--card-subpanel); color: var(--primary); border-color: var(--primary); }
+.badge-amber   { background: var(--card-subpanel); color: var(--amber); border-color: var(--amber); }
+.badge-emerald { background: var(--card-subpanel); color: var(--emerald); border-color: var(--emerald); }
+.badge-purple  { background: var(--card-subpanel); color: var(--purple); border-color: var(--purple); }
+
+.badge-github, .badge-pages {
+  background: var(--card-subpanel);
+  color: var(--text-muted);
+  border: 1px solid var(--card-border);
+  text-decoration: none;
+}
+.badge-github:hover, .badge-pages:hover {
+  background: var(--btn-hover-bg);
+  color: var(--text-main);
+  border-color: var(--primary);
+}
 
 h1 {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   line-height: 1.35;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
 }
 
 .subtitle {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
   margin-bottom: 14px;
   line-height: 1.45;
 }
 
+/* SELECTOR DE MODO Y TEMA */
+.mode-selector {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--card-subpanel);
+  border: 1px solid var(--card-border);
+  padding: 3px;
+  border-radius: 2px;
+}
+
+.mode-pill {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dark);
+  padding: 5px 10px;
+  border-radius: 2px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.mode-pill:hover {
+  color: var(--text-main);
+  background: var(--card-bg);
+}
+
+.mode-pill.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
 /* EQUIPO Y RESPONSABLES DEL PROYECTO */
 .credits-panel {
-  background: rgba(10, 15, 29, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  background: var(--card-subpanel);
+  border: 1px solid var(--card-border);
+  border-radius: 2px;
   padding: 12px 16px;
   margin-top: 12px;
   font-size: 0.82rem;
@@ -77,95 +125,94 @@ h1 {
   color: var(--primary);
   display: block;
   margin-bottom: 2px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  font-family: var(--code-font);
 }
 
 .credit-group span {
-  color: #e2e8f0;
+  color: var(--text-main);
   line-height: 1.4;
 }
 
-/* NAVEGACIÓN POR PESTAÑAS (TABS) - DOBLE FILA / RESPONSIVA SIN SCROLL HORIZONTAL */
+/* NAVEGACIÓN POR PESTAÑAS (TABS) */
 .nav-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 22px;
+  gap: 6px;
+  margin-bottom: 20px;
   justify-content: stretch;
 }
 
 .tab-btn {
-  flex: 1 1 calc(25% - 8px);
-  min-width: 180px;
-  background: rgba(15, 23, 42, 0.7);
+  flex: 1 1 calc(25% - 6px);
+  min-width: 170px;
+  background: var(--card-subpanel);
   border: 1px solid var(--card-border);
   color: var(--text-muted);
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 0.84rem;
+  padding: 9px 12px;
+  border-radius: 2px;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   gap: 6px;
-  min-height: 44px; /* Target táctil óptimo */
-  touch-action: manipulation;
+  min-height: 40px;
   user-select: none;
-  white-space: normal;
 }
 
 .tab-btn:hover {
-  background: rgba(30, 41, 59, 0.9);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--btn-hover-bg);
+  color: var(--text-main);
+  border-color: var(--primary);
 }
 
 .tab-btn.active {
-  background: rgba(14, 165, 233, 0.15);
+  background: var(--primary);
   border-color: var(--primary);
   color: #ffffff;
-  box-shadow: 0 0 15px var(--primary-glow);
 }
 
 /* PANELES DE CONTENIDO */
 .tab-panel {
   display: none;
-  animation: fadeIn 0.25s ease-in-out;
+  animation: fadeIn 0.15s ease-in-out;
 }
 
 .tab-panel.active { display: block; }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 footer {
   text-align: center;
-  padding: 30px 16px;
+  padding: 24px 16px;
   color: var(--text-dark);
   font-size: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--card-border);
   margin-top: 30px;
 }
 
 footer a { color: var(--primary); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
 
-/* MEDIA QUERIES PARA PANTALLAS MÓVILES (SAMSUNG GALAXY & SMARTPHONES) */
+/* MEDIA QUERIES */
 @media (max-width: 768px) {
   .container { padding: 10px; }
-  header { padding: 16px; border-radius: 12px; }
-  h1 { font-size: 1.18rem; }
-  .subtitle { font-size: 0.85rem; }
+  header { padding: 14px; border-radius: 2px; }
+  h1 { font-size: 1.15rem; }
+  .subtitle { font-size: 0.82rem; }
   .badge-bar {
     flex-direction: column;
     align-items: flex-start !important;
-    gap: 10px;
+    gap: 8px;
   }
   .mode-selector {
     width: 100%;
@@ -177,25 +224,137 @@ footer a { color: var(--primary); text-decoration: none; }
     text-align: center;
   }
   .nav-tabs {
-    gap: 6px;
-    margin-bottom: 16px;
+    gap: 4px;
+    margin-bottom: 14px;
   }
   .tab-btn {
-    flex: 1 1 calc(50% - 6px);
-    min-width: 125px;
-    padding: 8px 10px;
-    font-size: 0.78rem;
-    min-height: 42px;
+    flex: 1 1 calc(50% - 4px);
+    min-width: 120px;
+    padding: 7px 8px;
+    font-size: 0.76rem;
+    min-height: 38px;
   }
 }
 
 @media (max-width: 480px) {
   .container { padding: 6px; }
-  h1 { font-size: 1.08rem; }
-  .badge { font-size: 0.68rem; padding: 3px 8px; }
+  h1 { font-size: 1.05rem; }
+  .badge { font-size: 0.65rem; padding: 2px 6px; }
   .tab-btn {
-    padding: 8px 6px;
-    font-size: 0.74rem;
+    padding: 6px 4px;
+    font-size: 0.72rem;
   }
 }
 
+/* ==========================================================================
+   TIPOGRAFÍA Y BLOQUES DE TEXTO (Engineering Instrument Style)
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: 1.25rem;
+  letter-spacing: -0.2px;
+  border-bottom: 1px solid var(--card-border-subtle);
+  padding-bottom: 8px;
+  margin-top: 20px;
+}
+
+h3 {
+  font-size: 1.05rem;
+  margin-top: 16px;
+}
+
+h4 {
+  font-size: 0.95rem;
+}
+
+p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+strong, b {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+ul, ol {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-bottom: 14px;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+blockquote {
+  background: var(--card-subpanel);
+  border-left: 3px solid var(--primary);
+  border-radius: 2px;
+  padding: 10px 14px;
+  margin: 14px 0;
+  color: var(--text-main);
+  font-size: 0.88rem;
+}
+
+code {
+  font-family: var(--code-font);
+  background: var(--disp-bg);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 0.85em;
+  border: 1px solid var(--card-border-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+pre {
+  font-family: var(--code-font);
+  background: var(--disp-bg);
+  color: var(--text-main);
+  padding: 12px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--card-border);
+  font-size: 0.82rem;
+  overflow-x: auto;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 14px;
+}
+
+/* ==========================================================================
+   BLOQUES DE IMAGEN, DIAGRAMAS Y FIGURAS
+   ========================================================================== */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 2px;
+}
+
+figure {
+  margin: 14px 0;
+  background: var(--card-subpanel);
+  border: 1px solid var(--card-border);
+  border-radius: 2px;
+  padding: 12px;
+}
+
+figcaption {
+  font-size: 0.78rem;
+  color: var(--text-dark);
+  text-align: center;
+  margin-top: 8px;
+  font-family: var(--code-font);
+}

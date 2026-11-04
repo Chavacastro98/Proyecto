@@ -104,3 +104,13 @@ visualizacion/preview/RTOS1.3/
 firmware/**/historico/
 software/telemetria/
 /Innovafest/
+
+# Credenciales y Base de Datos Nube (Protección de Secretos)
+config_nube.json
+*.env
+!*.env.example
+*.db
+*.sqlite
+*.sqlite3
+software/telemetria2.0/experimentos/
+software/telemetria2.0/datos/*.db

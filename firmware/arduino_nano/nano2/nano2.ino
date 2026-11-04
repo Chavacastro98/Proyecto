@@ -147,7 +147,7 @@ void loop() {
         }
       }
 
-      // S7: Trama estructurada con CRC8 y secuencia: "p0,p1,p2,p3,seq*crc"
+      // S7 / INT-15: Trama obligatoria estructurada con CRC-8 y secuencia: "p0,p1,p2,p3,seq*crc"
       char *sep = strchr(rxBuf, '*');
       if (sep != NULL) {
         size_t lenCarga = sep - rxBuf;
@@ -164,18 +164,9 @@ void loop() {
             ultimaComunicacionMs = millis();
           }
         }
-        // Si el CRC es inválido, se descarta la trama y se mantienen las potencias
-      } else {
-        // Fallback retrocompatible para tramas sin CRC: "p0,p1,p2,p3"
-        int p0, p1, p2, p3;
-        if (sscanf(rxBuf, "%d,%d,%d,%d", &p0, &p1, &p2, &p3) == 4) {
-          potencias[0] = constrain(p0, 0, 100);
-          potencias[1] = constrain(p1, 0, 100);
-          potencias[2] = constrain(p2, 0, 100);
-          potencias[3] = constrain(p3, 0, 100);
-          ultimaComunicacionMs = millis();
-        }
+        // Si el CRC es inválido, se descarta la trama por seguridad y se mantienen las potencias
       }
+      // Se eliminó el fallback sin CRC para evitar aceptación espuria de ruido EMI como potencias válidas
       rxPos = 0;
     } else if (c != '\r' && rxPos < sizeof(rxBuf) - 1) {
       rxBuf[rxPos++] = c;

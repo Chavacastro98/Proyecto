@@ -1,28 +1,49 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manual de Operación de la Plataforma SCADA e Instrumentación — Guía de Botones y Parámetros</title>
   <meta name="description" content="Manual de usuario e instrumentación para la estación de control SCADA: guía botón por botón, parámetros, menús, telemetría real y adaptación a diferentes experimentos.">
   <style>
-    :root {
-      --bg-body: #0b1120;
-      --bg-surface: #111827;
-      --bg-card: #1e293b;
-      --bg-card-hover: #273549;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-accent: #38bdf8;
-      --border-color: #334155;
-      --primary: #0284c7;
-      --primary-hover: #0369a1;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --purple: #c084fc;
-      --pink: #f472b6;
-      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    :root, [data-theme="dark"] {
+      --bg-body: #1e1e1e;
+      --bg-surface: #252526;
+      --bg-card: #2d2d2d;
+      --bg-card-hover: #383838;
+      --text-main: #f1f1f1;
+      --text-muted: #cccccc;
+      --text-accent: #007acc;
+      --border-color: #3c3c3c;
+      --primary: #007acc;
+      --primary-hover: #1f8ad2;
+      --success: #4ec9b0;
+      --warning: #d7ba7d;
+      --danger: #f14c4c;
+      --purple: #c586c0;
+      --pink: #ce9178;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: Consolas, 'SF Mono', monospace;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f3f3f3;
+      --bg-surface: #ffffff;
+      --bg-card: #e8e8e8;
+      --bg-card-hover: #dedede;
+      --text-main: #1e1e1e;
+      --text-muted: #4b5563;
+      --text-accent: #005fb8;
+      --border-color: #d4d4d4;
+      --primary: #005fb8;
+      --primary-hover: #106ebe;
+      --success: #2e7d32;
+      --warning: #b45309;
+      --danger: #c62828;
+      --purple: #7b1fa2;
+      --pink: #a31515;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: Consolas, 'SF Mono', monospace;
     }
 
     * {
@@ -88,7 +109,7 @@
       text-decoration: none;
       font-size: 0.84rem;
       font-weight: 500;
-      border-radius: 6px;
+      border-radius: 2px;
       margin-bottom: 4px;
       transition: all 0.2s ease;
     }
@@ -119,7 +140,7 @@
     .hero-banner {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 2px;
       padding: 32px;
       margin-bottom: 36px;
       position: relative;
@@ -140,7 +161,7 @@
       font-size: 0.72rem;
       font-weight: 700;
       padding: 4px 10px;
-      border-radius: 20px;
+      border-radius: 2px;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       line-height: 1.2;
@@ -176,7 +197,7 @@
       align-items: center;
       gap: 8px;
       padding: 10px 18px;
-      border-radius: 6px;
+      border-radius: 2px;
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
@@ -227,7 +248,7 @@
     /* Alerts and Callouts */
     .alert {
       padding: 16px 20px;
-      border-radius: 8px;
+      border-radius: 2px;
       margin: 18px 0;
       border-left: 4px solid;
       background-color: var(--bg-card);
@@ -256,7 +277,7 @@
     .card {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 2px;
       padding: 18px;
       transition: transform 0.2s, border-color 0.2s;
       overflow-wrap: break-word;
@@ -301,7 +322,7 @@
       overflow-x: auto;
       margin: 20px 0;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 2px;
     }
 
     table {
@@ -336,7 +357,7 @@
       padding: 3px 8px;
       background-color: #1e293b;
       border: 1px solid #38bdf8;
-      border-radius: 4px;
+      border-radius: 2px;
       color: #38bdf8;
       font-weight: 700;
       font-size: 0.8rem;
@@ -347,7 +368,7 @@
     .infographic-wrapper {
       background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
       border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 12px;
+      border-radius: 2px;
       padding: 24px;
       margin: 24px 0;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
@@ -387,7 +408,7 @@
     .info-card {
       background: #0f172a;
       border: 1px solid #334155;
-      border-radius: 10px;
+      border-radius: 2px;
       padding: 18px;
       display: flex;
       flex-direction: column;
@@ -442,7 +463,7 @@
       flex-wrap: wrap;
       background: #090d16;
       padding: 9px 12px;
-      border-radius: 8px;
+      border-radius: 2px;
       border: 1px solid #1e293b;
     }
 
@@ -460,7 +481,7 @@
       align-items: center;
       gap: 6px;
       padding: 3px 8px;
-      border-radius: 5px;
+      border-radius: 2px;
       font-family: 'Consolas', monospace;
       font-size: 0.8rem;
       font-weight: 700;
@@ -506,7 +527,7 @@
       align-items: center;
       background: #060913;
       border: 1px solid #1e293b;
-      border-radius: 8px;
+      border-radius: 2px;
       padding: 10px;
     }
 
@@ -514,7 +535,7 @@
       width: 130px;
       height: 95px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 2px;
       border: 1px solid #334155;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -523,7 +544,7 @@
 
     .info-card-media img:hover {
       transform: scale(1.04);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+      box-shadow: none;
     }
 
     .info-card-media-text {
@@ -569,7 +590,7 @@
     .info-note {
       background: rgba(56, 189, 248, 0.06);
       border-left: 3px solid #38bdf8;
-      border-radius: 0 6px 6px 0;
+      border-radius: 2px;
       padding: 8px 12px;
       font-size: 0.80rem;
       color: #cbd5e1;
@@ -592,7 +613,7 @@
     .figure-box {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 2px;
       padding: 16px;
       margin: 24px 0;
       text-align: center;
@@ -601,14 +622,14 @@
     .figure-box img {
       max-width: 100%;
       height: auto;
-      border-radius: 6px;
+      border-radius: 2px;
       border: 1px solid #1e293b;
       cursor: pointer;
       transition: transform 0.2s;
     }
 
     .figure-box img:hover {
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+      box-shadow: none;
     }
 
     .figure-caption {
@@ -628,7 +649,7 @@
     code {
       background: rgba(255, 255, 255, 0.08);
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 2px;
       color: #38bdf8;
       font-size: 0.88em;
     }
@@ -636,7 +657,7 @@
     .code-box {
       background-color: #060913;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
+      border-radius: 2px;
       padding: 14px 18px;
       font-size: 0.85rem;
       font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
@@ -665,8 +686,8 @@
     .modal img {
       max-width: 95%;
       max-height: 92%;
-      border-radius: 8px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      border-radius: 2px;
+      box-shadow: none;
     }
 
     .modal-close {
@@ -708,7 +729,34 @@
       h2.section-title { color: #000 !important; border-bottom: 2px solid #000 !important; page-break-after: avoid; }
       img { max-width: 90% !important; page-break-inside: avoid; }
     }
-  </style>
+  
+    /* ESTILOS DE TEMA Y TABULAR NUMS */
+    .theme-toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 2px;
+      margin: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .theme-toggle-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--primary);
+    }
+    table, .spec-table, .chem-table, .pin-chip, pre, code, .metric-badge, .step-num {
+      font-variant-numeric: tabular-nums;
+    }
+    
+</style>
   <!-- KaTeX for math rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -722,6 +770,9 @@
       <h2>🖥️ MANUAL SCADA</h2>
       <p>Estación de Control e Instrumentación</p>
     </div>
+      <button id="theme-btn" onclick="toggleTheme()" class="theme-toggle-btn" title="Alternar Modo Oscuro / Modo Día">
+        <span id="theme-btn-lbl">&#9728; Modo D&iacute;a</span>
+      </button>
         <nav class="sidebar-nav">
       <a href="#inicio-rapido" class="active" style="color:#38bdf8;font-weight:700;">🚀 1. Guía de Inicio Rápido (Getting Started)</a>
       <a href="#inicio-paso1" style="padding-left:24px;font-size:0.78rem;">🔌 1.1 Conectar (Cableado Físico)</a>
@@ -6630,5 +6681,27 @@ ELECTRODO_32_Uno/                    # 🚀 Subproyecto Hermano: Next-Gen Edge A
       document.getElementById('imgModal').style.display = 'none';
     }
   </script>
+
+<script>
+function initTheme() {
+    var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeBtn(saved);
+}
+function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = (cur === 'dark') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('electrodo32_theme', next);
+    updateThemeBtn(next);
+}
+function updateThemeBtn(th) {
+    var lbl = document.getElementById('theme-btn-lbl');
+    if (!lbl) return;
+    lbl.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+}
+initTheme();
+</script>
 </body>
+
 </html>

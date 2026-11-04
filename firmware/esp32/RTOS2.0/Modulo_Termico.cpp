@@ -216,7 +216,12 @@ void enviarResetNano() {
   uint8_t crc = calcularCRC8((const uint8_t*)"RST", 3);
   char trama[16];
   snprintf(trama, sizeof(trama), "RST*%02X", crc);
-  Serial2.println(trama);
+  if (xUART2Mutex != NULL && xSemaphoreTake(xUART2Mutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+    Serial2.println(trama);
+    xSemaphoreGive(xUART2Mutex);
+  } else {
+    Serial2.println(trama);
+  }
 }
 
 /**
@@ -228,12 +233,7 @@ void enviarResetNano() {
  */
 void ejecutarPasoTermico1000ms() {
   if (g_failsafe_latched) {
-    char carga[32];
-    snprintf(carga, sizeof(carga), "0,0,0,0,%u", s_uart_seq++);
-    uint8_t crc = calcularCRC8((const uint8_t*)carga, strlen(carga));
-    char trama[40];
-    snprintf(trama, sizeof(trama), "%s*%02X", carga, crc);
-    Serial2.println(trama);
+    enviarApagadoEmergenciaNano();
     return;
   }
 
@@ -258,7 +258,12 @@ void ejecutarPasoTermico1000ms() {
   uint8_t crc = calcularCRC8((const uint8_t*)cargaUtil, strlen(cargaUtil));
   char tramaCompleta[40];
   snprintf(tramaCompleta, sizeof(tramaCompleta), "%s*%02X", cargaUtil, crc);
-  Serial2.println(tramaCompleta);
+  if (xUART2Mutex != NULL && xSemaphoreTake(xUART2Mutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+    Serial2.println(tramaCompleta);
+    xSemaphoreGive(xUART2Mutex);
+  } else {
+    Serial2.println(tramaCompleta);
+  }
 
   // Acumulación de energía térmica disipada en reactores (Wh, Ts = 1.0 s)
   float wTotal = (potencias[0] * 4.5f) + (potencias[1] * 4.5f) + 

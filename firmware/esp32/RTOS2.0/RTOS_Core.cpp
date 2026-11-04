@@ -28,6 +28,7 @@
 
 #include "RTOS_Core.h"
 #include "Modulo_Fuentes.h"
+#include "Modulo_Termico.h"
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -44,6 +45,9 @@ SemaphoreHandle_t xSPIMutex   = NULL;
 
 /** @brief Mutex de protección para las variables y estructuras volátiles globales */
 SemaphoreHandle_t xDataMutex  = NULL;
+
+/** @brief Mutex de protección para la línea de transmisión serie UART2 hacia Arduino Nano */
+SemaphoreHandle_t xUART2Mutex = NULL;
 
 /** @brief Mutex interno que protege el ring-buffer de eventos y logs en memoria RAM */
 static SemaphoreHandle_t xLogMutex = NULL;
@@ -113,6 +117,7 @@ void rtosInicializarNucleo() {
   if (xI2CMutex == NULL)  xI2CMutex  = xSemaphoreCreateMutex();
   if (xSPIMutex == NULL)  xSPIMutex  = xSemaphoreCreateMutex();
   if (xDataMutex == NULL) xDataMutex = xSemaphoreCreateMutex();
+  if (xUART2Mutex == NULL) xUART2Mutex = xSemaphoreCreateMutex();
   if (xLogMutex == NULL)  xLogMutex  = xSemaphoreCreateMutex();
 
   uint32_t now = millis();
@@ -312,8 +317,8 @@ void triggerFailSafe(uint8_t errCode, const char* reason) {
   digitalWrite(PIN_RELE_VCSS, !RELE_NIVEL_ACTIVO);
   estadoReleVDD = false;
 
-  // 3. Apagado inmediato de TRIACs térmicos en Arduino Nano esclavo
-  Serial2.println("0,0,0,0");
+  // 3. Apagado inmediato de TRIACs térmicos en Arduino Nano esclavo (con CRC-8 y secuencia S7/INT-15)
+  enviarApagadoEmergenciaNano();
 
   // 4. Apagar banderas de actuación bajo cerrojo de datos
   if (takeDataMutex(pdMS_TO_TICKS(50))) {
@@ -461,5 +466,27 @@ bool i2cRecuperarBus() {
     logSistema(LOG_LVL_WARN, "I2C", "Bus I2C sigue bloqueado tras 9 pulsos.");
   }
   return ok;
+}
+
+/**
+ * @brief Envía de forma atómica y segura una trama de parada total ("0,0,0,0,seq*crc") al esclavo Nano.
+ */
+void enviarApagadoEmergenciaNano() {
+  static uint8_t s_seqEmergencia = 0;
+  char carga[32];
+  snprintf(carga, sizeof(carga), "0,0,0,0,%u", s_seqEmergencia++);
+  uint8_t crc = calcularCRC8((const uint8_t*)carga, strlen(carga));
+  char trama[40];
+  snprintf(trama, sizeof(trama), "%s*%02X", carga, crc);
+
+  if (xUART2Mutex != NULL) {
+    if (xSemaphoreTake(xUART2Mutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+      Serial2.println(trama);
+      xSemaphoreGive(xUART2Mutex);
+      return;
+    }
+  }
+  // Si no se obtuvo el semáforo o aún no se inicializa, envío forzado para garantizar parada física
+  Serial2.println(trama);
 }
 

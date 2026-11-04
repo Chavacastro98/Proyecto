@@ -1,3 +1,4 @@
+from utilidades.tema import cargar_tema_preferido, aplicar_tema_a_ventana_generica
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -16,31 +17,40 @@ from tkinter import ttk, messagebox
 
 class VentanaDiagnostico:
     def __init__(self, parent_app):
+        self.tema = getattr(parent_app, 'tema_actual', cargar_tema_preferido())
         self.app = parent_app
         self.win = tk.Toplevel(self.app.root)
         self.win.title("Diagnóstico de Hardware & Auditoría de Accidentes de Sensores")
         self.win.geometry("980x700")
         self.win.minsize(860, 580)
-        self.win.configure(bg="#0b1120")
+        self.win.configure(bg=self.tema["bg_app"])
 
         self.running = True
-        self._crear_ui()
-        self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        try:
+            self._crear_ui()
+            self.aplicar_tema(self.tema)
+            self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        except Exception as e:
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+            raise e
 
         # Cargar historial existente si ya hubo eventos
         self._cargar_historial_existente()
         self._refrescar_datos()
 
     def _crear_ui(self):
-        hdr = tk.Frame(self.win, bg="#0f172a", height=50, bd=0)
+        hdr = tk.Frame(self.win, bg=self.tema["bg_panel"], height=50, bd=0)
         hdr.pack(fill="x", side="top", padx=6, pady=4)
 
         lbl_t = tk.Label(
             hdr,
             text="DIAGNÓSTICO DE HARDWARE & REGISTRO DE INCIDENCIAS EN TIEMPO REAL",
             font=("Segoe UI", 10, "bold"),
-            fg="#38bdf8",
-            bg="#0f172a"
+            fg=self.tema["accent_primary"],
+            bg=self.tema["bg_panel"]
         )
         lbl_t.pack(side="left", padx=10, pady=8)
 
@@ -77,11 +87,11 @@ class VentanaDiagnostico:
         btn_rescan.pack(side="right", padx=6)
 
         # Contenedor de Tarjetas
-        body = tk.Frame(self.win, bg="#0b1120")
+        body = tk.Frame(self.win, bg=self.tema["bg_app"])
         body.pack(fill="both", expand=True, padx=8, pady=4)
 
         # Sección 1: Bus I2C (0x38, 0x76/77, 0x48, 0x60)
-        lbl_i2c = tk.Label(body, text="Periféricos en Bus I2C (GPIO 8 / 9 — 400 kHz):", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg="#0b1120")
+        lbl_i2c = tk.Label(body, text="Periféricos en Bus I2C (GPIO 8 / 9 — 400 kHz):", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg=self.tema["bg_app"])
         lbl_i2c.pack(anchor="w", pady=(2, 2))
 
         f_i2c = tk.Frame(body, bg="#111827", bd=1, relief="solid")
@@ -93,7 +103,7 @@ class VentanaDiagnostico:
         self.card_dac = self._crear_card_sensor(f_i2c, "MCP4725 (0x60)", "DAC Corriente VCSS 12-bit", 3)
 
         # Sección 2: Bus SPI Termopares (MAX6675 T1..T4)
-        lbl_spi = tk.Label(body, text="🔥 Sensores de Temperatura SPI MAX6675 (Termopares K):", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg="#0b1120")
+        lbl_spi = tk.Label(body, text="🔥 Sensores de Temperatura SPI MAX6675 (Termopares K):", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg=self.tema["bg_app"])
         lbl_spi.pack(anchor="w", pady=(8, 2))
 
         f_spi = tk.Frame(body, bg="#111827", bd=1, relief="solid")
@@ -105,10 +115,10 @@ class VentanaDiagnostico:
         self.card_t4 = self._crear_card_sensor(f_spi, "MAX6675 #4 (CS 14)", "Tina 4: Níquel (450W)", 3)
 
         # Sección 3: Historial y Auditoría de Incidentes en Tiempo Real
-        sec_ev = tk.Frame(body, bg="#0b1120")
+        sec_ev = tk.Frame(body, bg=self.tema["bg_app"])
         sec_ev.pack(fill="both", expand=True, pady=(8, 2))
 
-        hdr_ev = tk.Frame(sec_ev, bg="#0b1120")
+        hdr_ev = tk.Frame(sec_ev, bg=self.tema["bg_app"])
         hdr_ev.pack(fill="x", pady=2)
 
         lbl_ev_title = tk.Label(
@@ -116,7 +126,7 @@ class VentanaDiagnostico:
             text="📋 AUDITORÍA DE ANOMALÍAS, ACCIDENTES Y EVENTOS (registro_eventos_fallos.csv):",
             font=("Segoe UI", 9, "bold"),
             fg="#f59e0b",
-            bg="#0b1120"
+            bg=self.tema["bg_app"]
         )
         lbl_ev_title.pack(side="left")
 
@@ -125,7 +135,7 @@ class VentanaDiagnostico:
             text="0 eventos registrados",
             font=("Segoe UI", 8),
             fg="#94a3b8",
-            bg="#0b1120"
+            bg=self.tema["bg_app"]
         )
         self.lbl_ev_count.pack(side="right")
 
@@ -138,7 +148,7 @@ class VentanaDiagnostico:
 
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("Treeview", background="#0f172a", foreground="#f8fafc", fieldbackground="#0f172a", borderwidth=0, font=("Segoe UI", 8))
+        style.configure("Treeview", background=self.tema["bg_panel"], foreground=self.tema["fg_text"], fieldbackground=self.tema["bg_panel"], borderwidth=0, font=("Segoe UI", 8))
         style.configure("Treeview.Heading", background="#1e293b", foreground="#94a3b8", font=("Segoe UI", 8, "bold"), borderwidth=0)
         style.map("Treeview.Heading", background=[("active", "#334155")])
 
@@ -211,7 +221,7 @@ class VentanaDiagnostico:
             text="Consultando estado de sensores...",
             font=("Segoe UI", 8),
             fg="#94a3b8",
-            bg="#0f172a",
+            bg=self.tema["bg_panel"],
             padx=10,
             pady=4
         )
@@ -291,7 +301,8 @@ class VentanaDiagnostico:
             return
 
         def _fetch():
-            if self.app.modo_demo:
+            is_demo = getattr(self.app, 'modo_demo', False) or getattr(self.app, 'modo_simulacion', False)
+            if is_demo:
                 res = {"aht": 1, "bmp": 1, "ads": 1, "dac": 1, "tc": [1, 1, 1, 1]}
                 # Reflejar falla simulada si aplica
                 if getattr(self.app, '_falla_sonda_activa', [False]*4)[0]:
@@ -347,7 +358,22 @@ class VentanaDiagnostico:
 
     def _on_close(self):
         self.running = False
-        self.app.win_diag = None
-        self.win.destroy()
+        try:
+            if hasattr(self.app, 'win_diag'):
+                self.app.win_diag = None
+        except Exception:
+            pass
+        try:
+            self.win.destroy()
+        except Exception:
+            pass
 
+    def aplicar_tema(self, tema):
+        """Aplica la paleta temática en caliente a la ventana de diagnostico.py."""
+        self.tema = tema
+        if not hasattr(self, 'win') or not hasattr(self.win, 'winfo_exists') or not self.win.winfo_exists():
+            return
+        aplicar_tema_a_ventana_generica(self, self.tema)
+        from utilidades.tema import aplicar_estilo_treeview
+        aplicar_estilo_treeview(self.tema)
 

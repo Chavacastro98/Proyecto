@@ -142,7 +142,8 @@ class ComunicacionMixin:
             self.lbl_csv_info.config(text="Modo Simulación activo: Generando datos sintéticos realistas en telemetria/experimentos/.", fg="#fbbf24")
         else:
             self.demo_forzar_corriente = False
-            self.btn_demo_curr.config(bg="#1e293b", fg="#94a3b8")
+            if hasattr(self, 'btn_demo_curr'):
+                self.btn_demo_curr.config(bg="#1e293b", fg="#94a3b8")
             self._probar_conexion_silenciosa()
 
 
@@ -150,11 +151,12 @@ class ComunicacionMixin:
         if not self.modo_demo:
             self.var_demo.set(True)
             self._on_toggle_demo()
-        self.demo_forzar_corriente = not self.demo_forzar_corriente
-        if self.demo_forzar_corriente:
-            self.btn_demo_curr.config(bg="#22c55e", fg="#0f172a", text="⚡ Corriente ON (1.5A)")
-        else:
-            self.btn_demo_curr.config(bg="#1e293b", fg="#94a3b8", text="⚡ Forzar Corriente")
+        self.demo_forzar_corriente = not getattr(self, 'demo_forzar_corriente', False)
+        if hasattr(self, 'btn_demo_curr'):
+            if self.demo_forzar_corriente:
+                self.btn_demo_curr.config(bg="#22c55e", fg="#0f172a", text="⚡ Corriente ON (1.5A)")
+            else:
+                self.btn_demo_curr.config(bg="#1e293b", fg="#94a3b8", text="⚡ Forzar Corriente")
 
 
     def _probar_conexion_silenciosa(self):
@@ -313,8 +315,8 @@ class ComunicacionMixin:
             "mba": 4.242
         }
 
-        if (self.etapa_corriendo and self.etapa_activa_idx in (2, 3)) or self.demo_forzar_corriente:
-            curr_target = 1.50 if (self.etapa_activa_idx == 2 or self.demo_forzar_corriente) else 1.13
+        if (self.etapa_corriendo and self.etapa_activa_idx in (2, 3)) or getattr(self, 'demo_forzar_corriente', False):
+            curr_target = 1.50 if (self.etapa_activa_idx == 2 or getattr(self, 'demo_forzar_corriente', False)) else 1.13
             modo_pul = p.get("pulsado", 0) if self.etapa_activa_idx == 2 else 0
             i_real_sim = round(curr_target + random.uniform(-0.02, 0.02), 3)
             i1_sim = round(i_real_sim * 0.502, 3)

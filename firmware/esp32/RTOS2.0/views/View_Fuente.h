@@ -3,154 +3,704 @@
 
 /**
  * =================================================================================
- * VISTA: FUENTE DE CORRIENTE VCSS (View_Fuente.h) — Versión RTOS 2.0
+ * VISTA: SALIDA DE CORRIENTE VCSS (View_Fuente.h) — FreeRTOS 2.0
  * =================================================================================
- * MEJORAS v2.0:
- *   • Amperímetro con barra VU analógica y colores dinámicos por rango
- *   • Animación de conteo suave en valores numéricos (animateValue)
- *   • Indicador de pulso visual en modo pulsado (parpadeo rítmico)
- *   • Toast notifications reemplazando alert() nativos
- *   • Heartbeat de conectividad en header
- *   • Botón de encendido con glow pulsante cuando activo
- *   • Loading spinner en botones de calibración
+ * Diseño de Instrumento de Ingeniería (Engineering Instrument - Anti-AI Slop)
+ *   • Tema dual: VS Dark (predeterminado) & COMSOL Light (Día).
+ *   • Osciloscopio técnico con retícula 10x6 sobria sin distorsiones ni scanlines falsos.
+ *   • Botones de preset rectangulares industriales y lecturas métricas monoespaciadas.
  * Almacenado en PROGMEM (Flash).
  * =================================================================================
  */
 
 const char HTML_FUENTE[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html><head><meta charset='UTF-8'>
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset='UTF-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<title>Salida de Corriente &middot; FreeRTOS</title>
+<title>Salida de Corriente &middot; RTOS 2.0</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#070b14;background-image:radial-gradient(circle at 50% 0%,rgba(56,189,248,0.08) 0,transparent 50%),radial-gradient(circle at 90% 90%,rgba(52,211,153,0.05) 0,transparent 50%);color:#e2e8f0;min-height:100vh;padding:16px 14px 32px;}
-.container{max-width:580px;margin:0 auto;}
 
-/* Header - Classic Frosted Glassmorphism */
-.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:16px 20px;background:rgba(15,23,42,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:16px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08);}
-.nav-back{color:#38bdf8;text-decoration:none;font-weight:700;font-size:0.82em;transition:0.2s;}
-.nav-back:hover{color:#7dd3fc;}
-.hdr-title{font-size:1.1em;color:white;font-weight:800;letter-spacing:-0.3px;}
-.hdr-sub{font-size:0.65em;color:#64748b;font-weight:600;display:block;margin-top:2px;letter-spacing:0.5px;}
-.hdr-hb{display:flex;align-items:center;gap:6px;font-size:0.65em;font-weight:700;color:#475569;}
-.hb-dot{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 5px #34d399;animation:hb-p 2s ease-in-out infinite;}
-.hb-dot.off{background:#ef4444;box-shadow:0 0 5px #ef4444;animation:none;}
-@keyframes hb-p{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.35;transform:scale(0.7);}}
+        /* ==========================================================================
+           VARIABLES DE TEMA: VS Dark & COMSOL Light (Instrumentación)
+           ========================================================================== */
+        :root, [data-theme="dark"] {
+            --ui-bg: #1e1e1e;
+            --ui-panel: #252526;
+            --ui-subpanel: #2d2d2d;
+            --ui-border: #3c3c3c;
+            --ui-border-subtle: #2f2f2f;
+            
+            --text-primary: #f1f1f1;
+            --text-secondary: #cccccc;
+            --text-muted: #858585;
+            --text-disabled: #555555;
 
-/* Main Instrument Card - Classic Frosted Glassmorphism */
-.card{background:rgba(15,23,42,0.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:22px;padding:24px 20px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 16px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);text-align:center;}
+            --accent-primary: #007acc;
+            --accent-hover: #1f8ad2;
+            --accent-active: #0e639c;
 
-/* Power Switch */
-.btn-pwr{width:100%;font-size:1.02em;padding:16px;border-radius:14px;font-weight:800;cursor:pointer;border:none;transition:all 0.25s cubic-bezier(.4,0,.2,1);letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-pwr:active{transform:scale(0.97);}
-.btn-pwr-off{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 20px rgba(5,150,105,0.35);}
-.btn-pwr-off:hover{background:linear-gradient(135deg,#10b981,#059669);transform:translateY(-1px);box-shadow:0 6px 24px rgba(5,150,105,0.45);}
-.btn-pwr-on{background:linear-gradient(135deg,#b91c1c,#991b1b);color:#fff;box-shadow:0 4px 20px rgba(185,28,28,0.35);animation:glow-red 2.5s ease-in-out infinite;}
-.btn-pwr-on:hover{background:linear-gradient(135deg,#dc2626,#b91c1c);transform:translateY(-1px);box-shadow:0 6px 24px rgba(220,38,38,0.45);}
-@keyframes glow-red{0%,100%{box-shadow:0 4px 20px rgba(185,28,28,0.35);}50%{box-shadow:0 4px 28px rgba(239,68,68,0.55);}}
+            --metro-ok: #4ec9b0;
+            --metro-ok-bg: rgba(78, 201, 176, 0.12);
+            --metro-ok-border: #2e8b75;
+            --metro-warn: #d7ba7d;
+            --metro-warn-bg: rgba(215, 186, 125, 0.12);
+            --metro-warn-border: #a88a4d;
+            --metro-err: #f14c4c;
+            --metro-err-bg: rgba(241, 76, 76, 0.12);
+            --metro-err-border: #aa3333;
+            
+            --disp-bg: #141414;
+            --disp-border: #333333;
+            --disp-val: #4ec9b0;
+            --disp-panel: #1b1b1c;
 
-/* Status Badge */
-.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;font-weight:800;font-size:0.78em;margin:16px 0 10px;letter-spacing:0.3px;transition:all 0.4s;}
-.status-on{background:rgba(5,150,105,0.15);backdrop-filter:blur(8px);color:#34d399;border:1px solid rgba(52,211,153,0.35);}
-.status-off{background:rgba(220,38,38,0.15);backdrop-filter:blur(8px);color:#fca5a5;border:1px solid rgba(239,68,68,0.35);}
+            --btn-bg: #2d2d2d;
+            --btn-border: #3c3c3c;
+            --btn-text: #cccccc;
+            --btn-hover-bg: #383838;
 
-/* Digital Ammeter Display */
-.meter-box{background:rgba(2,6,23,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:18px;padding:18px 14px;margin:12px 0 8px;border:1px solid rgba(56,189,248,0.2);box-shadow:0 8px 28px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.06);position:relative;overflow:hidden;}
-.meter-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.4),transparent);}
-.meter-sub{font-size:0.68em;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.amp-box{font-size:54px;font-weight:900;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;transition:color 0.5s;}
-.amp-box span{transition:color 0.5s;}
-.meter-meta{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:0.75em;color:#94a3b8;font-weight:700;}
-.meter-meta b{color:#38bdf8;}
+            --scale-track: #2a2a2a;
+            --scale-tick: #555555;
+            --scale-needle: #ffffff;
+            
+            --crt-bg: #090d12;
+            --crt-border: #1e293b;
+            --crt-grid: rgba(78, 201, 176, 0.15);
+            --crt-trace: #4ec9b0;
+        }
 
-/* VU Meter Bar */
-.vu-wrap{margin:10px 0 12px;padding:0 4px;}
-.vu-bar-bg{height:8px;background:#1e293b;border-radius:4px;overflow:hidden;position:relative;}
-.vu-bar-fill{height:100%;border-radius:4px;transition:width 0.4s ease-out;background:linear-gradient(90deg,#38bdf8,#22c55e 35%,#fbbf24 65%,#ef4444 100%);}
-.vu-labels{display:flex;justify-content:space-between;font-size:0.58em;color:#475569;font-weight:700;margin-top:3px;padding:0 2px;}
+        [data-theme="light"] {
+            --ui-bg: #f3f3f3;
+            --ui-panel: #ffffff;
+            --ui-subpanel: #e8e8e8;
+            --ui-border: #d4d4d4;
+            --ui-border-subtle: #e5e5e5;
 
-/* Pulse Indicator */
-.pulse-ind{margin:6px 0;font-size:0.72em;font-weight:800;letter-spacing:0.5px;color:#475569;height:18px;display:flex;align-items:center;justify-content:center;gap:6px;}
-.pulse-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;}
-.pulse-dot.beating{animation:pulse-beat var(--pulse-period,0.1s) ease-in-out infinite;}
-@keyframes pulse-beat{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.15;transform:scale(0.6);}}
+            --text-primary: #1e1e1e;
+            --text-secondary: #333333;
+            --text-muted: #666666;
+            --text-disabled: #a0a0a0;
 
-/* Mode Selector */
-.btn-mode-wrap{display:flex;gap:6px;margin-bottom:18px;background:rgba(15,23,42,0.8);border-radius:12px;padding:4px;border:1px solid rgba(51,65,85,0.4);}
-.btn-m{flex:1;padding:10px 8px;border-radius:9px;border:none;font-weight:800;font-size:0.78em;cursor:pointer;transition:all 0.25s;letter-spacing:0.3px;}
-.btn-m:active{transform:scale(0.96);}
-.btn-m.act{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;box-shadow:0 2px 10px rgba(37,99,235,0.4);}
-.btn-m.inact{background:transparent;color:#64748b;}
-.btn-m.inact:hover{color:#94a3b8;background:rgba(30,41,59,0.5);}
+            --accent-primary: #005fb8;
+            --accent-hover: #106ebe;
+            --accent-active: #004578;
 
-/* Controls & Sliders */
-.ctrl-group{background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);padding:14px 16px;border-radius:14px;margin-top:12px;text-align:left;border:1px solid rgba(51,65,85,0.4);}
-.ctrl-group label{font-weight:700;font-size:0.8em;color:#94a3b8;display:flex;justify-content:space-between;margin-bottom:6px;}
-.ctrl-group b{color:#38bdf8;}
-input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointer;height:6px;background:#1e293b;border-radius:3px;}
+            --metro-ok: #2e7d32;
+            --metro-ok-bg: #e8f5e9;
+            --metro-ok-border: #81c784;
+            --metro-warn: #b45309;
+            --metro-warn-bg: #fffbeb;
+            --metro-warn-border: #fcd34d;
+            --metro-err: #c62828;
+            --metro-err-bg: #ffebee;
+            --metro-err-border: #ef9a9a;
 
-/* Presets */
-.preset-wrap{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
-.btn-preset{flex:1;min-width:38px;padding:7px 2px;border-radius:7px;background:rgba(30,41,59,0.7);border:1px solid #334155;color:#94a3b8;font-size:0.72em;font-weight:800;cursor:pointer;transition:all 0.2s;text-align:center;}
-.btn-preset:hover{background:#334155;color:#38bdf8;border-color:#38bdf8;}
-.btn-preset:active{transform:scale(0.94);}
-.btn-preset.active{background:linear-gradient(135deg,#0284c7,#0369a1);border-color:#38bdf8;color:#ffffff;box-shadow:0 0 10px rgba(56,189,248,0.35);}
+            --disp-bg: #f9f9fb;
+            --disp-border: #b8b8b8;
+            --disp-val: #005fb8;
+            --disp-panel: #f0f0f4;
 
-/* Osciloscopio CRT Verde Retro */
-.crt-bezel{background:#090d12;border-radius:14px;padding:10px;border:2px solid #1e293b;box-shadow:inset 0 1px 1px rgba(255,255,255,0.08),0 8px 24px rgba(0,0,0,0.6);margin:12px 0;text-align:left;}
-.crt-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:0.68em;font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;}
-.crt-title{color:#4ade80;display:flex;align-items:center;gap:6px;letter-spacing:0.5px;}
-.crt-led{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;animation:crt-pulse 2s infinite ease-in-out;}
-@keyframes crt-pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.crt-stats{color:#86efac;font-variant-numeric:tabular-nums;letter-spacing:0.3px;}
-.crt-screen-wrap{position:relative;border-radius:10px;overflow:hidden;border:2px solid #0f2d18;box-shadow:inset 0 0 25px rgba(0,0,0,0.95),inset 0 0 6px rgba(34,197,94,0.3);background:radial-gradient(ellipse at center,#05230e 0%,#021207 70%,#010803 100%);}
-.crt-glass-glare{position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.01) 60%,transparent 100%);pointer-events:none;}
-.crt-scanlines{position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.2) 0px,rgba(0,0,0,0.2) 1px,transparent 1px,transparent 3px);pointer-events:none;}
+            --btn-bg: #e8e8e8;
+            --btn-border: #cccccc;
+            --btn-text: #222222;
+            --btn-hover-bg: #dedede;
 
-/* Panel VCSS RTOS */
-.vcss-panel{background:rgba(2,6,23,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;padding:18px 16px;margin-top:18px;border:1px solid rgba(255,255,255,0.06);text-align:left;}
-.vcss-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:0.7em;color:#94a3b8;font-weight:800;letter-spacing:0.5px;flex-wrap:wrap;gap:8px;}
-.vcss-badges{display:flex;gap:6px;}
-.vcss-badge{background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 8px;border-radius:6px;font-size:0.75em;font-weight:800;transition:all 0.3s;}
-.vcss-badge.off{background:rgba(71,85,105,0.2);color:#94a3b8;border-color:#475569;}
-.vcss-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
-.vcss-item{background:rgba(15,23,42,0.8);padding:12px 8px;border-radius:12px;text-align:center;border:1px solid rgba(51,65,85,0.4);box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);}
-.vcss-lbl{font-size:0.62em;color:#64748b;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
-.vcss-val{font-size:1.15em;font-weight:900;color:#38bdf8;font-variant-numeric:tabular-nums;transition:color 0.4s;}
-.vcss-sub{font-size:0.68em;color:#94a3b8;font-weight:700;margin-top:4px;}
-.vcss-actions{display:flex;gap:8px;flex-wrap:wrap;}
-.btn-vcss{flex:1;min-width:120px;padding:10px 8px;background:#1e293b;border:1px solid #334155;color:#cbd5e1;border-radius:9px;font-size:0.72em;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
-.btn-vcss:hover{background:#334155;color:#fff;}
-.btn-vcss:active{transform:scale(0.96);}
-.btn-vcss:disabled{opacity:0.5;cursor:wait;}
-.btn-cal{border-color:rgba(251,191,36,0.3);color:#fbbf24;}
-.btn-cal:hover{background:rgba(217,119,6,0.2);color:#fcd34d;}
-.btn-reset{border-color:rgba(56,189,248,0.35);color:#38bdf8;}
-.btn-reset:hover{background:rgba(56,189,248,0.15);color:#7dd3fc;}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin-r 0.6s linear infinite;}
-@keyframes spin-r{to{transform:rotate(360deg);}}
+            --scale-track: #e0e0e0;
+            --scale-tick: #999999;
+            --scale-needle: #005fb8;
+            
+            --crt-bg: #f8fafc;
+            --crt-border: #cbd5e1;
+            --crt-grid: rgba(0, 95, 184, 0.12);
+            --crt-trace: #005fb8;
+        }
 
-/* Toast */
-.toast-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:9999;pointer-events:none;}
-.toast{padding:12px 18px;border-radius:12px;font-size:0.82em;font-weight:700;color:#fff;pointer-events:auto;animation:toast-in 0.35s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 24px rgba(0,0,0,0.4);max-width:340px;}
-.toast.out{animation:toast-out 0.3s forwards;}
-.toast-ok{background:linear-gradient(135deg,#059669,#047857);border:1px solid #34d399;}
-.toast-err{background:linear-gradient(135deg,#b91c1c,#991b1b);border:1px solid #ef4444;}
-.toast-warn{background:linear-gradient(135deg,#b45309,#92400e);border:1px solid #f59e0b;}
-.toast-info{background:linear-gradient(135deg,#1e40af,#1e3a8a);border:1px solid #38bdf8;}
-@keyframes toast-in{from{opacity:0;transform:translateY(20px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
-@keyframes toast-out{to{opacity:0;transform:translateY(-10px) scale(0.95);}}
+        /* ==========================================================================
+           RESET & TIPOGRAFÍA DE INGENIERÍA
+           ========================================================================== */
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+            background:var(--ui-bg);
+            color:var(--text-secondary);
+            min-height:100vh;
+            padding:0;
+            transition:background 0.2s ease, color 0.2s ease;
+        }
+        .container{max-width:640px;margin:0 auto;padding:14px 14px 40px;}
 
-@media(max-width:440px){
-  .amp-box{font-size:42px;}
-  .vcss-grid{grid-template-columns:1fr;}
-  .toast-container{left:14px;right:14px;}
-}
-</style></head>
+        .mono{
+            font-family:Consolas,"Cascadia Code","SF Mono","Fira Code",monospace;
+            font-variant-numeric:tabular-nums;
+        }
+
+        /* Hub Nav */
+        .hub-bar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:12px;
+        }
+        .hub-link{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            color:var(--accent-primary);
+            text-decoration:none;
+            font-size:0.75em;
+            font-weight:700;
+            padding:4px 10px;
+            background:var(--ui-panel);
+            border-radius:3px;
+            border:1px solid var(--ui-border);
+            transition:background 0.15s, border-color 0.15s;
+        }
+        .hub-link:hover{
+            background:var(--btn-hover-bg);
+            border-color:var(--accent-primary);
+        }
+
+        /* Theme Toggle Button */
+        .theme-btn{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            background:var(--ui-panel);
+            color:var(--text-secondary);
+            border:1px solid var(--ui-border);
+            padding:4px 10px;
+            font-size:0.75em;
+            font-weight:700;
+            border-radius:3px;
+            cursor:pointer;
+            transition:all 0.15s;
+        }
+        .theme-btn:hover{
+            border-color:var(--accent-primary);
+            color:var(--text-primary);
+        }
+
+        /* Header Toolbar */
+        .hdr{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom:16px;
+            padding:12px 16px;
+            background:var(--ui-panel);
+            border-radius:4px;
+            border:1px solid var(--ui-border);
+            border-top:2px solid var(--accent-primary);
+        }
+        .nav-back{
+            color:var(--accent-primary);
+            text-decoration:none;
+            font-weight:700;
+            font-size:0.8em;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+        }
+        .nav-back:hover{text-decoration:underline;}
+        .hdr-title{
+            font-size:1.1em;
+            color:var(--text-primary);
+            font-weight:700;
+            letter-spacing:0.2px;
+        }
+        .hdr-sub{
+            font-size:0.68em;
+            color:var(--text-muted);
+            font-weight:600;
+            display:block;
+            margin-top:2px;
+            letter-spacing:0.6px;
+            font-family:Consolas,monospace;
+        }
+        .hdr-hb{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            font-size:0.68em;
+            font-weight:700;
+            color:var(--text-muted);
+            font-family:Consolas,monospace;
+        }
+        .hb-dot{
+            width:7px;
+            height:7px;
+            border-radius:2px;
+            background:var(--metro-ok);
+        }
+        .hb-dot.off{background:var(--metro-err);}
+
+        /* Tarjeta Principal */
+        .card{
+            background:var(--ui-panel);
+            border-radius:4px;
+            padding:18px 20px;
+            border:1px solid var(--ui-border);
+            margin-bottom:16px;
+            text-align:center;
+        }
+
+        /* Botón de Alimentación / Master Switch */
+        .btn-pwr{
+            width:100%;
+            font-size:0.95em;
+            padding:12px;
+            border-radius:3px;
+            font-weight:700;
+            cursor:pointer;
+            border:1px solid transparent;
+            transition:all 0.15s ease;
+            letter-spacing:0.5px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            font-family:Consolas,monospace;
+        }
+        .btn-pwr:active{transform:scale(0.99);}
+        .btn-pwr-off{
+            background:var(--metro-ok);
+            color:#ffffff;
+            border-color:var(--metro-ok-border);
+        }
+        .btn-pwr-off:hover{
+            filter:brightness(1.08);
+        }
+        .btn-pwr-on{
+            background:var(--metro-err);
+            color:#ffffff;
+            border-color:var(--metro-err-border);
+        }
+        .btn-pwr-on:hover{
+            filter:brightness(1.08);
+        }
+
+        /* Status Badge */
+        .status-badge{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            padding:3px 10px;
+            border-radius:2px;
+            font-weight:700;
+            font-size:0.74em;
+            margin:12px 0 10px;
+            letter-spacing:0.5px;
+            font-family:Consolas,monospace;
+            border:1px solid transparent;
+        }
+        .status-on{
+            background:var(--metro-ok-bg);
+            color:var(--metro-ok);
+            border-color:var(--metro-ok-border);
+        }
+        .status-off{
+            background:var(--ui-subpanel);
+            color:var(--text-muted);
+            border-color:var(--ui-border);
+        }
+
+        /* Display de Amperímetro Digital */
+        .meter-box{
+            background:var(--disp-bg);
+            border-radius:4px;
+            padding:16px 14px 14px;
+            margin:10px 0;
+            border:1px solid var(--disp-border);
+            position:relative;
+        }
+        .meter-sub{
+            font-size:0.68em;
+            color:var(--text-muted);
+            font-weight:700;
+            letter-spacing:0.8px;
+            text-transform:uppercase;
+            margin-bottom:6px;
+            font-family:Consolas,monospace;
+        }
+        .amp-box{
+            font-family:Consolas,"Cascadia Code","SF Mono",monospace;
+            font-size:58px;
+            font-weight:700;
+            letter-spacing:-1px;
+            font-variant-numeric:tabular-nums;
+            line-height:1;
+            color:var(--disp-val);
+            transition:color 0.2s;
+        }
+        .amp-box span{
+            font-size:0.5em;
+            color:var(--text-muted);
+            font-weight:600;
+            margin-left:4px;
+        }
+
+        /* Barra VU Graduada con Ticks Físicos */
+        .vu-wrap{
+            margin:14px 0 10px;
+            padding:0 4px;
+        }
+        .vu-bar-bg{
+            height:10px;
+            background:var(--scale-track);
+            border-radius:2px;
+            overflow:hidden;
+            position:relative;
+            border:1px solid var(--ui-border);
+        }
+        .vu-bar-fill{
+            height:100%;
+            border-radius:1px;
+            transition:width 0.2s ease-out;
+            background:linear-gradient(90deg, var(--accent-primary), var(--metro-ok) 50%, var(--metro-warn) 80%, var(--metro-err) 100%);
+        }
+        .vu-labels{
+            display:flex;
+            justify-content:space-between;
+            font-size:0.65em;
+            color:var(--text-muted);
+            font-weight:700;
+            margin-top:4px;
+            padding:0 2px;
+            font-family:Consolas,monospace;
+        }
+
+        /* Indicador de Cadencia de Pulso */
+        .pulse-ind{
+            margin:6px 0 8px;
+            font-size:0.72em;
+            font-weight:700;
+            letter-spacing:0.5px;
+            color:var(--text-muted);
+            height:20px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            font-family:Consolas,monospace;
+        }
+        .pulse-dot{
+            display:inline-block;
+            width:7px;
+            height:7px;
+            border-radius:2px;
+            background:var(--accent-primary);
+        }
+        .pulse-dot.beating{
+            animation:pulse-beat var(--pulse-period,0.1s) ease-in-out infinite;
+        }
+        @keyframes pulse-beat{
+            0%,100%{opacity:1;}
+            50%{opacity:0.2;}
+        }
+
+        /* Metadatos del Instrumento */
+        .meter-meta{
+            display:flex;
+            justify-content:center;
+            gap:14px;
+            margin-top:12px;
+            padding-top:10px;
+            border-top:1px solid var(--ui-border-subtle);
+            font-size:0.74em;
+            color:var(--text-muted);
+            font-weight:600;
+            font-family:Consolas,monospace;
+            flex-wrap:wrap;
+        }
+        .meter-meta b{color:var(--text-primary);}
+
+        /* Selector Segmentado de Modo (DC / Pulsado) */
+        .btn-mode-wrap{
+            display:flex;
+            gap:4px;
+            margin:14px 0;
+            background:var(--disp-panel);
+            border-radius:3px;
+            padding:3px;
+            border:1px solid var(--ui-border);
+        }
+        .btn-m{
+            flex:1;
+            padding:8px 10px;
+            border-radius:2px;
+            border:1px solid transparent;
+            font-weight:700;
+            font-size:0.76em;
+            cursor:pointer;
+            transition:all 0.15s;
+            letter-spacing:0.3px;
+            font-family:Consolas,monospace;
+        }
+        .btn-m.act{
+            background:var(--accent-primary);
+            color:#ffffff;
+            border-color:var(--accent-primary);
+        }
+        .btn-m.inact{
+            background:transparent;
+            color:var(--text-muted);
+        }
+        .btn-m.inact:hover{
+            color:var(--text-primary);
+            background:var(--btn-hover-bg);
+        }
+
+        /* Controles y Sliders Técnicos */
+        .ctrl-group{
+            background:var(--disp-panel);
+            padding:12px 14px;
+            border-radius:3px;
+            margin-top:10px;
+            text-align:left;
+            border:1px solid var(--ui-border);
+        }
+        .ctrl-group label{
+            font-weight:700;
+            font-size:0.75em;
+            color:var(--text-muted);
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:6px;
+            font-family:Consolas,monospace;
+        }
+        .ctrl-group b{color:var(--text-primary);}
+        input[type=range]{
+            width:100%;
+            accent-color:var(--accent-primary);
+            margin:6px 0 4px;
+            cursor:pointer;
+            height:5px;
+            background:var(--scale-track);
+            border-radius:2px;
+        }
+
+        /* Presets de Corriente */
+        .preset-wrap{
+            display:flex;
+            gap:4px;
+            margin-top:8px;
+            flex-wrap:wrap;
+        }
+        .btn-preset{
+            flex:1;
+            min-width:38px;
+            padding:5px 4px;
+            border-radius:2px;
+            background:var(--ui-panel);
+            border:1px solid var(--ui-border);
+            color:var(--text-secondary);
+            font-size:0.72em;
+            font-weight:700;
+            cursor:pointer;
+            transition:all 0.15s;
+            text-align:center;
+            font-family:Consolas,monospace;
+        }
+        .btn-preset:hover{
+            background:var(--btn-hover-bg);
+            border-color:var(--accent-primary);
+            color:var(--text-primary);
+        }
+        .btn-preset.active{
+            background:var(--accent-primary);
+            border-color:var(--accent-primary);
+            color:#ffffff;
+        }
+
+        /* Osciloscopio Técnico de Precisión */
+        .crt-bezel{
+            background:var(--crt-bg);
+            border-radius:4px;
+            padding:10px;
+            border:1px solid var(--crt-border);
+            margin:12px 0;
+            text-align:left;
+        }
+        .crt-hdr{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:6px;
+            font-size:0.7em;
+            font-weight:700;
+            font-family:Consolas,monospace;
+        }
+        .crt-title{
+            color:var(--crt-trace);
+            display:flex;
+            align-items:center;
+            gap:6px;
+            letter-spacing:0.5px;
+        }
+        .crt-led{
+            width:6px;
+            height:6px;
+            border-radius:2px;
+            background:var(--crt-trace);
+        }
+        .crt-stats{
+            color:var(--text-muted);
+            font-variant-numeric:tabular-nums;
+            letter-spacing:0.2px;
+        }
+        .crt-screen-wrap{
+            position:relative;
+            border-radius:3px;
+            overflow:hidden;
+            border:1px solid var(--crt-border);
+            background:var(--disp-bg);
+        }
+
+        /* Panel VCSS RTOS */
+        .vcss-panel{
+            background:var(--disp-panel);
+            border-radius:4px;
+            padding:14px;
+            margin-top:14px;
+            border:1px solid var(--ui-border);
+            text-align:left;
+        }
+        .vcss-hdr{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:10px;
+            font-size:0.72em;
+            color:var(--text-muted);
+            font-weight:700;
+            letter-spacing:0.5px;
+            flex-wrap:wrap;
+            gap:6px;
+            font-family:Consolas,monospace;
+        }
+        .vcss-badges{display:flex;gap:6px;}
+        .vcss-badge{
+            background:var(--metro-ok-bg);
+            color:var(--metro-ok);
+            border:1px solid var(--metro-ok-border);
+            padding:2px 6px;
+            border-radius:2px;
+            font-size:0.7em;
+            font-weight:700;
+            font-family:Consolas,monospace;
+        }
+        .vcss-badge.off{
+            background:var(--ui-subpanel);
+            color:var(--text-muted);
+            border-color:var(--ui-border);
+        }
+        .vcss-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:8px;
+            margin-bottom:12px;
+        }
+        .vcss-cell{
+            background:var(--ui-panel);
+            border-radius:3px;
+            padding:8px 10px;
+            border:1px solid var(--ui-border);
+        }
+        .vcss-lbl{
+            font-size:0.65em;
+            color:var(--text-muted);
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.4px;
+            font-family:Consolas,monospace;
+        }
+        .vcss-val{
+            font-size:1.05em;
+            font-weight:700;
+            color:var(--text-primary);
+            margin-top:2px;
+            font-family:Consolas,monospace;
+            font-variant-numeric:tabular-nums;
+        }
+        .btn-cal{
+            width:100%;
+            padding:8px 10px;
+            background:var(--btn-bg);
+            color:var(--text-secondary);
+            border:1px solid var(--ui-border);
+            border-radius:3px;
+            font-weight:700;
+            font-size:0.75em;
+            cursor:pointer;
+            transition:all 0.15s;
+            font-family:Consolas,monospace;
+        }
+        .btn-cal:hover:not(:disabled){
+            background:var(--btn-hover-bg);
+            border-color:var(--accent-primary);
+            color:var(--text-primary);
+        }
+        .btn-cal:active{transform:scale(0.99);}
+        .btn-cal:disabled{opacity:0.5;cursor:wait;}
+        .spin{
+            display:inline-block;
+            width:10px;
+            height:10px;
+            border:2px solid currentColor;
+            border-top-color:transparent;
+            border-radius:50%;
+            animation:spin-r 0.6s linear infinite;
+            vertical-align:middle;
+            margin-right:4px;
+        }
+        @keyframes spin-r{to{transform:rotate(360deg);}}
+
+        /* Toast Notifications */
+        .toast-container{
+            position:fixed;
+            bottom:16px;
+            right:16px;
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+            z-index:9999;
+            pointer-events:none;
+        }
+        .toast{
+            padding:8px 12px;
+            border-radius:3px;
+            font-size:0.75em;
+            font-weight:700;
+            color:var(--text-primary);
+            background:var(--ui-panel);
+            border:1px solid var(--ui-border);
+            pointer-events:auto;
+            max-width:320px;
+            display:flex;
+            align-items:center;
+            gap:6px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.25);
+            font-family:Consolas,monospace;
+        }
+        .toast.out{opacity:0;transition:opacity 0.2s;}
+        .toast-ok{border-left:3px solid var(--metro-ok);}
+        .toast-err{border-left:3px solid var(--metro-err);}
+        .toast-warn{border-left:3px solid var(--metro-warn);}
+        .toast-info{border-left:3px solid var(--accent-primary);}
+    
+        .vcss-val { font-variant-numeric: tabular-nums; }
+        .vcss-sub { font-size: 0.75em; color: var(--text-muted); font-family: Consolas, monospace; }
+        .meter-meta { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-muted); margin-top: 6px; font-family: Consolas, monospace; }
+
+</style>
+</head>
 <body>
+
     <div class='container'>
         <div class='hdr'>
-            <a href='/' class='nav-back'>&larr; Men&uacute;</a>
+            <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute;</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span></button></div>
             <div style='text-align:center'>
                 <span class='hdr-title'>Salida de Corriente</span>
                 <span class='hdr-sub'>CONTROL VCSS &middot; SHUNT DUAL &middot; RTOS 2.0</span>
@@ -266,7 +816,36 @@ input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointe
 
     <div class='toast-container' id='toast-box'></div>
 
-    <script>
+    
+<script>
+
+        /* ==========================================================================
+           GESTIÓN DE TEMA DUAL
+           ========================================================================== */
+        function initTheme() {
+            var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeBtn(saved);
+        }
+
+        function toggleTheme() {
+            var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = (cur === 'dark') ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('electrodo32_theme', next);
+            updateThemeBtn(next);
+            drawPulseWave();
+        }
+
+        function updateThemeBtn(th) {
+            var btn = document.getElementById('theme-btn-lbl');
+            if (!btn) return;
+            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+        }
+
+        initTheme();
+
+
         var fuenteActiva = false;
         var isDragging = false;
         var compActivo = true;
@@ -276,11 +855,11 @@ input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointe
         function showToast(msg,type){var box=document.getElementById('toast-box');var t=document.createElement('div');t.className='toast toast-'+(type||'info');t.innerHTML=msg;box.appendChild(t);setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove();},300);},3500);}
 
         function ampColor(a){
-            if(a<0.05) return '#38bdf8';
-            if(a<1.0) return '#38bdf8';
-            if(a<2.0) return '#22c55e';
-            if(a<3.0) return '#fbbf24';
-            return '#ef4444';
+            var isDark = (document.documentElement.getAttribute('data-theme') !== 'light');
+            if(a < 0.05) return isDark ? '#858585' : '#888888';
+            if(a < 2.0) return isDark ? '#4ec9b0' : '#2e7d32';
+            if(a < 3.5) return isDark ? '#d7ba7d' : '#b45309';
+            return isDark ? '#f14c4c' : '#c62828';
         }
 
         function animateValue(el, start, end, dur) {
@@ -455,6 +1034,7 @@ input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointe
             sendParam("a", val, 0);
         }
 
+        
         function drawPulseWave(){
             var cv = document.getElementById('wave-canvas');
             if(!cv) return;
@@ -462,15 +1042,80 @@ input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointe
             var w = cv.width, h = cv.height;
             ctx.clearRect(0, 0, w, h);
             
-            // Retícula clásica de osciloscopio verde CRT (10x6 divisiones)
+            var isDark = (document.documentElement.getAttribute('data-theme') !== 'light');
+            var gridColor = isDark ? 'rgba(78, 201, 176, 0.15)' : 'rgba(0, 95, 184, 0.15)';
+            var traceColor = isDark ? '#4ec9b0' : '#005fb8';
+            var textColor = isDark ? '#858585' : '#666666';
+
+            // Retícula métrica técnica (10x6)
             var numDivX = 10, numDivY = 6;
             var stepX = w / numDivX, stepY = h / numDivY;
             
-            ctx.strokeStyle = 'rgba(74, 222, 128, 0.15)';
+            ctx.strokeStyle = gridColor;
             ctx.lineWidth = 1;
             for(var x = stepX; x < w; x += stepX){
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
             }
+            for(var y = stepY; y < h; y += stepY){
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+            
+            // Eje base (cero)
+            var padBottom = 16, padTop = 18;
+            var yZero = h - padBottom;
+            ctx.strokeStyle = gridColor;
+            ctx.beginPath(); ctx.moveTo(0, yZero); ctx.lineTo(w, yZero); ctx.stroke();
+            
+            var freq = parseInt(document.getElementById('slide-freq') ? document.getElementById('slide-freq').value : 10) || 10;
+            var duty = parseInt(document.getElementById('slide-duty') ? document.getElementById('slide-duty').value : 50) || 50;
+            var curBits = parseInt(document.getElementById('slide-amp') ? document.getElementById('slide-amp').value : 1024) || 0;
+            var aCalc = ((curBits / 4095.0) * 7.06) || 0.0;
+            
+            var scaleMax = (aCalc > 3.8) ? 7.06 : 4.0;
+            var availableHeight = yZero - padTop;
+            var pulseHeight = (aCalc / scaleMax) * availableHeight;
+            if(pulseHeight < 0) pulseHeight = 0;
+            if(pulseHeight > availableHeight) pulseHeight = availableHeight;
+            var yHigh = yZero - pulseHeight;
+            
+            var periodMs = (1000.0 / freq);
+            var tonMs = periodMs * (duty / 100.0);
+            var toffMs = periodMs - tonMs;
+            var statsEl = document.getElementById('wave-stats');
+            if(statsEl) statsEl.innerText = 'T = ' + periodMs.toFixed(1) + ' ms | t_on = ' + tonMs.toFixed(1) + ' ms | t_off = ' + toffMs.toFixed(1) + ' ms';
+            
+            var numCycles = Math.max(1.2, Math.min(16.0, 1.0 + Math.pow(freq / 100.0, 0.75) * 14.0));
+            var cycleWidth = w / numCycles;
+            var highWidth = cycleWidth * (duty / 100.0);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, yZero);
+            for(var c = 0; c < numCycles + 1; c++){
+                var startX = c * cycleWidth;
+                var downX = startX + highWidth;
+                var endX = startX + cycleWidth;
+                
+                ctx.lineTo(startX, yZero);
+                ctx.lineTo(startX, yHigh);
+                ctx.lineTo(downX, yHigh);
+                ctx.lineTo(downX, yZero);
+                ctx.lineTo(endX, yZero);
+            }
+            
+            ctx.strokeStyle = traceColor;
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            
+            ctx.fillStyle = textColor;
+            ctx.font = '10px Consolas, monospace';
+            ctx.fillText('CH1: ' + (scaleMax / 4.0 * 1.0).toFixed(1) + ' A/DIV', 8, 13);
+            ctx.fillText('0.00 A', 8, h - 4);
+            if(aCalc > 0.05){
+                ctx.fillStyle = traceColor;
+                ctx.fillText('\u25b2 ' + aCalc.toFixed(2) + ' A', 8, yHigh - 4 > 14 ? yHigh - 4 : 24);
+            }
+        }
+
             for(var y = stepY; y < h; y += stepY){
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
             }
@@ -671,6 +1316,6 @@ input[type=range]{width:100%;accent-color:#38bdf8;margin:8px 0 4px;cursor:pointe
 
         setInterval(loadFuenteData, 1500); loadFuenteData();
         setInterval(updHb, 1000);
-    </script>
-</body></html>
+    
+</script>
 )rawliteral";

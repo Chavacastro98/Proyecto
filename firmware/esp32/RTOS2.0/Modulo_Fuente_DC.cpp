@@ -27,7 +27,6 @@
 
 static uint16_t s_ultimoCodigoDAC_DC = 0xFFFF;
 static uint32_t s_tiempoInicioDC = 0;
-static float    s_integralPI = 0.0f;
 static uint32_t s_tiempoSobrecorriente = 0;
 static uint32_t s_tiempoCeldaAbierta = 0;
 static uint8_t  s_fallosConsecutivosADS = 0;
@@ -36,7 +35,6 @@ static uint8_t  s_fallosConsecutivosDAC = 0;
 void inicializarFuenteDC() {
   s_ultimoCodigoDAC_DC = 0xFFFF;
   s_tiempoInicioDC = 0;
-  s_integralPI = 0.0f;
   s_tiempoSobrecorriente = 0;
   s_tiempoCeldaAbierta = 0;
   s_fallosConsecutivosADS = 0;
@@ -45,7 +43,6 @@ void inicializarFuenteDC() {
 
 void resetLazoDC() {
   s_tiempoInicioDC = millis();
-  s_integralPI = 0.0f;
   s_ultimoCodigoDAC_DC = 0xFFFF;
   s_tiempoSobrecorriente = 0;
   s_tiempoCeldaAbierta = 0;
@@ -85,14 +82,12 @@ void ejecutarCicloFuenteDC() {
 
   bool localActiva = false;
   bool localPulsado = false;
-  bool localComp = false;
   int  localSetpoint = 0;
   int  localAmplitud = 0;
 
   if (takeDataMutex(pdMS_TO_TICKS(10))) {
     localActiva = fuenteActiva;
     localPulsado = modoPulsado;
-    localComp = compensacionLazoCerrado;
     localSetpoint = amplitudDAC_Setpoint;
     localAmplitud = amplitudDAC;
     giveDataMutex();

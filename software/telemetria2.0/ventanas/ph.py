@@ -1,3 +1,4 @@
+from utilidades.tema import cargar_tema_preferido, aplicar_tema_a_ventana_generica
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -45,12 +46,13 @@ AUTH_HEADERS = {"X-Auth-Token": "admin"}
 class VentanaPH:
 
     def __init__(self, parent_app):
+        self.tema = getattr(parent_app, 'tema_actual', cargar_tema_preferido())
         self.app = parent_app
         self.win = tk.Toplevel(self.app.root)
         self.win.title("🧪 Metrología y Calibración de pH — Canal Dedicado A1 (Telemetría 2.0)")
         self.win.geometry("1240x860")
         self.win.minsize(1050, 720)
-        self.win.configure(bg="#0b1120")
+        self.win.configure(bg=self.tema["bg_app"])
 
         # Control de ciclo de vida del hilo de adquisición propio
         self._running = True
@@ -98,8 +100,16 @@ class VentanaPH:
         self.nvs_mba = 4.242
         self.nvs_modo = 1
 
-        self._crear_ui()
-        self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        try:
+            self._crear_ui()
+            self.aplicar_tema(self.tema)
+            self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        except Exception as e:
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+            raise e
 
         # Iniciar hilo de polling independiente para lecturas continuas
         self._hilo_poll_ph = threading.Thread(target=self._worker_polling_ph, daemon=True)
@@ -113,18 +123,28 @@ class VentanaPH:
 
 
     def _crear_ui(self):
+        is_day = (getattr(self, 'tema', {}).get('nombre') == 'dia') or getattr(self.app, 'modo_dia', False)
+        tema = getattr(self, 'tema', None) or (TEMA_DIA if is_day else TEMA_NOCHE)
+        ax_bg = tema.get("plot_axes_bg", "#ffffff" if is_day else "#101115")
+        fig_bg = tema.get("plot_bg", "#ffffff" if is_day else "#0a0b0d")
+        grid_col = tema.get("plot_grid", "#e5e5e5" if is_day else "#1e2027")
+        spine_col = tema.get("plot_spine", "#a8a29e" if is_day else "#2a2c35")
+        tick_col = tema.get("fg_dim", "#44403c" if is_day else "#9ca3af")
+        title_col = tema.get("fg_text", "#1c1917" if is_day else "#f1f5f9")
+
         # 1. Header Bar
-        hdr = tk.Frame(self.win, bg="#0f172a", height=50, bd=0)
+        hdr = tk.Frame(self.win, bg=self.tema["bg_panel"], height=50, bd=0)
         hdr.pack(fill="x", side="top", padx=8, pady=6)
 
         lbl_t = tk.Label(
             hdr,
             text="🧪 METROLOGÍA & CALIBRACIÓN DE PH — CANAL DEDICADO A1 (RTOS 2.0)",
             font=("Segoe UI", 11, "bold"),
-            fg="#38bdf8",
-            bg="#0f172a"
+            fg=self.tema["accent_primary"],
+            bg=self.tema["bg_panel"]
         )
         lbl_t.pack(side="left", padx=12, pady=10)
+        self.lbl_hdr_ph_title = lbl_t
 
         self.lbl_interlock = tk.Label(
             hdr,
@@ -153,43 +173,43 @@ class VentanaPH:
         self.btn_toggle_sonda.pack(side="right", padx=6)
 
         # 2. Main Body: Split Paneles Gráficos y Panel de Control
-        body = tk.Frame(self.win, bg="#0b1120")
+        body = tk.Frame(self.win, bg=self.tema["bg_app"])
         body.pack(fill="both", expand=True, padx=8, pady=2)
 
         # Frame de Gráficos (Lado Izquierdo + Centro)
-        frame_plots = tk.Frame(body, bg="#0b1120")
+        frame_plots = tk.Frame(body, bg=self.tema["bg_app"])
         frame_plots.pack(side="left", fill="both", expand=True)
 
-        self.fig = Figure(figsize=(8.8, 6.2), dpi=100, facecolor="#0b1120")
+        self.fig = Figure(figsize=(8.8, 6.2), dpi=100, facecolor=fig_bg)
         self.fig.subplots_adjust(left=0.08, right=0.92, top=0.92, bottom=0.10, wspace=0.30)
 
         # Subplot 1: Osciloscopio de Voltaje y pH en Vivo
         self.ax_osc = self.fig.add_subplot(121)
-        self.ax_osc.set_facecolor("#050b14")
-        self.ax_osc.set_title("1. Dinámica de Estabilización & Oscilaciones", color="#f8fafc", fontsize=9.5, fontweight="bold")
-        self.ax_osc.set_xlabel("Tiempo (s)", color="#94a3b8", fontsize=8.5, fontweight="bold")
-        self.ax_osc.set_ylabel("Voltaje Sonda (V)", color="#38bdf8", fontsize=8.5, fontweight="bold")
-        self.ax_osc.tick_params(colors="#94a3b8", labelsize=7.5)
-        self.ax_osc.grid(True, linestyle=":", color="#334155", alpha=0.6)
+        self.ax_osc.set_facecolor(ax_bg)
+        self.ax_osc.set_title("1. Dinámica de Estabilización & Oscilaciones", color=title_col, fontsize=9.5, fontweight="bold")
+        self.ax_osc.set_xlabel("Tiempo (s)", color=tick_col, fontsize=8.5, fontweight="bold")
+        self.ax_osc.set_ylabel("Voltaje Sonda (V)", color=self.tema["accent_primary"], fontsize=8.5, fontweight="bold")
+        self.ax_osc.tick_params(colors=tick_col, labelsize=7.5)
+        self.ax_osc.grid(True, linestyle=":", color=grid_col, alpha=0.5)
 
         self.ax_osc_ph = self.ax_osc.twinx()
-        self.ax_osc_ph.set_ylabel("pH Calculado", color="#c084fc", fontsize=8.5, fontweight="bold")
-        self.ax_osc_ph.tick_params(colors="#c084fc", labelsize=7.5)
+        self.ax_osc_ph.set_ylabel("pH Calculado", color="#6d28d9" if is_day else "#c084fc", fontsize=8.5, fontweight="bold")
+        self.ax_osc_ph.tick_params(colors="#6d28d9" if is_day else "#c084fc", labelsize=7.5)
 
         # Subplot 2: Curva de Calibración (mV vs pH)
         self.ax_nernst = self.fig.add_subplot(122)
-        self.ax_nernst.set_facecolor("#050b14")
-        self.ax_nernst.set_title("2. Curva Experimental vs Teórica", color="#f8fafc", fontsize=9.5, fontweight="bold")
-        self.ax_nernst.set_xlabel("pH Nominal de Buffer", color="#94a3b8", fontsize=8.5, fontweight="bold")
-        self.ax_nernst.set_ylabel("Potencial Referenciado E (mV)", color="#38bdf8", fontsize=8.5, fontweight="bold")
-        self.ax_nernst.tick_params(colors="#94a3b8", labelsize=7.5)
-        self.ax_nernst.grid(True, linestyle=":", color="#334155", alpha=0.6)
+        self.ax_nernst.set_facecolor(ax_bg)
+        self.ax_nernst.set_title("2. Curva Experimental vs Teórica", color=title_col, fontsize=9.5, fontweight="bold")
+        self.ax_nernst.set_xlabel("pH Nominal de Buffer", color=tick_col, fontsize=8.5, fontweight="bold")
+        self.ax_nernst.set_ylabel("Potencial Referenciado E (mV)", color=self.tema["accent_primary"], fontsize=8.5, fontweight="bold")
+        self.ax_nernst.tick_params(colors=tick_col, labelsize=7.5)
+        self.ax_nernst.grid(True, linestyle=":", color=grid_col, alpha=0.5)
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame_plots)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 
         # Panel de Control y Calibración (Lado Derecho)
-        panel_ctrl = tk.Frame(body, bg="#0f172a", width=360, padx=12, pady=10)
+        panel_ctrl = tk.Frame(body, bg=self.tema["bg_panel"], width=360, padx=12, pady=10)
         panel_ctrl.pack(side="right", fill="y", padx=(8, 0))
         panel_ctrl.pack_propagate(False)
 
@@ -200,20 +220,20 @@ class VentanaPH:
             f_badge,
             text="⚡ CANAL DEDICADO A1 — 860 SPS CONTINUOS",
             font=("Segoe UI", 8, "bold"),
-            fg="#38bdf8",
+            fg=self.tema["accent_primary"],
             bg="#1e293b"
         )
         lbl_badge.pack(anchor="center")
 
         # Selector de Modo de Calibración
-        lbl_sel_modo = tk.Label(panel_ctrl, text="MODELO MATEMÁTICO DE CALIBRACIÓN:", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg="#0f172a")
+        lbl_sel_modo = tk.Label(panel_ctrl, text="MODELO MATEMÁTICO DE CALIBRACIÓN:", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg=self.tema["bg_panel"])
         lbl_sel_modo.pack(anchor="w", pady=(0, 4))
 
-        f_modo_sel = tk.Frame(panel_ctrl, bg="#0f172a")
+        f_modo_sel = tk.Frame(panel_ctrl, bg=self.tema["bg_panel"])
         f_modo_sel.pack(fill="x", pady=(0, 8))
-        rb_m0 = tk.Radiobutton(f_modo_sel, text="Teórico", variable=self.var_modo_cal, value=0, bg="#0f172a", fg="#94a3b8", selectcolor="#1e293b", activebackground="#0f172a", font=("Segoe UI", 8), command=self._enviar_calibracion_esp32)
-        rb_m1 = tk.Radiobutton(f_modo_sel, text="2 Puntos (7 y 4)", variable=self.var_modo_cal, value=1, bg="#0f172a", fg="#94a3b8", selectcolor="#1e293b", activebackground="#0f172a", font=("Segoe UI", 8), command=self._enviar_calibracion_esp32)
-        rb_m2 = tk.Radiobutton(f_modo_sel, text="3 Puntos (4, 7, 10)", variable=self.var_modo_cal, value=2, bg="#0f172a", fg="#94a3b8", selectcolor="#1e293b", activebackground="#0f172a", font=("Segoe UI", 8), command=self._enviar_calibracion_esp32)
+        rb_m0 = tk.Radiobutton(f_modo_sel, text="Teórico", variable=self.var_modo_cal, value=0, bg=self.tema["bg_panel"], fg="#94a3b8", selectcolor=self.tema["bg_entry"], activebackground=self.tema["bg_card_inner"], font=("Segoe UI", 8), command=self._enviar_calibracion_esp32)
+        rb_m1 = tk.Radiobutton(f_modo_sel, text="2 Puntos (7 y 4)", variable=self.var_modo_cal, value=1, bg=self.tema["bg_panel"], fg="#94a3b8", selectcolor=self.tema["bg_entry"], activebackground=self.tema["bg_card_inner"], font=("Segoe UI", 8), command=self._enviar_calibracion_esp32)
+        rb_m2 = tk.Radiobutton(f_modo_sel, text="3 Puntos (4, 7, 10)", variable=self.var_modo_cal, value=2, bg=self.tema["bg_panel"], fg="#94a3b8", selectcolor=self.tema["bg_entry"], activebackground=self.tema["bg_card_inner"], font=("Segoe UI", 8), command=self._enviar_calibracion_esp32)
         rb_m0.pack(side="left", padx=1)
         rb_m1.pack(side="left", padx=1)
         rb_m2.pack(side="left", padx=1)
@@ -241,13 +261,14 @@ class VentanaPH:
         self.lbl_estab_det.pack(anchor="center", pady=(2, 0))
 
         # Lecturas en Vivo del Canal A1 (Instrument HUD Rectangular Grande)
-        f_live = tk.Frame(panel_ctrl, bg="#050b14", padx=16, pady=14, highlightbackground="#0284c7", highlightthickness=2)
-        f_live.pack(fill="x", pady=(0, 10))
+        self.frame_live = tk.Frame(panel_ctrl, bg="#050b14", padx=16, pady=14, highlightbackground="#0284c7", highlightthickness=2)
+        self.frame_live.pack(fill="x", pady=(0, 10))
+        f_live = self.frame_live
 
         self.lbl_live_ph = tk.Label(f_live, text="7.00 pH", font=("Segoe UI", 40, "bold"), fg="#34d399", bg="#050b14")
         self.lbl_live_ph.pack(anchor="center")
 
-        self.lbl_ph_state = tk.Label(f_live, text="[ NEUTRO · BUFFER 7.00 ]", font=("Segoe UI", 9, "bold"), fg="#38bdf8", bg="#050b14")
+        self.lbl_ph_state = tk.Label(f_live, text="[ NEUTRO · BUFFER 7.00 ]", font=("Segoe UI", 9, "bold"), fg=self.tema["accent_primary"], bg="#050b14")
         self.lbl_ph_state.pack(anchor="center", pady=(2, 4))
 
         self.lbl_live_v = tk.Label(f_live, text="Voltaje Sonda: 2.50 V | ADC A1: 1.765 V", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg="#050b14")
@@ -267,31 +288,32 @@ class VentanaPH:
         self.lbl_gain_m.pack(anchor="w", pady=(1, 0))
 
         # NUEVO PANEL: Puntos Guardados en Flash NVS por Modo
-        f_nvs = tk.LabelFrame(
+        self.frame_nvs = tk.LabelFrame(
             panel_ctrl,
             text=" 💾 Puntos Guardados en Flash NVS ",
             font=("Segoe UI", 8, "bold"),
-            fg="#38bdf8",
-            bg="#0f172a",
+            fg=self.tema["accent_primary"],
+            bg=self.tema["bg_panel"],
             padx=8,
             pady=4
         )
-        f_nvs.pack(fill="x", pady=(0, 8))
+        self.frame_nvs.pack(fill="x", pady=(0, 8))
+        f_nvs = self.frame_nvs
 
-        self.lbl_nvs_v7 = tk.Label(f_nvs, text="Buffer Neutro (pH 7): 1.7650 V", font=("Consolas", 8), fg="#cbd5e1", bg="#0f172a")
+        self.lbl_nvs_v7 = tk.Label(f_nvs, text="Buffer Neutro (pH 7): 1.7650 V", font=("Consolas", 8), fg="#cbd5e1", bg=self.tema["bg_panel"])
         self.lbl_nvs_v7.pack(anchor="w")
 
-        self.lbl_nvs_v4 = tk.Label(f_nvs, text="Buffer Ácido (pH 4):  2.4720 V", font=("Consolas", 8), fg="#cbd5e1", bg="#0f172a")
+        self.lbl_nvs_v4 = tk.Label(f_nvs, text="Buffer Ácido (pH 4):  2.4720 V", font=("Consolas", 8), fg="#cbd5e1", bg=self.tema["bg_panel"])
         self.lbl_nvs_v4.pack(anchor="w")
 
-        self.lbl_nvs_v10 = tk.Label(f_nvs, text="Buffer Básico (pH 10): 1.0580 V", font=("Consolas", 8), fg="#cbd5e1", bg="#0f172a")
+        self.lbl_nvs_v10 = tk.Label(f_nvs, text="Buffer Básico (pH 10): 1.0580 V", font=("Consolas", 8), fg="#cbd5e1", bg=self.tema["bg_panel"])
         self.lbl_nvs_v10.pack(anchor="w")
 
-        self.lbl_nvs_pend = tk.Label(f_nvs, text="Pendiente m: -4.242 pH/V", font=("Consolas", 8, "bold"), fg="#34d399", bg="#0f172a")
+        self.lbl_nvs_pend = tk.Label(f_nvs, text="Pendiente m: -4.242 pH/V", font=("Consolas", 8, "bold"), fg="#34d399", bg=self.tema["bg_panel"])
         self.lbl_nvs_pend.pack(anchor="w", pady=(2, 0))
 
         # Botones de Calibración por Buffer
-        lbl_cap = tk.Label(panel_ctrl, text="CALIBRACIÓN POR BUFFER:", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg="#0f172a")
+        lbl_cap = tk.Label(panel_ctrl, text="CALIBRACIÓN POR BUFFER:", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg=self.tema["bg_panel"])
         lbl_cap.pack(anchor="w", pady=(0, 3))
 
         self.btn_cap7 = tk.Button(
@@ -334,7 +356,7 @@ class VentanaPH:
         self.btn_cap10.pack(fill="x", pady=2)
 
         # Enviar / Sincronizar y Restablecer
-        f_acts = tk.Frame(panel_ctrl, bg="#0f172a")
+        f_acts = tk.Frame(panel_ctrl, bg=self.tema["bg_panel"])
         f_acts.pack(fill="x", pady=(4, 6))
 
         self.btn_send_esp = tk.Button(
@@ -398,7 +420,7 @@ class VentanaPH:
             text="Archivo CSV: Inactivo",
             font=("Segoe UI", 7),
             fg="#64748b",
-            bg="#0f172a",
+            bg=self.tema["bg_panel"],
             wraplength=330
         )
         self.lbl_csv_status.pack(anchor="w", pady=(3, 0))
@@ -684,7 +706,7 @@ class VentanaPH:
                             self.lbl_estab_status.config(text="● ESTABILIDAD ALCANZADA (LISTO)", fg="#34d399")
                         else:
                             self.es_estable = False
-                            self.lbl_estab_status.config(text=f"● ESTABILIZANDO ({self.duracion_estable:.1f}/3.0s)", fg="#38bdf8")
+                            self.lbl_estab_status.config(text=f"● ESTABILIZANDO ({self.duracion_estable:.1f}/3.0s)", fg=self.tema["accent_primary"])
                     else:
                         self.tiempo_inicio_estable = None
                         self.duracion_estable = 0.0
@@ -739,16 +761,28 @@ class VentanaPH:
 
 
     def _actualizar_panel_nvs(self):
-        """Actualiza los textos del panel de datos NVS guardados."""
+        """Actualiza los textos del panel de datos NVS guardados con estilos acordes al tema."""
         try:
+            is_day = (getattr(self, 'tema', {}).get('nombre') == 'dia')
+            bg_box = self.tema.get("bg_card_inner", self.tema["bg_card_inner"])
+            fg_txt = self.tema.get("fg_text", "#1c1917" if is_day else "#cbd5e1")
+            
+            if hasattr(self, 'frame_nvs') and self.frame_nvs:
+                self.frame_nvs.config(bg=bg_box, fg=self.tema.get("fg_dim", fg_txt))
+            for lbl in (self.lbl_nvs_v7, self.lbl_nvs_v4, self.lbl_nvs_v10):
+                lbl.config(bg=bg_box, fg=fg_txt)
+
             self.lbl_nvs_v7.config(text=f"Buffer Neutro (pH 7): {self.nvs_v7:.4f} V")
             self.lbl_nvs_v4.config(text=f"Buffer Ácido (pH 4):  {self.nvs_v4:.4f} V")
             self.lbl_nvs_v10.config(text=f"Buffer Básico (pH 10): {self.nvs_v10:.4f} V")
+            
             modo = self.var_modo_cal.get()
-            if modo == 2:
-                self.lbl_nvs_pend.config(text=f"m_ác: {self.nvs_mac:.3f} | m_bás: {self.nvs_mba:.3f} pH/V")
-            else:
-                self.lbl_nvs_pend.config(text=f"Pendiente m: {self.nvs_mph:.3f} pH/V")
+            pend_txt = f"m_ác: {self.nvs_mac:.3f} | m_bás: {self.nvs_mba:.3f} pH/V" if modo == 2 else f"Pendiente m: {self.nvs_mph:.3f} pH/V"
+            self.lbl_nvs_pend.config(
+                text=pend_txt,
+                bg="#d1fae5" if is_day else "#064e3b",
+                fg="#047857" if is_day else "#34d399"
+            )
         except Exception:
             pass
 
@@ -784,35 +818,56 @@ class VentanaPH:
 
 
     def _redibujar_graficas(self):
+        is_day = (getattr(self, 'tema', {}).get('nombre') == 'dia') or getattr(self.app, 'modo_dia', False)
+        tema = getattr(self, 'tema', None) or (TEMA_DIA if is_day else TEMA_NOCHE)
+        ax_bg = tema.get("plot_axes_bg", "#ffffff" if is_day else "#101115")
+        fig_bg = tema.get("plot_bg", "#ffffff" if is_day else "#0a0b0d")
+        grid_col = tema.get("plot_grid", "#e5e5e5" if is_day else "#1e2027")
+        spine_col = tema.get("plot_spine", "#a8a29e" if is_day else "#2a2c35")
+        tick_col = tema.get("fg_dim", "#44403c" if is_day else "#9ca3af")
+        title_col = tema.get("fg_text", "#1c1917" if is_day else "#f1f5f9")
+        leg_bg = "#ffffff" if is_day else "#16181f"
+        leg_ec = "#cbd5e1" if is_day else "#334155"
+        leg_fg = tema.get("fg_text", "#1c1917" if is_day else "#f1f5f9")
+        col_v = self.tema["accent_primary"]
+        col_ph = "#6d28d9" if is_day else "#c084fc"
+
+        self.fig.patch.set_facecolor(fig_bg)
+
         # 1. Panel 1: Osciloscopio Temporal
         self.ax_osc.clear()
         self.ax_osc_ph.clear()
 
-        self.ax_osc.set_facecolor("#050b14")
-        self.ax_osc.set_title("1. Dinámica de Estabilización & Oscilaciones", color="#f8fafc", fontsize=9.5, fontweight="bold")
-        self.ax_osc.set_xlabel("Tiempo Relativo (s)", color="#94a3b8", fontsize=8.5, fontweight="bold")
-        self.ax_osc.set_ylabel("Voltaje Sonda (V)", color="#38bdf8", fontsize=8.5, fontweight="bold")
-        self.ax_osc.grid(True, linestyle=":", color="#334155", alpha=0.6)
+        self.ax_osc.set_facecolor(ax_bg)
+        self.ax_osc.set_title("1. Dinámica de Estabilización & Oscilaciones", color=title_col, fontsize=9.5, fontweight="bold")
+        self.ax_osc.set_xlabel("Tiempo Relativo (s)", color=tick_col, fontsize=8.5, fontweight="bold")
+        self.ax_osc.set_ylabel("Voltaje Sonda (V)", color=col_v, fontsize=8.5, fontweight="bold")
+        self.ax_osc.tick_params(colors=tick_col, labelsize=7.5)
+        self.ax_osc.grid(True, linestyle=":", color=grid_col, alpha=0.5)
+        for s in self.ax_osc.spines.values():
+            s.set_color(spine_col)
 
         if self.buf_t:
-            self.ax_osc.plot(self.buf_t, self.buf_v1, color="#38bdf8", lw=1.8, label="V Sonda (V)")
-            self.ax_osc_ph.plot(self.buf_t, self.buf_ph1, color="#c084fc", ls="--", lw=1.5, label="pH")
-            self.ax_osc_ph.set_ylabel("pH Calculado", color="#c084fc", fontsize=8.5, fontweight="bold")
+            self.ax_osc.plot(self.buf_t, self.buf_v1, color=col_v, lw=1.8, label="V Sonda (V)")
+            self.ax_osc_ph.plot(self.buf_t, self.buf_ph1, color=col_ph, ls="--", lw=1.5, label="pH")
+            self.ax_osc_ph.set_ylabel("pH Calculado", color=col_ph, fontsize=8.5, fontweight="bold")
 
             if self.es_estable and len(self.buf_v1) > 5:
                 v_medio = float(np.mean(self.buf_v1[-12:]))
-                self.ax_osc.axhspan(v_medio - 0.040, v_medio + 0.040, color="#34d399", alpha=0.18, label="Banda Estable (±40 mV)")
+                self.ax_osc.axhspan(v_medio - 0.040, v_medio + 0.040, color="#047857" if is_day else "#34d399", alpha=0.18, label="Banda Estable (±40 mV)")
 
-        self.ax_osc.tick_params(colors="#94a3b8", labelsize=7.5)
-        self.ax_osc_ph.tick_params(colors="#c084fc", labelsize=7.5)
+        self.ax_osc.tick_params(colors=tick_col, labelsize=7.5)
+        self.ax_osc_ph.tick_params(colors=col_ph, labelsize=7.5)
 
         # 2. Panel 2: Curva de Calibración
         self.ax_nernst.clear()
-        self.ax_nernst.set_facecolor("#050b14")
-        self.ax_nernst.set_title("2. Curva Experimental vs Teórica", color="#f8fafc", fontsize=9.5, fontweight="bold")
-        self.ax_nernst.set_xlabel("pH Nominal del Buffer", color="#94a3b8", fontsize=8.5, fontweight="bold")
-        self.ax_nernst.set_ylabel("Potencial Referenciado E (mV)", color="#38bdf8", fontsize=8.5, fontweight="bold")
-        self.ax_nernst.grid(True, linestyle=":", color="#334155", alpha=0.6)
+        self.ax_nernst.set_facecolor(ax_bg)
+        self.ax_nernst.set_title("2. Curva Experimental vs Teórica", color=title_col, fontsize=9.5, fontweight="bold")
+        self.ax_nernst.set_xlabel("pH Nominal del Buffer", color=tick_col, fontsize=8.5, fontweight="bold")
+        self.ax_nernst.set_ylabel("Potencial Referenciado E (mV)", color=col_v, fontsize=8.5, fontweight="bold")
+        self.ax_nernst.grid(True, linestyle=":", color=grid_col, alpha=0.5)
+        for s in self.ax_nernst.spines.values():
+            s.set_color(spine_col)
 
         pts = self.cal_puntos
         v7_ref = pts.get(7, 1.765)
@@ -835,7 +890,7 @@ class VentanaPH:
         slope_exp_mv, slope_pct_real, r2, _ = self._calcular_regresion_nernst()
 
         if len(x_pts) >= 2:
-            self.ax_nernst.scatter(x_pts, y_pts_mv, color="#38bdf8", edgecolor="#ffffff", s=75, zorder=5, label="Puntos Calibrados")
+            self.ax_nernst.scatter(x_pts, y_pts_mv, color=self.tema["accent_primary"], edgecolor="#ffffff", s=75, zorder=5, label="Puntos Calibrados")
 
             coef = np.polyfit(x_pts, y_pts_mv, 1)
             poly_fn = np.poly1d(coef)
@@ -853,7 +908,7 @@ class VentanaPH:
 
         self.ax_nernst.set_xlim(2, 12)
         self.ax_nernst.tick_params(colors="#94a3b8", labelsize=7.5)
-        self.ax_nernst.legend(loc="upper right", facecolor="#1e293b", edgecolor="#334155", labelcolor="#cbd5e1", fontsize=7.5)
+        self.ax_nernst.legend(loc="upper right", facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg, fontsize=7.5)
 
         self.canvas.draw_idle()
 
@@ -1090,7 +1145,7 @@ class VentanaPH:
         )
         if fpath:
             try:
-                self.fig.savefig(fpath, dpi=300, bbox_inches="tight", facecolor="#0b1120")
+                self.fig.savefig(fpath, dpi=300, bbox_inches="tight", facecolor=self.tema["bg_app"])
                 messagebox.showinfo("Exportación Exitosa", f"Certificado metrológico a 300 DPI guardado en:\n{fpath}")
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo guardar la imagen:\n{e}")
@@ -1130,3 +1185,55 @@ class VentanaPH:
 
     def _cerrar(self):
         self._on_close()
+
+    def aplicar_tema(self, tema):
+        """Aplica la paleta temática en caliente a la ventana de ph.py."""
+        self.tema = tema
+        if not hasattr(self, 'win') or not hasattr(self.win, 'winfo_exists') or not self.win.winfo_exists():
+            return
+        aplicar_tema_a_ventana_generica(self, self.tema)
+        is_day = (tema.get("nombre") == "dia")
+
+        if hasattr(self, 'lbl_hdr_ph_title') and self.lbl_hdr_ph_title:
+            self.lbl_hdr_ph_title.config(bg=tema["bg_header"], fg=tema["accent_primary"])
+
+        # HUD de Lectura en Vivo
+        if hasattr(self, 'frame_live') and self.frame_live:
+            self.frame_live.config(bg=tema["bg_card_inner"], highlightbackground="#047857" if is_day else "#0284c7")
+        if hasattr(self, 'lbl_live_ph') and self.lbl_live_ph:
+            self.lbl_live_ph.config(bg=tema["bg_card_inner"], fg="#047857" if is_day else "#34d399")
+        if hasattr(self, 'lbl_ph_state') and self.lbl_ph_state:
+            self.lbl_ph_state.config(bg=tema["bg_card_inner"], fg=self.tema["accent_primary"])
+        if hasattr(self, 'lbl_live_v') and self.lbl_live_v:
+            self.lbl_live_v.config(bg=tema["bg_card_inner"], fg=tema["fg_dim"])
+
+        # Botones de Calibración
+        if hasattr(self, 'btn_cap7') and self.btn_cap7:
+            self.btn_cap7.config(bg="#1d4ed8" if is_day else "#0284c7", fg="#ffffff")
+        if hasattr(self, 'btn_cap4') and self.btn_cap4:
+            self.btn_cap4.config(bg="#c2410c" if is_day else "#d97706", fg="#ffffff")
+        if hasattr(self, 'btn_cap10') and self.btn_cap10:
+            self.btn_cap10.config(bg="#6d28d9" if is_day else "#7c3aed", fg="#ffffff")
+        if hasattr(self, 'btn_sync_nvs') and self.btn_sync_nvs:
+            self.btn_sync_nvs.config(bg="#047857" if is_day else "#059669", fg="#ffffff")
+        if hasattr(self, 'btn_reset_nvs') and self.btn_reset_nvs:
+            self.btn_reset_nvs.config(bg="#dedbd4" if is_day else "#1e293b", fg="#1c1917" if is_day else "#cbd5e1")
+        if hasattr(self, 'btn_rec_ph') and self.btn_rec_ph:
+            self.btn_rec_ph.config(bg="#b91c1c" if is_day else "#dc2626", fg="#ffffff")
+
+        # Badges superiores
+        if hasattr(self, 'btn_toggle_sonda') and self.btn_toggle_sonda:
+            if getattr(self, 'sonda_ph_activa', False):
+                self.btn_toggle_sonda.config(bg="#047857" if is_day else "#059669", fg="#ffffff")
+            else:
+                self.btn_toggle_sonda.config(bg="#fee2e2" if is_day else "#7f1d1d", fg="#b91c1c" if is_day else "#fca5a5")
+
+        if hasattr(self, 'lbl_interlock') and self.lbl_interlock:
+            if getattr(self, 'interlock_permitido', True):
+                self.lbl_interlock.config(bg="#d1fae5" if is_day else "#064e3b", fg="#047857" if is_day else "#34d399")
+            else:
+                self.lbl_interlock.config(bg="#fee2e2" if is_day else "#7f1d1d", fg="#b91c1c" if is_day else "#fca5a5")
+
+        self._actualizar_panel_nvs()
+        self._redibujar_graficas()
+

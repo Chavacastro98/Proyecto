@@ -1,3 +1,4 @@
+from utilidades.tema import cargar_tema_preferido, aplicar_tema_a_ventana_generica
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -16,12 +17,13 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class VentanaFaraday:
     def __init__(self, parent_app):
+        self.tema = getattr(parent_app, 'tema_actual', cargar_tema_preferido())
         self.app = parent_app
         self.win = tk.Toplevel(self.app.root)
         self.win.title("⚖️ Balanza Gravimétrica y Rendimiento Faradaico — Proceso Bicapa (Zn + Ni)")
         self.win.geometry("1100x780")
         self.win.minsize(960, 660)
-        self.win.configure(bg="#0b1120")
+        self.win.configure(bg=self.tema["bg_app"])
 
         # Modo por defecto: BICAPA (Protocolo de Tesis: pesaje único final)
         self.var_metal = tk.StringVar(value="BICAPA")
@@ -29,12 +31,20 @@ class VentanaFaraday:
         self.var_peso_fin = tk.StringVar(value=f"{getattr(self.app, 'peso_final_g', 0.0):.4f}")
         self.var_area = tk.StringVar(value=f"{getattr(self.app, 'area_placa_cm2', 65.0):.1f}")
 
-        self._crear_ui()
-        self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        try:
+            self._crear_ui()
+            self.aplicar_tema(self.tema)
+            self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        except Exception as e:
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+            raise e
 
     def _crear_ui(self):
         # 1. Header
-        hdr = tk.Frame(self.win, bg="#0f172a", height=50, bd=0)
+        hdr = tk.Frame(self.win, bg=self.tema["bg_panel"], height=50, bd=0)
         hdr.pack(fill="x", side="top", padx=6, pady=4)
 
         lbl_t = tk.Label(
@@ -42,7 +52,7 @@ class VentanaFaraday:
             text="BALANZA GRAVIMÉTRICA & RENDIMIENTO FARADAICO: m_teo = Σ (Q_i × M_i) / (z_i × F)",
             font=("Segoe UI", 10, "bold"),
             fg="#f472b6",
-            bg="#0f172a"
+            bg=self.tema["bg_panel"]
         )
         lbl_t.pack(side="left", padx=10, pady=8)
 
@@ -51,12 +61,12 @@ class VentanaFaraday:
             text="Constante de Faraday: F = 96,485.33 C/mol  |  Zn: 0.33880 mg/C  |  Ni: 0.30414 mg/C",
             font=("Segoe UI", 8, "italic"),
             fg="#94a3b8",
-            bg="#0f172a"
+            bg=self.tema["bg_panel"]
         )
         lbl_info.pack(side="right", padx=10)
 
         # 2. Cuerpo en 2 Columnas
-        body = tk.Frame(self.win, bg="#0b1120")
+        body = tk.Frame(self.win, bg=self.tema["bg_app"])
         body.pack(fill="both", expand=True, padx=6, pady=2)
 
         # Columna Izquierda: Controles, Balanza y Resultados
@@ -89,7 +99,7 @@ class VentanaFaraday:
         lbl_b_desc.pack(anchor="w", pady=(2, 0))
 
         # 2.1 Selector de Metal / Modo de Ensayo
-        lbl_sec_m = tk.Label(col_ctrl, text="1. Modo de Electrodeposición y Constantes:", font=("Segoe UI", 8, "bold"), fg="#38bdf8", bg="#111827")
+        lbl_sec_m = tk.Label(col_ctrl, text="1. Modo de Electrodeposición y Constantes:", font=("Segoe UI", 8, "bold"), fg=self.tema["accent_primary"], bg="#111827")
         lbl_sec_m.pack(anchor="w", padx=10, pady=(6, 2))
 
         f_metal = tk.Frame(col_ctrl, bg="#1e293b", padx=6, pady=6)
@@ -101,11 +111,11 @@ class VentanaFaraday:
             variable=self.var_metal,
             value="BICAPA",
             font=("Segoe UI", 7, "bold"),
-            fg="#38bdf8",
+            fg=self.tema["accent_primary"],
             bg="#1e293b",
-            selectcolor="#0f172a",
+            selectcolor=self.tema["bg_entry"],
             activebackground="#1e293b",
-            activeforeground="#38bdf8",
+            activeforeground=self.tema["accent_primary"],
             command=self._recalcular
         )
         rb_bicapa.pack(anchor="w")
@@ -118,7 +128,7 @@ class VentanaFaraday:
             font=("Segoe UI", 7),
             fg="#34d399",
             bg="#1e293b",
-            selectcolor="#0f172a",
+            selectcolor=self.tema["bg_entry"],
             activebackground="#1e293b",
             activeforeground="#34d399",
             command=self._recalcular
@@ -133,7 +143,7 @@ class VentanaFaraday:
             font=("Segoe UI", 7),
             fg="#a78bfa",
             bg="#1e293b",
-            selectcolor="#0f172a",
+            selectcolor=self.tema["bg_entry"],
             activebackground="#1e293b",
             activeforeground="#a78bfa",
             command=self._recalcular
@@ -141,7 +151,7 @@ class VentanaFaraday:
         rb_ni.pack(anchor="w")
 
         # 2.2 Entradas de Balanza Analítica
-        lbl_sec_bal = tk.Label(col_ctrl, text="2. Datos Gravimétricos de Balanza Analítica:", font=("Segoe UI", 8, "bold"), fg="#38bdf8", bg="#111827")
+        lbl_sec_bal = tk.Label(col_ctrl, text="2. Datos Gravimétricos de Balanza Analítica:", font=("Segoe UI", 8, "bold"), fg=self.tema["accent_primary"], bg="#111827")
         lbl_sec_bal.pack(anchor="w", padx=10, pady=(6, 2))
 
         f_bal = tk.Frame(col_ctrl, bg="#1e293b", padx=8, pady=6)
@@ -150,21 +160,21 @@ class VentanaFaraday:
         f_p1 = tk.Frame(f_bal, bg="#1e293b")
         f_p1.pack(fill="x", pady=2)
         tk.Label(f_p1, text="Peso Inicial en Seco (Pre-Etapa 1) [g]:", font=("Segoe UI", 7, "bold"), fg="#cbd5e1", bg="#1e293b").pack(side="left")
-        e_p1 = tk.Entry(f_p1, textvariable=self.var_peso_ini, font=("Segoe UI", 8), width=10, bg="#0f172a", fg="#38bdf8", insertbackground="#38bdf8")
+        e_p1 = tk.Entry(f_p1, textvariable=self.var_peso_ini, font=("Segoe UI", 8), width=10, bg=self.tema["bg_panel"], fg=self.tema["accent_primary"], insertbackground=self.tema["accent_primary"])
         e_p1.pack(side="right")
         e_p1.bind("<KeyRelease>", lambda e: self._recalcular())
 
         f_p2 = tk.Frame(f_bal, bg="#1e293b")
         f_p2.pack(fill="x", pady=2)
         tk.Label(f_p2, text="Peso Final en Seco (Post-Etapa 4) [g]:", font=("Segoe UI", 7, "bold"), fg="#cbd5e1", bg="#1e293b").pack(side="left")
-        e_p2 = tk.Entry(f_p2, textvariable=self.var_peso_fin, font=("Segoe UI", 8), width=10, bg="#0f172a", fg="#34d399", insertbackground="#34d399")
+        e_p2 = tk.Entry(f_p2, textvariable=self.var_peso_fin, font=("Segoe UI", 8), width=10, bg=self.tema["bg_panel"], fg="#34d399", insertbackground="#34d399")
         e_p2.pack(side="right")
         e_p2.bind("<KeyRelease>", lambda e: self._recalcular())
 
         f_area = tk.Frame(f_bal, bg="#1e293b")
         f_area.pack(fill="x", pady=2)
         tk.Label(f_area, text="Área Superficial Efectiva (cm²):", font=("Segoe UI", 7, "bold"), fg="#cbd5e1", bg="#1e293b").pack(side="left")
-        e_area = tk.Entry(f_area, textvariable=self.var_area, font=("Segoe UI", 8), width=10, bg="#0f172a", fg="#f8fafc", insertbackground="#38bdf8")
+        e_area = tk.Entry(f_area, textvariable=self.var_area, font=("Segoe UI", 8), width=10, bg=self.tema["bg_panel"], fg="#f8fafc", insertbackground=self.tema["accent_primary"])
         e_area.pack(side="right")
         e_area.bind("<KeyRelease>", lambda e: self._recalcular())
 
@@ -185,13 +195,13 @@ class VentanaFaraday:
         btn_calc.pack(fill="x", pady=(6, 2))
 
         # 2.3 Resultados Faraday
-        lbl_sec_res = tk.Label(col_ctrl, text="3. Balance Faradaico y Rendimiento (η):", font=("Segoe UI", 8, "bold"), fg="#38bdf8", bg="#111827")
+        lbl_sec_res = tk.Label(col_ctrl, text="3. Balance Faradaico y Rendimiento (η):", font=("Segoe UI", 8, "bold"), fg=self.tema["accent_primary"], bg="#111827")
         lbl_sec_res.pack(anchor="w", padx=10, pady=(6, 2))
 
         f_res = tk.Frame(col_ctrl, bg="#1e293b", padx=8, pady=6)
         f_res.pack(fill="x", padx=8, pady=2)
 
-        self.lbl_q_val = self._crear_fila_res(f_res, "Carga Eléctrica Q:", "0.0 C (0.000 mAh)", "#38bdf8")
+        self.lbl_q_val = self._crear_fila_res(f_res, "Carga Eléctrica Q:", "0.0 C (0.000 mAh)", self.tema["accent_primary"])
         self.lbl_mteo_val = self._crear_fila_res(f_res, "Masa Teórica Faraday:", "0.00 mg (0.0000 g)", "#fbbf24")
         self.lbl_mreal_val = self._crear_fila_res(f_res, "Masa Real Depositada:", "0.00 mg (0.0000 g)", "#34d399")
         self.lbl_eta_val = self._crear_fila_res(f_res, "Eficiencia Faradaica η:", "0.0 %", "#f472b6", big=True)
@@ -257,10 +267,10 @@ class VentanaFaraday:
         self.lbl_faraday_status.pack(fill="x", padx=10, pady=2)
 
         # Columna Derecha: Gráficas Matplotlib
-        col_plot = tk.Frame(body, bg="#0b1120")
+        col_plot = tk.Frame(body, bg=self.tema["bg_app"])
         col_plot.pack(side="left", fill="both", expand=True, padx=4, pady=2)
 
-        self.fig = Figure(figsize=(7.5, 5.5), dpi=100, facecolor="#0f172a")
+        self.fig = Figure(figsize=(7.5, 5.5), dpi=100, facecolor=self.tema["plot_bg"])
         self.ax1 = self.fig.add_subplot(2, 1, 1)
         self.ax2 = self.fig.add_subplot(2, 1, 2, sharex=self.ax1)
 
@@ -279,15 +289,25 @@ class VentanaFaraday:
         return lbl_v
 
     def _estilizar_axes(self):
+        is_day = (getattr(self, 'tema', {}).get('nombre') == 'dia') or getattr(self.app, 'modo_dia', False)
+        tema = getattr(self, 'tema', None) or (TEMA_DIA if is_day else TEMA_NOCHE)
+        ax_bg = tema.get("plot_axes_bg", "#ffffff" if is_day else "#101115")
+        fig_bg = tema.get("plot_bg", "#ffffff" if is_day else "#0a0b0d")
+        grid_col = tema.get("plot_grid", "#e5e5e5" if is_day else "#1e2027")
+        spine_col = tema.get("plot_spine", "#a8a29e" if is_day else "#2a2c35")
+        tick_col = tema.get("fg_dim", "#44403c" if is_day else "#9ca3af")
+        label_col = tema.get("fg_text", "#1c1917" if is_day else "#f1f5f9")
+
+        self.fig.patch.set_facecolor(fig_bg)
         for ax in [self.ax1, self.ax2]:
-            ax.set_facecolor("#1e293b")
-            ax.grid(True, linestyle=":", alpha=0.35, color="#475569")
-            ax.tick_params(colors="#94a3b8", labelsize=7.5)
+            ax.set_facecolor(ax_bg)
+            ax.grid(True, linestyle=":", alpha=0.45, color=grid_col)
+            ax.tick_params(colors=tick_col, labelsize=7.5)
             for s in ax.spines.values():
-                s.set_color("#334155")
-        self.ax1.set_ylabel("Carga Q (Coulombs)", color="#e2e8f0", fontsize=8, fontweight="bold")
-        self.ax2.set_ylabel("Masa Depositada (mg)", color="#e2e8f0", fontsize=8, fontweight="bold")
-        self.ax2.set_xlabel("Tiempo (minutos)", color="#e2e8f0", fontsize=8, fontweight="bold")
+                s.set_color(spine_col)
+        self.ax1.set_ylabel("Carga Q (Coulombs)", color=label_col, fontsize=8, fontweight="bold")
+        self.ax2.set_ylabel("Masa Depositada (mg)", color=label_col, fontsize=8, fontweight="bold")
+        self.ax2.set_xlabel("Tiempo (minutos)", color=label_col, fontsize=8, fontweight="bold")
         self.fig.tight_layout(pad=1.2)
 
     def _recalcular(self):
@@ -589,7 +609,7 @@ class VentanaFaraday:
                 self._recalcular()
                 self.lbl_faraday_status.config(
                     text=f"📂 CSV cargado: {os.path.basename(ruta)} (Q_Zn={q_zn:.1f} C, Q_Ni={q_ni:.1f} C, Total={q_tot:.1f} C)",
-                    fg="#38bdf8"
+                    fg=self.tema["accent_primary"]
                 )
                 messagebox.showinfo(
                     "CSV Cargado",
@@ -613,6 +633,13 @@ class VentanaFaraday:
         self.ax2.clear()
         self._estilizar_axes()
 
+        is_day = (getattr(self, 'tema', {}).get('nombre') == 'dia') or getattr(self.app, 'modo_dia', False)
+        tema = getattr(self, 'tema', None) or (TEMA_DIA if is_day else TEMA_NOCHE)
+        title_col = tema.get("fg_text", "#1c1917" if is_day else "#f1f5f9")
+        leg_bg = "#ffffff" if is_day else "#16181f"
+        leg_ec = "#cbd5e1" if is_day else "#334155"
+        leg_fg = tema.get("fg_text", "#1c1917" if is_day else "#f1f5f9")
+
         buf_t = getattr(self.app, 'buf_t', [])
         buf_q = getattr(self.app, 'buf_q', [])
         if not buf_t or not buf_q:
@@ -626,10 +653,10 @@ class VentanaFaraday:
         area = max(0.1, getattr(self.app, 'area_placa_cm2', 65.0))
 
         # 1. Gráfica de Carga Eléctrica Q(t)
-        self.ax1.fill_between(buf_t, buf_q, color="#38bdf8", alpha=0.25)
-        self.ax1.plot(buf_t, buf_q, color="#38bdf8", lw=2.0, label=f"Carga Acumulada Q(t) [Total = {buf_q[-1]:.1f} C]")
-        self.ax1.set_title("1. Integral de Corriente Faradaica: Q(t) = ∫ I(t)dt [Coulombs]", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-        self.ax1.legend(loc="upper left", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+        self.ax1.fill_between(buf_t, buf_q, color=self.tema["accent_primary"], alpha=0.25)
+        self.ax1.plot(buf_t, buf_q, color=self.tema["accent_primary"], lw=2.0, label=f"Carga Acumulada Q(t) [Total = {buf_q[-1]:.1f} C]")
+        self.ax1.set_title("1. Integral de Corriente Faradaica: Q(t) = ∫ I(t)dt [Coulombs]", color=title_col, fontsize=8.5, fontweight="bold")
+        self.ax1.legend(loc="upper left", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
         # 2. Gráfica de Masa Teórica Faradaica vs Masa Real de Balanza
         if modo == "BICAPA":
@@ -663,10 +690,10 @@ class VentanaFaraday:
                     color="#34d399",
                     fontsize=8,
                     fontweight="bold",
-                    bbox=dict(boxstyle="round,pad=0.3", facecolor="#0f172a", edgecolor="#34d399", alpha=0.85)
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor=self.tema["plot_bg"], edgecolor="#34d399", alpha=0.85)
                 )
 
-            self.ax2.set_title("2. Masa Teórica Faraday m_teo = (Q_Zn × 0.3388) + (Q_Ni × 0.3041) [mg]", color="#e2e8f0", fontsize=8.5, fontweight="bold")
+            self.ax2.set_title("2. Masa Teórica Faraday m_teo = (Q_Zn × 0.3388) + (Q_Ni × 0.3041) [mg]", color=title_col, fontsize=8.5, fontweight="bold")
         else:
             eq_mg_c = 0.33880 if modo == "ZN" else 0.30414
             nom_m = "Zinc" if modo == "ZN" else "Níquel"
@@ -686,17 +713,37 @@ class VentanaFaraday:
                     color="#34d399",
                     fontsize=8,
                     fontweight="bold",
-                    bbox=dict(boxstyle="round,pad=0.3", facecolor="#0f172a", edgecolor="#34d399", alpha=0.85)
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor=self.tema["plot_bg"], edgecolor="#34d399", alpha=0.85)
                 )
 
-            self.ax2.set_title(f"2. Masa Teórica de {nom_m}: m_teo = Q × {eq_mg_c:.4f} mg/C", color="#e2e8f0", fontsize=8.5, fontweight="bold")
+            self.ax2.set_title(f"2. Masa Teórica de {nom_m}: m_teo = Q × {eq_mg_c:.4f} mg/C", color=title_col, fontsize=8.5, fontweight="bold")
 
-        self.ax2.set_xlabel("Tiempo (minutos)", color="#e2e8f0", fontsize=8, fontweight="bold")
-        self.ax2.legend(loc="upper left", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+        self.ax2.set_xlabel("Tiempo (minutos)", color=title_col, fontsize=8, fontweight="bold")
+        self.ax2.legend(loc="upper left", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
         self.fig.tight_layout(pad=1.0)
         self.canvas.draw_idle()
 
+    def _redibujar_graficas(self):
+        self._redibujar()
+
     def _on_close(self):
-        self.app.win_faraday = None
-        self.win.destroy()
+        try:
+            if hasattr(self.app, 'win_faraday'):
+                self.app.win_faraday = None
+        except Exception:
+            pass
+        try:
+            self.win.destroy()
+        except Exception:
+            pass
+
+    def aplicar_tema(self, tema):
+        """Aplica la paleta temática en caliente a la ventana de faraday.py."""
+        self.tema = tema
+        if not hasattr(self, 'win') or not hasattr(self.win, 'winfo_exists') or not self.win.winfo_exists():
+            return
+        aplicar_tema_a_ventana_generica(self, self.tema)
+        self._estilizar_axes()
+        self._redibujar()
+

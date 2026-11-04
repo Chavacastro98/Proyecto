@@ -21,18 +21,41 @@ from utilidades.calculos import calcular_disparo_triac
 class GraficasMixin:
 
     def _estilizar_axes(self):
-        for ax in [self.ax1, self.ax2, self.ax3]:
-            ax.set_facecolor("#1e293b")
-            ax.grid(True, linestyle=":", alpha=0.3, color="#475569")
-            ax.tick_params(colors="#94a3b8", labelsize=7.5)
-            for spine in ax.spines.values():
-                spine.set_color("#334155")
+        tema = getattr(self, "tema_actual", None)
+        ax_bg = tema["plot_axes_bg"] if tema else "#1a1d22"
+        fig_bg = tema["plot_bg"] if tema else "#14161a"
+        grid_col = tema["plot_grid"] if tema else "#2d313b"
+        tick_col = tema["fg_dim"] if tema else "#9ca3af"
+        spine_col = tema["plot_spine"] if tema else "#363a45"
+        label_col = tema["fg_text"] if tema else "#e5e7eb"
 
-        self.ax1.set_ylabel("Temp (°C)", color="#e2e8f0", fontsize=7.5, fontweight="bold")
-        self.ax2.set_ylabel("TRIACs (%)", color="#e2e8f0", fontsize=7.5, fontweight="bold")
-        self.ax3.set_ylabel("Corriente (A)", color="#e2e8f0", fontsize=7.5, fontweight="bold")
-        self.ax3.set_xlabel("Tiempo (minutos)", color="#e2e8f0", fontsize=7.5, fontweight="bold")
-        self.fig.tight_layout(pad=0.8)
+        for fig, ax in [(getattr(self, 'fig_t', None), getattr(self, 'ax1', None)),
+                        (getattr(self, 'fig_u', None), getattr(self, 'ax2', None)),
+                        (getattr(self, 'fig_i', None), getattr(self, 'ax3', None))]:
+            if fig is not None:
+                fig.patch.set_facecolor(fig_bg)
+            if ax is not None:
+                ax.set_facecolor(ax_bg)
+                ax.grid(True, linestyle=":", alpha=0.35, color=grid_col)
+                ax.tick_params(colors=tick_col, labelsize=7.5)
+                for spine in ax.spines.values():
+                    spine.set_color(spine_col)
+
+        if hasattr(self, 'ax1') and self.ax1:
+            self.ax1.set_ylabel("Temp (°C)", color=label_col, fontsize=7.5, fontweight="bold")
+            if hasattr(self, 'fig_t') and self.fig_t:
+                self.fig_t.tight_layout(pad=0.6)
+
+        if hasattr(self, 'ax2') and self.ax2:
+            self.ax2.set_ylabel("TRIACs (%)", color=label_col, fontsize=7.5, fontweight="bold")
+            if hasattr(self, 'fig_u') and self.fig_u:
+                self.fig_u.tight_layout(pad=0.6)
+
+        if hasattr(self, 'ax3') and self.ax3:
+            self.ax3.set_ylabel("Corriente (A)", color=label_col, fontsize=7.5, fontweight="bold")
+            self.ax3.set_xlabel("Tiempo (minutos)", color=label_col, fontsize=7.5, fontweight="bold")
+            if hasattr(self, 'fig_i') and self.fig_i:
+                self.fig_i.tight_layout(pad=0.6)
 
 
     def _actualizar_gui_datos(self, t_rel, d_t, d_ph, d_f, d_env):
@@ -98,32 +121,39 @@ class GraficasMixin:
             if hasattr(self, '_salto_termico_activo') and canal_idx < len(self._salto_termico_activo):
                 salto_activo = self._salto_termico_activo[canal_idx]
 
+            tema = getattr(self, "tema_actual", None)
+            is_day = bool(tema and tema.get("nombre") == "dia")
+
             if "trend" in card and card["trend"] is not None:
                 if falla_sonda:
-                    card["trend"].config(text="DESCONECTADO", fg="#f87171", bg="#7f1d1d")
+                    card["trend"].config(text="DESCONECTADO", fg="#dc2626", bg="#fee2e2" if is_day else "#7f1d1d")
                 elif salto_activo:
-                    card["trend"].config(text="RUIDO EMI", fg="#fb923c", bg="#7c2d12")
+                    card["trend"].config(text="RUIDO EMI", fg="#b45309", bg="#fef3c7" if is_day else "#7c2d12")
                 elif prev_t is not None:
                     diff = t_val - prev_t
                     if diff > 0.08:
-                        card["trend"].config(text="CALENTANDO", fg="#fbbf24", bg="#78350f")
+                        card["trend"].config(text="CALENTANDO", fg="#b45309", bg="#fef3c7" if is_day else "#78350f")
                     elif diff < -0.08:
-                        card["trend"].config(text="ENFRIANDO", fg="#38bdf8", bg="#0c4a6e")
+                        card["trend"].config(text="ENFRIANDO", fg="#0369a1", bg="#e0f2fe" if is_day else "#0c4a6e")
                     else:
-                        card["trend"].config(text="ESTABLE", fg="#34d399", bg="#064e3b")
+                        card["trend"].config(text="ESTABLE", fg="#047857", bg="#d1fae5" if is_day else "#064e3b")
                 else:
-                    card["trend"].config(text="ESTABLE", fg="#34d399", bg="#064e3b")
+                    card["trend"].config(text="ESTABLE", fg="#047857", bg="#d1fae5" if is_day else "#064e3b")
 
             is_heating = (gate_pct > 5.0)
             if falla_sonda:
-                card_bg = "#2b1417"
-                border_col = "#ef4444"
+                card_bg = "#fee2e2" if is_day else "#2b1417"
+                border_col = "#dc2626"
             elif salto_activo:
-                card_bg = "#2d1a10"
-                border_col = "#f59e0b"
+                card_bg = "#fef3c7" if is_day else "#2d1a10"
+                border_col = "#d97706"
             else:
-                card_bg = "#221921" if is_heating else "#131d31"
-                border_col = "#f59e0b" if is_heating else "#27354f"
+                if is_heating:
+                    card_bg = "#fef3c7" if is_day else "#241e26"
+                    border_col = "#d97706" if is_day else "#f59e0b"
+                else:
+                    card_bg = (tema["bg_card_inner"] if tema else "#131d31")
+                    border_col = (tema["border"] if tema else "#27354f")
 
             card["frame"].config(bg=card_bg, highlightbackground=border_col)
             for k in ("hdr_row", "hdr", "temp", "info_row", "gate", "watts"):
@@ -145,25 +175,45 @@ class GraficasMixin:
         _upd_card(self.card_t3, float(d_t[2]['t']), float(d_t[2]['sp']), p3, a3, dl3, w3, 18.0, canal_idx=2)
         _upd_card(self.card_t4, float(d_t[3]['t']), float(d_t[3]['sp']), p4, a4, dl4, w4, 450.0, canal_idx=3)
 
+        # Actualizar Badges de Resumen en Barras de Acordeón (Estilo Monitor de Recursos)
+        if hasattr(self, "lbl_acc_t_badge") and self.lbl_acc_t_badge:
+            self.lbl_acc_t_badge.config(
+                text=f"T1: {float(d_t[0]['t']):.1f}°C | T2: {float(d_t[1]['t']):.1f}°C | T3: {float(d_t[2]['t']):.1f}°C | T4: {float(d_t[3]['t']):.1f}°C"
+            )
+        if hasattr(self, "lbl_acc_u_badge") and self.lbl_acc_u_badge:
+            self.lbl_acc_u_badge.config(
+                text=f"Gate: T1 {p1:.0f}% | T2 {p2:.0f}% | T3 {p3:.0f}% | T4 {p4:.0f}%"
+            )
+        if hasattr(self, "lbl_acc_i_badge") and self.lbl_acc_i_badge:
+            target_sp = getattr(self, "sp_corriente_actual", 0.0)
+            self.lbl_acc_i_badge.config(
+                text=f"I: {amps_val:.2f} A | SP: {target_sp:.2f} A | Q: {self.coulombs_total:.1f} C"
+            )
+
         ph_activo = (d_ph.get("on") == 1)
 
         # Tarjeta Culombimétrica Q (Faraday)
         self.card_coulomb.config(text=f"{self.coulombs_total:.1f} C")
 
+        is_day = (getattr(self, 'tema_actual', {}).get('nombre') == 'dia')
+        c_amp_ok = "#15803d" if is_day else "#22c55e"
+        c_amp_idle = "#44403c" if is_day else "#94a3b8"
+        c_amp_pul = "#be185d" if is_day else "#f472b6"
+
         if es_activa and es_pulsado and amps_val > 0.05:
-            self.card_amp.config(text=f"{i_pico:.2f}A Pk | {i_prom:.2f}A", fg="#f472b6")
+            self.card_amp.config(text=f"{i_pico:.2f}A Pk | {i_prom:.2f}A", fg=c_amp_pul)
         elif es_activa and amps_val > 0.05:
-            self.card_amp.config(text=f"{amps_val:.2f} A", fg="#22c55e")
+            self.card_amp.config(text=f"{amps_val:.2f} A", fg=c_amp_ok)
         else:
-            self.card_amp.config(text="0.00 A", fg="#94a3b8")
+            self.card_amp.config(text="0.00 A", fg=c_amp_idle)
 
         self.card_env.config(text=f"{d_env.get('t', '--')}° / {d_env.get('h', '--')}%")
         if hasattr(self, "card_ph"):
             p_val = str(d_ph.get("p", d_ph.get("p1", d_ph.get("ph1", "--"))))
             self.card_ph.config(text=f"{p_val} pH")
 
-        if (self.etapa_corriendo and self.etapa_activa_idx in (2, 3)) or (self.modo_demo and self.demo_forzar_corriente):
-            if self.etapa_activa_idx == 2 or (self.modo_demo and self.demo_forzar_corriente):
+        if (self.etapa_corriendo and self.etapa_activa_idx in (2, 3)) or (self.modo_demo and getattr(self, 'demo_forzar_corriente', False)):
+            if self.etapa_activa_idx == 2 or (self.modo_demo and getattr(self, 'demo_forzar_corriente', False)):
                 target_i = 1.50
                 nombre_op = "Zincado"
             else:
@@ -173,31 +223,34 @@ class GraficasMixin:
             diff = abs(amps_val - target_i)
             i1 = float(d_f.get("i1", amps_val * 0.5))
             i2 = float(d_f.get("i2", amps_val * 0.5))
+            c_stab_ok = "#15803d" if is_day else "#34d399"
+            c_stab_adj = "#b45309" if is_day else "#fbbf24"
             if es_pulsado:
                 if diff <= 0.08:
                     self.lbl_stab_val.config(
                         text=f"{nombre_op} Pulsado {freq_val}Hz: {i_pico:.2f}A Pico (Shunts: {i1:.2f}A / {i2:.2f}A) | {i_prom:.2f}A Prom — Estable (Q: {self.coulombs_total:.1f}C)",
-                        fg="#34d399"
+                        fg=c_stab_ok
                     )
                 else:
                     self.lbl_stab_val.config(
                         text=f"{nombre_op} Pulsado {freq_val}Hz: {i_pico:.2f}A Pico (Obj: {target_i:.2f}A) | {i_prom:.2f}A Prom",
-                        fg="#fbbf24"
+                        fg=c_stab_adj
                     )
             else:
                 if diff <= 0.08:
                     self.lbl_stab_val.config(
                         text=f"{nombre_op} DC: {amps_val:.2f}A (Shunts: {i1:.2f}A / {i2:.2f}A) — Estable (Q: {self.coulombs_total:.1f}C)",
-                        fg="#34d399"
+                        fg=c_stab_ok
                     )
                 else:
                     self.lbl_stab_val.config(
                         text=f"{nombre_op} DC: {amps_val:.2f}A (Obj: {target_i:.2f}A) — Ajustando Lazo",
-                        fg="#fbbf24"
+                        fg=c_stab_adj
                     )
         else:
             txt_corr = f"{amps_val:.2f} A" if es_activa else "0.00 A"
-            self.lbl_stab_val.config(text=f"En reposo / Etapa {self.etapa_activa_idx + 1} ({txt_corr} | Q={self.coulombs_total:.1f}C)", fg="#94a3b8")
+            c_stab_idle = "#44403c" if is_day else "#94a3b8"
+            self.lbl_stab_val.config(text=f"En reposo / Etapa {self.etapa_activa_idx + 1} ({txt_corr} | Q={self.coulombs_total:.1f}C)", fg=c_stab_idle)
 
         # Buffers
         t_min = t_rel / 60.0
@@ -263,102 +316,137 @@ class GraficasMixin:
 
 
     def _redibujar_grafica_vivo(self):
-        self.ax1.clear()
-        self.ax2.clear()
-        self.ax3.clear()
+        tema = getattr(self, "tema_actual", None)
+        leg_bg = tema["bg_panel"] if tema else "#1a1d22"
+        leg_ec = tema["border"] if tema else "#2d313b"
+        leg_fg = tema["fg_text"] if tema else "#e5e7eb"
+
+        # 1. Gráfica 1: Térmico
+        if getattr(self, "plot_t_visible", True):
+            self.ax1.clear()
+        # 2. Gráfica 2: TRIACs
+        if getattr(self, "plot_u_visible", True):
+            self.ax2.clear()
+        # 3. Gráfica 3: Corriente
+        if getattr(self, "plot_i_visible", True):
+            self.ax3.clear()
+
         self._estilizar_axes()
 
         if not self.buf_t:
-            self.canvas.draw_idle()
+            if getattr(self, "plot_t_visible", True) and hasattr(self, "canvas_t"): self.canvas_t.draw_idle()
+            if getattr(self, "plot_u_visible", True) and hasattr(self, "canvas_u"): self.canvas_u.draw_idle()
+            if getattr(self, "plot_i_visible", True) and hasattr(self, "canvas_i"): self.canvas_i.draw_idle()
             return
 
-        # Subplot 1: Térmico
-        # Bandas sombreadas de tolerancia de setpoint (SP ± 1.5°C) (B4)
-        if self.buf_t1_sp and self.buf_t1_sp[-1] > 20.0:
-            self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t1_sp], [s + 1.5 for s in self.buf_t1_sp], color="#d95f02", alpha=0.08, zorder=0)
-        if self.buf_t2_sp and self.buf_t2_sp[-1] > 20.0:
-            self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t2_sp], [s + 1.5 for s in self.buf_t2_sp], color="#e6ab02", alpha=0.08, zorder=0)
-        if self.buf_t3_sp and self.buf_t3_sp[-1] > 20.0:
-            self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t3_sp], [s + 1.5 for s in self.buf_t3_sp], color="#38bdf8", alpha=0.08, zorder=0)
-        if self.buf_t4_sp and self.buf_t4_sp[-1] > 20.0:
-            self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t4_sp], [s + 1.5 for s in self.buf_t4_sp], color="#a78bfa", alpha=0.08, zorder=0)
+        # =========================================================================
+        # SUBPLOT 1: TÉRMICO (Solo si está expandido)
+        # =========================================================================
+        if getattr(self, "plot_t_visible", True):
+            if self.buf_t1_sp and self.buf_t1_sp[-1] > 20.0:
+                self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t1_sp], [s + 1.5 for s in self.buf_t1_sp], color="#d95f02", alpha=0.08, zorder=0)
+            if self.buf_t2_sp and self.buf_t2_sp[-1] > 20.0:
+                self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t2_sp], [s + 1.5 for s in self.buf_t2_sp], color="#e6ab02", alpha=0.08, zorder=0)
+            if self.buf_t3_sp and self.buf_t3_sp[-1] > 20.0:
+                self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t3_sp], [s + 1.5 for s in self.buf_t3_sp], color="#38bdf8", alpha=0.08, zorder=0)
+            if self.buf_t4_sp and self.buf_t4_sp[-1] > 20.0:
+                self.ax1.fill_between(self.buf_t, [s - 1.5 for s in self.buf_t4_sp], [s + 1.5 for s in self.buf_t4_sp], color="#a78bfa", alpha=0.08, zorder=0)
 
-        self.ax1.plot(self.buf_t, self.buf_t1, color="#d95f02", ls="-", lw=1.8, zorder=2, label="T1: Limpieza [—]")
-        self.ax1.plot(self.buf_t, self.buf_t1_sp, color="#d95f02", ls=(0, (4, 3)), lw=1.2, alpha=0.45, zorder=1)
-        self.ax1.plot(self.buf_t, self.buf_t2, color="#e6ab02", ls=(0, (6, 3)), lw=1.8, zorder=3, label="T2: Decapado [_ _]")
-        self.ax1.plot(self.buf_t, self.buf_t2_sp, color="#e6ab02", ls=(0, (3, 3, 1, 3)), lw=1.2, alpha=0.45, zorder=1)
-        self.ax1.plot(self.buf_t, self.buf_t3, color="#38bdf8", ls=(0, (6, 2, 1.5, 2)), lw=2.0, zorder=4, label="T3: Zincado Celda Hull [_._]")
-        self.ax1.plot(self.buf_t, self.buf_t3_sp, color="#38bdf8", ls=(0, (1, 3)), lw=1.3, alpha=0.5, zorder=1)
-        self.ax1.plot(self.buf_t, self.buf_t4, color="#a78bfa", ls=(0, (1.5, 2.0)), lw=2.0, zorder=5, label="T4: Niquelado Watts [...]")
-        self.ax1.plot(self.buf_t, self.buf_t4_sp, color="#a78bfa", ls=(0, (3, 4)), lw=1.2, alpha=0.45, zorder=1)
-        self.ax1.legend(loc="upper left", fontsize=7.0, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+            self.ax1.plot(self.buf_t, self.buf_t1, color="#d95f02", ls="-", lw=1.8, zorder=2, label="T1: Limpieza [—]")
+            self.ax1.plot(self.buf_t, self.buf_t1_sp, color="#d95f02", ls=(0, (4, 3)), lw=1.2, alpha=0.45, zorder=1)
+            self.ax1.plot(self.buf_t, self.buf_t2, color="#e6ab02", ls=(0, (6, 3)), lw=1.8, zorder=3, label="T2: Decapado [_ _]")
+            self.ax1.plot(self.buf_t, self.buf_t2_sp, color="#e6ab02", ls=(0, (3, 3, 1, 3)), lw=1.2, alpha=0.45, zorder=1)
+            self.ax1.plot(self.buf_t, self.buf_t3, color="#38bdf8", ls=(0, (6, 2, 1.5, 2)), lw=2.0, zorder=4, label="T3: Zincado Celda Hull [_._]")
+            self.ax1.plot(self.buf_t, self.buf_t3_sp, color="#38bdf8", ls=(0, (1, 3)), lw=1.3, alpha=0.5, zorder=1)
+            self.ax1.plot(self.buf_t, self.buf_t4, color="#a78bfa", ls=(0, (1.5, 2.0)), lw=2.0, zorder=5, label="T4: Niquelado Watts [...]")
+            self.ax1.plot(self.buf_t, self.buf_t4_sp, color="#a78bfa", ls=(0, (3, 4)), lw=1.2, alpha=0.45, zorder=1)
+            self.ax1.legend(loc="upper left", fontsize=7.0, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
-        # Subplot 2: Conducción de TRIACs (%)
-        self.ax2.plot(self.buf_t, self.buf_u1, color="#d95f02", ls="-", lw=1.5, zorder=2, label="u1: Limp (450W) [—]")
-        self.ax2.plot(self.buf_t, self.buf_u2, color="#e6ab02", ls=(0, (6, 3)), lw=1.5, zorder=3, label="u2: Decap (450W) [_ _]")
-        self.ax2.plot(self.buf_t, self.buf_u3, color="#38bdf8", ls=(0, (6, 2, 1.5, 2)), lw=1.8, zorder=4, label="u3: Hull (18W) [_._]")
-        self.ax2.plot(self.buf_t, self.buf_u4, color="#a78bfa", ls=(0, (1.5, 2.0)), lw=1.8, zorder=5, label="u4: Niq (450W) [...]")
-        self.ax2.set_ylim(-5, 105)
-        self.ax2.legend(loc="upper left", fontsize=7.0, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+            # Anotación último punto térmico
+            last_t_x = self.buf_t[-1]
+            idx_act = getattr(self, 'etapa_activa_idx', 0)
+            t_series = [self.buf_t1, self.buf_t2, self.buf_t3, self.buf_t4]
+            t_colors = ["#d95f02", "#e6ab02", "#38bdf8", "#a78bfa"]
+            t_names = ["T1", "T2", "T3", "T4"]
+            cur_t = t_series[idx_act]
+            cur_c = t_colors[idx_act]
+            if cur_t:
+                v_t = cur_t[-1]
+                self.ax1.plot(last_t_x, v_t, marker="o", markersize=4.5, color=cur_c, zorder=6)
+                self.ax1.annotate(f"{t_names[idx_act]}: {v_t:.1f}°C", (last_t_x, v_t), textcoords="offset points", xytext=(6, -2),
+                                  fontsize=6.8, fontweight="bold", color=leg_fg,
+                                  bbox=dict(boxstyle="round,pad=0.25", fc=leg_bg, ec=cur_c, lw=0.9, alpha=0.9))
 
-        # Subplot 3: Corriente Galvánica con Volumen Sombreado y Banda Objetivo
-        hay_pulsado = any(self.buf_curr_avg) and any(abs(c - a) > 0.05 for c, a in zip(self.buf_curr, self.buf_curr_avg))
+            # Líneas de cambio de etapa
+            if hasattr(self, 'marcadores_etapas') and self.marcadores_etapas:
+                t_min_cur, t_max_cur = self.buf_t[0], self.buf_t[-1]
+                for m_t, _ in self.marcadores_etapas:
+                    if t_min_cur <= m_t <= t_max_cur:
+                        self.ax1.axvline(x=m_t, color="#38bdf8", ls=":", lw=1.2, alpha=0.5, zorder=1)
 
-        idx_e = getattr(self, 'etapa_activa_idx', 0)
-        sp_corr = 1.50 if idx_e == 2 else (1.13 if idx_e == 3 else 0.0)
+            if hasattr(self, "canvas_t"): self.canvas_t.draw_idle()
 
-        if sp_corr > 0.0 and self.buf_t:
-            # Banda de tolerancia objetivo ±0.05 A
-            self.ax3.fill_between(self.buf_t, [sp_corr - 0.05]*len(self.buf_t), [sp_corr + 0.05]*len(self.buf_t),
-                                  color="#38bdf8" if sp_corr == 1.13 else "#34d399", alpha=0.12, zorder=0)
-            lbl_meta = f"Meta {sp_corr:.2f}A" + (" (Níquel)" if sp_corr == 1.13 else " (Zinc)")
-            self.ax3.axhline(y=sp_corr, color="#38bdf8" if sp_corr == 1.13 else "#34d399",
-                             ls="--", lw=1.2, alpha=0.80, label=lbl_meta, zorder=1)
+        # =========================================================================
+        # SUBPLOT 2: CONDUCCIÓN DE TRIACS (%) (Solo si está expandido)
+        # =========================================================================
+        if getattr(self, "plot_u_visible", True):
+            self.ax2.plot(self.buf_t, self.buf_u1, color="#d95f02", ls="-", lw=1.5, zorder=2, label="u1: Limp (450W) [—]")
+            self.ax2.plot(self.buf_t, self.buf_u2, color="#e6ab02", ls=(0, (6, 3)), lw=1.5, zorder=3, label="u2: Decap (450W) [_ _]")
+            self.ax2.plot(self.buf_t, self.buf_u3, color="#38bdf8", ls=(0, (6, 2, 1.5, 2)), lw=1.8, zorder=4, label="u3: Hull (18W) [_._]")
+            self.ax2.plot(self.buf_t, self.buf_u4, color="#a78bfa", ls=(0, (1.5, 2.0)), lw=1.8, zorder=5, label="u4: Niq (450W) [...]")
+            self.ax2.set_ylim(-5, 105)
+            self.ax2.legend(loc="upper left", fontsize=7.0, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
-        if hay_pulsado:
-            self.ax3.fill_between(self.buf_t, self.buf_curr_avg, color="#fbbf24", alpha=0.20, zorder=1)
-            self.ax3.plot(self.buf_t, self.buf_curr, color="#22c55e", ls="-", lw=2.0, zorder=2, label="I_pico Medida (A)")
-            self.ax3.plot(self.buf_t, self.buf_curr_avg, color="#fbbf24", ls="--", lw=1.8, zorder=3, label="I_promedio (A)")
-        else:
-            self.ax3.fill_between(self.buf_t, self.buf_curr, color="#22c55e", alpha=0.18, zorder=1)
-            self.ax3.plot(self.buf_t, self.buf_curr, color="#22c55e", ls="-", lw=2.0, zorder=2, label="Corriente Real Medida (A)")
+            if hasattr(self, 'marcadores_etapas') and self.marcadores_etapas:
+                t_min_cur, t_max_cur = self.buf_t[0], self.buf_t[-1]
+                for m_t, _ in self.marcadores_etapas:
+                    if t_min_cur <= m_t <= t_max_cur:
+                        self.ax2.axvline(x=m_t, color="#38bdf8", ls=":", lw=1.2, alpha=0.5, zorder=1)
 
-        max_curr_val = max(self.buf_curr) if self.buf_curr else 1.0
-        self.ax3.set_ylim(0, max(max_curr_val * 1.25, 2.0))
-        self.ax3.legend(loc="upper left", fontsize=7.0, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+            if hasattr(self, "canvas_u"): self.canvas_u.draw_idle()
 
-        # Líneas verticales de cambio de etapa (B4)
-        if hasattr(self, 'marcadores_etapas') and self.marcadores_etapas:
-            t_min_cur = self.buf_t[0]
-            t_max_cur = self.buf_t[-1]
-            for m_t, m_label in self.marcadores_etapas:
-                if t_min_cur <= m_t <= t_max_cur:
-                    for ax in (self.ax1, self.ax2, self.ax3):
-                        ax.axvline(x=m_t, color="#38bdf8", ls=":", lw=1.2, alpha=0.5, zorder=1)
+        # =========================================================================
+        # SUBPLOT 3: CORRIENTE GALVÁNICA VCSS (Solo si está expandido)
+        # =========================================================================
+        if getattr(self, "plot_i_visible", True):
+            hay_pulsado = any(self.buf_curr_avg) and any(abs(c - a) > 0.05 for c, a in zip(self.buf_curr, self.buf_curr_avg))
+            idx_e = getattr(self, 'etapa_activa_idx', 0)
+            sp_corr = 1.50 if idx_e == 2 else (1.13 if idx_e == 3 else 0.0)
 
-        # Cursor / Anotación de valor actual en el último punto (B4)
-        last_t_x = self.buf_t[-1]
-        idx_act = getattr(self, 'etapa_activa_idx', 0)
-        t_series = [self.buf_t1, self.buf_t2, self.buf_t3, self.buf_t4]
-        t_colors = ["#d95f02", "#e6ab02", "#38bdf8", "#a78bfa"]
-        t_names = ["T1", "T2", "T3", "T4"]
-        cur_t = t_series[idx_act]
-        cur_c = t_colors[idx_act]
-        if cur_t:
-            v_t = cur_t[-1]
-            self.ax1.plot(last_t_x, v_t, marker="o", markersize=4.5, color=cur_c, zorder=6)
-            self.ax1.annotate(f"{t_names[idx_act]}: {v_t:.1f}°C", (last_t_x, v_t), textcoords="offset points", xytext=(6, -2),
-                              fontsize=6.8, fontweight="bold", color="#f8fafc",
-                              bbox=dict(boxstyle="round,pad=0.25", fc="#0f172a", ec=cur_c, lw=0.9, alpha=0.9))
+            if sp_corr > 0.0 and self.buf_t:
+                self.ax3.fill_between(self.buf_t, [sp_corr - 0.05]*len(self.buf_t), [sp_corr + 0.05]*len(self.buf_t),
+                                      color="#38bdf8" if sp_corr == 1.13 else "#34d399", alpha=0.12, zorder=0)
+                lbl_meta = f"Meta {sp_corr:.2f}A" + (" (Níquel)" if sp_corr == 1.13 else " (Zinc)")
+                self.ax3.axhline(y=sp_corr, color="#38bdf8" if sp_corr == 1.13 else "#34d399",
+                                 ls="--", lw=1.2, alpha=0.80, label=lbl_meta, zorder=1)
 
-        if self.buf_curr:
-            v_i = self.buf_curr[-1]
-            self.ax3.plot(last_t_x, v_i, marker="o", markersize=4.5, color="#22c55e", zorder=6)
-            self.ax3.annotate(f"{v_i:.2f} A", (last_t_x, v_i), textcoords="offset points", xytext=(6, -2),
-                              fontsize=6.8, fontweight="bold", color="#f8fafc",
-                              bbox=dict(boxstyle="round,pad=0.25", fc="#0f172a", ec="#22c55e", lw=0.9, alpha=0.9))
+            if hay_pulsado:
+                self.ax3.fill_between(self.buf_t, self.buf_curr_avg, color="#fbbf24", alpha=0.20, zorder=1)
+                self.ax3.plot(self.buf_t, self.buf_curr, color="#22c55e", ls="-", lw=2.0, zorder=2, label="I_pico Medida (A)")
+                self.ax3.plot(self.buf_t, self.buf_curr_avg, color="#fbbf24", ls="--", lw=1.8, zorder=3, label="I_promedio (A)")
+            else:
+                self.ax3.fill_between(self.buf_t, self.buf_curr, color="#22c55e", alpha=0.18, zorder=1)
+                self.ax3.plot(self.buf_t, self.buf_curr, color="#22c55e", ls="-", lw=2.0, zorder=2, label="Corriente Real Medida (A)")
 
-        self.canvas.draw_idle()
+            max_curr_val = max(self.buf_curr) if self.buf_curr else 1.0
+            self.ax3.set_ylim(0, max(max_curr_val * 1.25, 2.0))
+            self.ax3.legend(loc="upper left", fontsize=7.0, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
+
+            last_t_x = self.buf_t[-1]
+            if self.buf_curr:
+                v_i = self.buf_curr[-1]
+                self.ax3.plot(last_t_x, v_i, marker="o", markersize=4.5, color="#22c55e", zorder=6)
+                self.ax3.annotate(f"{v_i:.2f} A", (last_t_x, v_i), textcoords="offset points", xytext=(6, -2),
+                                  fontsize=6.8, fontweight="bold", color=leg_fg,
+                                  bbox=dict(boxstyle="round,pad=0.25", fc=leg_bg, ec="#22c55e", lw=0.9, alpha=0.9))
+
+            if hasattr(self, 'marcadores_etapas') and self.marcadores_etapas:
+                t_min_cur, t_max_cur = self.buf_t[0], self.buf_t[-1]
+                for m_t, _ in self.marcadores_etapas:
+                    if t_min_cur <= m_t <= t_max_cur:
+                        self.ax3.axvline(x=m_t, color="#38bdf8", ls=":", lw=1.2, alpha=0.5, zorder=1)
+
+            if hasattr(self, "canvas_i"): self.canvas_i.draw_idle()
 
 
     def exportar_grafica_hd(self):

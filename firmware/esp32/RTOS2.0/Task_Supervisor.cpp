@@ -120,7 +120,7 @@ void taskSupervisorFunc(void *pvParameters) {
     if (g_failsafe_latched) {
       // Reasegurar físicamente el corte de potencia en cada ciclo de alarma
       digitalWrite(PIN_RELE_VCSS, !RELE_NIVEL_ACTIVO);
-      Serial2.println("0,0,0,0");
+      enviarApagadoEmergenciaNano();
 
       bool esPeligroCritico = (g_failsafe_code == ERR_TEMP_OVERHEAT || 
                                g_failsafe_code == ERR_VCSS_OVERCURRENT || 

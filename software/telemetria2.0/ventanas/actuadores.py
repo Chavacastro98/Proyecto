@@ -1,3 +1,4 @@
+from utilidades.tema import cargar_tema_preferido, aplicar_tema_a_ventana_generica
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -18,43 +19,52 @@ except ImportError:
 
 class VentanaActuadores:
     def __init__(self, parent_app, canal_inicial=0):
+        self.tema = getattr(parent_app, 'tema_actual', cargar_tema_preferido())
         self.app = parent_app
         self.win = tk.Toplevel(self.app.root)
         self.win.title("Osciloscopio de Potencia — Conmutación AC 60Hz y Señales de Compuerta")
         self.win.geometry("1000x740")
         self.win.minsize(850, 600)
-        self.win.configure(bg="#0b1120")
+        self.win.configure(bg=self.tema.get("bg_app", "#0a0b0d"))
 
-        self.canal_sel = canal_inicial  # 0: T1, 1: T2, 2: T3, 3: T4, 4: Vista 4 Tinas
+        self.canal_sel = canal_inicial  # 0: T1, 1: T2, 2: T3, 3: T4, 4: VCSS, 5: Vista 4 Tinas
         self.modo_conmutacion = "FASE"  # "FASE" o "PROPORCIONAL"
 
         self.potencias_max = [450.0, 450.0, 18.0, 450.0]
         self.resistencias = [120.0**2 / 450.0, 120.0**2 / 450.0, 120.0**2 / 18.0, 120.0**2 / 450.0]  # R = V^2 / P (Ohms)
         self.nombres_tinas = ["T1: Limpieza (450W)", "T2: Decapado (450W)", "T3: Celda Hull (18W)", "T4: Níquel (450W)"]
-        self.colores_tinas = ["#d95f02", "#e6ab02", "#38bdf8", "#a78bfa"]
+        self.colores_tinas = ["#d95f02", "#e6ab02", self.tema["accent_primary"], "#a78bfa"]
 
-        self._crear_ui()
-        self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        try:
+            self._crear_ui()
+            self.aplicar_tema(self.tema)
+            self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        except Exception as e:
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+            raise e
 
     def _crear_ui(self):
         # 1. Header con Controles de Selección y Métodos de Disparo
-        hdr = tk.Frame(self.win, bg="#0f172a", height=50, bd=0)
+        hdr = tk.Frame(self.win, bg=self.tema["bg_panel"], height=50, bd=0)
         hdr.pack(fill="x", side="top", padx=6, pady=4)
 
         lbl_t = tk.Label(
             hdr,
             text="OSCILOSCOPIO DIGITAL: ONDA AC SENOIDAL Y PULSOS DE GATE",
             font=("Segoe UI", 10, "bold"),
-            fg="#38bdf8",
-            bg="#0f172a"
+            fg=self.tema["accent_primary"],
+            bg=self.tema["bg_panel"]
         )
         lbl_t.pack(side="left", padx=10, pady=8)
 
         # Controles de Modo de Disparo
-        frame_controles = tk.Frame(hdr, bg="#0f172a")
+        frame_controles = tk.Frame(hdr, bg=self.tema["bg_panel"])
         frame_controles.pack(side="right", padx=10, pady=4)
 
-        tk.Label(frame_controles, text="Método de Control:", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg="#0f172a").pack(side="left", padx=(6, 4))
+        tk.Label(frame_controles, text="Método de Control:", font=("Segoe UI", 8, "bold"), fg="#94a3b8", bg=self.tema["bg_panel"]).pack(side="left", padx=(6, 4))
         self.var_modo = tk.StringVar(value=self.modo_conmutacion)
         rb_fase = tk.Radiobutton(
             frame_controles,
@@ -62,11 +72,11 @@ class VentanaActuadores:
             variable=self.var_modo,
             value="FASE",
             font=("Segoe UI", 8, "bold"),
-            fg="#38bdf8",
-            bg="#0f172a",
-            selectcolor="#1e293b",
-            activebackground="#0f172a",
-            activeforeground="#38bdf8",
+            fg=self.tema["accent_primary"],
+            bg=self.tema["bg_panel"],
+            selectcolor=self.tema["bg_entry"],
+            activebackground=self.tema["bg_card_inner"],
+            activeforeground=self.tema["accent_primary"],
             command=self._on_modo_change
         )
         rb_fase.pack(side="left", padx=4)
@@ -78,9 +88,9 @@ class VentanaActuadores:
             value="PROPORCIONAL",
             font=("Segoe UI", 8, "bold"),
             fg="#34d399",
-            bg="#0f172a",
-            selectcolor="#1e293b",
-            activebackground="#0f172a",
+            bg=self.tema["bg_panel"],
+            selectcolor=self.tema["bg_entry"],
+            activebackground=self.tema["bg_card_inner"],
             activeforeground="#34d399",
             command=self._on_modo_change
         )
@@ -142,14 +152,14 @@ class VentanaActuadores:
         kpi_bar.pack(fill="x", side="bottom", padx=6, pady=4)
 
         # 4. Canvas de Matplotlib para la Onda AC y Señal de Gate
-        plot_frame = tk.Frame(self.win, bg="#0b1120")
+        plot_frame = tk.Frame(self.win, bg=self.tema["bg_app"])
         plot_frame.pack(fill="both", expand=True, padx=6, pady=2)
 
-        self.fig = Figure(figsize=(8.5, 5.2), dpi=100, facecolor="#0f172a")
+        self.fig = Figure(figsize=(8.5, 5.2), dpi=100, facecolor=self.tema["plot_bg"])
         self.canvas = FigureCanvasTkAgg(self.fig, master=plot_frame)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 
-        self.lbl_kpi_u = self._crear_kpi_sub(kpi_bar, "Esfuerzo u(t)", "0.0 %", "#38bdf8")
+        self.lbl_kpi_u = self._crear_kpi_sub(kpi_bar, "Esfuerzo u(t)", "0.0 %", self.tema["accent_primary"])
         self.lbl_kpi_alpha = self._crear_kpi_sub(kpi_bar, "Ángulo Disparo α", "180.0°", "#fbbf24")
         self.lbl_kpi_delay = self._crear_kpi_sub(kpi_bar, "Retardo Gate", "8333 µs", "#f472b6")
         self.lbl_kpi_vrms = self._crear_kpi_sub(kpi_bar, "Voltaje RMS", "0.0 V", "#a78bfa")
@@ -168,10 +178,21 @@ class VentanaActuadores:
         lbl_v.pack()
         return lbl_v
 
+    def _actualizar_estilo_botones_canales(self):
+        is_day = (getattr(self, 'tema', {}).get('nombre') == 'dia') or getattr(self.app, 'modo_dia', False)
+        bg_unsel = "#d5d1c8" if is_day else "#1e293b"
+        fg_unsel = "#1c1917" if is_day else "#cbd5e1"
+        bg_sel = "#1d4ed8" if is_day else "#2563eb"
+        if hasattr(self, 'btns_canales'):
+            for i, b in enumerate(self.btns_canales):
+                b.config(
+                    bg=bg_sel if i == self.canal_sel else bg_unsel,
+                    fg="#ffffff" if i == self.canal_sel else fg_unsel
+                )
+
     def _seleccionar_canal(self, idx):
         self.canal_sel = idx
-        for i, b in enumerate(self.btns_canales):
-            b.config(bg="#2563eb" if i == idx else "#1e293b")
+        self._actualizar_estilo_botones_canales()
         self._redibujar()
 
     def _on_modo_change(self):
@@ -185,6 +206,20 @@ class VentanaActuadores:
 
     def _redibujar(self):
         self.fig.clear()
+
+        is_day = getattr(self.app, 'modo_dia', False) or (getattr(self, 'tema', {}).get('nombre') == 'dia')
+        tema = getattr(self, 'tema', None) or (TEMA_DIA if is_day else TEMA_NOCHE)
+        ax_bg = tema.get("plot_axes_bg", "#ffffff" if is_day else "#101115")
+        fig_bg = tema.get("plot_bg", "#ffffff" if is_day else "#0a0b0d")
+        grid_col = tema.get("plot_grid", "#e5e5e5" if is_day else "#1e2027")
+        spine_col = tema.get("plot_spine", "#a8a29e" if is_day else "#2a2c35")
+        tick_col = tema.get("fg_dim", "#44403c" if is_day else "#9ca3af")
+        title_col = tema.get("fg_text", "#1c1917" if is_day else "#f1f3f5")
+        leg_bg = "#ffffff" if is_day else "#16181f"
+        leg_ec = "#cbd5e1" if is_day else "#334155"
+        leg_fg = tema.get("fg_text", "#1c1917" if is_day else "#f1f3f5")
+
+        self.fig.patch.set_facecolor(fig_bg)
 
         # Obtener valores actuales de potencia u(t) de los buffers del app
         u_vals = [
@@ -229,11 +264,11 @@ class VentanaActuadores:
 
             # --- ESTILIZAR AXES ---
             for ax in [ax1, ax2, ax3]:
-                ax.set_facecolor("#1e293b")
-                ax.grid(True, linestyle=":", alpha=0.35, color="#475569")
-                ax.tick_params(colors="#94a3b8", labelsize=7.5)
+                ax.set_facecolor(ax_bg)
+                ax.grid(True, linestyle=":", alpha=0.35, color=grid_col)
+                ax.tick_params(colors=tick_col, labelsize=7.5)
                 for s in ax.spines.values():
-                    s.set_color("#334155")
+                    s.set_color(spine_col)
 
             v_peak = 170.0  # 120 * sqrt(2)
             t_half_ms = 8.3333
@@ -247,7 +282,7 @@ class VentanaActuadores:
                 elif u >= 100.0:
                     self.lbl_kpi_gate_st.config(text="CONDUCCIÓN TOTAL (100%)", fg="#34d399")
                 else:
-                    self.lbl_kpi_gate_st.config(text=f"RECORTE α={alpha_deg:.0f}° ({delay_us}µs)", fg="#38bdf8")
+                    self.lbl_kpi_gate_st.config(text=f"RECORTE α={alpha_deg:.0f}° ({delay_us}µs)", fg=self.tema["accent_primary"])
 
                 t_max = 33.333
                 t_ms = np.linspace(0, t_max, 1000)
@@ -283,11 +318,11 @@ class VentanaActuadores:
                 ax1.plot(t_ms, v_conducido, color=col, lw=2.0, label=f"V_load: {nom} ({v_rms:.1f} V_RMS)")
                 ax1.set_title(
                     f"1. Tensión de Carga AC con Recorte de Fase — {nom}: u={u:.1f}% | α={alpha_deg:.0f}° ({delay_us} µs) | {watts:.1f} W",
-                    color="#e2e8f0", fontsize=8.5, fontweight="bold"
+                    color=title_col, fontsize=8.5, fontweight="bold"
                 )
-                ax1.set_ylabel("Voltaje (V)", color="#e2e8f0", fontsize=8, fontweight="bold")
+                ax1.set_ylabel("Voltaje (V)", color=title_col, fontsize=8, fontweight="bold")
                 ax1.set_ylim(-190, 190)
-                ax1.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+                ax1.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
                 # 2. Señal de Gate
                 ax2.step(t_ms, gate_signal, color="#f472b6", lw=1.8, where="post", label="Pulso Gate (0V / 5V TTL)")
@@ -305,21 +340,21 @@ class VentanaActuadores:
                             arrowprops=dict(arrowstyle="->", color="#f472b6", lw=0.8)
                         )
 
-                ax2.set_title("2. Señal de Disparo de Compuerta (Gate Pulses al MOC3021 / Arduino Slave)", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-                ax2.set_ylabel("Gate (V)", color="#e2e8f0", fontsize=8, fontweight="bold")
+                ax2.set_title("2. Señal de Disparo de Compuerta (Gate Pulses al MOC3021 / Arduino Slave)", color=title_col, fontsize=8.5, fontweight="bold")
+                ax2.set_ylabel("Gate (V)", color=title_col, fontsize=8, fontweight="bold")
                 ax2.set_ylim(-0.5, 6.0)
-                ax2.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+                ax2.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
                 # 3. Potencia Instantánea
                 p_inst = (v_conducido**2) / res_ohm
                 ax3.fill_between(t_ms, p_inst, color="#22c55e", alpha=0.25)
                 ax3.plot(t_ms, p_inst, color="#22c55e", lw=1.6, label=f"P(t) Instantánea (P_RMS = {watts:.1f} W)")
                 ax3.axhline(watts, color="#34d399", ls="--", lw=1.2, label=f"P_media = {watts:.1f} W")
-                ax3.set_title("3. Potencia Activa Instantánea Disipada en el Calentador: p(t) = v(t)² / R", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-                ax3.set_ylabel("Potencia (W)", color="#e2e8f0", fontsize=8, fontweight="bold")
-                ax3.set_xlabel("Tiempo (milisegundos — 2 Ciclos AC de 16.66 ms c/u)", color="#e2e8f0", fontsize=7.5)
+                ax3.set_title("3. Potencia Activa Instantánea Disipada en el Calentador: p(t) = v(t)² / R", color=title_col, fontsize=8.5, fontweight="bold")
+                ax3.set_ylabel("Potencia (W)", color=title_col, fontsize=8, fontweight="bold")
+                ax3.set_xlabel("Tiempo (milisegundos — 2 Ciclos AC de 16.66 ms c/u)", color=title_col, fontsize=7.5)
                 ax3.set_ylim(0, max(p_max * 2.2, 50.0))
-                ax3.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+                ax3.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
                 ax1.set_xlim(0, t_max)
 
             else:
@@ -366,31 +401,31 @@ class VentanaActuadores:
 
                 ax1.set_title(
                     f"1. Control por Paquetes de Ciclos (Burst Firing Cruce por Cero) — {nom}: {n_on} ON / {n_off} OFF ({u:.0f}% Potencia)",
-                    color="#e2e8f0", fontsize=8.5, fontweight="bold"
+                    color=title_col, fontsize=8.5, fontweight="bold"
                 )
-                ax1.set_ylabel("Voltaje (V)", color="#e2e8f0", fontsize=8, fontweight="bold")
+                ax1.set_ylabel("Voltaje (V)", color=title_col, fontsize=8, fontweight="bold")
                 ax1.set_ylim(-190, 190)
                 ax1.set_xlim(0, t_max)
-                ax1.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+                ax1.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
                 # 2. Habilitación de Gate
                 ax2.step(t_ms, gate_burst, color="#f472b6", lw=1.8, where="post", label="Habilitación Gate TRIAC (5V en Ciclos ON)")
                 ax2.fill_between(t_ms, gate_burst, color="#f472b6", alpha=0.30, step="post")
-                ax2.set_title("2. Señal de Disparo de Compuerta durante la Ventana de Control (200 ms = 12 Ciclos)", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-                ax2.set_ylabel("Gate (V)", color="#e2e8f0", fontsize=8, fontweight="bold")
+                ax2.set_title("2. Señal de Disparo de Compuerta durante la Ventana de Control (200 ms = 12 Ciclos)", color=title_col, fontsize=8.5, fontweight="bold")
+                ax2.set_ylabel("Gate (V)", color=title_col, fontsize=8, fontweight="bold")
                 ax2.set_ylim(-0.5, 6.0)
-                ax2.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+                ax2.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
                 # 3. Potencia Media
                 p_inst = np.where(t_ms <= t_corte_ms, (v_ac**2)/res_ohm, 0.0) if u > 0.0 else np.zeros_like(t_ms)
                 ax3.fill_between(t_ms, p_inst, color="#22c55e", alpha=0.25)
                 ax3.plot(t_ms, p_inst, color="#22c55e", lw=1.6, label="Potencia Instantánea")
                 ax3.axhline(watts, color="#34d399", ls="--", lw=1.2, label=f"P_media = {watts:.1f} W")
-                ax3.set_title("3. Potencia Activa Entregada en la Ventana de Control (200 ms)", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-                ax3.set_ylabel("Potencia (W)", color="#e2e8f0", fontsize=8, fontweight="bold")
-                ax3.set_xlabel("Tiempo (milisegundos — Ventana de 12 Ciclos / 200 ms)", color="#e2e8f0", fontsize=7.5)
+                ax3.set_title("3. Potencia Activa Entregada en la Ventana de Control (200 ms)", color=title_col, fontsize=8.5, fontweight="bold")
+                ax3.set_ylabel("Potencia (W)", color=title_col, fontsize=8, fontweight="bold")
+                ax3.set_xlabel("Tiempo (milisegundos — Ventana de 12 Ciclos / 200 ms)", color=title_col, fontsize=7.5)
                 ax3.set_ylim(0, max(p_max * 2.2, 50.0))
-                ax3.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+                ax3.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
         elif self.canal_sel == 4:
             # =========================================================================
@@ -404,11 +439,11 @@ class VentanaActuadores:
             ax3 = self.fig.add_subplot(3, 1, 3)
 
             for ax in [ax1, ax2, ax3]:
-                ax.set_facecolor("#1e293b")
-                ax.grid(True, linestyle=":", alpha=0.35, color="#475569")
-                ax.tick_params(colors="#94a3b8", labelsize=7.5)
+                ax.set_facecolor(ax_bg)
+                ax.grid(True, linestyle=":", alpha=0.35, color=grid_col)
+                ax.tick_params(colors=tick_col, labelsize=7.5)
                 for s in ax.spines.values():
-                    s.set_color("#334155")
+                    s.set_color(spine_col)
 
             # Obtener datos de la fuente del app
             d_f = getattr(self.app, 'ultimo_df', {}) or {}
@@ -454,17 +489,17 @@ class VentanaActuadores:
                 ax1.axhline(i_prom, color="#fbbf24", ls="--", lw=1.5, label=f"I_promedio = {i_prom:.2f} A")
                 ax1.set_title(
                     f"1. Forma de Onda de Corriente Galvánica I(t) — Frecuencia: {freq} Hz | Duty: {duty}% | Ton: {t_on_ms:.1f}ms | Toff: {t_off_ms:.1f}ms",
-                    color="#e2e8f0", fontsize=8.5, fontweight="bold"
+                    color=title_col, fontsize=8.5, fontweight="bold"
                 )
             else:
                 ax1.set_title(
                     f"1. Corriente Galvánica Continua (DC) — I = {i_pico:.2f} A",
-                    color="#e2e8f0", fontsize=8.5, fontweight="bold"
+                    color=title_col, fontsize=8.5, fontweight="bold"
                 )
-            ax1.set_ylabel("Corriente (A)", color="#e2e8f0", fontsize=8, fontweight="bold")
+            ax1.set_ylabel("Corriente (A)", color=title_col, fontsize=8, fontweight="bold")
             ax1.set_ylim(-0.2, max(2.5, i_pico * 1.35))
             ax1.set_xlim(0, t_max)
-            ax1.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+            ax1.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
             # 2. Señal DAC MCP4725 y Control de Gate
             dac_signal = np.zeros_like(t_ms)
@@ -477,25 +512,25 @@ class VentanaActuadores:
                 else:
                     dac_signal[:] = (i_pico / 7.06) * 3.53
 
-            ax2.step(t_ms, dac_signal, color="#38bdf8", lw=1.8, where="post", label="Voltaje Control DAC MCP4725 (0-3.5V)")
-            ax2.fill_between(t_ms, dac_signal, color="#38bdf8", alpha=0.25, step="post")
-            ax2.set_title("2. Señal de Control Analógica / Puerta MOSFET (DAC I2C @ 12-bit)", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-            ax2.set_ylabel("V_DAC (V)", color="#e2e8f0", fontsize=8, fontweight="bold")
-            ax2.set_xlabel("Tiempo (milisegundos)", color="#e2e8f0", fontsize=7.5)
+            ax2.step(t_ms, dac_signal, color=self.tema["accent_primary"], lw=1.8, where="post", label="Voltaje Control DAC MCP4725 (0-3.5V)")
+            ax2.fill_between(t_ms, dac_signal, color=self.tema["accent_primary"], alpha=0.25, step="post")
+            ax2.set_title("2. Señal de Control Analógica / Puerta MOSFET (DAC I2C @ 12-bit)", color=title_col, fontsize=8.5, fontweight="bold")
+            ax2.set_ylabel("V_DAC (V)", color=title_col, fontsize=8, fontweight="bold")
+            ax2.set_xlabel("Tiempo (milisegundos)", color=title_col, fontsize=7.5)
             ax2.set_ylim(-0.2, 3.8)
-            ax2.legend(loc="upper right", fontsize=7, facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+            ax2.legend(loc="upper right", fontsize=7, facecolor=leg_bg, edgecolor=leg_ec, labelcolor=leg_fg)
 
             # 3. Balance de Shunts (MOSFET 1 vs MOSFET 2)
             categorias = ["Shunt 1 (MOSFET 1)", "Shunt 2 (MOSFET 2)", "Total Medido"]
             valores_i = [i1, i2, i_pico]
-            colores_bar = ["#38bdf8", "#818cf8", "#22c55e"]
-            bars = ax3.barh(categorias, valores_i, color=colores_bar, height=0.55, edgecolor="#334155")
+            colores_bar = [self.tema["accent_primary"], "#818cf8", "#22c55e"]
+            bars = ax3.barh(categorias, valores_i, color=colores_bar, height=0.55, edgecolor=self.tema["border"])
             for bar, val in zip(bars, valores_i):
                 ax3.text(val + 0.04, bar.get_y() + bar.get_height()/2.0, f"{val:.2f} A", va="center", color="#f8fafc", fontsize=8, fontweight="bold")
 
             ax3.set_xlim(0, max(2.5, i_pico * 1.35))
-            ax3.set_title(f"3. Balance Físico de Corriente en Shunts (A2: {vs1:.3f}V | A3: {vs2:.3f}V | Gm: {d_f.get('gm', 1.0):.4f})", color="#e2e8f0", fontsize=8.5, fontweight="bold")
-            ax3.set_xlabel("Corriente (Amperios)", color="#e2e8f0", fontsize=7.5)
+            ax3.set_title(f"3. Balance Físico de Corriente en Shunts (A2: {vs1:.3f}V | A3: {vs2:.3f}V | Gm: {d_f.get('gm', 1.0):.4f})", color=title_col, fontsize=8.5, fontweight="bold")
+            ax3.set_xlabel("Corriente (Amperios)", color=title_col, fontsize=7.5)
 
         else:
             # =========================================================================
@@ -524,11 +559,11 @@ class VentanaActuadores:
                     p_pct, alpha_deg, delay_us, watts = calcular_disparo_triac(u, p_max)
                     delay_ms = delay_us / 1000.0
 
-                    ax.set_facecolor("#1e293b")
-                    ax.grid(True, linestyle=":", alpha=0.3, color="#475569")
-                    ax.tick_params(colors="#94a3b8", labelsize=6.5)
+                    ax.set_facecolor(ax_bg)
+                    ax.grid(True, linestyle=":", alpha=0.3, color=grid_col)
+                    ax.tick_params(colors=tick_col, labelsize=6.5)
                     for s in ax.spines.values():
-                        s.set_color("#334155")
+                        s.set_color(spine_col)
 
                     v_cond = np.zeros_like(v_ac)
                     gate_sig = np.zeros_like(t_ms)
@@ -548,7 +583,7 @@ class VentanaActuadores:
                     ax.step(t_ms, gate_sig - 160.0, color="#f472b6", lw=1.2, where="post")
                     ax.text(0.5, -150, "Gate Pulse", color="#f472b6", fontsize=5.5)
 
-                    ax.set_title(f"{nom}: u={u:.0f}% ({watts:.1f}W | α={alpha_deg:.0f}° | {delay_us}µs)", color="#e2e8f0", fontsize=7.5, fontweight="bold")
+                    ax.set_title(f"{nom}: u={u:.0f}% ({watts:.1f}W | α={alpha_deg:.0f}° | {delay_us}µs)", color=title_col, fontsize=7.5, fontweight="bold")
                     ax.set_ylim(-185, 185)
                     ax.set_xlim(0, 16.666)
 
@@ -568,11 +603,11 @@ class VentanaActuadores:
                     t_corte = n_on * 16.666
                     watts = p_max * (u / 100.0)
 
-                    ax.set_facecolor("#1e293b")
-                    ax.grid(True, linestyle=":", alpha=0.3, color="#475569")
-                    ax.tick_params(colors="#94a3b8", labelsize=6.5)
+                    ax.set_facecolor(ax_bg)
+                    ax.grid(True, linestyle=":", alpha=0.3, color=grid_col)
+                    ax.tick_params(colors=tick_col, labelsize=6.5)
                     for s in ax.spines.values():
-                        s.set_color("#334155")
+                        s.set_color(spine_col)
 
                     ax.plot(t_ms, v_ac, color="#475569", ls=":", lw=0.9)
                     if n_on > 0:
@@ -583,14 +618,46 @@ class VentanaActuadores:
                         mask_off = t_ms >= t_corte
                         ax.plot(t_ms[mask_off], np.zeros(np.sum(mask_off)), color="#ef4444", lw=1.8)
 
-                    ax.set_title(f"{nom}: {n_on} ON / {n_off} OFF ({u:.0f}% | {watts:.1f}W)", color="#e2e8f0", fontsize=7.5, fontweight="bold")
+                    ax.set_title(f"{nom}: {n_on} ON / {n_off} OFF ({u:.0f}% | {watts:.1f}W)", color=title_col, fontsize=7.5, fontweight="bold")
                     ax.set_ylim(-185, 185)
                     ax.set_xlim(0, 200.0)
 
         self.fig.tight_layout(pad=1.0)
         self.canvas.draw_idle()
 
+    def _redibujar_grafica(self):
+        self._redibujar()
+
     def _on_close(self):
-        self.app.win_actuadores = None
-        self.win.destroy()
+        try:
+            if hasattr(self.app, 'win_actuadores'):
+                self.app.win_actuadores = None
+        except Exception:
+            pass
+        try:
+            self.win.destroy()
+        except Exception:
+            pass
+
+    def aplicar_tema(self, tema):
+        """Aplica la paleta temática en caliente a la ventana de actuadores.py."""
+        self.tema = tema
+        if not hasattr(self, 'win') or not hasattr(self.win, 'winfo_exists') or not self.win.winfo_exists():
+            return
+        aplicar_tema_a_ventana_generica(self, self.tema)
+        self._actualizar_estilo_botones_canales()
+        is_day = (tema.get("nombre") == "dia")
+        if hasattr(self, 'lbl_kpi_u'):
+            self.lbl_kpi_u.config(fg=self.tema["accent_primary"])
+        if hasattr(self, 'lbl_kpi_alpha'):
+            self.lbl_kpi_alpha.config(fg="#b45309" if is_day else "#fbbf24")
+        if hasattr(self, 'lbl_kpi_delay'):
+            self.lbl_kpi_delay.config(fg="#be185d" if is_day else "#f472b6")
+        if hasattr(self, 'lbl_kpi_vrms'):
+            self.lbl_kpi_vrms.config(fg="#6d28d9" if is_day else "#a78bfa")
+        if hasattr(self, 'lbl_kpi_watts'):
+            self.lbl_kpi_watts.config(fg="#047857" if is_day else "#22c55e")
+        if hasattr(self, 'lbl_kpi_vcss'):
+            self.lbl_kpi_vcss.config(fg="#047857" if is_day else "#34d399")
+        self._redibujar_grafica()
 

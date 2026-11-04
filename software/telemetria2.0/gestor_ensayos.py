@@ -160,8 +160,16 @@ class GestorEnsayosMixin:
             (self.btn_f_p4_25, "pH 4 — 25°C"),
             (self.btn_f_p4_40, "pH 4 — 40°C"),
         ]
+        tema = getattr(self, "tema_actual", None)
+        active_bg = tema["accent_primary"] if tema else "#2563eb"
+        inactive_bg = tema["btn_acc_bg"] if tema else "#1e293b"
+        active_fg = "#ffffff"
+        inactive_fg = tema["btn_acc_fg"] if tema else "#f8fafc"
         for btn, b_tag in todos_btns:
-            btn.config(bg="#2563eb" if b_tag == tag else "#1e293b")
+            btn.config(
+                bg=active_bg if b_tag == tag else inactive_bg,
+                fg=active_fg if b_tag == tag else inactive_fg
+            )
         self._actualizar_lista_combo()
 
 
@@ -189,19 +197,25 @@ class GestorEnsayosMixin:
         self.placa_activa = self.mapa_combo[sel_text]
         p = self.placa_activa
 
-        self.lbl_badge_ronda.config(text=f"🏷️ {p['ronda']} — Placa #{p['num']:02d}")
-        self.lbl_badge_cond.config(text=f"🧪 pH Ref: {p['ph']}  |  🌡️ Zincado: {p['temp_zin']} °C ({p['tiem_zin_s']}s)")
+        is_day = (getattr(self, 'tema_actual', {}).get('nombre') == 'dia')
+        c_ronda = "#1e3a8a" if is_day else "#38bdf8"
+        c_cond = "#047857" if is_day else "#34d399"
+        c_niq = "#6d28d9" if is_day else "#a78bfa"
+        self.lbl_badge_ronda.config(text=f"🏷️ {p['ronda']} — Placa #{p['num']:02d}", fg=c_ronda)
+        self.lbl_badge_cond.config(text=f"🧪 pH Ref: {p['ph']}  |  🌡️ Zincado: {p['temp_zin']} °C ({p['tiem_zin_s']}s)", fg=c_cond)
 
         if p["pulsado"] == 1:
             f_txt = p.get("freq", 10)
             d_txt = p.get("duty", 20)
             a_txt = p.get("amp_zin", 1.50)
-            self.lbl_badge_zin.config(text=f"⚡ Zincado: PULSADO {a_txt:.2f} A @ {f_txt}Hz ({d_txt}% Duty)", fg="#f472b6")
+            c_zin = "#be185d" if is_day else "#f472b6"
+            self.lbl_badge_zin.config(text=f"⚡ Zincado: PULSADO {a_txt:.2f} A @ {f_txt}Hz ({d_txt}% Duty)", fg=c_zin)
         else:
             a_txt = p.get("amp_zin", 1.50)
-            self.lbl_badge_zin.config(text=f"⚡ Zincado: DC CONTINUO {a_txt:.2f} A", fg="#34d399")
+            c_zin = "#047857" if is_day else "#34d399"
+            self.lbl_badge_zin.config(text=f"⚡ Zincado: DC CONTINUO {a_txt:.2f} A", fg=c_zin)
 
-        self.lbl_badge_niq.config(text="⚡ Níquel: DC CONTINUO 1.13 A (600s / 10 min)", fg="#a78bfa")
+        self.lbl_badge_niq.config(text="⚡ Níquel: DC CONTINUO 1.13 A (600s / 10 min)", fg=c_niq)
 
         self.lbl_e1.config(text=f"Limpieza (T1): {p['limpieza_s']}s @ 85°C | 0.00A")
         self.lbl_e2.config(text=f"Decapado (T2): {p['matizado_s']}s @ 85°C | 0.00A")
@@ -240,7 +254,7 @@ class GestorEnsayosMixin:
 
         self.lbl_etapa_titulo.config(text=f"ETAPA {self.etapa_activa_idx + 1}/4: {nombre.upper()}")
         self._actualizar_display_reloj()
-        self.btn_stage_toggle.config(text="▶ Iniciar Etapa", bg="#059669", activebackground="#10b981")
+        self.btn_stage_toggle.config(text="▶ Iniciar Etapa", bg="#047857" if (getattr(self, "tema_actual", {}).get("nombre") == "dia") else "#059669", activebackground="#10b981")
         self.lbl_aviso_etapa.config(text=f"Objetivo: SP Temp {sp_t:.0f}°C | Corriente: {curr:.2f}A ({modo})", fg="#94a3b8")
 
         if hasattr(self, 'btn_stage_prev'):
@@ -249,14 +263,19 @@ class GestorEnsayosMixin:
         if hasattr(self, 'lbl_hw_sync_status'):
             self.lbl_hw_sync_status.config(text=f"📡 SPs listos: {curr:.2f}A ({modo}) | T{self.etapa_activa_idx+1}:{sp_t:.0f}°C", fg="#94a3b8")
 
+        is_day = (getattr(self, 'tema_actual', {}).get('nombre') == 'dia')
+        c_act = "#1d4ed8" if is_day else "#38bdf8"
+        c_prev = "#047857" if is_day else "#34d399"
+        c_next = "#78716c" if is_day else "#64748b"
+
         filas = [self.lbl_e1, self.lbl_e2, self.lbl_e3, self.lbl_e4]
         for idx, f in enumerate(filas):
             if idx == self.etapa_activa_idx:
-                f.config(fg="#38bdf8", font=("Segoe UI", 7, "bold"))
+                f.config(fg=c_act, font=("Segoe UI", 7, "bold"))
             elif idx < self.etapa_activa_idx:
-                f.config(fg="#34d399", font=("Segoe UI", 7))
+                f.config(fg=c_prev, font=("Segoe UI", 7))
             else:
-                f.config(fg="#64748b", font=("Segoe UI", 7))
+                f.config(fg=c_next, font=("Segoe UI", 7))
 
 
     def _actualizar_display_reloj(self):
@@ -280,7 +299,7 @@ class GestorEnsayosMixin:
             if hasattr(self, 'marcadores_etapas'):
                 self.marcadores_etapas.append((t_now, f"E{self.etapa_activa_idx+1}: {nom_etapa}"))
 
-            self.btn_stage_toggle.config(text="⏸ Pausar", bg="#d97706", activebackground="#f59e0b")
+            self.btn_stage_toggle.config(text="⏸ Pausar", bg="#b45309" if (getattr(self, "tema_actual", {}).get("nombre") == "dia") else "#d97706", activebackground="#f59e0b")
             self.lbl_timer_big.config(fg="#34d399")
             self.lbl_aviso_etapa.config(text="⏳ Etapa en progreso...", fg="#34d399")
             

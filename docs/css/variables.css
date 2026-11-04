@@ -1,25 +1,76 @@
 /* ==========================================================================
-   VARIABLES DE DISEÑO & TOKENS GLOBALES
+   VARIABLES DE DISEÑO & TOKENS GLOBALES (Anti-AI Slop Engineering System)
    Sistema de Control Automático de Recubrimientos Electrolíticos
+   Tema Dual: VS Dark (Predeterminado) & COMSOL Scientific Light (Día)
    ========================================================================== */
 
-:root {
-  --bg: #070d19;
-  --card-bg: rgba(15, 23, 42, 0.90);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --primary: #0ea5e9;
-  --primary-hover: #38bdf8;
-  --primary-glow: rgba(14, 165, 233, 0.22);
-  --emerald: #10b981;
-  --amber: #f59e0b;
-  --rose: #f43f5e;
-  --purple: #8b5cf6;
-  --indigo: #6366f1;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dark: #64748b;
-  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --code-font: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+:root, [data-theme="dark"] {
+  --bg: #1e1e1e;
+  --card-bg: #252526;
+  --card-subpanel: #2d2d2d;
+  --card-border: #3c3c3c;
+  --card-border-subtle: #2f2f2f;
+  
+  --primary: #007acc;
+  --primary-hover: #1f8ad2;
+  --primary-glow: transparent;
+  
+  --emerald: #4ec9b0;
+  --amber: #d7ba7d;
+  --rose: #f14c4c;
+  --purple: #c586c0;
+  --indigo: #569cd6;
+  
+  --text-main: #f1f1f1;
+  --text-muted: #cccccc;
+  --text-dark: #858585;
+  
+  --disp-bg: #141414;
+  --disp-border: #333333;
+  --disp-panel: #1b1b1c;
+
+  --btn-bg: #2d2d2d;
+  --btn-border: #3c3c3c;
+  --btn-text: #cccccc;
+  --btn-hover-bg: #383838;
+
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --code-font: Consolas, "SFMono-Regular", "Liberation Mono", Menlo, Courier, monospace;
+  --math-font: "Cambria Math", "Latin Modern Math", "STIX Two Math", Georgia, serif;
+}
+
+[data-theme="light"] {
+  --bg: #f3f3f3;
+  --card-bg: #ffffff;
+  --card-subpanel: #e8e8e8;
+  --card-border: #d4d4d4;
+  --card-border-subtle: #e5e5e5;
+  
+  --primary: #005fb8;
+  --primary-hover: #106ebe;
+  --primary-glow: transparent;
+  
+  --emerald: #2e7d32;
+  --amber: #b45309;
+  --rose: #c62828;
+  --purple: #7b1fa2;
+  --indigo: #1565c0;
+  
+  --text-main: #1e1e1e;
+  --text-muted: #4b5563;
+  --text-dark: #6b7280;
+  
+  --disp-bg: #e5e5e5;
+  --disp-border: #c8c8c8;
+  --disp-panel: #dedede;
+
+  --btn-bg: #f8f8f8;
+  --btn-border: #c8c8c8;
+  --btn-text: #1e1e1e;
+  --btn-hover-bg: #e0e0e0;
+
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --code-font: Consolas, "SFMono-Regular", "Liberation Mono", Menlo, Courier, monospace;
   --math-font: "Cambria Math", "Latin Modern Math", "STIX Two Math", Georgia, serif;
 }
 
@@ -37,7 +88,4 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   min-height: 100vh;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
 }

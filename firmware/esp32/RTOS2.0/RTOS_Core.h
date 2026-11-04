@@ -31,6 +31,7 @@
 extern SemaphoreHandle_t xI2CMutex;   // Mutex de acceso exclusivo al bus I2C (ADS1115, MCP4725, AHT20, BMP280)
 extern SemaphoreHandle_t xSPIMutex;   // Mutex de acceso exclusivo a los 4 termopares MAX6675 por SPI
 extern SemaphoreHandle_t xDataMutex;  // Mutex de variables globales compartidas de control y estado de planta
+extern SemaphoreHandle_t xUART2Mutex; // Mutex de acceso exclusivo a la línea serie UART2 (Nano esclavo)
 
 /**
  * IDENTIFICADORES DE TAREA (Task Handles de FreeRTOS):
@@ -165,5 +166,10 @@ void escaparJSON(const char* src, char* dst, size_t maxLen);
  * @return true si el bus quedó libre (SDA y SCL en nivel ALTO).
  */
 bool i2cRecuperarBus();
+
+/**
+ * @brief Envía de forma atómica y segura una trama de parada total ("0,0,0,0,seq*crc") al esclavo Nano.
+ */
+void enviarApagadoEmergenciaNano();
 
 #endif // RTOS_CORE_H
