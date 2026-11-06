@@ -327,8 +327,8 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
         .btn-upld{
             width:100%;
             padding:10px;
-            background:var(--accent-primary);
-            color:#fff;
+            background:var(--btn-bg);
+            color:var(--text-primary);
             border:1px solid var(--accent-primary);
             border-radius:3px;
             font-weight:700;
@@ -339,7 +339,8 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
             font-family:Consolas,monospace;
         }
         .btn-upld:hover:not(:disabled){
-            background:var(--accent-hover);
+            background:var(--btn-hover-bg);
+            border-color:var(--accent-hover);
         }
         .btn-upld:active{transform:scale(0.99);}
         .btn-upld:disabled{

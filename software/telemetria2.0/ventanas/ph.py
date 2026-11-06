@@ -1,3 +1,4 @@
+from utilidades.scrollable_frame import ScrollableFrame
 from utilidades.tema import cargar_tema_preferido, aplicar_tema_a_ventana_generica
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -208,10 +209,12 @@ class VentanaPH:
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame_plots)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 
-        # Panel de Control y Calibración (Lado Derecho)
-        panel_ctrl = tk.Frame(body, bg=self.tema["bg_panel"], width=360, padx=12, pady=10)
-        panel_ctrl.pack(side="right", fill="y", padx=(8, 0))
-        panel_ctrl.pack_propagate(False)
+        # Panel de Control y Calibración (Lado Derecho con Scrollbar Adaptativo)
+        self.panel_ctrl_scroll = ScrollableFrame(body, bg=self.tema["bg_panel"], fit_width=True)
+        self.panel_ctrl_scroll.pack(side="right", fill="y", padx=(8, 0))
+        self.panel_ctrl_scroll.canvas.configure(width=360)
+        panel_ctrl = self.panel_ctrl_scroll.content
+        self.panel_ctrl = panel_ctrl
 
         # Badge Canal Dedicado
         f_badge = tk.Frame(panel_ctrl, bg="#1e293b", padx=8, pady=4, highlightbackground="#0284c7", highlightthickness=1)
@@ -318,40 +321,43 @@ class VentanaPH:
 
         self.btn_cap7 = tk.Button(
             panel_ctrl,
-            text="1. Calibrar Buffer Neutro (pH 7.00)",
+            text="● 1. Calibrar Buffer Neutro (pH 7.00)",
             font=("Segoe UI", 8, "bold"),
-            bg="#0284c7",
-            fg="#fff",
-            activebackground="#0369a1",
+            bg="#1e293b",
+            fg="#38bdf8",
+            activebackground="#334155",
+            activeforeground="#ffffff",
             command=lambda: self._capturar_buffer(7),
             relief="flat",
-            pady=3
+            pady=4
         )
         self.btn_cap7.pack(fill="x", pady=2)
 
         self.btn_cap4 = tk.Button(
             panel_ctrl,
-            text="2. Calibrar Buffer Ácido (pH 4.01)",
+            text="● 2. Calibrar Buffer Ácido (pH 4.01)",
             font=("Segoe UI", 8, "bold"),
-            bg="#d97706",
-            fg="#fff",
-            activebackground="#b45309",
+            bg="#1e293b",
+            fg="#fbbf24",
+            activebackground="#334155",
+            activeforeground="#ffffff",
             command=lambda: self._capturar_buffer(4),
             relief="flat",
-            pady=3
+            pady=4
         )
         self.btn_cap4.pack(fill="x", pady=2)
 
         self.btn_cap10 = tk.Button(
             panel_ctrl,
-            text="3. Calibrar Buffer Básico (pH 10.01)",
+            text="● 3. Calibrar Buffer Básico (pH 10.01)",
             font=("Segoe UI", 8, "bold"),
-            bg="#7c3aed",
-            fg="#fff",
-            activebackground="#6d28d9",
+            bg="#1e293b",
+            fg="#c084fc",
+            activebackground="#334155",
+            activeforeground="#ffffff",
             command=lambda: self._capturar_buffer(10),
             relief="flat",
-            pady=3
+            pady=4
         )
         self.btn_cap10.pack(fill="x", pady=2)
 
@@ -1207,13 +1213,16 @@ class VentanaPH:
         if hasattr(self, 'lbl_live_v') and self.lbl_live_v:
             self.lbl_live_v.config(bg=tema["bg_card_inner"], fg=tema["fg_dim"])
 
-        # Botones de Calibración
+        # Botones de Calibración sobrios
+        btn_bg = "#dedbd4" if is_day else "#1e293b"
+        if hasattr(self, 'panel_ctrl_scroll') and self.panel_ctrl_scroll:
+            self.panel_ctrl_scroll.aplicar_tema(tema["bg_panel"])
         if hasattr(self, 'btn_cap7') and self.btn_cap7:
-            self.btn_cap7.config(bg="#1d4ed8" if is_day else "#0284c7", fg="#ffffff")
+            self.btn_cap7.config(bg=btn_bg, fg="#0284c7" if is_day else "#38bdf8")
         if hasattr(self, 'btn_cap4') and self.btn_cap4:
-            self.btn_cap4.config(bg="#c2410c" if is_day else "#d97706", fg="#ffffff")
+            self.btn_cap4.config(bg=btn_bg, fg="#d97706" if is_day else "#fbbf24")
         if hasattr(self, 'btn_cap10') and self.btn_cap10:
-            self.btn_cap10.config(bg="#6d28d9" if is_day else "#7c3aed", fg="#ffffff")
+            self.btn_cap10.config(bg=btn_bg, fg="#7c3aed" if is_day else "#c084fc")
         if hasattr(self, 'btn_sync_nvs') and self.btn_sync_nvs:
             self.btn_sync_nvs.config(bg="#047857" if is_day else "#059669", fg="#ffffff")
         if hasattr(self, 'btn_reset_nvs') and self.btn_reset_nvs:

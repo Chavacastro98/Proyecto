@@ -168,6 +168,30 @@ def aplicar_estilo_treeview(tema):
         style.map(style_name, background=[("selected", sel_bg)], foreground=[("selected", sel_fg)])
         style.map(f"{style_name}.Heading", background=[("active", tema["btn_acc_bg"])])
 
+    # Configuración de Scrollbar industrial según tema
+    sb_bg = tema.get("btn_acc_bg", "#2d2d2d" if not is_day else "#e8e8e8")
+    sb_trough = tema.get("bg_app", "#1e1e1e" if not is_day else "#f3f3f3")
+    sb_arrow = tema.get("fg_dim", "#cccccc" if not is_day else "#4b5563")
+    sb_active = tema.get("accent_primary", "#007acc" if not is_day else "#005fb8")
+
+    for sb_style in ("Vertical.TScrollbar", "Horizontal.TScrollbar", "TScrollbar"):
+        try:
+            style.configure(
+                sb_style,
+                background=sb_bg,
+                troughcolor=sb_trough,
+                arrowcolor=sb_arrow,
+                borderwidth=0,
+                relief="flat"
+            )
+            style.map(
+                sb_style,
+                background=[("active", sb_active)],
+                arrowcolor=[("active", "#ffffff")]
+            )
+        except Exception:
+            pass
+
 
 def estilizar_figura_matplotlib(fig, canvas, tema):
     """Estiliza una figura Matplotlib y sus ejes según el tema (Día/Noche)."""

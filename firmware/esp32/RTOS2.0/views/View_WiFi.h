@@ -379,12 +379,12 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
         }
         .btn-act:active{transform:scale(0.99);}
         .btn-save{
-            background:var(--accent-primary);
-            color:#fff;
+            background:var(--btn-bg);
+            color:var(--text-primary);
             border-color:var(--accent-primary);
             grid-column:1 / -1;
         }
-        .btn-save:hover{background:var(--accent-hover);}
+        .btn-save:hover{background:var(--btn-hover-bg);border-color:var(--accent-hover);color:var(--text-primary);}
         .btn-save:disabled{opacity:0.4;cursor:not-allowed;}
         .btn-reset{
             background:var(--btn-bg);

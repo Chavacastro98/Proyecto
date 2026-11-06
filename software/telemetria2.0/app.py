@@ -44,6 +44,7 @@ from ventanas.diagnostico import VentanaDiagnostico
 from ventanas.ph import VentanaPH
 from ventanas.nube import VentanaNube
 from ventanas.visor_datos import VentanaVisorDatos
+from utilidades.scrollable_frame import ScrollableFrame
 from utilidades.tema import cargar_tema_preferido, guardar_tema_preferido, TEMA_DIA, TEMA_NOCHE
 
 
@@ -408,9 +409,10 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self.canvas_tx.pack(side="left", padx=(0, 1))
         self._led_tx = self.canvas_tx.create_oval(1, 1, 9, 9, fill=self.tema_actual["bg_panel"], outline="#475569")
 
-        # 2. CUERPO PRINCIPAL DIVIDIDO EN 2 COLUMNAS
-        self.body_frame = tk.Frame(self.root, bg=self.tema_actual["bg_app"])
-        self.body_frame.pack(fill="both", expand=True, padx=8, pady=4)
+        # 2. CUERPO PRINCIPAL DIVIDIDO EN 2 COLUMNAS CON DESPLAZAMIENTO FLUIDO (SCROLLBAR)
+        self.body_scroll = ScrollableFrame(self.root, bg=self.tema_actual["bg_app"], fit_width=True, scroll_x=True)
+        self.body_scroll.pack(fill="both", expand=True, padx=4, pady=2)
+        self.body_frame = self.body_scroll.content
         body = self.body_frame
 
         # =========================================================================
@@ -418,7 +420,6 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         # =========================================================================
         self.panel_recetas = tk.Frame(body, bg=self.tema_actual["bg_panel"], width=360, bd=1, relief="solid")
         self.panel_recetas.pack(side="left", fill="y", padx=4, pady=2)
-        self.panel_recetas.pack_propagate(False)
         panel_recetas = self.panel_recetas
 
         self.lbl_sec_rec = tk.Label(
@@ -691,7 +692,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self.lbl_hw_sync_status.pack(fill="x", pady=(1, 0))
 
         self.frame_stab = tk.Frame(panel_recetas, bg=self.tema_actual["bg_card_inner"], bd=0, padx=6, pady=4)
-        self.frame_stab.pack(fill="x", padx=8, pady=(4, 8), side="bottom")
+        self.frame_stab.pack(fill="x", padx=8, pady=(4, 8))
         frame_stab = self.frame_stab
 
         self.lbl_stab_title = tk.Label(
@@ -1137,6 +1138,8 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         # 1. Ventana Raíz y Layout Principal
         self.root.configure(bg=tema["bg_app"])
 
+        if hasattr(self, 'body_scroll') and self.body_scroll:
+            self.body_scroll.aplicar_tema(tema)
         if hasattr(self, 'body_frame'):
             self.body_frame.configure(bg=tema["bg_app"])
 

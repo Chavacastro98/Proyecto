@@ -35,6 +35,8 @@ from utilidades.sim_termica import (
     graficar_simulacion_termica,
     simular_tina,
 )
+from utilidades.scrollable_frame import ScrollableFrame
+from utilidades.tema import cargar_tema_preferido, guardar_tema_preferido, aplicar_estilo_treeview, estilizar_figura_matplotlib, TEMA_NOCHE, TEMA_DIA
 from utilidades.verificar_lut import (
     LUT_FIRMWARE_DEF,
     calcular_potencia_rms_lut,
@@ -191,3 +193,67 @@ class TestSimTermica:
         ruta_term = str(tmp_path / "test_term.png")
         fig_term = graficar_simulacion_termica(guardar_archivo=True, mostrar=False, ruta_salida=ruta_term, t_total=20, dt=2.0)
         assert fig_term is not None
+
+
+
+class TestScrollableFrame:
+    """Pruebas unitarias para el contenedor desplazable industrial con scrollbar."""
+
+    def test_scrollable_frame_ciclo_vida(self):
+        import tkinter as tk
+        from unittest.mock import MagicMock
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            sf = ScrollableFrame(root, bg="#1e1e1e", fit_width=True, fit_height=True, scroll_x=True)
+            sf.pack(fill="both", expand=True)
+            lbl = tk.Label(sf.content, text="Contenido")
+            lbl.pack()
+            root.update_idletasks()
+
+            sf._on_content_configure()
+            sf._on_canvas_configure(MagicMock(width=600, height=400))
+            sf.scroll_to_top()
+            sf.scroll_to_bottom()
+            sf.aplicar_tema("#252526")
+            sf.aplicar_tema({"bg_app": "#1e1e1e"})
+
+            sf._on_mousewheel(MagicMock(delta=120))
+            sf._on_mousewheel_linux(MagicMock(num=4))
+            sf._on_mousewheel_linux(MagicMock(num=5))
+            sf._on_enter()
+            sf._on_leave()
+        finally:
+            root.destroy()
+
+
+class TestTema:
+    """Pruebas unitarias para el sistema de temas Día/Noche y estilización."""
+
+    def test_tema_carga_y_guardado(self, tmp_path):
+        tema = cargar_tema_preferido()
+        assert tema["nombre"] in ("noche", "dia")
+        guardar_tema_preferido("noche")
+        assert cargar_tema_preferido()["nombre"] == "noche"
+
+    def test_estilos_ttk_y_matplotlib(self):
+        import tkinter as tk
+        from matplotlib.figure import Figure
+        from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            aplicar_estilo_treeview(TEMA_NOCHE)
+            aplicar_estilo_treeview(TEMA_DIA)
+
+            fig = Figure()
+            ax = fig.add_subplot(111)
+            ax.set_title("Test Gráfica")
+            ax.set_xlabel("Eje X")
+            canvas = FigureCanvasTkAgg(fig, master=root)
+            estilizar_figura_matplotlib(fig, canvas, TEMA_NOCHE)
+            estilizar_figura_matplotlib(fig, canvas, TEMA_DIA)
+            estilizar_figura_matplotlib(None, None, TEMA_NOCHE)
+        finally:
+            root.destroy()

@@ -255,9 +255,9 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
       padding:8px 16px;
       cursor:pointer;
       border-radius:3px;
-      border:1px solid var(--accent-primary);
-      background:var(--accent-primary);
-      color:#fff;
+      border:1px solid var(--ui-border);
+      background:var(--btn-bg);
+      color:var(--text-secondary);
       font-weight:700;
       font-size:0.8em;
       transition:all 0.15s;
@@ -268,7 +268,9 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
       font-family:Consolas,monospace;
     }
     .btn-scan:hover:not(:disabled){
-      background:var(--accent-hover);
+      background:var(--btn-hover-bg);
+      border-color:var(--accent-primary);
+      color:var(--text-primary);
     }
     .btn-scan:active{transform:scale(0.99);}
     .btn-scan.scanning{opacity:0.6;cursor:wait;}

@@ -616,9 +616,11 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
         }
         .cal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
         .cal-btn{
+            background:var(--btn-bg);
+            color:var(--text-secondary);
+            border:1px solid var(--ui-border);
             padding:8px 6px;
             border-radius:2px;
-            border:1px solid var(--ui-border);
             font-weight:700;
             cursor:pointer;
             font-size:0.75em;
@@ -632,12 +634,14 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
         }
         .cal-btn .dot{width:6px;height:6px;border-radius:2px;flex-shrink:0;}
         .cal-btn:disabled{opacity:0.5;cursor:wait;}
-        
-        .cb7{background:var(--metro-ok-bg);color:var(--metro-ok);border-color:var(--metro-ok-border);}
+        .cal-btn:hover:not(:disabled){
+            background:var(--btn-hover-bg);
+            color:var(--text-primary);
+            border-color:var(--accent-primary);
+        }
+        .cal-btn:active:not(:disabled){transform:scale(0.98);}
         .cb7 .dot{background:var(--metro-ok);}
-        .cb4{background:var(--metro-err-bg);color:var(--metro-err);border-color:var(--metro-err-border);}
         .cb4 .dot{background:var(--metro-err);}
-        .cb10{background:var(--metro-basic-bg);color:var(--metro-basic);border-color:var(--metro-basic-border);}
         .cb10 .dot{background:var(--metro-basic);}
         .cal-btn:hover:not(:disabled){filter:brightness(1.15);}
 

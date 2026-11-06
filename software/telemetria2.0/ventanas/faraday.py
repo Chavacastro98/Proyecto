@@ -1,3 +1,4 @@
+from utilidades.scrollable_frame import ScrollableFrame
 from utilidades.tema import cargar_tema_preferido, aplicar_tema_a_ventana_generica
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -69,10 +70,12 @@ class VentanaFaraday:
         body = tk.Frame(self.win, bg=self.tema["bg_app"])
         body.pack(fill="both", expand=True, padx=6, pady=2)
 
-        # Columna Izquierda: Controles, Balanza y Resultados
-        col_ctrl = tk.Frame(body, bg="#111827", width=410, bd=1, relief="solid")
-        col_ctrl.pack(side="left", fill="y", padx=4, pady=2)
-        col_ctrl.pack_propagate(False)
+        # Columna Izquierda: Controles, Balanza y Resultados con ScrollableFrame
+        self.col_ctrl_scroll = ScrollableFrame(body, bg="#111827", fit_width=True)
+        self.col_ctrl_scroll.pack(side="left", fill="y", padx=4, pady=2)
+        self.col_ctrl_scroll.canvas.configure(width=410)
+        col_ctrl = self.col_ctrl_scroll.content
+        self.col_ctrl = col_ctrl
 
         # 2.0 Banner Protocolar de Metalurgia / Tesis
         f_banner = tk.Frame(col_ctrl, bg="#1e1b4b", bd=1, relief="solid", highlightbackground="#6366f1", highlightthickness=1, padx=8, pady=6)
@@ -744,6 +747,8 @@ class VentanaFaraday:
         if not hasattr(self, 'win') or not hasattr(self.win, 'winfo_exists') or not self.win.winfo_exists():
             return
         aplicar_tema_a_ventana_generica(self, self.tema)
+        if hasattr(self, 'col_ctrl_scroll') and self.col_ctrl_scroll:
+            self.col_ctrl_scroll.aplicar_tema(self.tema.get("bg_panel", "#111827"))
         self._estilizar_axes()
         self._redibujar()
 
