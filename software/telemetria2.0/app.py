@@ -410,7 +410,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self._led_tx = self.canvas_tx.create_oval(1, 1, 9, 9, fill=self.tema_actual["bg_panel"], outline="#475569")
 
         # 2. CUERPO PRINCIPAL DIVIDIDO EN 2 COLUMNAS CON DESPLAZAMIENTO FLUIDO (SCROLLBAR)
-        self.body_scroll = ScrollableFrame(self.root, bg=self.tema_actual["bg_app"], fit_width=True, scroll_x=True)
+        self.body_scroll = ScrollableFrame(self.root, bg=self.tema_actual["bg_app"], fit_width=True, scroll_x=False)
         self.body_scroll.pack(fill="both", expand=True, padx=4, pady=2)
         self.body_frame = self.body_scroll.content
         body = self.body_frame

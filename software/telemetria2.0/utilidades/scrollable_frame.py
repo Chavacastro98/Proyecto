@@ -18,23 +18,48 @@ from tkinter import ttk
 
 class ScrollableFrame(tk.Frame):
     """
-    Contenedor desplazable con Canvas + ttk.Scrollbar vertical y soporte opcional horizontal.
+    Contenedor desplazable con Canvas + tk.Scrollbar vertical y soporte opcional horizontal.
     Expone `self.content` como el frame interior donde se deben agregar los widgets hijos.
+    Obedece dinámicamente los cambios de tema Día / Noche.
     """
 
     def __init__(self, parent, bg="#1e1e1e", fit_width=True, fit_height=False, scroll_x=False, *args, **kwargs):
-        super().__init__(parent, bg=bg, *args, **kwargs)
-        self.bg = bg
+        # Determinar colores de scrollbar iniciales según tema/bg
+        is_day = False
+        if isinstance(bg, dict):
+            bg_col = bg.get("bg_app", "#1e1e1e")
+            is_day = (bg.get("nombre") == "dia")
+            accent_col = bg.get("accent_primary", "#005fb8" if is_day else "#007acc")
+        else:
+            bg_col = str(bg)
+            is_day = (bg_col.lower() in ("#f8fafc", "#f3f3f3", "#ffffff", "#f1f5f9", "white"))
+            accent_col = "#005fb8" if is_day else "#007acc"
+
+        super().__init__(parent, bg=bg_col, *args, **kwargs)
+        self.bg = bg_col
         self.fit_width = fit_width
         self.fit_height = fit_height
         self.scroll_x = scroll_x
+        trough_col = bg_col
+        thumb_col = "#cbd5e1" if is_day else "#3c3c3c"
 
         # Canvas principal sin bordes parásitos
-        self.canvas = tk.Canvas(self, bg=bg, highlightthickness=0, bd=0)
-        self.scrollbar_y = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.canvas = tk.Canvas(self, bg=bg_col, highlightthickness=0, bd=0)
+        self.scrollbar_y = tk.Scrollbar(
+            self,
+            orient="vertical",
+            command=self.canvas.yview,
+            width=11,
+            bg=thumb_col,
+            troughcolor=trough_col,
+            activebackground=accent_col,
+            bd=0,
+            highlightthickness=0,
+            relief="flat"
+        )
 
         # Frame interno de contenido
-        self.content = tk.Frame(self.canvas, bg=bg)
+        self.content = tk.Frame(self.canvas, bg=bg_col)
         self._window_id = self.canvas.create_window((0, 0), window=self.content, anchor="nw")
 
         # Conectar scrollbar con canvas
@@ -42,14 +67,26 @@ class ScrollableFrame(tk.Frame):
 
         # Empaquetado
         self.scrollbar_y.pack(side="right", fill="y")
-        self.canvas.pack(side="left", fill="both", expand=True)
 
         if self.scroll_x:
-            self.scrollbar_x = ttk.Scrollbar(self, orient="horizontal", command=self.canvas.xview)
+            self.scrollbar_x = tk.Scrollbar(
+                self,
+                orient="horizontal",
+                command=self.canvas.xview,
+                width=11,
+                bg=thumb_col,
+                troughcolor=trough_col,
+                activebackground=accent_col,
+                bd=0,
+                highlightthickness=0,
+                relief="flat"
+            )
             self.canvas.configure(xscrollcommand=self.scrollbar_x.set)
             self.scrollbar_x.pack(side="bottom", fill="x")
         else:
             self.scrollbar_x = None
+
+        self.canvas.pack(side="left", fill="both", expand=True)
 
         # Callbacks de redimensionamiento dinámico
         self.content.bind("<Configure>", self._on_content_configure)
@@ -129,8 +166,17 @@ class ScrollableFrame(tk.Frame):
         """Ajusta colores cromáticos al conmutar entre Día y Noche."""
         if isinstance(tema, dict):
             bg_col = tema.get("bg_app", self.bg)
+            is_day = (tema.get("nombre") == "dia")
+            trough_col = tema.get("bg_app", "#1e1e1e")
+            thumb_col = "#cbd5e1" if is_day else "#3c3c3c"
+            active_col = tema.get("accent_primary", "#005fb8" if is_day else "#007acc")
         else:
             bg_col = str(tema)
+            is_day = (bg_col.lower() in ("#f8fafc", "#f3f3f3", "#ffffff", "#f1f5f9", "white"))
+            trough_col = bg_col
+            thumb_col = "#cbd5e1" if is_day else "#3c3c3c"
+            active_col = "#005fb8" if is_day else "#007acc"
+
         self.bg = bg_col
         try:
             self.configure(bg=bg_col)
@@ -138,5 +184,17 @@ class ScrollableFrame(tk.Frame):
                 self.canvas.configure(bg=bg_col)
             if self.content.winfo_exists():
                 self.content.configure(bg=bg_col)
+            if hasattr(self, 'scrollbar_y') and self.scrollbar_y and self.scrollbar_y.winfo_exists():
+                self.scrollbar_y.configure(
+                    bg=thumb_col,
+                    troughcolor=trough_col,
+                    activebackground=active_col
+                )
+            if hasattr(self, 'scrollbar_x') and self.scrollbar_x and self.scrollbar_x.winfo_exists():
+                self.scrollbar_x.configure(
+                    bg=thumb_col,
+                    troughcolor=trough_col,
+                    activebackground=active_col
+                )
         except Exception:
             pass
