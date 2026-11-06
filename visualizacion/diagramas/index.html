@@ -13,20 +13,20 @@
   
   <style>
     :root {
-      --bg-dark: #0b1120;
-      --bg-card: #1e293b;
-      --bg-sidebar: #0f172a;
+      --bg-dark: #1e1e1e;
+      --bg-card: #252526;
+      --bg-sidebar: #252526;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --primary: #38bdf8;
       --primary-hover: #0284c7;
       --accent-green: #10b981;
       --accent-purple: #a855f7;
-      --border-color: rgba(56, 189, 248, 0.15);
+      --border-color: #3c3c3c;
       --card-bg: rgba(30, 41, 59, 0.5);
       --card-hover: rgba(30, 41, 59, 0.9);
-      --toolbar-bg: rgba(15, 23, 42, 0.92);
-      --canvas-bg: radial-gradient(circle at 50% 50%, #0f172a 0%, #0b1120 100%);
+      --toolbar-bg: #2d2d2d;
+      --canvas-bg: #1e1e1e;
     }
 
     body.light-theme {
@@ -379,7 +379,7 @@
   <!-- BARRA LATERAL -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h1>🔬 Catálogo de Diagramas</h1>
+      <h1>Catálogo de Diagramas</h1>
       <p id="sidebar-subtitle">Planta de Electrodeposición</p>
     </div>
 
@@ -387,8 +387,8 @@
     <div class="suite-box">
       <label for="suite-select">Arquitectura del Sistema:</label>
       <select id="suite-select" class="suite-select" onchange="cambiarSuite(this.value)">
-        <option value="rtos" selected>⚡ FreeRTOS SMP (RTOS 1.0 - N16R8)</option>
-        <option value="superloop">🔬 Super-Loop (v4.0 - Clásica)</option>
+        <option value="rtos" selected>FreeRTOS SMP (RTOS 1.0 - N16R8)</option>
+        <option value="superloop">Super-Loop (v4.0 - Clásica)</option>
       </select>
     </div>
 
@@ -405,10 +405,10 @@
         <p id="current-badge">Categoría</p>
       </div>
       <div class="toolbar-actions">
-        <button class="btn btn-theme" id="theme-btn" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-        <button class="btn btn-secondary" onclick="toggleCodeView()">📄 Ver Código Mermaid</button>
-        <button class="btn btn-success" onclick="descargarPNG()">💾 Descargar PNG</button>
-        <button class="btn btn-primary" onclick="descargarSVG()">📐 Descargar SVG</button>
+        <button class="btn btn-theme" id="theme-btn" onclick="toggleTheme()">Modo Oscuro</button>
+        <button class="btn btn-secondary" onclick="toggleCodeView()">Ver Código Mermaid</button>
+        <button class="btn btn-success" onclick="descargarPNG()">Descargar PNG</button>
+        <button class="btn btn-primary" onclick="descargarSVG()">Descargar SVG</button>
       </div>
     </header>
 
@@ -452,11 +452,11 @@
       if (currentTheme === 'dark') {
         currentTheme = 'light';
         document.body.classList.add('light-theme');
-        document.getElementById('theme-btn').innerText = '🌙 Modo Oscuro';
+        document.getElementById('theme-btn').innerText = 'Modo Oscuro';
       } else {
         currentTheme = 'dark';
         document.body.classList.remove('light-theme');
-        document.getElementById('theme-btn').innerText = '☀️ Modo Claro';
+        document.getElementById('theme-btn').innerText = 'Modo Claro';
       }
       initMermaid(currentTheme);
       selectDiagram(currentKey);

@@ -1,330 +1,468 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolución del Firmware &middot; Previews Interactivos</title>
+    <title>Evolución del Firmware · Suite de Previews Interactivos (FreeRTOS 2.0)</title>
     <style>
+        /* ==========================================================================
+           VARIABLES DE TEMA: VS Dark & COMSOL Light (Instrumentación)
+           ========================================================================== */
+        :root, [data-theme="dark"] {
+            --ui-bg: #1e1e1e;
+            --ui-panel: #252526;
+            --ui-subpanel: #2d2d2d;
+            --ui-border: #3c3c3c;
+            --ui-border-subtle: #2f2f2f;
+
+            --text-primary: #f1f1f1;
+            --text-secondary: #cccccc;
+            --text-muted: #858585;
+            --text-disabled: #555555;
+
+            --accent-primary: #007acc;
+            --accent-hover: #1f8ad2;
+            --accent-active: #0e639c;
+
+            --metro-ok: #4ec9b0;
+            --metro-ok-bg: rgba(78, 201, 176, 0.12);
+            --metro-ok-border: #2e8b75;
+            --metro-warn: #d7ba7d;
+            --metro-warn-bg: rgba(215, 186, 125, 0.12);
+            --metro-warn-border: #a88a4d;
+            --metro-err: #f14c4c;
+            --metro-err-bg: rgba(241, 76, 76, 0.12);
+            --metro-err-border: #aa3333;
+
+            --btn-bg: #2d2d2d;
+            --btn-border: #3c3c3c;
+            --btn-text: #cccccc;
+            --btn-hover-bg: #383838;
+
+            --card-featured-border: #007acc;
+            --card-featured-bg: #20262e;
+        }
+
+        [data-theme="light"] {
+            --ui-bg: #f3f3f3;
+            --ui-panel: #ffffff;
+            --ui-subpanel: #e8e8e8;
+            --ui-border: #d4d4d4;
+            --ui-border-subtle: #e5e5e5;
+
+            --text-primary: #1e1e1e;
+            --text-secondary: #333333;
+            --text-muted: #666666;
+            --text-disabled: #a0a0a0;
+
+            --accent-primary: #005fb8;
+            --accent-hover: #106ebe;
+            --accent-active: #004578;
+
+            --metro-ok: #059669;
+            --metro-ok-bg: rgba(5, 150, 105, 0.08);
+            --metro-ok-border: #10b981;
+            --metro-warn: #b45309;
+            --metro-warn-bg: rgba(180, 83, 9, 0.08);
+            --metro-warn-border: #f59e0b;
+            --metro-err: #dc2626;
+            --metro-err-bg: rgba(220, 38, 38, 0.08);
+            --metro-err-border: #ef4444;
+
+            --btn-bg: #f8fafc;
+            --btn-border: #d4d4d4;
+            --btn-text: #333333;
+            --btn-hover-bg: #eaeaea;
+
+            --card-featured-border: #005fb8;
+            --card-featured-bg: #f5f9fc;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: #0b1120;
-            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--ui-bg);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 36px 20px 50px;
+            padding: 24px 20px 48px;
+            transition: background 0.15s ease, color 0.15s ease;
         }
+
         .container {
-            max-width: 1180px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Header */
+        /* Barra de Navegación Superior y Modo */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: var(--ui-panel);
+            border: 1px solid var(--ui-border);
+            border-radius: 4px;
+            margin-bottom: 24px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            font-family: Consolas, monospace;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 2px;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--ui-subpanel);
+            border-color: var(--ui-border);
+        }
+
+        .theme-btn {
+            font-family: Consolas, monospace;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 2px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .theme-btn:hover {
+            background: var(--btn-hover-bg);
+            border-color: var(--accent-primary);
+        }
+
+        /* Header Principal */
         .header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
-        .header-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 14px;
-            background: rgba(56,189,248,0.1);
-            border: 1px solid rgba(56,189,248,0.25);
-            border-radius: 20px;
-            color: #38bdf8;
-            font-size: 0.75em;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
+
+        .header-tag {
+            display: inline-block;
+            font-family: Consolas, monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
+            color: var(--accent-primary);
+            padding: 3px 10px;
+            background: var(--ui-panel);
+            border: 1px solid var(--ui-border);
+            border-radius: 2px;
+            margin-bottom: 10px;
         }
+
         .header h1 {
-            font-size: 2.3em;
-            font-weight: 900;
-            letter-spacing: -1px;
-            color: #fff;
-            margin-bottom: 8px;
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
         }
-        .header h1 span {
-            background: linear-gradient(135deg, #38bdf8, #34d399);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+
         .header p {
-            color: #94a3b8;
-            font-size: 0.98em;
-            max-width: 650px;
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            max-width: 720px;
             margin: 0 auto;
             line-height: 1.5;
         }
 
-        /* Quick Info Bar */
+        /* Barra de Estadísticas de Arquitectura */
         .stats-bar {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 32px;
+            gap: 10px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
         }
+
         .stat-chip {
-            background: rgba(15,23,42,0.7);
-            border: 1px solid rgba(51,65,85,0.5);
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 0.78em;
-            font-weight: 700;
-            color: #cbd5e1;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .stat-chip b {
-            color: #38bdf8;
+            font-family: Consolas, monospace;
+            font-variant-numeric: tabular-nums;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            background: var(--ui-panel);
+            border: 1px solid var(--ui-border);
+            border-radius: 2px;
+            color: var(--text-secondary);
         }
 
-        /* Filter Tabs */
+        .stat-chip b {
+            color: var(--accent-primary);
+        }
+
+        .stat-chip.live {
+            border-color: var(--metro-ok-border);
+            background: var(--metro-ok-bg);
+            color: var(--metro-ok);
+        }
+
+        /* Barra de Filtros de Versión */
         .filter-bar {
             display: flex;
             justify-content: center;
             gap: 8px;
             margin-bottom: 24px;
         }
+
         .filter-btn {
-            padding: 7px 16px;
-            border-radius: 10px;
-            font-size: 0.78em;
+            font-family: Consolas, monospace;
+            font-size: 0.78rem;
             font-weight: 700;
-            border: 1px solid rgba(51,65,85,0.4);
-            background: rgba(15,23,42,0.6);
-            color: #94a3b8;
+            padding: 7px 18px;
+            border-radius: 2px;
+            border: 1px solid var(--ui-border);
+            background: var(--ui-panel);
+            color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
-        }
-        .filter-btn:hover {
-            color: #fff;
-            background: rgba(30,41,59,0.7);
-        }
-        .filter-btn.active {
-            background: linear-gradient(135deg, #0284c7, #2563eb);
-            color: #fff;
-            border-color: #38bdf8;
-            box-shadow: 0 2px 10px rgba(37,99,235,0.3);
+            transition: all 0.15s ease;
+            text-transform: uppercase;
         }
 
-        /* Version Cards Grid */
+        .filter-btn:hover {
+            color: var(--text-primary);
+            background: var(--ui-subpanel);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-primary);
+            color: #ffffff;
+            border-color: var(--accent-primary);
+        }
+
+        /* Cuadrícula de Tarjetas de Versión */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 16px;
         }
 
-        /* Compact Card */
+        /* Tarjeta de Versión Regular */
         .version-card {
-            background: linear-gradient(165deg, rgba(30,41,59,0.92), rgba(15,23,42,0.95));
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid rgba(56,189,248,0.1);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            background: var(--ui-panel);
+            border: 1px solid var(--ui-border);
+            border-radius: 4px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.25s cubic-bezier(.4,0,.2,1);
-            position: relative;
-        }
-        .version-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(56,189,248,0.3);
-            box-shadow: 0 14px 40px rgba(0,0,0,0.55);
+            transition: border-color 0.15s ease;
         }
 
-        /* Featured Card for RTOS 1.1 */
+        .version-card:hover {
+            border-color: var(--ui-border-subtle);
+        }
+
+        /* Tarjeta Destacada (RTOS 2.0 Producción) */
         .version-card.featured {
             grid-column: 1 / -1;
-            background: linear-gradient(165deg, rgba(15,23,42,0.98), rgba(2,132,199,0.22));
-            border: 2px solid #38bdf8;
-            box-shadow: 0 12px 45px rgba(2,132,199,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            background: var(--card-featured-bg);
+            border: 2px solid var(--card-featured-border);
+            padding: 22px;
         }
 
         .card-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            gap: 8px;
         }
+
         .card-badge {
-            font-size: 0.65em;
-            font-weight: 800;
+            font-family: Consolas, monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             padding: 3px 8px;
-            border-radius: 6px;
+            border-radius: 2px;
+            border: 1px solid var(--ui-border);
+            background: var(--ui-subpanel);
+            color: var(--text-muted);
         }
-        .badge-beta { background: rgba(234,179,8,0.15); color: #fbbf24; border: 1px solid rgba(234,179,8,0.3); }
-        .badge-orig { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
-        .badge-v2   { background: rgba(34,197,94,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
-        .badge-v3   { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
-        .badge-v35  { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
-        .badge-v4   { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
-        .badge-rtos { background: rgba(2,132,199,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); }
-        .badge-new  { background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(56,189,248,0.25)); color: #34d399; border: 1px solid #34d399; font-weight: 900; }
+
+        .badge-rtos {
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            background: rgba(0, 122, 204, 0.08);
+        }
+
+        .badge-new {
+            color: var(--metro-ok);
+            border-color: var(--metro-ok-border);
+            background: var(--metro-ok-bg);
+        }
 
         .card-title {
-            font-size: 1.15em;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 6px;
-            letter-spacing: -0.3px;
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            letter-spacing: -0.2px;
+            line-height: 1.35;
         }
 
-        /* The Main Improvement Tagline */
+        .version-card.featured .card-title {
+            font-size: 1.25rem;
+        }
+
+        /* Detalle de Mejora / Especificación */
         .card-feature {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            background: rgba(15,23,42,0.65);
-            border-radius: 10px;
-            padding: 9px 11px;
-            border: 1px solid rgba(51,65,85,0.35);
+            background: var(--ui-subpanel);
+            border: 1px solid var(--ui-border);
+            border-radius: 2px;
+            padding: 10px 12px;
             margin-bottom: 14px;
-            font-size: 0.78em;
-            color: #cbd5e1;
-            line-height: 1.4;
-            min-height: 52px;
-        }
-        .card-feature .feat-ico {
-            font-size: 1.15em;
-            flex-shrink: 0;
-            margin-top: 1px;
+            font-size: 0.81rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
         }
 
-        /* Action Button */
-        .btn-launch {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px 14px;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 0.82em;
-            border-radius: 10px;
-            transition: all 0.2s;
-            text-align: center;
+        .card-feature b {
+            color: var(--text-primary);
         }
-        .btn-beta { background: linear-gradient(135deg, #d97706, #b45309); }
-        .btn-orig { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-        .btn-v2   { background: linear-gradient(135deg, #059669, #047857); }
-        .btn-v3   { background: linear-gradient(135deg, #0284c7, #0369a1); }
-        .btn-v35  { background: linear-gradient(135deg, #7c3aed, #2563eb); }
-        .btn-v4   { background: linear-gradient(135deg, #059669, #0284c7); }
-        .btn-rtos { background: linear-gradient(135deg, #0284c7, #2563eb); }
-        .btn-new  { background: linear-gradient(135deg, #059669, #0284c7); box-shadow: 0 4px 18px rgba(5,150,105,0.4); font-size: 0.9em; padding: 12px 18px; }
+
+        /* Botón de Lanzamiento de Menú */
+        .btn-launch {
+            display: block;
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 9px 14px;
+            border-radius: 2px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: 1px solid var(--btn-border);
+            background: var(--btn-bg);
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         .btn-launch:hover {
-            filter: brightness(1.15);
-            transform: translateY(-1px);
+            background: var(--btn-hover-bg);
+            border-color: var(--accent-primary);
         }
 
-        /* Subviews Dropdown Accordion */
+        .btn-launch.btn-featured {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: #ffffff;
+        }
+
+        .btn-launch.btn-featured:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        /* Acordeón de Vistas Individuales */
         .subviews-toggle {
+            width: 100%;
+            margin-top: 8px;
+            padding: 7px 12px;
+            background: transparent;
+            border: 1px solid var(--ui-border);
+            border-radius: 2px;
+            color: var(--text-muted);
+            font-family: Consolas, monospace;
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 10px;
-            padding: 6px 10px;
-            background: transparent;
-            border: none;
-            color: #64748b;
-            font-size: 0.72em;
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-            width: 100%;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
         }
+
         .subviews-toggle:hover {
-            color: #94a3b8;
-            background: rgba(15,23,42,0.5);
+            color: var(--text-primary);
+            border-color: var(--ui-border-subtle);
+            background: var(--ui-subpanel);
         }
+
         .subviews-list {
             display: none;
             flex-direction: column;
-            gap: 5px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(51,65,85,0.3);
+            gap: 4px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--ui-border);
         }
+
         .subviews-list.open {
             display: flex;
         }
+
         .sub-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 10px;
-            background: rgba(15,23,42,0.7);
-            color: #94a3b8;
+            font-family: Consolas, monospace;
+            font-size: 0.77rem;
+            color: var(--text-secondary);
             text-decoration: none;
-            border-radius: 7px;
-            font-size: 0.72em;
-            font-weight: 600;
-            transition: all 0.15s;
-            border: 1px solid transparent;
-        }
-        .sub-link:hover {
-            color: #38bdf8;
-            background: rgba(30,41,59,0.8);
-            border-color: rgba(56,189,248,0.2);
-            transform: translateX(2px);
-        }
-
-        /* Featured Content layout */
-        .featured-content {
+            padding: 6px 10px;
+            background: var(--ui-subpanel);
+            border: 1px solid var(--ui-border);
+            border-radius: 2px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: all 0.15s ease;
+        }
+
+        .sub-link:hover {
+            background: var(--btn-hover-bg);
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .sub-link.highlight {
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .sub-link span {
+            color: var(--text-muted);
+        }
+
+        /* Layout Especial para Featured Card */
+        .featured-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
             gap: 20px;
-            flex-wrap: wrap;
-        }
-        .featured-text {
-            flex: 1;
-            min-width: 280px;
-        }
-        .featured-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 200px;
+            align-items: center;
         }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 36px;
-            padding: 16px;
-            background: rgba(15,23,42,0.6);
-            border-radius: 14px;
-            border: 1px solid rgba(56,189,248,0.12);
-            font-size: 0.82em;
-            color: #94a3b8;
-        }
-        .footer b {
-            color: #38bdf8;
-        }
-
-        @media(max-width: 768px) {
+        @media (max-width: 860px) {
             .featured-content {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .cards-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -332,63 +470,76 @@
 </head>
 <body>
     <div class="container">
+
+        <!-- Barra de Navegación Superior y Modo -->
+        <div class="top-nav">
+            <div class="nav-links">
+                <a href="../../docs/index.html" class="nav-link">&larr; Showcase Principal</a>
+                <a href="../../docs/manual/index.html" class="nav-link">Manual de Operación</a>
+                <a href="../diagramas/index.html" class="nav-link">Diagramas Técnicos</a>
+            </div>
+            <button class="theme-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar Modo Día / Noche">
+                MODO DÍA
+            </button>
+        </div>
+
         <!-- Header -->
         <div class="header">
-            <div class="header-badge">⚡ Laboratorio de Firmware &middot; ESP32-S3</div>
-            <h1>Evolución del <span>Firmware</span></h1>
-            <p>Selector de versiones interactivas para la Tesis de Automatización de Electrodeposición y Galvanoplastia</p>
+            <div class="header-tag">PLATAFORMA CIBERFÍSICA · ESP32-S3 RTOS 2.0</div>
+            <h1>Evolución de Interfaces &middot; Hub de Previews</h1>
+            <p>Selector de réplicas de instrumentación web y evolución arquitectónica para experimentación sin hardware energizado.</p>
         </div>
 
-        <!-- Quick Stats -->
+        <!-- Estadísticas de la Suite -->
         <div class="stats-bar">
-            <div class="stat-chip">📦 <b>11 Versiones</b> Preservadas</div>
-            <div class="stat-chip">🚀 <b>RTOS 2.0</b> Producción Actual</div>
-            <div class="stat-chip">⏱️ <b>SMP Dual-Core</b> @ 240 MHz</div>
+            <div class="stat-chip"><b>11 Versiones</b> Catalogadas</div>
+            <div class="stat-chip live"><b>RTOS 2.0</b> Producción Activa</div>
+            <div class="stat-chip"><b>SMP Dual-Core</b> @ 240 MHz</div>
+            <div class="stat-chip"><b>I2C Fast-Mode</b> 400 kHz</div>
         </div>
 
-        <!-- Filter Bar -->
+        <!-- Filtros -->
         <div class="filter-bar">
             <button class="filter-btn active" onclick="filterCards('all')">Todas (11)</button>
-            <button class="filter-btn" onclick="filterCards('rtos')">FreeRTOS (5)</button>
+            <button class="filter-btn" onclick="filterCards('rtos')">FreeRTOS SMP (5)</button>
             <button class="filter-btn" onclick="filterCards('classic')">Etapas Previas (6)</button>
         </div>
 
-        <!-- Cards Grid -->
+        <!-- Cuadrícula de Tarjetas -->
         <div class="cards-grid">
-            
-            <!-- ⭐ FLAGSHIP: RTOS 2.0 (FEATURED) -->
+
+            <!-- RTOS 2.0 (FLAGSHIP EN PRODUCCIÓN) -->
             <div class="version-card featured card-group-rtos">
                 <div class="featured-content">
                     <div class="featured-text">
                         <div class="card-top">
-                            <span class="card-badge badge-new">ETAPA 11 &middot; RTOS 2.0 ⭐ VERSIÓN MÁS RECIENTE</span>
-                            <span style="font-size:0.7em;color:#34d399;font-weight:800;">PRODUCCIÓN ACTIVA</span>
+                            <span class="card-badge badge-new">ETAPA 11 &middot; RTOS 2.0 · VERSIÓN ACTUAL</span>
+                            <span style="font-family:Consolas,monospace;font-size:0.75rem;color:var(--metro-ok);font-weight:700;">PRODUCCIÓN ACTIVA</span>
                         </div>
-                        <div class="card-title" style="font-size:1.35em;color:#fff;">
-                            Panel de Control RTOS 2.0 (Sensor pH Dedicado Canal A1 &amp; Puntos NVS por Modo)
+                        <div class="card-title">
+                            Panel de Control RTOS 2.0 (Sensor pH Dedicado Canal A1 &amp; Puntos NVS)
                         </div>
-                        <div class="card-feature" style="margin-bottom:0;min-height:auto;background:rgba(15,23,42,0.85);border-color:rgba(56,189,248,0.25);">
-                            <span class="feat-ico">🧪</span>
-                            <div>
-                                <b>Mejora Principal:</b> Medición unificada en un <b>sensor único dedicado en Canal A1 del ADS1115 con uso total del bus I2C (860 SPS continuo)</b> sin contención ni alternancia MUX. <b>Visualización interactiva de puntos guardados en Flash NVS por modo</b> (Teórico, 2 Puntos y 3 Puntos con pendientes asimétricas) y <b>panel de offset de hardware unificado</b> para calibración de potenciómetro PH-4502C en corto (1.765 V &plusmn;10 mV).
-                            </div>
+                        <div class="card-feature">
+                            <b>Mejora Principal:</b> Medición unificada con sensor dedicado en Canal A1 del ADS1115 (860 SPS continuo) sin contención I2C. Visualización interactiva de puntos guardados en Flash NVS por modo (Teórico, 2 Puntos, 3 Puntos con pendientes asimétricas) y calibración de offset en cortocircuito (1.765 V &plusmn;10 mV).
                         </div>
                     </div>
                     <div class="featured-actions">
-                        <a href="RTOS2.0/index.html" class="btn-launch btn-new">🚀 Abrir Panel RTOS 2.0</a>
+                        <a href="RTOS2.0/index.html" class="btn-launch btn-featured">ABRIR MENÚ GENERAL RTOS 2.0</a>
                         <button class="subviews-toggle" onclick="toggleViews('rtos20')">
-                            <span>Explorar vistas individuales (6)</span>
-                            <span id="arr-rtos20">▾</span>
+                            <span>VISTAS INDIVIDUALES (8)</span>
+                            <span id="arr-rtos20">&#9660;</span>
                         </button>
                     </div>
                 </div>
                 <div class="subviews-list" id="list-rtos20">
-                    <a href="RTOS2.0/ph.html" class="sub-link" style="color:#38bdf8;font-weight:800;">🧪 Módulo de pH Dedicado (Canal A1 &amp; Puntos NVS) <span>&rarr;</span></a>
-                    <a href="RTOS2.0/fuente.html" class="sub-link">⚡ Salida de Corriente VCSS (PI, Salud de Celda &amp; Onda ETS) <span>&rarr;</span></a>
-                    <a href="RTOS2.0/termico.html" class="sub-link">🔥 Control Térmico PI (Tendencias &amp; SP Bar) <span>&rarr;</span></a>
-                    <a href="RTOS2.0/sensores.html" class="sub-link">🔍 Estado de Sensores (Laser Sweep) <span>&rarr;</span></a>
-                    <a href="RTOS2.0/consola.html" class="sub-link">💻 Consola de Diagnóstico (Ping Latency) <span>&rarr;</span></a>
-                    <a href="RTOS2.0/update.html" class="sub-link">📦 Actualizar Firmware (OTA A/B) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/ph.html" class="sub-link highlight">Módulo de pH Dedicado (Canal A1 &amp; Puntos NVS) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/fuente.html" class="sub-link">Salida de Corriente VCSS (PI, Salud de Celda &amp; Onda ETS) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/fuente_pulsado.html" class="sub-link">Salida de Corriente VCSS Pulsada (10 Hz &amp; Tren de Pulsos) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/termico.html" class="sub-link">Control Térmico Multicanal PI ZCS (Tendencias &amp; SP Bar) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/sensores.html" class="sub-link">Estado de Sensores (Mapeo I2C &amp; Monitoreo) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/consola.html" class="sub-link">Consola de Diagnóstico (Ping &amp; Latencia de Red) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/wifi.html" class="sub-link">Gestión SoftAP Wi-Fi (Memoria Flash NVS) <span>&rarr;</span></a>
+                    <a href="RTOS2.0/update.html" class="sub-link">Actualización de Firmware OTA A/B <span>&rarr;</span></a>
                 </div>
             </div>
 
@@ -400,23 +551,22 @@
                     </div>
                     <div class="card-title">Panel RTOS 1.3 (Control PI VCSS, Anti-Inrush &amp; Metrología ETS)</div>
                     <div class="card-feature">
-                        <span class="feat-ico">⚡</span>
-                        <div><b>Mejora Principal:</b> Soft-Start (500 ms), Blanking Time (2000 ms), control PI discreto suave (&plusmn;10 mA), muestreo estroboscópico ETS (16 puntos) y diagnóstico en vivo de salud de celda.</div>
+                        <b>Mejora Principal:</b> Soft-Start (500 ms), Blanking Time (2000 ms), control PI discreto suave (&plusmn;10 mA), muestreo estroboscópico ETS (16 puntos) y diagnóstico en vivo de salud de celda.
                     </div>
                 </div>
                 <div>
-                    <a href="RTOS1.3/index.html" class="btn-launch btn-rtos">🚀 Abrir Menú RTOS 1.3</a>
+                    <a href="RTOS1.3/index.html" class="btn-launch">ABRIR MENÚ RTOS 1.3</a>
                     <button class="subviews-toggle" onclick="toggleViews('rtos13')">
                         <span>Vistas secundarias (6)</span>
-                        <span id="arr-rtos13">▾</span>
+                        <span id="arr-rtos13">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-rtos13">
-                        <a href="RTOS1.3/fuente.html" class="sub-link">⚡ Salida VCSS <span>&rarr;</span></a>
-                        <a href="RTOS1.3/ph.html" class="sub-link">🧪 Módulo de pH Dual <span>&rarr;</span></a>
-                        <a href="RTOS1.3/termico.html" class="sub-link">🔥 Control Térmico <span>&rarr;</span></a>
-                        <a href="RTOS1.3/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="RTOS1.3/consola.html" class="sub-link">💻 Consola <span>&rarr;</span></a>
-                        <a href="RTOS1.3/update.html" class="sub-link">📦 OTA <span>&rarr;</span></a>
+                        <a href="RTOS1.3/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="RTOS1.3/ph.html" class="sub-link">Módulo de pH Dual <span>&rarr;</span></a>
+                        <a href="RTOS1.3/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="RTOS1.3/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="RTOS1.3/consola.html" class="sub-link">Consola <span>&rarr;</span></a>
+                        <a href="RTOS1.3/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
@@ -429,23 +579,22 @@
                     </div>
                     <div class="card-title">Panel RTOS 1.2 (Metrología de pH &amp; Doble Voltímetro)</div>
                     <div class="card-feature">
-                        <span class="feat-ico">🧪</span>
-                        <div><b>Mejora Principal:</b> Calibración metrológica de pH: doble voltímetro en cortocircuito (A0/A1), voltajes analógicos reales, verificación de estabilidad 3s y exclusividad RTOS.</div>
+                        <b>Mejora Principal:</b> Calibración metrológica de pH: doble voltímetro en cortocircuito (A0/A1), voltajes analógicos reales, verificación de estabilidad 3s y exclusividad RTOS.
                     </div>
                 </div>
                 <div>
-                    <a href="RTOS1.2/index.html" class="btn-launch btn-rtos">🚀 Abrir Menú RTOS 1.2</a>
+                    <a href="RTOS1.2/index.html" class="btn-launch">ABRIR MENÚ RTOS 1.2</a>
                     <button class="subviews-toggle" onclick="toggleViews('rtos12')">
                         <span>Vistas secundarias (6)</span>
-                        <span id="arr-rtos12">▾</span>
+                        <span id="arr-rtos12">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-rtos12">
-                        <a href="RTOS1.2/ph.html" class="sub-link">🧪 Módulo de pH Dual <span>&rarr;</span></a>
-                        <a href="RTOS1.2/fuente.html" class="sub-link">⚡ Salida VCSS <span>&rarr;</span></a>
-                        <a href="RTOS1.2/termico.html" class="sub-link">🔥 Control Térmico <span>&rarr;</span></a>
-                        <a href="RTOS1.2/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="RTOS1.2/consola.html" class="sub-link">💻 Consola <span>&rarr;</span></a>
-                        <a href="RTOS1.2/update.html" class="sub-link">📦 OTA <span>&rarr;</span></a>
+                        <a href="RTOS1.2/ph.html" class="sub-link">Módulo de pH Dual <span>&rarr;</span></a>
+                        <a href="RTOS1.2/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="RTOS1.2/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="RTOS1.2/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="RTOS1.2/consola.html" class="sub-link">Consola <span>&rarr;</span></a>
+                        <a href="RTOS1.2/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
@@ -458,23 +607,22 @@
                     </div>
                     <div class="card-title">Panel RTOS 1.1 (Visual Feedback)</div>
                     <div class="card-feature">
-                        <span class="feat-ico">✨</span>
-                        <div><b>Mejora Principal:</b> Feedback visual enriquecido en las 6 vistas: ammeter analógico con barra VU, rhythmic pulse indicator y sistema de Toasts.</div>
+                        <b>Mejora Principal:</b> Transición de telemetría hacia diseño de panel de instrumentación con gauges analógicos y retroalimentación interactiva.
                     </div>
                 </div>
                 <div>
-                    <a href="RTOS1.1/index.html" class="btn-launch btn-rtos">🚀 Abrir Menú RTOS 1.1</a>
+                    <a href="RTOS1.1/index.html" class="btn-launch">ABRIR MENÚ RTOS 1.1</a>
                     <button class="subviews-toggle" onclick="toggleViews('rtos11')">
                         <span>Vistas secundarias (6)</span>
-                        <span id="arr-rtos11">▾</span>
+                        <span id="arr-rtos11">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-rtos11">
-                        <a href="RTOS1.1/fuente.html" class="sub-link">⚡ Salida VCSS <span>&rarr;</span></a>
-                        <a href="RTOS1.1/termico.html" class="sub-link">🔥 Control Térmico <span>&rarr;</span></a>
-                        <a href="RTOS1.1/ph.html" class="sub-link">🧪 Módulo de pH <span>&rarr;</span></a>
-                        <a href="RTOS1.1/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="RTOS1.1/consola.html" class="sub-link">💻 Consola <span>&rarr;</span></a>
-                        <a href="RTOS1.1/update.html" class="sub-link">📦 OTA <span>&rarr;</span></a>
+                        <a href="RTOS1.1/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="RTOS1.1/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="RTOS1.1/ph.html" class="sub-link">Módulo de pH <span>&rarr;</span></a>
+                        <a href="RTOS1.1/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="RTOS1.1/consola.html" class="sub-link">Consola <span>&rarr;</span></a>
+                        <a href="RTOS1.1/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
@@ -485,229 +633,232 @@
                     <div class="card-top">
                         <span class="card-badge badge-rtos">ETAPA 7 &middot; RTOS 1.0</span>
                     </div>
-                    <div class="card-title">Panel RTOS 1.0</div>
+                    <div class="card-title">Panel RTOS 1.0 (Dual-Core SMP)</div>
                     <div class="card-feature">
-                        <span class="feat-ico">⚙️</span>
-                        <div><b>Mejora Principal:</b> Kernel FreeRTOS Dual-Core SMP, consola de diagnóstico web en vivo y parada fail-safe.</div>
+                        <b>Mejora Principal:</b> Kernel FreeRTOS Dual-Core SMP, consola de diagnóstico web en vivo y parada fail-safe ante fallas de sensores.
                     </div>
                 </div>
                 <div>
-                    <a href="RTOS1.0/index.html" class="btn-launch btn-rtos">🚀 Abrir Menú RTOS 1.0</a>
+                    <a href="RTOS1.0/index.html" class="btn-launch">ABRIR MENÚ RTOS 1.0</a>
                     <button class="subviews-toggle" onclick="toggleViews('rtos10')">
                         <span>Vistas secundarias (6)</span>
-                        <span id="arr-rtos10">▾</span>
+                        <span id="arr-rtos10">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-rtos10">
-                        <a href="RTOS1.0/fuente.html" class="sub-link">⚡ Salida VCSS <span>&rarr;</span></a>
-                        <a href="RTOS1.0/termico.html" class="sub-link">🔥 Control Térmico <span>&rarr;</span></a>
-                        <a href="RTOS1.0/ph.html" class="sub-link">🧪 Módulo de pH <span>&rarr;</span></a>
-                        <a href="RTOS1.0/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="RTOS1.0/consola.html" class="sub-link">💻 Consola <span>&rarr;</span></a>
-                        <a href="RTOS1.0/update.html" class="sub-link">📦 OTA <span>&rarr;</span></a>
+                        <a href="RTOS1.0/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="RTOS1.0/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="RTOS1.0/ph.html" class="sub-link">Módulo de pH <span>&rarr;</span></a>
+                        <a href="RTOS1.0/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="RTOS1.0/consola.html" class="sub-link">Consola <span>&rarr;</span></a>
+                        <a href="RTOS1.0/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
 
-            <!-- VERSION 4.0 -->
+            <!-- VERSIÓN 4.0 -->
             <div class="version-card card-group-classic">
                 <div>
                     <div class="card-top">
-                        <span class="card-badge badge-v4">ETAPA 6 &middot; v4.0</span>
+                        <span class="card-badge">ETAPA 6 &middot; VERSIÓN 4.0</span>
                     </div>
                     <div class="card-title">Arquitectura MVC</div>
                     <div class="card-feature">
-                        <span class="feat-ico">🏛️</span>
-                        <div><b>Mejora Principal:</b> Refactorización MVC completa: vistas desacopladas en PROGMEM y controladores dedicados.</div>
+                        <b>Mejora Principal:</b> Separación Modelo-Vista-Controlador en C++, vistas modulares en PROGMEM y estandarización de endpoints REST.
                     </div>
                 </div>
                 <div>
-                    <a href="4.0/index.html" class="btn-launch btn-v4">🚀 Abrir Menú v4.0</a>
+                    <a href="4.0/index.html" class="btn-launch">ABRIR MENÚ 4.0</a>
                     <button class="subviews-toggle" onclick="toggleViews('v40')">
                         <span>Vistas secundarias (5)</span>
-                        <span id="arr-v40">▾</span>
+                        <span id="arr-v40">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-v40">
-                        <a href="4.0/fuente.html" class="sub-link">⚡ Fuente VCSS <span>&rarr;</span></a>
-                        <a href="4.0/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="4.0/ph.html" class="sub-link">🧪 pH Dual <span>&rarr;</span></a>
-                        <a href="4.0/termico.html" class="sub-link">🔥 Térmico <span>&rarr;</span></a>
-                        <a href="4.0/update.html" class="sub-link">⚙️ OTA <span>&rarr;</span></a>
+                        <a href="4.0/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="4.0/ph.html" class="sub-link">Módulo pH <span>&rarr;</span></a>
+                        <a href="4.0/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="4.0/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="4.0/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
 
-            <!-- VERSION 3.5 -->
+            <!-- VERSIÓN 3.5 -->
             <div class="version-card card-group-classic">
                 <div>
                     <div class="card-top">
-                        <span class="card-badge badge-v35">ETAPA 5 &middot; v3.5</span>
+                        <span class="card-badge">ETAPA 5 &middot; VERSIÓN 3.5</span>
                     </div>
                     <div class="card-title">VCSS Lazo Cerrado</div>
                     <div class="card-feature">
-                        <span class="feat-ico">🔄</span>
-                        <div><b>Mejora Principal:</b> Sensado de shunts duales (ADS1115), compensación outer-loop @ 2Hz y relé de corte galvánico ZCS.</div>
+                        <b>Mejora Principal:</b> Control de corriente de celda por sumidero VCSS con derivación activa en transistores MOSFET.
                     </div>
                 </div>
                 <div>
-                    <a href="3.5/index.html" class="btn-launch btn-v35">🚀 Abrir Menú v3.5</a>
+                    <a href="3.5/index.html" class="btn-launch">ABRIR MENÚ 3.5</a>
                     <button class="subviews-toggle" onclick="toggleViews('v35')">
                         <span>Vistas secundarias (5)</span>
-                        <span id="arr-v35">▾</span>
+                        <span id="arr-v35">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-v35">
-                        <a href="3.5/fuente.html" class="sub-link">⚡ Fuente VCSS <span>&rarr;</span></a>
-                        <a href="3.5/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="3.5/ph.html" class="sub-link">🧪 pH Dual <span>&rarr;</span></a>
-                        <a href="3.5/termico.html" class="sub-link">🔥 Térmico <span>&rarr;</span></a>
-                        <a href="3.5/update.html" class="sub-link">⚙️ OTA <span>&rarr;</span></a>
+                        <a href="3.5/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="3.5/ph.html" class="sub-link">Módulo pH <span>&rarr;</span></a>
+                        <a href="3.5/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="3.5/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="3.5/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
 
-            <!-- VERSION 3.1 -->
+            <!-- VERSIÓN 3.0 -->
             <div class="version-card card-group-classic">
                 <div>
                     <div class="card-top">
-                        <span class="card-badge badge-v3">ETAPA 4 &middot; v3.1</span>
+                        <span class="card-badge">ETAPA 4 &middot; VERSIÓN 3.0</span>
                     </div>
-                    <div class="card-title">Diagnóstico & OTA</div>
+                    <div class="card-title">Diagnóstico &amp; OTA</div>
                     <div class="card-feature">
-                        <span class="feat-ico">📡</span>
-                        <div><b>Mejora Principal:</b> Diagnóstico en caliente de 8 sensores I2C/SPI y flasheo inalámbrico OTA con partición dual A/B.</div>
+                        <b>Mejora Principal:</b> Consola de diagnóstico integrada y actualización de firmware over-the-air (OTA) mediante particiones duales A/B.
                     </div>
                 </div>
                 <div>
-                    <a href="3.0/index.html" class="btn-launch btn-v3">🚀 Abrir Menú v3.1</a>
-                    <button class="subviews-toggle" onclick="toggleViews('v31')">
+                    <a href="3.0/index.html" class="btn-launch">ABRIR MENÚ 3.0</a>
+                    <button class="subviews-toggle" onclick="toggleViews('v30')">
                         <span>Vistas secundarias (5)</span>
-                        <span id="arr-v31">▾</span>
+                        <span id="arr-v30">&#9660;</span>
                     </button>
-                    <div class="subviews-list" id="list-v31">
-                        <a href="3.0/sensores.html" class="sub-link">🔍 Sensores <span>&rarr;</span></a>
-                        <a href="3.0/update.html" class="sub-link">⚙️ OTA <span>&rarr;</span></a>
-                        <a href="3.0/ph.html" class="sub-link">🧪 pH Dual <span>&rarr;</span></a>
-                        <a href="3.0/termico.html" class="sub-link">🔥 Térmico <span>&rarr;</span></a>
-                        <a href="3.0/fuente.html" class="sub-link">⚡ Fuente <span>&rarr;</span></a>
+                    <div class="subviews-list" id="list-v30">
+                        <a href="3.0/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="3.0/ph.html" class="sub-link">Módulo pH <span>&rarr;</span></a>
+                        <a href="3.0/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
+                        <a href="3.0/sensores.html" class="sub-link">Sensores <span>&rarr;</span></a>
+                        <a href="3.0/update.html" class="sub-link">OTA <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
 
-            <!-- VERSION 2.0 -->
+            <!-- VERSIÓN 2.0 -->
             <div class="version-card card-group-classic">
                 <div>
                     <div class="card-top">
-                        <span class="card-badge badge-v2">ETAPA 3 &middot; v2.0</span>
+                        <span class="card-badge">ETAPA 3 &middot; VERSIÓN 2.0</span>
                     </div>
                     <div class="card-title">Proyecto pH 2.0</div>
                     <div class="card-feature">
-                        <span class="feat-ico">🧪</span>
-                        <div><b>Mejora Principal:</b> Calibración analítica de 3 modos (Teórico, 2 Pts, 3 Pts Dual-Slope) y cálculo de pendiente real.</div>
+                        <b>Mejora Principal:</b> Adquisición analógica de pH con compensación manual de temperatura y calibración básica de 2 puntos buffer.
                     </div>
                 </div>
                 <div>
-                    <a href="2.0/index.html" class="btn-launch btn-v2">🚀 Abrir Menú v2.0</a>
+                    <a href="2.0/index.html" class="btn-launch">ABRIR MENÚ 2.0</a>
                     <button class="subviews-toggle" onclick="toggleViews('v20')">
                         <span>Vistas secundarias (3)</span>
-                        <span id="arr-v20">▾</span>
+                        <span id="arr-v20">&#9660;</span>
                     </button>
                     <div class="subviews-list" id="list-v20">
-                        <a href="2.0/ph.html" class="sub-link">🧪 Módulo pH 2.0 <span>&rarr;</span></a>
-                        <a href="2.0/termico.html" class="sub-link">🔥 Térmico <span>&rarr;</span></a>
-                        <a href="2.0/fuente.html" class="sub-link">⚡ Fuente <span>&rarr;</span></a>
+                        <a href="2.0/fuente.html" class="sub-link">Salida VCSS <span>&rarr;</span></a>
+                        <a href="2.0/ph.html" class="sub-link">Módulo pH <span>&rarr;</span></a>
+                        <a href="2.0/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
 
-            <!-- ORIGINAL 1.0 -->
+            <!-- VERSIÓN ORIGINAL -->
             <div class="version-card card-group-classic">
                 <div>
                     <div class="card-top">
-                        <span class="card-badge badge-orig">ETAPA 2 &middot; v1.0</span>
+                        <span class="card-badge">ETAPA 2 &middot; VERSIÓN ORIGINAL</span>
                     </div>
                     <div class="card-title">Proyecto Original</div>
                     <div class="card-feature">
-                        <span class="feat-ico">📁</span>
-                        <div><b>Mejora Principal:</b> Arquitectura modular (.h/.cpp), SoftAP propio, control PI con rampa y memoria NVS Flash.</div>
+                        <b>Mejora Principal:</b> Primer prototipo funcional con servidor HTTP incrustado básico y control térmico elemental ON/OFF sin modulación ZCS.
                     </div>
                 </div>
                 <div>
-                    <a href="Original/index.html" class="btn-launch btn-orig">🚀 Abrir Menú Original</a>
-                    <button class="subviews-toggle" onclick="toggleViews('orig')">
+                    <a href="Original/index.html" class="btn-launch">ABRIR MENÚ ORIGINAL</a>
+                    <button class="subviews-toggle" onclick="toggleViews('vorig')">
                         <span>Vistas secundarias (3)</span>
-                        <span id="arr-orig">▾</span>
+                        <span id="arr-vorig">&#9660;</span>
                     </button>
-                    <div class="subviews-list" id="list-orig">
-                        <a href="Original/termico.html" class="sub-link">🔥 Control Térmico <span>&rarr;</span></a>
-                        <a href="Original/fuente.html" class="sub-link">⚡ Fuente DAC <span>&rarr;</span></a>
-                        <a href="Original/ph.html" class="sub-link">🧪 Monitoreo pH <span>&rarr;</span></a>
+                    <div class="subviews-list" id="list-vorig">
+                        <a href="Original/fuente.html" class="sub-link">Salida Fuente <span>&rarr;</span></a>
+                        <a href="Original/ph.html" class="sub-link">Módulo pH <span>&rarr;</span></a>
+                        <a href="Original/termico.html" class="sub-link">Control Térmico <span>&rarr;</span></a>
                     </div>
                 </div>
             </div>
 
-            <!-- BETA -->
+            <!-- VERSIÓN BETA -->
             <div class="version-card card-group-classic">
                 <div>
                     <div class="card-top">
-                        <span class="card-badge badge-beta">ETAPA 1 &middot; BETA</span>
+                        <span class="card-badge">ETAPA 1 &middot; PROTOTIPO BETA</span>
                     </div>
                     <div class="card-title">Proyecto Beta</div>
                     <div class="card-feature">
-                        <span class="feat-ico">🌱</span>
-                        <div><b>Mejora Principal:</b> Primera prueba de concepto en un solo archivo .ino con PID simulado y WiFi Station.</div>
+                        <b>Mejora Principal:</b> Banco experimental preliminar para validación de sensado analógico y conmutación de potencia en banco de laboratorio.
                     </div>
                 </div>
                 <div>
-                    <a href="Beta/index.html" class="btn-launch btn-beta">🚀 Abrir Menú Beta</a>
-                    <button class="subviews-toggle" onclick="toggleViews('beta')">
-                        <span>Vistas secundarias (3)</span>
-                        <span id="arr-beta">▾</span>
-                    </button>
-                    <div class="subviews-list" id="list-beta">
-                        <a href="Beta/termico.html" class="sub-link">🔥 Térmico Beta <span>&rarr;</span></a>
-                        <a href="Beta/fuente.html" class="sub-link">⚡ Fuente Beta <span>&rarr;</span></a>
-                        <a href="Beta/ph.html" class="sub-link">🧪 pH Beta <span>&rarr;</span></a>
-                    </div>
+                    <a href="Beta/index.html" class="btn-launch">ABRIR MENÚ BETA</a>
                 </div>
             </div>
 
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            Sistema Automatizado de Electrodeposición y Galvanoplastia &middot; Tesis Profesional &middot; ESP32-S3<br>
-            Desarrollado por <b>Salvador&sup2; C</b>
         </div>
     </div>
 
     <script>
-        function toggleViews(id){
-            var list = document.getElementById('list-' + id);
-            var arr = document.getElementById('arr-' + id);
-            if(list.classList.contains('open')){
-                list.classList.remove('open');
-                arr.innerText = '▾';
-            } else {
-                list.classList.add('open');
-                arr.innerText = '▴';
+        function toggleTheme() {
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('electrodo32_theme', next);
+            var btn = document.getElementById('btnThemeToggle');
+            if (btn) {
+                btn.innerText = next === 'dark' ? 'MODO DÍA' : 'MODO NOCHE';
             }
         }
 
-        function filterCards(filter){
+        function initTheme() {
+            var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            var btn = document.getElementById('btnThemeToggle');
+            if (btn) {
+                btn.innerText = saved === 'dark' ? 'MODO DÍA' : 'MODO NOCHE';
+            }
+        }
+
+        function toggleViews(id) {
+            var list = document.getElementById('list-' + id);
+            var arr = document.getElementById('arr-' + id);
+            if (!list) return;
+            if (list.classList.contains('open')) {
+                list.classList.remove('open');
+                if (arr) arr.innerHTML = '&#9660;';
+            } else {
+                list.classList.add('open');
+                if (arr) arr.innerHTML = '&#9650;';
+            }
+        }
+
+        function filterCards(filter) {
             var buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(function(b){ b.classList.remove('active'); });
-            event.target.classList.add('active');
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
 
             var allCards = document.querySelectorAll('.version-card');
-            allCards.forEach(function(card){
-                if(filter === 'all'){
-                    card.style.display = card.classList.contains('featured') ? 'flex' : 'flex';
-                } else if(filter === 'rtos'){
+            allCards.forEach(function(card) {
+                if (filter === 'all') {
+                    card.style.display = 'flex';
+                } else if (filter === 'rtos') {
                     card.style.display = card.classList.contains('card-group-rtos') ? 'flex' : 'none';
-                } else if(filter === 'classic'){
+                } else if (filter === 'classic') {
                     card.style.display = card.classList.contains('card-group-classic') ? 'flex' : 'none';
                 }
             });
         }
+
+        initTheme();
     </script>
 </body>
 </html>
