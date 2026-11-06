@@ -202,8 +202,11 @@ class TestScrollableFrame:
     def test_scrollable_frame_ciclo_vida(self):
         import tkinter as tk
         from unittest.mock import MagicMock
-        root = tk.Tk()
-        root.withdraw()
+        try:
+            root = tk.Tk()
+            root.withdraw()
+        except (tk.TclError, Exception):
+            pytest.skip("Tkinter display/Tcl interpreter not available or environment issue")
         try:
             sf = ScrollableFrame(root, bg="#1e1e1e", fit_width=True, fit_height=True, scroll_x=True)
             sf.pack(fill="both", expand=True)
@@ -224,7 +227,10 @@ class TestScrollableFrame:
             sf._on_enter()
             sf._on_leave()
         finally:
-            root.destroy()
+            try:
+                root.destroy()
+            except Exception:
+                pass
 
 
 class TestTema:
@@ -241,8 +247,11 @@ class TestTema:
         from matplotlib.figure import Figure
         from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-        root = tk.Tk()
-        root.withdraw()
+        try:
+            root = tk.Tk()
+            root.withdraw()
+        except (tk.TclError, Exception):
+            pytest.skip("Tkinter display/Tcl interpreter not available or environment issue")
         try:
             aplicar_estilo_treeview(TEMA_NOCHE)
             aplicar_estilo_treeview(TEMA_DIA)
@@ -256,4 +265,7 @@ class TestTema:
             estilizar_figura_matplotlib(fig, canvas, TEMA_DIA)
             estilizar_figura_matplotlib(None, None, TEMA_NOCHE)
         finally:
-            root.destroy()
+            try:
+                root.destroy()
+            except Exception:
+                pass
