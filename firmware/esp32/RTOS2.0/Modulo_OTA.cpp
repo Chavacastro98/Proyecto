@@ -426,6 +426,9 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
     <div class="hdr">
         <div style="display:flex;align-items:center;gap:12px;">
             <a href="/" class="nav-back">&larr; Men&uacute; RTOS 2.0</a>
+            <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar Modo Día / Noche">
+                <span id="theme-btn-lbl">&#9728; Modo D&iacute;a</span>
+            </button>
         </div>
         <div style="text-align:right;">
             <span class="hdr-title">Actualizaci&oacute;n OTA</span>
@@ -476,13 +479,24 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
        GESTIÓN DE TEMA DUAL
        ========================================================================== */
     function initTheme() {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('electrodo32_theme', 'dark');
-        }
+        var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        updateThemeBtn(saved);
+    }
 
-    
+    function toggleTheme() {
+        var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = (cur === 'dark') ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('electrodo32_theme', next);
+        updateThemeBtn(next);
+    }
 
-    
+    function updateThemeBtn(th) {
+        var btn = document.getElementById('theme-btn-lbl');
+        if (!btn) return;
+        btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+    }
 
     initTheme();
 

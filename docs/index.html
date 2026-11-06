@@ -49,6 +49,9 @@
         <button id="btnModoTecnico" class="mode-pill mode-tecnico" onclick="setModoLectura('tecnico')">
           <span>📖 Reporte</span>
         </button>
+        <button id="btnThemeToggle" class="mode-pill" onclick="toggleTheme()" title="Alternar Modo Día / Noche">
+          <span id="themeBtnLbl">☀️ Modo Día</span>
+        </button>
       </div>
     </div>
     <h1>E.L.E.C.T.R.O.D.O-32: Sistema de Control Automático de Recubrimientos Electrolíticos</h1>
@@ -5122,10 +5125,23 @@ C_pi = pidtune(G_planta, 'PI', wc, opciones);
 
 
 <script>
-/* MODO INDUSTRIAL OSCURO FIJO (Keysight / Rohde & Schwarz) */
+/* GESTIÓN DE TEMA DUAL: VS Dark & COMSOL Light */
 function initTheme() {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    localStorage.setItem('electrodo32_theme', 'dark');
+    var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeBtn(saved);
+}
+function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = (cur === 'dark') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('electrodo32_theme', next);
+    updateThemeBtn(next);
+}
+function updateThemeBtn(th) {
+    var lbl = document.getElementById('themeBtnLbl');
+    if (!lbl) return;
+    lbl.innerHTML = (th === 'dark') ? '☀️ Modo Día' : '🌙 Modo Noche';
 }
 initTheme();
 </script>

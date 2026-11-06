@@ -576,6 +576,9 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
   <div class='container'>
     <div class='hub-bar'>
       <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
+      <button class='theme-btn' onclick='toggleTheme()' title='Alternar Modo Día / Noche'>
+        <span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span>
+      </button>
     </div>
 
     <div class='hdr'>
@@ -753,13 +756,24 @@ var lastOk = Date.now();
    GESTIÓN DE TEMA DUAL
    ========================================================================== */
 function initTheme() {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('electrodo32_theme', 'dark');
-        }
+    var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeBtn(saved);
+}
 
+function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = (cur === 'dark') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('electrodo32_theme', next);
+    updateThemeBtn(next);
+}
 
-
-
+function updateThemeBtn(th) {
+    var btn = document.getElementById('theme-btn-lbl');
+    if (!btn) return;
+    btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+}
 
 initTheme();
 

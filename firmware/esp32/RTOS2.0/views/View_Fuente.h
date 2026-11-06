@@ -700,7 +700,7 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
 
     <div class='container'>
         <div class='hdr'>
-            <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute;</a></div>
+            <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute;</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span></button></div>
             <div style='text-align:center'>
                 <span class='hdr-title'>Salida de Corriente</span>
                 <span class='hdr-sub'>CONTROL VCSS &middot; SHUNT DUAL &middot; RTOS 2.0</span>
@@ -823,8 +823,9 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
            GESTIÓN DE TEMA DUAL
            ========================================================================== */
         function initTheme() {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('electrodo32_theme', 'dark');
+            var saved = localStorage.getItem('electrodo32_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeBtn(saved);
         }
 
         function toggleTheme() {
@@ -836,7 +837,11 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
             drawPulseWave();
         }
 
-        
+        function updateThemeBtn(th) {
+            var btn = document.getElementById('theme-btn-lbl');
+            if (!btn) return;
+            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+        }
 
         initTheme();
 
