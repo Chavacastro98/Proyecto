@@ -56,7 +56,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         # Sistema de Temas y Visibilidad
         self.tema_actual = cargar_tema_preferido()
         self.graficas_visibles = True
-        self.root.title("🧪 Monitor de Telemetría 2.0 y Gestor de Ensayos — ESP32 Electrodeposición (Sensor Dedicado A1)")
+        self.root.title("Monitor de Telemetría 2.0 y Gestor de Ensayos — ESP32 Electrodeposición (Sensor Dedicado A1)")
         self.root.geometry("1260x860")
         self.root.minsize(1050, 720)
         self.root.configure(bg=self.tema_actual["bg_app"])
@@ -230,7 +230,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
 
         btn_faraday = tk.Button(
             hdr,
-            text="⚖️ Balanza",
+            text="Balanza Faraday",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema_actual["btn_acc_bg"],
             fg="#f472b6",
@@ -246,7 +246,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
 
         btn_ph = tk.Button(
             hdr,
-            text="🧪 pH",
+            text="Sensor pH",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema_actual["btn_acc_bg"],
             fg="#c084fc",
@@ -262,7 +262,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
 
         btn_visor = tk.Button(
             hdr,
-            text="📊 Explorador de Datos",
+            text="Explorador de Datos",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema_actual["btn_acc_bg"],
             fg="#34d399",
@@ -278,7 +278,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
 
         btn_nube = tk.Button(
             hdr,
-            text="☁ Nube / Supabase",
+            text="Nube / Supabase",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema_actual["btn_acc_bg"],
             fg=self.tema_actual["accent_primary"],
@@ -294,7 +294,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
 
         btn_diag = tk.Button(
             hdr,
-            text="⚙ Diagnóstico",
+            text="Diagnóstico",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema_actual["btn_acc_bg"],
             fg="#fbbf24",
@@ -322,7 +322,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         # Botón conmutador Modo Día / Noche
         self.btn_tema = tk.Button(
             hdr,
-            text="☀️ Modo Día" if self.tema_actual["nombre"] == "noche" else "🌙 Modo Noche",
+            text="MODO DÍA" if self.tema_actual["nombre"] == "noche" else "MODO NOCHE",
             font=("Segoe UI", 8, "bold"),
             bg="#334155",
             fg="#f8fafc",
@@ -540,7 +540,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self.lbl_timer_big = tk.Label(
             frame_clock_box,
             text="04:00",
-            font=("Segoe UI", 26, "bold"),
+            font=("Consolas", 28, "bold"),
             fg=self.tema_actual["accent_primary"],
             bg="#1e293b"
         )
@@ -788,7 +788,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
 
         self.lbl_incidentes = tk.Label(
             kpi_frame,
-            text="⚠️ Incidentes: 0",
+            text="INCIDENTES: 0",
             font=("Segoe UI", 9, "bold"),
             fg="#22c55e",
             bg="#1e293b",
@@ -828,7 +828,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self.hdr_acc_t.pack(fill="x")
         self.hdr_acc_t.pack_propagate(False)
 
-        self.lbl_acc_t_title = tk.Label(self.hdr_acc_t, text="🌡️ TEMPERATURA DE TINAS (T1..T4)", font=("Segoe UI", 8, "bold"), fg=self.tema_actual["fg_acc_title"], bg=self.tema_actual["bg_acc_hdr"], cursor="hand2")
+        self.lbl_acc_t_title = tk.Label(self.hdr_acc_t, text="TEMPERATURA DE TINAS (T1..T4)", font=("Segoe UI", 8, "bold"), fg=self.tema_actual["fg_acc_title"], bg=self.tema_actual["bg_acc_hdr"], cursor="hand2")
         self.lbl_acc_t_title.pack(side="left", padx=8, pady=2)
 
         self.btn_acc_t = tk.Button(self.hdr_acc_t, text="▲", font=("Segoe UI", 7, "bold"), bg=self.tema_actual["btn_acc_bg"], fg=self.tema_actual["btn_acc_fg"], bd=0, padx=8, pady=1, cursor="hand2", command=self.toggle_acordeon_t)
@@ -856,7 +856,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self.hdr_acc_u.pack(fill="x")
         self.hdr_acc_u.pack_propagate(False)
 
-        self.lbl_acc_u_title = tk.Label(self.hdr_acc_u, text="⚡ CONDUCCIÓN DE TRIACS (%)", font=("Segoe UI", 8, "bold"), fg=self.tema_actual["fg_acc_title"], bg=self.tema_actual["bg_acc_hdr"], cursor="hand2")
+        self.lbl_acc_u_title = tk.Label(self.hdr_acc_u, text="CONDUCCIÓN DE TRIACS (%)", font=("Segoe UI", 8, "bold"), fg=self.tema_actual["fg_acc_title"], bg=self.tema_actual["bg_acc_hdr"], cursor="hand2")
         self.lbl_acc_u_title.pack(side="left", padx=8, pady=2)
 
         self.btn_acc_u = tk.Button(self.hdr_acc_u, text="▲", font=("Segoe UI", 7, "bold"), bg=self.tema_actual["btn_acc_bg"], fg=self.tema_actual["btn_acc_fg"], bd=0, padx=8, pady=1, cursor="hand2", command=self.toggle_acordeon_u)
@@ -884,7 +884,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         self.hdr_acc_i.pack(fill="x")
         self.hdr_acc_i.pack_propagate(False)
 
-        self.lbl_acc_i_title = tk.Label(self.hdr_acc_i, text="🔬 CORRIENTE VCSS (A) & BANDA OBJETIVO", font=("Segoe UI", 8, "bold"), fg=self.tema_actual["fg_acc_title"], bg=self.tema_actual["bg_acc_hdr"], cursor="hand2")
+        self.lbl_acc_i_title = tk.Label(self.hdr_acc_i, text="CORRIENTE VCSS (A) & BANDA OBJETIVO", font=("Segoe UI", 8, "bold"), fg=self.tema_actual["fg_acc_title"], bg=self.tema_actual["bg_acc_hdr"], cursor="hand2")
         self.lbl_acc_i_title.pack(side="left", padx=8, pady=2)
 
         self.btn_acc_i = tk.Button(self.hdr_acc_i, text="▲", font=("Segoe UI", 7, "bold"), bg=self.tema_actual["btn_acc_bg"], fg=self.tema_actual["btn_acc_fg"], bd=0, padx=8, pady=1, cursor="hand2", command=self.toggle_acordeon_i)
@@ -1122,11 +1122,11 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         if self.tema_actual["nombre"] == "noche":
             self.tema_actual = TEMA_DIA
             guardar_tema_preferido("dia")
-            self.btn_tema.config(text="🌙 Modo Noche")
+            self.btn_tema.config(text="MODO NOCHE")
         else:
             self.tema_actual = TEMA_NOCHE
             guardar_tema_preferido("noche")
-            self.btn_tema.config(text="☀️ Modo Día")
+            self.btn_tema.config(text="MODO DÍA")
 
         self.aplicar_tema_global(self.tema_actual)
 
@@ -1410,7 +1410,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         f.pack(side="left", expand=True, fill="both", padx=2)
         lbl_t = tk.Label(f, text=title.upper(), font=("Segoe UI", 7, "bold"), fg=fg_t, bg=bg_card, cursor="hand2" if click_cmd else "arrow")
         lbl_t.pack(anchor="center")
-        lbl_v = tk.Label(f, text=val_def, font=("Segoe UI", 11, "bold"), fg=color, bg=bg_card, cursor="hand2" if click_cmd else "arrow")
+        lbl_v = tk.Label(f, text=val_def, font=("Consolas", 13, "bold"), fg=color, bg=bg_card, cursor="hand2" if click_cmd else "arrow")
         lbl_v.pack(anchor="center", pady=(1, 0))
         if click_cmd:
             for w in (f, lbl_t, lbl_v):
@@ -1449,7 +1449,7 @@ class TelemetriaApp(ComunicacionMixin, GrabacionMixin, GestorEnsayosMixin, Grafi
         )
         lbl_trend.pack(side="right")
 
-        lbl_temp = tk.Label(f, text="-- °C / SP --°C", font=("Segoe UI", 10, "bold"), fg=color, bg=bg_card, cursor="hand2")
+        lbl_temp = tk.Label(f, text="-- °C / SP --°C", font=("Consolas", 12, "bold"), fg=color, bg=bg_card, cursor="hand2")
         lbl_temp.pack(anchor="w", pady=(1, 0))
 
         info_row = tk.Frame(f, bg=bg_card)

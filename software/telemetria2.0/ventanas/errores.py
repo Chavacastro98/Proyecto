@@ -352,11 +352,11 @@ class VentanaErrores:
             err_now = abs(e_t3[-1])
             dedt_now = abs(de_t3[-1])
             if err_now <= 0.5 and dedt_now <= 0.05:
-                self.lbl_regimen.config(text="🟢 EN ATRACTOR (±0.5°C | Estacionario)", fg="#34d399")
+                self.lbl_regimen.config(text="[OK] EN ATRACTOR (±0.5°C | Estacionario)", fg="#34d399")
             elif err_now <= 1.0:
-                self.lbl_regimen.config(text="🟡 EN TOLERANCIA (±1°C | Amortiguando)", fg="#fbbf24")
+                self.lbl_regimen.config(text="[AVISO] EN TOLERANCIA (±1°C | Amortiguando)", fg="#fbbf24")
             else:
-                self.lbl_regimen.config(text="🔵 CONVERGIENDO AL ORIGEN", fg=self.tema["accent_primary"])
+                self.lbl_regimen.config(text="[INFO] CONVERGIENDO AL ORIGEN", fg=self.tema["accent_primary"])
 
         self.fig.tight_layout(pad=1.0)
         self.canvas.draw_idle()

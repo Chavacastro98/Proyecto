@@ -489,18 +489,18 @@
                 <label class='form-label' for='pass-input'>Contraseña WPA2:</label>
                 <div class='input-wrap'>
                     <input type='password' id='pass-input' class='input-field' value='12345678' maxlength='64' oninput='validateForm()'>
-                    <button class='pass-btn' id='pass-toggle' type='button' onclick='togglePass()' title='Mostrar/Ocultar contraseña'>👁️</button>
+                    <button class='pass-btn' id='pass-toggle' type='button' onclick='togglePass()' title='Mostrar/Ocultar contraseña'>[VER]️</button>
                 </div>
-                <div class='pass-hint' id='pass-hint'>✓ Longitud válida (mínimo 8 caracteres)</div>
+                <div class='pass-hint' id='pass-hint'>[OK] Longitud válida (mínimo 8 caracteres)</div>
             </div>
 
             <div class='btn-grid'>
-                <button class='btn-act btn-save' id='btn-save' onclick='guardarCredenciales()'>💾 GUARDAR Y APLICAR CAMBIOS</button>
+                <button class='btn-act btn-save' id='btn-save' onclick='guardarCredenciales()'>GUARDAR Y APLICAR CAMBIOS</button>
                 <button class='btn-act btn-reset' id='btn-default' onclick='restablecerPorDefecto()'>↺ Valores de Fábrica</button>
-                <button class='btn-act btn-reboot' id='btn-reboot' onclick='reiniciarESP()'>⚡ Reiniciar Nodo ESP32</button>
+                <button class='btn-act btn-reboot' id='btn-reboot' onclick='reiniciarESP()'>Reiniciar Nodo ESP32</button>
             </div>
 
-            <div class='status-msg msg-ok' id='status-msg'>✓ Credenciales guardadas correctamente. Reinicie el nodo para aplicar el nuevo SSID.</div>
+            <div class='status-msg msg-ok' id='status-msg'>[OK] Credenciales guardadas correctamente. Reinicie el nodo para aplicar el nuevo SSID.</div>
         </div>
     </div>
 
@@ -552,10 +552,10 @@
             var btn = document.getElementById('pass-toggle');
             if(inp.type === 'password'){
                 inp.type = 'text';
-                btn.innerText = '🔒';
+                btn.innerText = '[OCULTO]';
             } else {
                 inp.type = 'password';
-                btn.innerText = '👁️';
+                btn.innerText = '[VER]️';
             }
         }
 
@@ -568,10 +568,10 @@
             var isValid = (ssid.length >= 1 && pass.length >= 8);
             if(pass.length < 8){
                 hint.className = 'pass-hint invalid';
-                hint.innerText = '✗ La contraseña debe tener al menos 8 caracteres (' + pass.length + '/8)';
+                hint.innerText = '[AVISO] La contraseña debe tener al menos 8 caracteres (' + pass.length + '/8)';
             } else {
                 hint.className = 'pass-hint valid';
-                hint.innerText = '✓ Longitud válida (' + pass.length + ' caracteres)';
+                hint.innerText = '[OK] Longitud válida (' + pass.length + ' caracteres)';
             }
             btn.disabled = !isValid;
         }
@@ -582,12 +582,12 @@
             var msg = document.getElementById('status-msg');
 
             msg.className = 'status-msg msg-ok';
-            msg.innerText = '✓ Guardando en memoria Flash NVS...';
+            msg.innerText = '[OK] Guardando en memoria Flash NVS...';
             msg.style.display = 'block';
 
             setTimeout(function(){
-                msg.innerText = '✓ Credenciales guardadas: SSID "' + ssid + '". Reinicie el nodo para activar la nueva red.';
-                showToast('✓ Guardado en NVS con éxito', 'ok');
+                msg.innerText = '[OK] Credenciales guardadas: SSID "' + ssid + '". Reinicie el nodo para activar la nueva red.';
+                showToast('[OK] Guardado en NVS con éxito', 'ok');
             }, 600);
         }
 
@@ -604,7 +604,7 @@
             showToast('Enviando comando de reinicio /reboot...', 'info');
             var msg = document.getElementById('status-msg');
             msg.className = 'status-msg msg-ok';
-            msg.innerText = '⚡ Reiniciando ESP32-S3... Reconecte su dispositivo a la red Wi-Fi en 5 segundos.';
+            msg.innerText = 'Reiniciando ESP32-S3... Reconecte su dispositivo a la red Wi-Fi en 5 segundos.';
             msg.style.display = 'block';
         }
     </script>

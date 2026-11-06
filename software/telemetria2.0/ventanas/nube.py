@@ -30,7 +30,7 @@ class VentanaNube:
         self.app = parent_app
         self.tema = getattr(self.app, "tema_actual", cargar_tema_preferido())
         self.win = tk.Toplevel(self.app.root)
-        self.win.title("☁ Base de Datos y Sincronización en la Nube (SQLite / Supabase) — E.L.E.C.T.R.O.D.O-32")
+        self.win.title(" Base de Datos y Sincronización en la Nube (SQLite / Supabase) — E.L.E.C.T.R.O.D.O-32")
         self.win.geometry("1100x720")
         self.win.minsize(980, 600)
         self.win.configure(bg=self.tema["bg_app"])
@@ -69,7 +69,7 @@ class VentanaNube:
 
         lbl_t = tk.Label(
             hdr,
-            text="☁ BASE DE DATOS Y SINCRONIZACIÓN EN LA NUBE (SQLITE / SUPABASE)",
+            text=" BASE DE DATOS Y SINCRONIZACIÓN EN LA NUBE (SQLITE / SUPABASE)",
             font=("Segoe UI", 11, "bold"),
             fg=self.tema["accent_primary"],
             bg=self.tema["bg_panel"]
@@ -79,7 +79,7 @@ class VentanaNube:
 
         btn_cfg = tk.Button(
             hdr,
-            text="⚙ Configurar Supabase",
+            text=" Configurar Supabase",
             bg="#1e293b",
             fg="#94a3b8",
             activebackground="#334155",
@@ -95,7 +95,7 @@ class VentanaNube:
 
         btn_ref = tk.Button(
             hdr,
-            text="🔄 Refrescar Ensayos",
+            text=" Refrescar Ensayos",
             bg="#1e293b",
             fg=self.tema["accent_primary"],
             activebackground="#334155",
@@ -116,7 +116,7 @@ class VentanaNube:
         # ----------------- PANEL IZQUIERDO: LISTA DE ENSAYOS -----------------
         frame_izq = tk.LabelFrame(
             panes,
-            text=" 📁 Ensayos Realizados en Disco ",
+            text="  Ensayos Realizados en Disco ",
             bg=self.tema["bg_panel"],
             fg="#94a3b8",
             font=("Segoe UI", 10, "bold"),
@@ -148,7 +148,7 @@ class VentanaNube:
         # ----------------- PANEL DERECHO: DETALLES Y ACCIONES -----------------
         frame_der = tk.LabelFrame(
             panes,
-            text=" 🔬 Caracterización Gravimétrica y Carga ",
+            text="  Caracterización Gravimétrica y Carga ",
             bg=self.tema["bg_panel"],
             fg="#94a3b8",
             font=("Segoe UI", 10, "bold"),
@@ -206,7 +206,7 @@ class VentanaNube:
 
         self.btn_guardar_local = tk.Button(
             f_btns,
-            text="💾 Guardar en SQLite Local",
+            text=" Guardar en SQLite Local",
             bg="#0369a1",
             fg="#ffffff",
             activebackground="#0284c7",
@@ -222,7 +222,7 @@ class VentanaNube:
 
         self.btn_subir_nube = tk.Button(
             f_btns,
-            text="🚀 Subir a Supabase (Nube)",
+            text=" Subir a Supabase (Nube)",
             bg="#059669",
             fg="#ffffff",
             activebackground="#10b981",
@@ -238,7 +238,7 @@ class VentanaNube:
 
         self.btn_sync_pendientes = tk.Button(
             f_btns,
-            text="☁ Sincronizar Todos los Pendientes",
+            text=" Sincronizar Todos los Pendientes",
             bg="#475569",
             fg="#f8fafc",
             activebackground="#64748b",
@@ -309,8 +309,8 @@ class VentanaNube:
                         break
 
             reg = ensayos_db.get(nombre)
-            estado_local = "✅ Sí" if reg else "❌ No"
-            estado_nube = "☁ Sí" if reg and reg.get("sincronizado_nube") == 1 else "⏳ Pendiente" if reg else "--"
+            estado_local = "Sí" if reg else "ERROR: No"
+            estado_nube = " Sí" if reg and reg.get("sincronizado_nube") == 1 else " Pendiente" if reg else "--"
 
             self.tree_ensayos.insert("", "end", iid=nombre, values=(nombre, placa, estado_local, estado_nube))
 
@@ -372,10 +372,10 @@ class VentanaNube:
 
             ensayo_id = self.db.registrar_o_actualizar_ensayo_local(ruta, datos_grav)
             self._actualizar_lista_ensayos()
-            self.var_estado_proceso.set(f"✅ Guardado localmente con éxito (ID: {ensayo_id[:8]}...)")
+            self.var_estado_proceso.set(f"Guardado localmente con éxito (ID: {ensayo_id[:8]}...)")
             messagebox.showinfo("Éxito", f"Ensayo registrado en SQLite local exitosamente.\nID: {ensayo_id}", parent=self.win)
         except Exception as e:
-            self.var_estado_proceso.set("❌ Error al guardar localmente.")
+            self.var_estado_proceso.set("ERROR: Error al guardar localmente.")
             messagebox.showerror("Error", f"Error al procesar el ensayo:\n{str(e)}", parent=self.win)
 
     def _subir_nube(self):
@@ -417,7 +417,7 @@ class VentanaNube:
             except Exception as e:
                 err_msg = str(e)
                 self.win.after(0, lambda: messagebox.showerror("Fallo de Subida", f"No se pudo sincronizar con Supabase:\n{err_msg}", parent=self.win))
-                self.var_estado_proceso.set("❌ Error en subida a nube.")
+                self.var_estado_proceso.set("ERROR: Error en subida a nube.")
             finally:
                 self.btn_subir_nube.config(state="normal")
                 self.btn_guardar_local.config(state="normal")
@@ -466,7 +466,7 @@ class VentanaNube:
     def _abrir_modal_config(self):
         """Ventana modal para configurar credenciales de Supabase y carpeta Drive."""
         cfg_win = tk.Toplevel(self.win)
-        cfg_win.title("⚙ Configuración de Conexión Nube (Supabase)")
+        cfg_win.title(" Configuración de Conexión Nube (Supabase)")
         cfg_win.geometry("560x340")
         cfg_win.configure(bg=self.tema["bg_panel"])
         cfg_win.transient(self.win)
@@ -508,9 +508,9 @@ class VentanaNube:
             cfg_win.update_idletasks()
             ok, msg = self.sync.test_conexion(var_url.get().strip(), var_key.get().strip())
             if ok:
-                lbl_res.config(text=f"✅ {msg}", fg="#34d399")
+                lbl_res.config(text=f"{msg}", fg="#34d399")
             else:
-                lbl_res.config(text=f"❌ {msg}", fg="#f87171")
+                lbl_res.config(text=f"ERROR: {msg}", fg="#f87171")
 
         def guardar_salir():
             nueva_cfg = {
@@ -527,8 +527,8 @@ class VentanaNube:
         f_b = tk.Frame(cfg_win, bg=self.tema["bg_panel"])
         f_b.pack(pady=14)
 
-        tk.Button(f_b, text="🔌 Probar Conexión", font=("Segoe UI", 9), bg="#334155", fg="#f8fafc", padx=10, pady=4, bd=0, cursor="hand2", command=probar_conexion).pack(side="left", padx=6)
-        tk.Button(f_b, text="💾 Guardar Cambios", font=("Segoe UI", 9, "bold"), bg="#0284c7", fg="#ffffff", padx=12, pady=4, bd=0, cursor="hand2", command=guardar_salir).pack(side="left", padx=6)
+        tk.Button(f_b, text=" Probar Conexión", font=("Segoe UI", 9), bg="#334155", fg="#f8fafc", padx=10, pady=4, bd=0, cursor="hand2", command=probar_conexion).pack(side="left", padx=6)
+        tk.Button(f_b, text=" Guardar Cambios", font=("Segoe UI", 9, "bold"), bg="#0284c7", fg="#ffffff", padx=12, pady=4, bd=0, cursor="hand2", command=guardar_salir).pack(side="left", padx=6)
 
     def _on_close(self):
         try:

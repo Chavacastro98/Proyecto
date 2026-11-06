@@ -602,7 +602,7 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
       </div>
       <div>
         <button class='btn-scan' id='btn-scan' onclick='escanear()'>
-          <span>&#128752;</span> ESCANEAR SENSORES
+          <span></span> ESCANEAR SENSORES
         </button>
         <div class='scan-progress' id='scan-bar'><div class='scan-prog-fill'></div></div>
       </div>

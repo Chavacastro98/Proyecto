@@ -654,7 +654,7 @@ static void handleOTA_Upload() {
     Serial.printf("[OTA] Inicio de recepcion: %s\n", upload.filename.c_str());
 
     if (otaInterlockActivo()) {
-      Serial.println("[OTA] ❌ Cancelado: Interlock activo.");
+      Serial.println("[OTA] [CANCELADO]: Interlock activo.");
       otaEnProgreso = false;
       return;
     }

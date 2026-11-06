@@ -56,7 +56,7 @@ class VentanaDiagnostico:
 
         btn_csv = tk.Button(
             hdr,
-            text="📄 Abrir CSV de Eventos",
+            text=" Abrir CSV de Eventos",
             font=("Segoe UI", 8, "bold"),
             bg="#334155",
             fg="#f8fafc",
@@ -72,7 +72,7 @@ class VentanaDiagnostico:
 
         btn_rescan = tk.Button(
             hdr,
-            text="🔄 Re-escanear Bus",
+            text=" Re-escanear Bus",
             font=("Segoe UI", 8, "bold"),
             bg="#2563eb",
             fg="#ffffff",
@@ -103,7 +103,7 @@ class VentanaDiagnostico:
         self.card_dac = self._crear_card_sensor(f_i2c, "MCP4725 (0x60)", "DAC Corriente VCSS 12-bit", 3)
 
         # Sección 2: Bus SPI Termopares (MAX6675 T1..T4)
-        lbl_spi = tk.Label(body, text="🔥 Sensores de Temperatura SPI MAX6675 (Termopares K):", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg=self.tema["bg_app"])
+        lbl_spi = tk.Label(body, text=" Sensores de Temperatura SPI MAX6675 (Termopares K):", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg=self.tema["bg_app"])
         lbl_spi.pack(anchor="w", pady=(8, 2))
 
         f_spi = tk.Frame(body, bg="#111827", bd=1, relief="solid")
@@ -123,7 +123,7 @@ class VentanaDiagnostico:
 
         lbl_ev_title = tk.Label(
             hdr_ev,
-            text="📋 AUDITORÍA DE ANOMALÍAS, ACCIDENTES Y EVENTOS (registro_eventos_fallos.csv):",
+            text=" AUDITORÍA DE ANOMALÍAS, ACCIDENTES Y EVENTOS (registro_eventos_fallos.csv):",
             font=("Segoe UI", 9, "bold"),
             fg="#f59e0b",
             bg=self.tema["bg_app"]
@@ -183,7 +183,7 @@ class VentanaDiagnostico:
 
         lbl_test = tk.Label(
             bar_test,
-            text="🧪 Simular Accidente (Validación del Logger):",
+            text=" Simular Accidente (Validación del Logger):",
             font=("Segoe UI", 8, "bold"),
             fg="#94a3b8",
             bg="#1e293b"
@@ -208,12 +208,12 @@ class VentanaDiagnostico:
             b.pack(side="left", padx=3)
             return b
 
-        _crear_btn_test(bar_test, "⚡ Salto Térmico (+16°C)", "salto_t2", "#78350f")
-        _crear_btn_test(bar_test, "🔌 Desconexión Sonda T1", "desconexion_t1", "#7f1d1d")
-        _crear_btn_test(bar_test, "🔥 Sobretemp T4 (>68°C)", "sobretemp_t4", "#7f1d1d")
-        _crear_btn_test(bar_test, "⚖️ Desbalance Shunts VCSS", "desbalance_vcss", "#1e3a5f")
-        _crear_btn_test(bar_test, "🧪 Saturación Celda", "saturacion_celda", "#4c1d95")
-        _crear_btn_test(bar_test, "📶 Caída Wi-Fi", "caida_wifi", "#334155")
+        _crear_btn_test(bar_test, " Salto Térmico (+16°C)", "salto_t2", "#78350f")
+        _crear_btn_test(bar_test, " Desconexión Sonda T1", "desconexion_t1", "#7f1d1d")
+        _crear_btn_test(bar_test, " Sobretemp T4 (>68°C)", "sobretemp_t4", "#7f1d1d")
+        _crear_btn_test(bar_test, "️ Desbalance Shunts VCSS", "desbalance_vcss", "#1e3a5f")
+        _crear_btn_test(bar_test, " Saturación Celda", "saturacion_celda", "#4c1d95")
+        _crear_btn_test(bar_test, " Caída Wi-Fi", "caida_wifi", "#334155")
 
         # Footer informativo
         self.lbl_diag_status = tk.Label(
@@ -237,7 +237,7 @@ class VentanaDiagnostico:
         lbl_d = tk.Label(f, text=desc, font=("Segoe UI", 7), fg="#94a3b8", bg="#1e293b")
         lbl_d.pack(anchor="w")
 
-        lbl_st = tk.Label(f, text="⏳ Verificando...", font=("Segoe UI", 8, "bold"), fg="#fbbf24", bg="#1e293b")
+        lbl_st = tk.Label(f, text=" Verificando...", font=("Segoe UI", 8, "bold"), fg="#fbbf24", bg="#1e293b")
         lbl_st.pack(anchor="w", pady=(4, 0))
         return lbl_st
 
@@ -330,10 +330,10 @@ class VentanaDiagnostico:
             return
 
         if not data:
-            self.lbl_diag_status.config(text="🔴 No se pudo obtener diagnóstico del ESP32 (Sin conexión)", fg="#ef4444")
+            self.lbl_diag_status.config(text="[FALLA] No se pudo obtener diagnóstico del ESP32 (Sin conexión)", fg="#ef4444")
             return
 
-        def set_badge(lbl, ok, ok_text="🟢 OK (Conectado)", err_text="🔴 DESCONECTADO"):
+        def set_badge(lbl, ok, ok_text="[OK] OK (Conectado)", err_text="[FALLA] DESCONECTADO"):
             if ok:
                 lbl.config(text=ok_text, fg="#34d399")
             else:
@@ -345,14 +345,14 @@ class VentanaDiagnostico:
         set_badge(self.card_dac, data.get("dac") == 1)
 
         tcs = data.get("tc", [0, 0, 0, 0])
-        set_badge(self.card_t1, len(tcs) > 0 and tcs[0] == 1, "🟢 OK (0-150°C)", "🔴 Falla Sonda")
-        set_badge(self.card_t2, len(tcs) > 1 and tcs[1] == 1, "🟢 OK (0-150°C)", "🔴 Falla Sonda")
-        set_badge(self.card_t3, len(tcs) > 2 and tcs[2] == 1, "🟢 OK (0-150°C)", "🔴 Falla Sonda")
-        set_badge(self.card_t4, len(tcs) > 3 and tcs[3] == 1, "🟢 OK (0-150°C)", "🔴 Falla Sonda")
+        set_badge(self.card_t1, len(tcs) > 0 and tcs[0] == 1, "[OK] OK (0-150°C)", "[FALLA] Falla Sonda")
+        set_badge(self.card_t2, len(tcs) > 1 and tcs[1] == 1, "[OK] OK (0-150°C)", "[FALLA] Falla Sonda")
+        set_badge(self.card_t3, len(tcs) > 2 and tcs[2] == 1, "[OK] OK (0-150°C)", "[FALLA] Falla Sonda")
+        set_badge(self.card_t4, len(tcs) > 3 and tcs[3] == 1, "[OK] OK (0-150°C)", "[FALLA] Falla Sonda")
 
         total_ok = sum([data.get("aht", 0), data.get("bmp", 0), data.get("ads", 0), data.get("dac", 0)] + tcs)
         self.lbl_diag_status.config(
-            text=f"✅ Diagnóstico actualizado: {total_ok}/8 Periféricos operativos ({datetime.now().strftime('%H:%M:%S')})",
+            text=f"Diagnóstico actualizado: {total_ok}/8 Periféricos operativos ({datetime.now().strftime('%H:%M:%S')})",
             fg="#34d399" if total_ok == 8 else "#fbbf24"
         )
 

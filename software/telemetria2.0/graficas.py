@@ -60,9 +60,9 @@ class GraficasMixin:
 
     def _actualizar_gui_datos(self, t_rel, d_t, d_ph, d_f, d_env):
         if self.modo_demo:
-            self.lbl_status.config(text="🎮 MODO DEMO", fg="#fbbf24")
+            self.lbl_status.config(text="[SIMULACIÓN] MODO DEMO", fg="#fbbf24")
         else:
-            self.lbl_status.config(text="🟢 EN LÍNEA" if self.conectado else "🔴 RECONECTANDO", fg="#34d399" if self.conectado else "#ef4444")
+            self.lbl_status.config(text="[ONLINE] EN LÍNEA" if self.conectado else "[RECONECTANDO]", fg="#34d399" if self.conectado else "#ef4444")
 
         mins = int(t_rel // 60)
         segs = int(t_rel % 60)
@@ -71,9 +71,9 @@ class GraficasMixin:
         if hasattr(self, 'lbl_incidentes'):
             n_anom = sum(1 for ev in getattr(self, 'historia_eventos_fallos', []) if ev.get("severidad") in ("CRITICO", "ADVERTENCIA"))
             if n_anom == 0:
-                self.lbl_incidentes.config(text="⚠️ Incidentes: 0", fg="#22c55e")
+                self.lbl_incidentes.config(text="INCIDENTES: 0", fg="#22c55e")
             else:
-                self.lbl_incidentes.config(text=f"⚠️ Incidentes: {n_anom}", fg="#ef4444")
+                self.lbl_incidentes.config(text=f"INCIDENTES: {n_anom}", fg="#ef4444")
 
         # Calcular parámetros de actuadores y TRIACs en tiempo real
         u1 = float(d_t[0].get("p", min(100.0, max(0.0, (float(d_t[0]["sp"]) - float(d_t[0]["t"])) * 15.0 + 25.0)) if d_t[0]["run"] == 1 else 0.0))
@@ -161,7 +161,7 @@ class GraficasMixin:
                     card[k].config(bg=card_bg)
 
             if falla_sonda:
-                card["temp"].config(text="⚠️ DESCONECTADO", fg="#ef4444")
+                card["temp"].config(text="ALERTA: DESCONECTADO", fg="#ef4444")
             elif salto_activo:
                 card["temp"].config(text=f"{t_val:.1f} °C  [EMI]", fg="#f59e0b")
             else:
@@ -468,7 +468,7 @@ class GraficasMixin:
             dir_graf = os.path.join(os.path.dirname(target_csv), "graficas")
             messagebox.showinfo(
                 "Gráficas Científicas Generadas",
-                f"✅ ¡Suite completa de 8 Figuras Científicas HD (300 DPI) generada con éxito!\n\n"
+                f"¡Suite completa de 8 Figuras Científicas HD (300 DPI) generada con éxito!\n\n"
                 f"1. Perfil Electroquímico y Térmico\n"
                 f"2. Seguimiento de Errores e(t) e IAE\n"
                 f"3. Conmutación de TRIACs y Potencia Activa\n"

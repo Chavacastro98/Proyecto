@@ -32,8 +32,8 @@ import uuid
 try:
     import requests
 except ImportError:
-    print("❌ Error: La librería 'requests' no está instalada.")
-    print("👉 Instálala ejecutando: pip install requests")
+    print("ERROR: Error: La librería 'requests' no está instalada.")
+    print("- Instálala ejecutando: pip install requests")
     sys.exit(1)
 
 
@@ -98,12 +98,12 @@ def main():
         filename = f"telemetria_proceso_{timestamp_str}.csv"
 
     print("=" * 80)
-    print("  📊 SISTEMA DE TELEMETRÍA Y ADQUISICIÓN DE DATOS EN TIEMPO REAL (v3.5)")
+    print("   SISTEMA DE TELEMETRÍA Y ADQUISICIÓN DE DATOS EN TIEMPO REAL (v3.5)")
     print("  Proyecto: Automatización de Planta Piloto de Electrodeposición (ESP32)")
     print("=" * 80)
-    print(f"🎯 Conectando a: {base_url}")
-    print(f"⏱️  Intervalo de muestreo: {args.intervalo} segundo(s)")
-    print(f"📁 Archivo de salida: {filename}")
+    print(f" Conectando a: {base_url}")
+    print(f"️  Intervalo de muestreo: {args.intervalo} segundo(s)")
+    print(f" Archivo de salida: {filename}")
     print("=" * 80)
 
     # Crear sesión HTTP persistente (reduce latencia y overhead TCP)
@@ -111,17 +111,17 @@ def main():
     session.headers.update({"User-Agent": "CapturaDatosESP32/3.5"})
 
     # Probar conectividad con el ESP32
-    print("\n🔍 Verificando conexión con el ESP32...")
+    print("\n Verificando conexión con el ESP32...")
     try:
         r = session.get(f"{base_url}/data_env", timeout=2.5)
         if r.status_code == 200:
-            print("✅ Conexión establecida exitosamente con el ESP32.")
+            print("Conexión establecida exitosamente con el ESP32.")
         else:
-            print(f"⚠️ El ESP32 respondió con código HTTP {r.status_code}.")
+            print(f"ALERTA: El ESP32 respondió con código HTTP {r.status_code}.")
     except Exception as e:
-        print("\n❌ NO SE PUDO CONECTAR CON EL ESP32.")
-        print("👉 Asegúrate de estar conectado a la red Wi-Fi: 'Uli' (Pass: 12345678)")
-        print("👉 Verifica que el ESP32 esté encendido y responda en http://192.168.4.1")
+        print("\nERROR: NO SE PUDO CONECTAR CON EL ESP32.")
+        print("- Asegúrate de estar conectado a la red Wi-Fi: 'Uli' (Pass: 12345678)")
+        print("- Verifica que el ESP32 esté encendido y responda en http://192.168.4.1")
         sys.exit(1)
 
     ensayo_uuid = str(uuid.uuid4())
@@ -180,8 +180,8 @@ def main():
         writer.writerow(headers)
         csv_file.flush()
 
-        print("\n🚀 INICIANDO CAPTURA DE DATOS EN TIEMPO REAL (Telemetría 2.0 - RTOS 2.0)")
-        print("💡 Presiona Ctrl+C en cualquier momento para detener y finalizar el archivo.\n")
+        print("\n INICIANDO CAPTURA DE DATOS EN TIEMPO REAL (Telemetría 2.0 - RTOS 2.0)")
+        print(" Presiona Ctrl+C en cualquier momento para detener y finalizar el archivo.\n")
         print(
             f"{'Tiempo':>8} | {'T1 Limp':>8} | {'T2 Decap':>8} | {'T3 Hull':>8} | {'T4 Níquel':>9} | {'pH (A1)':>8} | {'I Real (A)':>10} | {'Ambiente':>10}"
         )
@@ -333,10 +333,10 @@ def main():
 
         except KeyboardInterrupt:
             print("\n" + "=" * 80)
-            print("🛑 CAPTURA FINALIZADA POR EL USUARIO")
-            print(f"📊 Total de muestras registradas: {muestras_guardadas}")
-            print(f"⏱️  Tiempo total registrado: {round(time.time() - t_inicio, 1)} segundos")
-            print(f"📁 Archivo CSV guardado en: {os.path.abspath(filename)}")
+            print(" CAPTURA FINALIZADA POR EL USUARIO")
+            print(f" Total de muestras registradas: {muestras_guardadas}")
+            print(f"️  Tiempo total registrado: {round(time.time() - t_inicio, 1)} segundos")
+            print(f" Archivo CSV guardado en: {os.path.abspath(filename)}")
 
             # Generar checksum SHA-256 (Auditoría D2)
             try:
@@ -348,9 +348,9 @@ def main():
                 sha_file = f"{filename}.sha256"
                 with open(sha_file, "w", encoding="utf-8") as f_out:
                     f_out.write(f"{chk_hex}  {os.path.basename(filename)}\n")
-                print(f"🔒 Checksum SHA-256 verificado: {chk_hex[:16]}... ({sha_file})")
+                print(f" Checksum SHA-256 verificado: {chk_hex[:16]}... ({sha_file})")
             except Exception as e_chk:
-                print(f"⚠️ No se pudo calcular SHA-256: {e_chk}")
+                print(f"ALERTA: No se pudo calcular SHA-256: {e_chk}")
             print("=" * 80)
 
 

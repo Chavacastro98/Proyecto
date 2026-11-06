@@ -126,7 +126,7 @@ class VentanaVisorDatos:
 
         tk.Label(
             hdr,
-            text="📊 EXPLORADOR DE BASE DE DATOS LOCAL",
+            text=" EXPLORADOR DE BASE DE DATOS LOCAL",
             font=("Segoe UI", 11, "bold"),
             fg=self.tema["accent_primary"],
             bg=self.tema["bg_header"]
@@ -146,7 +146,7 @@ class VentanaVisorDatos:
 
         btn_ref = tk.Button(
             hdr,
-            text="🔄 Recargar",
+            text=" Recargar",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema["bg_card_inner"],
             fg=self.tema["fg_text"],
@@ -162,7 +162,7 @@ class VentanaVisorDatos:
 
         self.btn_exportar = tk.Button(
             hdr,
-            text="📥 Exportar Vista Filtrada (CSV)",
+            text=" Exportar Vista Filtrada (CSV)",
             font=("Segoe UI", 8, "bold"),
             bg=self.tema["accent_primary"],
             fg=self.tema["accent_btn_fg"],
@@ -258,7 +258,7 @@ class VentanaVisorDatos:
 
         btn_buscar = tk.Button(
             bar_filtros,
-            text="🔍 Filtrar",
+            text=" Filtrar",
             font=("Segoe UI", 8),
             bg=self.tema["bg_card_inner"],
             fg=self.tema["fg_text"],
@@ -303,7 +303,7 @@ class VentanaVisorDatos:
         f_nav = tk.Frame(f_pag, bg=self.tema["bg_header"])
         f_nav.pack(side="right", padx=12, pady=4)
 
-        btn_primera = tk.Button(f_nav, text="⏮", font=("Segoe UI", 8), bg=self.tema["bg_card_inner"], fg=self.tema["fg_text"], bd=0, padx=6, command=self._ir_primera_pagina)
+        btn_primera = tk.Button(f_nav, text="<<", font=("Segoe UI", 8), bg=self.tema["bg_card_inner"], fg=self.tema["fg_text"], bd=0, padx=6, command=self._ir_primera_pagina)
         btn_primera.pack(side="left", padx=2)
 
         btn_ant = tk.Button(f_nav, text="◀ Ant", font=("Segoe UI", 8, "bold"), bg=self.tema["bg_card_inner"], fg=self.tema["fg_text"], bd=0, padx=8, command=self._pagina_anterior)
@@ -315,7 +315,7 @@ class VentanaVisorDatos:
         btn_sig = tk.Button(f_nav, text="Sig ▶", font=("Segoe UI", 8, "bold"), bg=self.tema["bg_card_inner"], fg=self.tema["fg_text"], bd=0, padx=8, command=self._pagina_siguiente)
         btn_sig.pack(side="left", padx=2)
 
-        btn_ultima = tk.Button(f_nav, text="⏭", font=("Segoe UI", 8), bg=self.tema["bg_card_inner"], fg=self.tema["fg_text"], bd=0, padx=6, command=self._ir_ultima_pagina)
+        btn_ultima = tk.Button(f_nav, text=">>", font=("Segoe UI", 8), bg=self.tema["bg_card_inner"], fg=self.tema["fg_text"], bd=0, padx=6, command=self._ir_ultima_pagina)
         btn_ultima.pack(side="left", padx=2)
 
         self._configurar_estilos_treeview()

@@ -583,7 +583,7 @@
       </div>
       <div>
         <button class='btn-scan' id='btn-scan' onclick='escanear()'>
-          <span>&#128752;</span> ESCANEAR SENSORES
+          <span></span> ESCANEAR SENSORES
         </button>
         <div class='scan-progress' id='scan-bar'><div class='scan-prog-fill'></div></div>
       </div>
@@ -748,14 +748,14 @@
 
     // Componentes de Hardware Reales del Sistema
     var hardwareSensors = [
-      { key: 'aht', name: 'AHT20',      bus: 'I2C', addr: '0x38',        desc: 'Temp / Humedad',         cat: 'Ambiental', catColor: '#007acc', ico: '🌤️', ok: 1 },
-      { key: 'bmp', name: 'BMP280',     bus: 'I2C', addr: '0x76/77',     desc: 'Presión Atmosférica',    cat: 'Ambiental', catColor: '#007acc', ico: '🌡️', ok: 1 },
-      { key: 'ads', name: 'ADS1115',    bus: 'I2C', addr: '0x48',        desc: 'ADC pH 16-bit (Canal Dedicado A1)', cat: 'pH / Sondas', catColor: '#a855f7', ico: '🧪', ok: 1 },
-      { key: 'dac', name: 'MCP4725',    bus: 'I2C', addr: '0x60',        desc: 'DAC Corriente VCSS',     cat: 'Potencia',  catColor: '#f59e0b', ico: '⚡', ok: 1 },
-      { key: 'tc0', name: 'MAX6675 #0', bus: 'SPI', addr: 'CS GPIO 5',   desc: 'Tina Limpieza',          cat: 'Térmico',   catColor: '#ea580c', ico: '🔥', ok: 1 },
-      { key: 'tc1', name: 'MAX6675 #1', bus: 'SPI', addr: 'CS GPIO 4',   desc: 'Tina Decapado',          cat: 'Térmico',   catColor: '#ea580c', ico: '🔥', ok: 1 },
-      { key: 'tc2', name: 'MAX6675 #2', bus: 'SPI', addr: 'CS GPIO 13',  desc: 'Celda Hull',             cat: 'Térmico',   catColor: '#ea580c', ico: '🔥', ok: 1 },
-      { key: 'tc3', name: 'MAX6675 #3', bus: 'SPI', addr: 'CS GPIO 14',  desc: 'Tina Niquelado',         cat: 'Térmico',   catColor: '#ea580c', ico: '🔥', ok: 1 }
+      { key: 'aht', name: 'AHT20',      bus: 'I2C', addr: '0x38',        desc: 'Temp / Humedad',         cat: 'Ambiental', catColor: '#007acc', ico: '', ok: 1 },
+      { key: 'bmp', name: 'BMP280',     bus: 'I2C', addr: '0x76/77',     desc: 'Presión Atmosférica',    cat: 'Ambiental', catColor: '#007acc', ico: '', ok: 1 },
+      { key: 'ads', name: 'ADS1115',    bus: 'I2C', addr: '0x48',        desc: 'ADC pH 16-bit (Canal Dedicado A1)', cat: 'pH / Sondas', catColor: '#a855f7', ico: '', ok: 1 },
+      { key: 'dac', name: 'MCP4725',    bus: 'I2C', addr: '0x60',        desc: 'DAC Corriente VCSS',     cat: 'Potencia',  catColor: '#f59e0b', ico: '', ok: 1 },
+      { key: 'tc0', name: 'MAX6675 #0', bus: 'SPI', addr: 'CS GPIO 5',   desc: 'Tina Limpieza',          cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
+      { key: 'tc1', name: 'MAX6675 #1', bus: 'SPI', addr: 'CS GPIO 4',   desc: 'Tina Decapado',          cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
+      { key: 'tc2', name: 'MAX6675 #2', bus: 'SPI', addr: 'CS GPIO 13',  desc: 'Celda Hull',             cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
+      { key: 'tc3', name: 'MAX6675 #3', bus: 'SPI', addr: 'CS GPIO 14',  desc: 'Tina Niquelado',         cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 }
     ];
 
     function showToast(msg, type){
@@ -817,7 +817,7 @@
       setTimeout(function(){
         buildGrid(hardwareSensors);
         btn.className = 'btn-scan';
-        btn.innerHTML = '<span>&#128752;</span> ESCANEAR SENSORES';
+        btn.innerHTML = '<span></span> ESCANEAR SENSORES';
         btn.disabled = false;
         bar.className = 'scan-progress';
         var now = new Date();

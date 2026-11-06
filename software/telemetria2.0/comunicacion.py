@@ -138,7 +138,7 @@ class ComunicacionMixin:
     def _on_toggle_demo(self):
         self.modo_demo = self.var_demo.get()
         if self.modo_demo:
-            self.lbl_status.config(text="🎮 MODO DEMO", fg="#fbbf24")
+            self.lbl_status.config(text="[SIMULACIÓN] MODO DEMO", fg="#fbbf24")
             self.lbl_csv_info.config(text="Modo Simulación activo: Generando datos sintéticos realistas en telemetria/experimentos/.", fg="#fbbf24")
         else:
             self.demo_forzar_corriente = False
@@ -154,9 +154,9 @@ class ComunicacionMixin:
         self.demo_forzar_corriente = not getattr(self, 'demo_forzar_corriente', False)
         if hasattr(self, 'btn_demo_curr'):
             if self.demo_forzar_corriente:
-                self.btn_demo_curr.config(bg="#22c55e", fg="#0f172a", text="⚡ Corriente ON (1.5A)")
+                self.btn_demo_curr.config(bg="#22c55e", fg="#0f172a", text="Corriente ON (1.5A)")
             else:
-                self.btn_demo_curr.config(bg="#1e293b", fg="#94a3b8", text="⚡ Forzar Corriente")
+                self.btn_demo_curr.config(bg="#1e293b", fg="#94a3b8", text="Forzar Corriente")
 
 
     def _probar_conexion_silenciosa(self):
@@ -173,7 +173,7 @@ class ComunicacionMixin:
                     if hasattr(self, 'destellar_rx'):
                         self.root.after(0, self.destellar_rx)
                     try:
-                        self.root.after(0, lambda: self.lbl_status.config(text="🟢 EN LÍNEA", fg="#34d399"))
+                        self.root.after(0, lambda: self.lbl_status.config(text="[ONLINE] EN LÍNEA", fg="#34d399"))
                     except Exception:
                         pass
                     return
@@ -181,7 +181,7 @@ class ComunicacionMixin:
                 pass
             self.conectado = False
             try:
-                self.root.after(0, lambda: self.lbl_status.config(text="🔴 DESCONECTADO", fg="#ef4444"))
+                self.root.after(0, lambda: self.lbl_status.config(text="[OFFLINE] DESCONECTADO", fg="#ef4444"))
             except Exception:
                 pass
 
@@ -201,7 +201,7 @@ class ComunicacionMixin:
                 self.conectado = True
                 if hasattr(self, 'destellar_rx'):
                     self.destellar_rx()
-                self.lbl_status.config(text="🟢 EN LÍNEA", fg="#34d399")
+                self.lbl_status.config(text="[ONLINE] EN LÍNEA", fg="#34d399")
                 if hasattr(self, 'show_toast'):
                     self.show_toast(f"Conectado a ESP32 ({ip})", tipo="success")
                 else:
@@ -209,10 +209,10 @@ class ComunicacionMixin:
                 return
         except Exception:
             self.conectado = False
-            self.lbl_status.config(text="🔴 DESCONECTADO", fg="#ef4444")
+            self.lbl_status.config(text="[OFFLINE] DESCONECTADO", fg="#ef4444")
             messagebox.showwarning(
                 "Sin Conexión",
-                f"No se pudo conectar a http://{ip}\n\n1. Verifica Wi-Fi 'Uli' (Pass: 12345678).\n2. Si deseas probar sin hardware, activa '🎮 Modo Demo'."
+                f"No se pudo conectar a http://{ip}\n\n1. Verifica Wi-Fi 'Uli' (Pass: 12345678).\n2. Si deseas probar sin hardware, activa 'Modo Demo'."
             )
 
 
@@ -221,7 +221,7 @@ class ComunicacionMixin:
         self._accidente_simulado_pendiente = tipo_accidente
         self._accidente_duracion = 4 if tipo_accidente != "salto_t2" else 1
         if hasattr(self, 'lbl_status'):
-            self.lbl_status.config(text=f"⚠️ TEST: {tipo_accidente.upper()}", fg="#ef4444")
+            self.lbl_status.config(text=f"[TEST]: {tipo_accidente.upper()}", fg="#ef4444")
 
 
     def _generar_datos_simulados(self, t_rel):
@@ -536,7 +536,7 @@ class ComunicacionMixin:
                     if time.time() - getattr(self, '_ultimo_exito_adq', time.time()) > 3.0:
                         self.dato_obsoleto = True
                         if hasattr(self, 'lbl_status'):
-                            self.root.after(0, lambda: self.lbl_status.config(text="⚠️ DATO OBSOLETO (>3s)", fg="#f97316"))
+                            self.root.after(0, lambda: self.lbl_status.config(text="[ALERTA] DATO OBSOLETO (>3s)", fg="#f97316"))
 
                 d_t = d_t or ultimo_d_t
                 d_ph = d_ph or ultimo_d_ph

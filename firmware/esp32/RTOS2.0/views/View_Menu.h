@@ -667,7 +667,7 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
                 badge.className = 'sys-badge';
                 badge.innerHTML = "<span class='dot'></span>Sistema Activo";
                 if(upd){
-                    upd.innerText = '✓ Actualizado ' + timeAgo(diff);
+                    upd.innerText = 'Actualizado ' + timeAgo(diff);
                     upd.style.color = 'var(--text-muted)';
                 }
             }

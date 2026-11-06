@@ -50,7 +50,7 @@ class VentanaPH:
         self.tema = getattr(parent_app, 'tema_actual', cargar_tema_preferido())
         self.app = parent_app
         self.win = tk.Toplevel(self.app.root)
-        self.win.title("🧪 Metrología y Calibración de pH — Canal Dedicado A1 (Telemetría 2.0)")
+        self.win.title(" Metrología y Calibración de pH — Canal Dedicado A1 (Telemetría 2.0)")
         self.win.geometry("1240x860")
         self.win.minsize(1050, 720)
         self.win.configure(bg=self.tema["bg_app"])
@@ -139,7 +139,7 @@ class VentanaPH:
 
         lbl_t = tk.Label(
             hdr,
-            text="🧪 METROLOGÍA & CALIBRACIÓN DE PH — CANAL DEDICADO A1 (RTOS 2.0)",
+            text=" METROLOGÍA & CALIBRACIÓN DE PH — CANAL DEDICADO A1 (RTOS 2.0)",
             font=("Segoe UI", 11, "bold"),
             fg=self.tema["accent_primary"],
             bg=self.tema["bg_panel"]
@@ -160,7 +160,7 @@ class VentanaPH:
 
         self.btn_toggle_sonda = tk.Button(
             hdr,
-            text="🔌 SONDA PH: APAGADA",
+            text=" SONDA PH: APAGADA",
             font=("Segoe UI", 8, "bold"),
             bg="#7f1d1d",
             fg="#fca5a5",
@@ -221,7 +221,7 @@ class VentanaPH:
         f_badge.pack(fill="x", pady=(0, 8))
         lbl_badge = tk.Label(
             f_badge,
-            text="⚡ CANAL DEDICADO A1 — 860 SPS CONTINUOS",
+            text=" CANAL DEDICADO A1 — 860 SPS CONTINUOS",
             font=("Segoe UI", 8, "bold"),
             fg=self.tema["accent_primary"],
             bg="#1e293b"
@@ -293,7 +293,7 @@ class VentanaPH:
         # NUEVO PANEL: Puntos Guardados en Flash NVS por Modo
         self.frame_nvs = tk.LabelFrame(
             panel_ctrl,
-            text=" 💾 Puntos Guardados en Flash NVS ",
+            text="  Puntos Guardados en Flash NVS ",
             font=("Segoe UI", 8, "bold"),
             fg=self.tema["accent_primary"],
             bg=self.tema["bg_panel"],
@@ -367,7 +367,7 @@ class VentanaPH:
 
         self.btn_send_esp = tk.Button(
             f_acts,
-            text="⚡ Sincronizar NVS",
+            text=" Sincronizar NVS",
             font=("Segoe UI", 8, "bold"),
             bg="#059669",
             fg="#fff",
@@ -380,7 +380,7 @@ class VentanaPH:
 
         self.btn_reset_cal = tk.Button(
             f_acts,
-            text="🔄 Restablecer NVS",
+            text=" Restablecer NVS",
             font=("Segoe UI", 8),
             bg="#334155",
             fg="#cbd5e1",
@@ -397,7 +397,7 @@ class VentanaPH:
 
         self.btn_rec_ph = tk.Button(
             panel_ctrl,
-            text="⏺ INICIAR HISTORIAL EXCLUSIVO PH",
+            text=" INICIAR HISTORIAL EXCLUSIVO PH",
             font=("Segoe UI", 8, "bold"),
             bg="#dc2626",
             fg="#fff",
@@ -410,7 +410,7 @@ class VentanaPH:
 
         btn_png = tk.Button(
             panel_ctrl,
-            text="📸 Exportar Certificado PNG (300 DPI)",
+            text=" Exportar Certificado PNG (300 DPI)",
             font=("Segoe UI", 8),
             bg="#1e293b",
             fg="#cbd5e1",
@@ -540,14 +540,14 @@ class VentanaPH:
         if hasattr(self, 'btn_toggle_sonda') and self.btn_toggle_sonda.winfo_exists():
             if self.sonda_encendida:
                 self.btn_toggle_sonda.config(
-                    text="🔌 SONDA PH: ENCENDIDA",
+                    text=" SONDA PH: ENCENDIDA",
                     bg="#059669",
                     activebackground="#10b981",
                     fg="#ffffff"
                 )
             else:
                 self.btn_toggle_sonda.config(
-                    text="🔌 SONDA PH: APAGADA",
+                    text=" SONDA PH: APAGADA",
                     bg="#7f1d1d",
                     activebackground="#991b1b",
                     fg="#fca5a5"
@@ -633,7 +633,7 @@ class VentanaPH:
                 for btn in botones_cal:
                     btn.config(state="disabled")
                 self.lbl_interlock.config(
-                    text=f"⚠️ INTERLOCK: {motivo.upper()} (CALIBRACIÓN BLOQUEADA)",
+                    text=f"ALERTA: INTERLOCK: {motivo.upper()} (CALIBRACIÓN BLOQUEADA)",
                     bg="#7f1d1d",
                     fg="#fca5a5"
                 )
@@ -945,7 +945,7 @@ class VentanaPH:
             messagebox.showwarning(
                 "Sonda en Reposo",
                 "La sonda de pH está apagada.\n\n"
-                "Haz clic primero en el botón '🔌 SONDA PH: APAGADA' del encabezado para iniciar la adquisición del sensor."
+                "Haz clic primero en el botón ' SONDA PH: APAGADA' del encabezado para iniciar la adquisición del sensor."
             )
             return
 
@@ -1125,7 +1125,7 @@ class VentanaPH:
 
         self.grabando_ph = True
         self.muestras_ph_count = 0
-        self.btn_rec_ph.config(text="⏹ DETENER HISTORIAL PH", bg="#ef4444")
+        self.btn_rec_ph.config(text=" DETENER HISTORIAL PH", bg="#ef4444")
         self.lbl_csv_status.config(text=f"Guardando en: {os.path.basename(self.archivo_csv_ph)}", fg="#34d399")
 
 
@@ -1138,7 +1138,7 @@ class VentanaPH:
                 pass
             self.csv_ph_handle = None
 
-        self.btn_rec_ph.config(text="⏺ INICIAR HISTORIAL EXCLUSIVO PH", bg="#dc2626")
+        self.btn_rec_ph.config(text=" INICIAR HISTORIAL EXCLUSIVO PH", bg="#dc2626")
         self.lbl_csv_status.config(text=f"Historial cerrado ({self.muestras_ph_count} muestras guardadas)", fg="#fbbf24")
 
 

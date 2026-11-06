@@ -237,10 +237,10 @@ class GrabacionMixin:
         self.buf_amb_p = []
         self.buf_ets_wave = [0.0] * 16
 
-        self.btn_rec.config(text="⏹ DETENER GRABACIÓN", bg="#dc2626", activebackground="#ef4444")
-        self.lbl_csv_info.config(text=f"💾 Guardando en: experimentos/{os.path.basename(self.carpeta_ensayo_actual)}/", fg="#34d399")
+        self.btn_rec.config(text="DETENER GRABACIÓN", bg="#dc2626", activebackground="#ef4444")
+        self.lbl_csv_info.config(text=f" Guardando en: experimentos/{os.path.basename(self.carpeta_ensayo_actual)}/", fg="#34d399")
         if hasattr(self, 'lbl_incidentes'):
-            self.lbl_incidentes.config(text="⚠️ Incidentes: 0", fg="#22c55e")
+            self.lbl_incidentes.config(text="INCIDENTES: 0", fg="#22c55e")
 
         self.hilo_muestreo = threading.Thread(target=self._bucle_adquisicion, daemon=True)
         self.hilo_muestreo.start()
@@ -293,7 +293,7 @@ class GrabacionMixin:
             color = "#ef4444" if n_anom > 0 else "#22c55e"
             try:
                 self.root.after(0, lambda: self.lbl_incidentes.config(
-                    text=f"⚠️ Incidentes: {n_anom}",
+                    text=f"INCIDENTES: {n_anom}",
                     fg=color
                 ))
             except Exception:
@@ -349,7 +349,7 @@ class GrabacionMixin:
                     f_res.write("========================================================================\n")
                     eventos = getattr(self, 'historia_eventos_fallos', [])
                     if not eventos:
-                        f_res.write("Estado Global: ✅ 100% NOMINAL — 0 incidencias registradas durante el ensayo.\n")
+                        f_res.write("Estado Global: 100% NOMINAL — 0 incidencias registradas durante el ensayo.\n")
                         f_res.write("No se detectaron saltos térmicos EMI, desconexiones de sondas MAX6675,\n")
                         f_res.write("desbalances en etapas shunt VCSS ni pérdidas de enlace con ESP32.\n")
                     else:
@@ -367,7 +367,7 @@ class GrabacionMixin:
                 logger.warning("No se pudo escribir auditoría en resumen_receta.txt: %s", e_aud)
 
         self.btn_rec.config(text="▶ INICIAR GRABACIÓN", bg="#059669", activebackground="#10b981")
-        self.lbl_csv_info.config(text=f"✅ Ensayo cerrado en: {os.path.basename(self.carpeta_ensayo_actual)}/ ({self.muestras_count} muestras)", fg="#fbbf24")
+        self.lbl_csv_info.config(text=f"Ensayo cerrado en: {os.path.basename(self.carpeta_ensayo_actual)}/ ({self.muestras_count} muestras)", fg="#fbbf24")
 
 
     def abrir_carpeta_datos(self):

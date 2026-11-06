@@ -21,7 +21,7 @@ class VentanaFaraday:
         self.tema = getattr(parent_app, 'tema_actual', cargar_tema_preferido())
         self.app = parent_app
         self.win = tk.Toplevel(self.app.root)
-        self.win.title("⚖️ Balanza Gravimétrica y Rendimiento Faradaico — Proceso Bicapa (Zn + Ni)")
+        self.win.title("️ Balanza Gravimétrica y Rendimiento Faradaico — Proceso Bicapa (Zn + Ni)")
         self.win.geometry("1100x780")
         self.win.minsize(960, 660)
         self.win.configure(bg=self.tema["bg_app"])
@@ -83,7 +83,7 @@ class VentanaFaraday:
         
         lbl_b_tit = tk.Label(
             f_banner, 
-            text="🛡️ PROTOCOLO METALÚRGICO (TESIS):", 
+            text="️ PROTOCOLO METALÚRGICO (TESIS):", 
             font=("Segoe UI", 7, "bold"), 
             fg="#a5b4fc", 
             bg="#1e1b4b"
@@ -183,7 +183,7 @@ class VentanaFaraday:
 
         btn_calc = tk.Button(
             f_bal,
-            text="⚖️ Calcular Rendimiento de Corriente Global",
+            text="️ Calcular Rendimiento de Corriente Global",
             font=("Segoe UI", 8, "bold"),
             bg="#2563eb",
             fg="#ffffff",
@@ -213,7 +213,7 @@ class VentanaFaraday:
         # Botón Guardar en Ficha
         btn_guardar = tk.Button(
             col_ctrl,
-            text="💾 Registrar en Ficha del Ensayo (resumen_receta.txt)",
+            text=" Registrar en Ficha del Ensayo (resumen_receta.txt)",
             font=("Segoe UI", 8, "bold"),
             bg="#059669",
             fg="#ffffff",
@@ -232,7 +232,7 @@ class VentanaFaraday:
 
         btn_cargar_csv = tk.Button(
             f_btns,
-            text="📂 Cargar CSV Ensayo",
+            text=" Cargar CSV Ensayo",
             font=("Segoe UI", 7, "bold"),
             bg="#334155",
             fg="#f8fafc",
@@ -246,7 +246,7 @@ class VentanaFaraday:
 
         btn_graficas = tk.Button(
             f_btns,
-            text="📊 Exportar 8 Figuras HD",
+            text=" Exportar 8 Figuras HD",
             font=("Segoe UI", 7, "bold"),
             bg="#7c3aed",
             fg="#ffffff",
@@ -287,7 +287,7 @@ class VentanaFaraday:
         f = tk.Frame(parent, bg="#1e293b", pady=2)
         f.pack(fill="x")
         tk.Label(f, text=titulo, font=("Segoe UI", 7, "bold"), fg="#94a3b8", bg="#1e293b").pack(side="left")
-        lbl_v = tk.Label(f, text=val_def, font=("Segoe UI", 8 if not big else 10, "bold"), fg=color, bg="#1e293b")
+        lbl_v = tk.Label(f, text=val_def, font=("Consolas", 10 if not big else 13, "bold"), fg=color, bg="#1e293b")
         lbl_v.pack(side="right")
         return lbl_v
 
@@ -501,12 +501,12 @@ class VentanaFaraday:
                 with open(f_path, "a", encoding="utf-8") as f:
                     f.write(texto_guardar)
                 self.lbl_faraday_status.config(
-                    text=f"✅ Datos guardados con éxito en resumen_receta.txt ({datetime.now().strftime('%H:%M:%S')})",
+                    text=f"Datos guardados con éxito en resumen_receta.txt ({datetime.now().strftime('%H:%M:%S')})",
                     fg="#34d399"
                 )
-                messagebox.showinfo("Registro Exitoso", f"✅ Análisis Gravimétrico guardado con éxito en:\n{f_path}")
+                messagebox.showinfo("Registro Exitoso", f"Análisis Gravimétrico guardado con éxito en:\n{f_path}")
             except Exception as e:
-                self.lbl_faraday_status.config(text=f"🔴 Error al guardar: {e}", fg="#ef4444")
+                self.lbl_faraday_status.config(text=f"[FALLA] Error al guardar: {e}", fg="#ef4444")
         else:
             messagebox.showinfo("Cálculo Realizado", "Cálculo completado correctamente. (Para guardar en disco inicie una grabación de ensayo).")
 
@@ -611,7 +611,7 @@ class VentanaFaraday:
 
                 self._recalcular()
                 self.lbl_faraday_status.config(
-                    text=f"📂 CSV cargado: {os.path.basename(ruta)} (Q_Zn={q_zn:.1f} C, Q_Ni={q_ni:.1f} C, Total={q_tot:.1f} C)",
+                    text=f" CSV cargado: {os.path.basename(ruta)} (Q_Zn={q_zn:.1f} C, Q_Ni={q_ni:.1f} C, Total={q_tot:.1f} C)",
                     fg=self.tema["accent_primary"]
                 )
                 messagebox.showinfo(

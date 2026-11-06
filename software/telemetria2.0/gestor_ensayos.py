@@ -201,21 +201,21 @@ class GestorEnsayosMixin:
         c_ronda = "#1e3a8a" if is_day else "#38bdf8"
         c_cond = "#047857" if is_day else "#34d399"
         c_niq = "#6d28d9" if is_day else "#a78bfa"
-        self.lbl_badge_ronda.config(text=f"🏷️ {p['ronda']} — Placa #{p['num']:02d}", fg=c_ronda)
-        self.lbl_badge_cond.config(text=f"🧪 pH Ref: {p['ph']}  |  🌡️ Zincado: {p['temp_zin']} °C ({p['tiem_zin_s']}s)", fg=c_cond)
+        self.lbl_badge_ronda.config(text=f"️ {p['ronda']} — Placa #{p['num']:02d}", fg=c_ronda)
+        self.lbl_badge_cond.config(text=f" pH Ref: {p['ph']}  |  ️ Zincado: {p['temp_zin']} °C ({p['tiem_zin_s']}s)", fg=c_cond)
 
         if p["pulsado"] == 1:
             f_txt = p.get("freq", 10)
             d_txt = p.get("duty", 20)
             a_txt = p.get("amp_zin", 1.50)
             c_zin = "#be185d" if is_day else "#f472b6"
-            self.lbl_badge_zin.config(text=f"⚡ Zincado: PULSADO {a_txt:.2f} A @ {f_txt}Hz ({d_txt}% Duty)", fg=c_zin)
+            self.lbl_badge_zin.config(text=f" Zincado: PULSADO {a_txt:.2f} A @ {f_txt}Hz ({d_txt}% Duty)", fg=c_zin)
         else:
             a_txt = p.get("amp_zin", 1.50)
             c_zin = "#047857" if is_day else "#34d399"
-            self.lbl_badge_zin.config(text=f"⚡ Zincado: DC CONTINUO {a_txt:.2f} A", fg=c_zin)
+            self.lbl_badge_zin.config(text=f" Zincado: DC CONTINUO {a_txt:.2f} A", fg=c_zin)
 
-        self.lbl_badge_niq.config(text="⚡ Níquel: DC CONTINUO 1.13 A (600s / 10 min)", fg=c_niq)
+        self.lbl_badge_niq.config(text=" Níquel: DC CONTINUO 1.13 A (600s / 10 min)", fg=c_niq)
 
         self.lbl_e1.config(text=f"Limpieza (T1): {p['limpieza_s']}s @ 85°C | 0.00A")
         self.lbl_e2.config(text=f"Decapado (T2): {p['matizado_s']}s @ 85°C | 0.00A")
@@ -261,7 +261,7 @@ class GestorEnsayosMixin:
             self.btn_stage_prev.config(state="normal" if self.etapa_activa_idx > 0 else "disabled")
 
         if hasattr(self, 'lbl_hw_sync_status'):
-            self.lbl_hw_sync_status.config(text=f"📡 SPs listos: {curr:.2f}A ({modo}) | T{self.etapa_activa_idx+1}:{sp_t:.0f}°C", fg="#94a3b8")
+            self.lbl_hw_sync_status.config(text=f" SPs listos: {curr:.2f}A ({modo}) | T{self.etapa_activa_idx+1}:{sp_t:.0f}°C", fg="#94a3b8")
 
         is_day = (getattr(self, 'tema_actual', {}).get('nombre') == 'dia')
         c_act = "#1d4ed8" if is_day else "#38bdf8"
@@ -299,9 +299,9 @@ class GestorEnsayosMixin:
             if hasattr(self, 'marcadores_etapas'):
                 self.marcadores_etapas.append((t_now, f"E{self.etapa_activa_idx+1}: {nom_etapa}"))
 
-            self.btn_stage_toggle.config(text="⏸ Pausar", bg="#b45309" if (getattr(self, "tema_actual", {}).get("nombre") == "dia") else "#d97706", activebackground="#f59e0b")
+            self.btn_stage_toggle.config(text="Pausar", bg="#b45309" if (getattr(self, "tema_actual", {}).get("nombre") == "dia") else "#d97706", activebackground="#f59e0b")
             self.lbl_timer_big.config(fg="#34d399")
-            self.lbl_aviso_etapa.config(text="⏳ Etapa en progreso...", fg="#34d399")
+            self.lbl_aviso_etapa.config(text=" Etapa en progreso...", fg="#34d399")
             
             # Suministro de corriente y sincronización garantizada al iniciar
             self.enviar_setpoints_esp32(feedback_usuario=False)
@@ -320,13 +320,13 @@ class GestorEnsayosMixin:
                 self.t_inicio_etapa_real = None
             self.btn_stage_toggle.config(text="▶ Reanudar", bg="#059669", activebackground="#10b981")
             self.lbl_timer_big.config(fg="#fbbf24")
-            self.lbl_aviso_etapa.config(text="⏸ Etapa en pausa (Fuente VCSS apagada y relé abierto).", fg="#fbbf24")
+            self.lbl_aviso_etapa.config(text=" Etapa en pausa (Fuente VCSS apagada y relé abierto).", fg="#fbbf24")
             # Corte inmediato de corriente por seguridad al pausar
             self.apagar_fuente_esp32()
             if hasattr(self, 'sonar_beep'):
                 self.sonar_beep(450, 120)
             if hasattr(self, 'show_toast'):
-                self.show_toast("⏸ Etapa en pausa — Relé abierto", tipo="warning")
+                self.show_toast(" Etapa en pausa — Relé abierto", tipo="warning")
 
 
     def avanzar_siguiente_etapa(self):
@@ -349,15 +349,15 @@ class GestorEnsayosMixin:
             reproducir_alarma_sonora("fin_ensayo")
             p_num = self.placa_activa.get("num", 1) if self.placa_activa else 1
             self.lbl_aviso_etapa.config(
-                text=f"🏆 ¡ENSAYO FINALIZADO! Enjuague/seque la probeta y registre en '⚖️ Faraday / Balanza'.",
+                text=f" ¡ENSAYO FINALIZADO! Enjuague/seque la probeta y registre en '️ Faraday / Balanza'.",
                 fg="#34d399"
             )
             messagebox.showinfo(
                 "Ensayo Finalizado",
-                f"✅ ¡Ensayo de la Placa #{p_num:02d} completado con éxito!\n\n"
+                f"¡Ensayo de la Placa #{p_num:02d} completado con éxito!\n\n"
                 f"• La fuente VCSS está apagada y la celda aislada con relé ZCS.\n"
                 f"• Retire la probeta, enjuáguela con agua destilada y séquela.\n"
-                f"• Cuando esté seca y pesada, ingrese los valores en '⚖️ Faraday / Balanza'."
+                f"• Cuando esté seca y pesada, ingrese los valores en '️ Faraday / Balanza'."
             )
 
 
@@ -384,7 +384,7 @@ class GestorEnsayosMixin:
         """
         if getattr(self, 'modo_demo', False):
             if hasattr(self, 'lbl_hw_sync_status'):
-                self.lbl_hw_sync_status.config(text="🎮 Modo Demo: Fuente VCSS apagada (Relé abierto)", fg="#94a3b8")
+                self.lbl_hw_sync_status.config(text=" Modo Demo: Fuente VCSS apagada (Relé abierto)", fg="#94a3b8")
             return
 
         ip = self.entry_ip.get().strip() if hasattr(self, 'entry_ip') else "192.168.4.1"
@@ -403,17 +403,17 @@ class GestorEnsayosMixin:
 
                 if hasattr(self, 'lbl_hw_sync_status'):
                     self.root.after(0, lambda: self.lbl_hw_sync_status.config(
-                        text="⚡ Fuente VCSS APAGADA (Relé Abierto)", fg="#38bdf8"
+                        text=" Fuente VCSS APAGADA (Relé Abierto)", fg="#38bdf8"
                     ))
                 if feedback_usuario:
                     self.root.after(0, lambda: messagebox.showinfo(
                         "Seguridad Eléctrica",
-                        f"✅ Fuente VCSS apagada y relé abierto con éxito en el ESP32 ({ip})."
+                        f"Fuente VCSS apagada y relé abierto con éxito en el ESP32 ({ip})."
                     ))
             except Exception as e:
                 if hasattr(self, 'lbl_hw_sync_status'):
                     self.root.after(0, lambda: self.lbl_hw_sync_status.config(
-                        text=f"⚠️ Error corte fuente: {str(e)[:22]}", fg="#ef4444"
+                        text=f"ALERTA: Error corte fuente: {str(e)[:22]}", fg="#ef4444"
                     ))
 
         threading.Thread(target=_cut_thread, daemon=True).start()
@@ -441,7 +441,7 @@ class GestorEnsayosMixin:
         desc_rele = "RELÉ CERRADO (CORRIENTE ON)" if run_val == 1 else "RELÉ ABIERTO (EN REPOSO)"
 
         if self.modo_demo:
-            txt_demo = f"🎮 Modo Demo: SPs listos ({curr_sp:.2f}A {modo_corr} [{desc_rele}] | T{self.etapa_activa_idx+1}:{sp_t:.0f}°C)"
+            txt_demo = f" Modo Demo: SPs listos ({curr_sp:.2f}A {modo_corr} [{desc_rele}] | T{self.etapa_activa_idx+1}:{sp_t:.0f}°C)"
             if hasattr(self, 'lbl_hw_sync_status'):
                 self.lbl_hw_sync_status.config(text=txt_demo, fg="#fbbf24")
             if feedback_usuario:
@@ -453,7 +453,7 @@ class GestorEnsayosMixin:
         def _sync_thread():
             try:
                 if hasattr(self, 'lbl_hw_sync_status'):
-                    self.root.after(0, lambda: self.lbl_hw_sync_status.config(text="⏳ Enviando parámetros a ESP32...", fg="#38bdf8"))
+                    self.root.after(0, lambda: self.lbl_hw_sync_status.config(text=" Enviando parámetros a ESP32...", fg="#38bdf8"))
                 if hasattr(self, 'destellar_tx'):
                     self.root.after(0, self.destellar_tx)
                 base_url = f"http://{ip}"
@@ -493,17 +493,17 @@ class GestorEnsayosMixin:
                 session.get(f"{base_url}/set_t?id={canal_id}&v={sp_t:.1f}", timeout=1.5)
 
                 if run_val == 1:
-                    txt_ok = f"⚡ ENERGIZADO: {curr_sp:.2f}A ({modo_corr}) | T{canal_id+1}:{sp_t:.0f}°C"
+                    txt_ok = f" ENERGIZADO: {curr_sp:.2f}A ({modo_corr}) | T{canal_id+1}:{sp_t:.0f}°C"
                     color_ok = "#34d399"
                 else:
-                    txt_ok = f"🟢 ESP32 LISTO (Relé en Reposo): {curr_sp:.2f}A ({modo_corr}) | T{canal_id+1}:{sp_t:.0f}°C"
+                    txt_ok = f" ESP32 LISTO (Relé en Reposo): {curr_sp:.2f}A ({modo_corr}) | T{canal_id+1}:{sp_t:.0f}°C"
                     color_ok = "#38bdf8"
 
                 if hasattr(self, 'lbl_hw_sync_status'):
                     self.root.after(0, lambda: self.lbl_hw_sync_status.config(text=txt_ok, fg=color_ok))
                 if feedback_usuario:
                     msg = (
-                        f"✅ Parámetros cargados en el ESP32 ({ip}):\n\n"
+                        f"Parámetros cargados en el ESP32 ({ip}):\n\n"
                         f"• Etapa {self.etapa_activa_idx + 1}/4: {nombre}\n"
                         f"• Consigna Corriente: {curr_sp:.2f} A ({modo_corr})\n"
                         f"• Estado Relé VCSS: {desc_rele}\n"
@@ -512,7 +512,7 @@ class GestorEnsayosMixin:
                     )
                     self.root.after(0, lambda: messagebox.showinfo("Sincronización Exitosa", msg))
             except Exception as e:
-                txt_err = f"🔴 Error ESP32: {str(e)[:28]}"
+                txt_err = f" Error ESP32: {str(e)[:28]}"
                 if hasattr(self, 'lbl_hw_sync_status'):
                     self.root.after(0, lambda: self.lbl_hw_sync_status.config(text=txt_err, fg="#ef4444"))
                 if feedback_usuario:
@@ -561,19 +561,19 @@ class GestorEnsayosMixin:
                         # Finalización de la Etapa 4: Niquelado Watts (Fin de la Receta Bicapa)
                         reproducir_alarma_sonora("fin_ensayo")
                         self.lbl_aviso_etapa.config(
-                            text=f"🏆 ¡BICAPA FINALIZADA! Enjuague, seque la probeta y registre el Peso Final en '⚖️ Faraday'.",
+                            text=f" ¡BICAPA FINALIZADA! Enjuague, seque la probeta y registre el Peso Final en '️ Faraday'.",
                             fg="#34d399"
                         )
                     elif self.etapa_activa_idx == 2:
                         reproducir_alarma_sonora("fin_etapa")
                         self.lbl_aviso_etapa.config(
-                            text=f"🔔 ¡ZINCADO FINALIZADO! Enjuague rápido con agua DI (NO secar ni pesar). Pase a Tina 4.",
+                            text=f" ¡ZINCADO FINALIZADO! Enjuague rápido con agua DI (NO secar ni pesar). Pase a Tina 4.",
                             fg="#fbbf24"
                         )
                     else:
                         reproducir_alarma_sonora("fin_etapa")
                         self.lbl_aviso_etapa.config(
-                            text=f"🔔 ¡{nom_etapa} FINALIZADA! Cambie de tina y presione 'Siguiente'.",
+                            text=f" ¡{nom_etapa} FINALIZADA! Cambie de tina y presione 'Siguiente'.",
                             fg="#fbbf24"
                         )
 
@@ -590,7 +590,7 @@ class GestorEnsayosMixin:
         )
         if ruta and os.path.exists(ruta):
             self._cargar_datos_excel(ruta)
-            self.lbl_xl_info.config(text=f"📁 {len(self.lista_placas)} placas ({os.path.basename(ruta)[:18]}...)")
+            self.lbl_xl_info.config(text=f" {len(self.lista_placas)} placas ({os.path.basename(ruta)[:18]}...)")
             self._actualizar_lista_combo()
             messagebox.showinfo("Excel Cargado", f"Se cargaron correctamente {len(self.lista_placas)} placas desde:\n{ruta}")
 

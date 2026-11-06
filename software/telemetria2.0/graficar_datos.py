@@ -1405,7 +1405,7 @@ def main(csv_input=None):
     print(f">> [6/8] Diagrama Gantt y Tiempos Muertos guardado: {out_fig6}")
     print(f">> [7/8] Histórico Meteorológico de Cabina guardado: {out_fig7}")
     print(f">> [8/8] Metrología VCSS y Reconstrucción ETS guardada: {out_fig8}")
-    print(f">> ✅ La suite completa de 8 figuras científicas generada con éxito (300 DPI) en: {carpeta_graficas}")
+    print(f">> La suite completa de 8 figuras científicas generada con éxito (300 DPI) en: {carpeta_graficas}")
 
 
 generar_todas_las_graficas = main
