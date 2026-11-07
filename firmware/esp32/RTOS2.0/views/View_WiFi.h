@@ -478,7 +478,7 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
         <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute; Principal</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>Modo D&iacute;a</span></button></div>
         <div style='text-align:right;'>
             <div class='hdr-title'>Red Wi-Fi SoftAP</div>
-            <span class='hdr-sub'>ESP32-S3 FreeRTOS RTOS 2.0</span>
+            <span class='hdr-sub'>CONFIGURACIÓN DE RED LOCAL</span>
         </div>
     </div>
 

@@ -568,7 +568,7 @@
       <a href='index.html' class='nav-back'>&larr; Men&uacute;</a>
       <div>
         <div class='hdr-title'>Diagn&oacute;stico de Sensores</div>
-        <span class='hdr-sub'>I2C &middot; SPI &middot; 8 PERIF&Eacute;RICOS EN PLANTA &middot; RTOS 2.0</span>
+        <span class='hdr-sub'>SUPERVISIÓN DE PERIFÉRICOS</span>
       </div>
       <div class='hdr-hb'>
         <span class='hb-dot' id='hb-dot'></span>
@@ -593,9 +593,9 @@
     <div class='filter-bar'>
       <span>SUBSISTEMAS:</span>
       <span class='filter-pill'><span class='cat-dot' style='background:#007acc'></span> Ambiental (I2C)</span>
-      <span class='filter-pill'><span class='cat-dot' style='background:#a855f7'></span> pH / ADS1115 (I2C)</span>
-      <span class='filter-pill'><span class='cat-dot' style='background:#f59e0b'></span> Potencia / MCP4725 (I2C)</span>
-      <span class='filter-pill'><span class='cat-dot' style='background:#ea580c'></span> Térmico / MAX6675 (SPI)</span>
+      <span class='filter-pill'><span class='cat-dot' style='background:#a855f7'></span> Sensor de pH</span>
+      <span class='filter-pill'><span class='cat-dot' style='background:#f59e0b'></span> Potencia VCSS</span>
+      <span class='filter-pill'><span class='cat-dot' style='background:#ea580c'></span> Termopares de Tinas</span>
     </div>
 
     <div class='grid' id='grid'></div>
@@ -752,10 +752,10 @@
       { key: 'bmp', name: 'BMP280',     bus: 'I2C', addr: '0x76/77',     desc: 'Presión Atmosférica',    cat: 'Ambiental', catColor: '#007acc', ico: '', ok: 1 },
       { key: 'ads', name: 'ADS1115',    bus: 'I2C', addr: '0x48',        desc: 'ADC pH 16-bit (Canal Dedicado A1)', cat: 'pH / Sondas', catColor: '#a855f7', ico: '', ok: 1 },
       { key: 'dac', name: 'MCP4725',    bus: 'I2C', addr: '0x60',        desc: 'DAC Corriente VCSS',     cat: 'Potencia',  catColor: '#f59e0b', ico: '', ok: 1 },
-      { key: 'tc0', name: 'MAX6675 #0', bus: 'SPI', addr: 'CS GPIO 5',   desc: 'Tina Limpieza',          cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
-      { key: 'tc1', name: 'MAX6675 #1', bus: 'SPI', addr: 'CS GPIO 4',   desc: 'Tina Decapado',          cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
-      { key: 'tc2', name: 'MAX6675 #2', bus: 'SPI', addr: 'CS GPIO 13',  desc: 'Celda Hull',             cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
-      { key: 'tc3', name: 'MAX6675 #3', bus: 'SPI', addr: 'CS GPIO 14',  desc: 'Tina Niquelado',         cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 }
+      { key: 'tc0', name: 'MAX6675 #0', bus: 'SPI', addr: 'Canal 1',   desc: 'Tina Limpieza',          cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
+      { key: 'tc1', name: 'MAX6675 #1', bus: 'SPI', addr: 'Canal 2',   desc: 'Tina Decapado',          cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
+      { key: 'tc2', name: 'MAX6675 #2', bus: 'SPI', addr: 'Canal 3',  desc: 'Celda Hull',             cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 },
+      { key: 'tc3', name: 'MAX6675 #3', bus: 'SPI', addr: 'Canal 4',  desc: 'Tina Niquelado',         cat: 'Térmico',   catColor: '#ea580c', ico: '', ok: 1 }
     ];
 
     function showToast(msg, type){

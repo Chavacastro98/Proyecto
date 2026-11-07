@@ -703,7 +703,7 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
             <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute;</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>Modo D&iacute;a</span></button></div>
             <div style='text-align:center'>
                 <span class='hdr-title'>Salida de Corriente</span>
-                <span class='hdr-sub'>CONTROL VCSS &middot; SHUNT DUAL &middot; RTOS 2.0</span>
+                <span class='hdr-sub'>CONTROL DE CORRIENTE VCSS</span>
             </div>
             <div class='hdr-hb'><span class='hb-dot' id='hb-dot'></span><span id='hb-txt'>...</span></div>
         </div>

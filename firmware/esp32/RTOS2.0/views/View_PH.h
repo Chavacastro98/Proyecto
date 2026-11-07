@@ -1043,7 +1043,7 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
 
     <div class='card'>
         <div class='card-t'>
-            <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH &middot; Canal Dedicado A1</span></div>
+            <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH</span></div>
             <span class='card-slope-badge mono' id='sl-lbl'>Salud Sonda: 98.6%</span>
         </div>
         
@@ -1051,8 +1051,8 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
         <div class='ph-wrap'>
             <div class='ph-hud' id='ph-hud'>
                 <div class='ph-hud-top'>
-                    <span class='ph-hud-pill'>ADS1115 CANAL A1 &middot; 16-BIT</span>
-                    <span class='ph-hud-rate'><span class='pulse-dot'></span>860 SPS CONTINUO</span>
+                    <span class='ph-hud-pill'>CANAL DE MEDICIÓN</span>
+                    <span class='ph-hud-rate'><span class='pulse-dot'></span>MUESTREO EN VIVO</span>
                 </div>
 
                 <div class='ph-main-readout'>
@@ -1201,7 +1201,7 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
             
             <div class='off-single-wrap'>
                 <div style='font-size:0.75em;color:var(--text-muted);font-weight:700;margin-bottom:8px;font-family:Consolas,monospace;'>
-                    PLACA PH-4502C: CANAL DEDICADO (ADS1115 A1)
+                    CALIBRACIÓN DE REFERENCIA (pH 7.00)
                 </div>
                 <div style='padding:4px 0;'>
                     <span class='vm-val' id='raw-v'>1.765</span><span class='vm-unit'>V</span>
@@ -1229,7 +1229,7 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
 <div class='modal-backdrop' id='cal-modal'>
     <div class='modal-box'>
         <div class='modal-title' id='cal-m-title'>Calibrando pH 7.0</div>
-        <div class='modal-subtitle'>Canal A1 Dedicado &middot; RTOS 2.0</div>
+        <div class='modal-subtitle'>Calibración de Sonda</div>
         
         <div class='buffer-warning-box'>
             <b>&#9888; ATENCI&Oacute;N METROL&Oacute;GICA:</b>
@@ -1245,7 +1245,7 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
             <div class='modal-prog-fill' id='cal-prog'></div>
         </div>
 
-        <div class='modal-status-txt' id='cal-m-status'>Adquiriendo 25 muestras continuas en Canal A1 y evaluando estabilidad...</div>
+        <div class='modal-status-txt' id='cal-m-status'>Adquiriendo 25 muestras continuas y evaluando estabilidad...</div>
     </div>
 </div>
 
@@ -1517,7 +1517,7 @@ function iniciarCalibracion(p){
     calEnProceso = true;
     var modal = document.getElementById('cal-modal');
     document.getElementById('cal-m-title').innerText = 'Calibrando ' + nombreBuf;
-    document.getElementById('cal-m-status').innerText = 'Adquiriendo 25 muestras continuas en Canal A1 y evaluando estabilidad...';
+    document.getElementById('cal-m-status').innerText = 'Adquiriendo 25 muestras continuas y evaluando estabilidad...';
     
     var timerEl = document.getElementById('cal-timer');
     var progEl = document.getElementById('cal-prog');
@@ -1565,7 +1565,7 @@ function iniciarCalibracion(p){
 }
 
 function resetCalibracion(){
-    if(!confirm('¿Restablecer calibración a VALORES DE FÁBRICA para el Sensor Dedicado?\n\nEsto borrará los puntos de pH 4, 7 y 10 guardados en la Flash NVS y regresará al modelo teórico predeterminado.')) return;
+    if(!confirm('¿Restablecer calibración a VALORES DE FÁBRICA para la sonda?\n\nEsto borrará los puntos de pH 4, 7 y 10 guardados en la Flash NVS y regresará al modelo teórico predeterminado.')) return;
 
     fetch('/reset_cal_ph')
         .then(function(r){ return r.json(); })

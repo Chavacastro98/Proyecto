@@ -3,7 +3,7 @@
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>M&oacute;dulo pH Dedicado &middot; FreeRTOS 2.0 (Engineering Instrument)</title>
+    <title>M&oacute;dulo de pH &middot; ELECTRODO-32</title>
     <style>
         /* ==========================================================================
            VARIABLES DE TEMA: VS Dark (Predeterminado) & COMSOL Light (Día)
@@ -991,10 +991,10 @@
 
     <!-- Header / Toolbar de Instrumentación -->
     <div class='hdr'>
-        <a href='index.html' class='nav-back'>&larr; Men&uacute; RTOS 2.0</a>
+        <a href='index.html' class='nav-back'>&larr; Men&uacute; Principal</a>
         <div style='text-align:center'>
             <span class='hdr-title'>M&oacute;dulo de pH Metrol&oacute;gico</span>
-            <span class='hdr-sub'>ADS1115 &middot; CANAL A1 DEDICADO &middot; RTOS 2.0</span>
+            <span class='hdr-sub'>MONITOREO DE ELECTROLITO</span>
         </div>
         <div class='hdr-right'>
             <div class='hdr-hb'><span class='hb-dot' id='hb-dot'></span><span id='hb-txt'>OK (SIMULADO)</span></div>
@@ -1008,7 +1008,7 @@
     <!-- Tarjeta Principal del Sensor Dedicado (Canal A1) -->
     <div class='card'>
         <div class='card-t'>
-            <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH &middot; Canal Dedicado A1</span></div>
+            <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH</span></div>
             <span class='card-slope-badge mono' id='sl-lbl'>Salud Sonda: 98.6%</span>
         </div>
         
@@ -1016,8 +1016,8 @@
         <div class='ph-wrap'>
             <div class='ph-hud' id='ph-hud'>
                 <div class='ph-hud-top'>
-                    <span class='ph-hud-pill'>ADS1115 CANAL A1 &middot; 16-BIT</span>
-                    <span class='ph-hud-rate'><span class='pulse-dot'></span>860 SPS CONTINUO</span>
+                    <span class='ph-hud-pill'>CANAL DE MEDICIÓN</span>
+                    <span class='ph-hud-rate'><span class='pulse-dot'></span>MUESTREO EN VIVO</span>
                 </div>
 
                 <div class='ph-main-readout'>
@@ -1166,7 +1166,7 @@
             
             <div class='off-single-wrap'>
                 <div style='font-size:0.75em;color:var(--text-muted);font-weight:700;margin-bottom:8px;font-family:Consolas,monospace;'>
-                    PLACA PH-4502C: CANAL DEDICADO (ADS1115 A1)
+                    CALIBRACIÓN DE REFERENCIA (pH 7.00)
                 </div>
                 <div style='padding:4px 0;'>
                     <span class='vm-val' id='raw-v'>1.765</span><span class='vm-unit'>V</span>
@@ -1194,7 +1194,7 @@
 <div class='modal-backdrop' id='cal-modal'>
     <div class='modal-box'>
         <div class='modal-title' id='cal-m-title'>Calibrando pH 7.0</div>
-        <div class='modal-subtitle'>Canal A1 Dedicado &middot; RTOS 2.0</div>
+        <div class='modal-subtitle'>Calibración de Sonda</div>
         
         <div class='buffer-warning-box'>
             <b>&#9888; ATENCI&Oacute;N METROL&Oacute;GICA:</b>
@@ -1210,7 +1210,7 @@
             <div class='modal-prog-fill' id='cal-prog'></div>
         </div>
 
-        <div class='modal-status-txt' id='cal-m-status'>Adquiriendo 25 muestras continuas en Canal A1 y evaluando estabilidad...</div>
+        <div class='modal-status-txt' id='cal-m-status'>Adquiriendo 25 muestras continuas y evaluando estabilidad...</div>
     </div>
 </div>
 
@@ -1292,7 +1292,7 @@ function togglePH(){
         val.className = 'ph-val';
         if(cur) cur.className = 'ph-cursor';
         if(track) track.className = 'ph-spectrum-track';
-        showToast('Módulo pH ACTIVADO (Canal A1 Dedicado)', 'ok');
+        showToast('Módulo pH ACTIVADO', 'ok');
     }
 }
 
@@ -1369,7 +1369,7 @@ function iniciarCalibracion(p){
 }
 
 function resetCalibracion(){
-    if(!confirm('¿Restablecer calibración a VALORES DE FÁBRICA para el Sensor Dedicado?\n\nEsto borrará los puntos guardados en la Flash NVS y regresará al modelo teórico predeterminado.')) return;
+    if(!confirm('¿Restablecer calibración a VALORES DE FÁBRICA para la sonda?\n\nEsto borrará los puntos guardados en la Flash NVS y regresará al modelo teórico predeterminado.')) return;
 
     setMode(0);
     document.getElementById('nvs-v7').innerText = '1.765 V';

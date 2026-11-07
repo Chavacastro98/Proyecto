@@ -687,7 +687,7 @@
             <a href='index.html' class='nav-back'>&larr; Men&uacute;</a>
             <div>
                 <div class='hdr-title'>Salida de Corriente</div>
-                <span class='hdr-sub'>Control VCSS &middot; DAC MCP4725 (12-Bit) &middot; RTOS 2.0</span>
+                <span class='hdr-sub'>CONTROL DE CORRIENTE CONTINUA</span>
             </div>
             <div class='hdr-hb'>
                 <span class='hb-dot' id='hb-dot'></span>
@@ -705,7 +705,7 @@
             </div>
 
             <div class='meter-box'>
-                <div class='meter-sub'>Corriente Entregada (Sensada ADS1115)</div>
+                <div class='meter-sub'>Corriente Entregada</div>
                 <div class='amp-box' id='amp-val'>0.00 <span>A</span></div>
                 
                 <div class='vu-wrap'>
@@ -725,7 +725,7 @@
                 <div class='meter-meta'>
                     <span>Consigna: <b id='amp-calc'>0.00</b> A</span>
                     <span>Modo: <b id='txt-modo'>DC</b></span>
-                    <span>DAC MCP4725: <b id='amp-bits'>0</b> / 4095 bits</span>
+                    <span>Nivel DAC: <b id='amp-bits'>0</b> / 4095</span>
                 </div>
             </div>
 
@@ -737,7 +737,7 @@
             <div class='ctrl-group'>
                 <label>
                     <span>Consigna de Corriente: <b id='amp-calc2'>0.00</b> A</span>
-                    <span style='color:var(--text-muted);'>0 - 6.60 A (DAC MCP4725 12-Bit)</span>
+                    <span style='color:var(--text-muted);'>0.00 - 4.50 A</span>
                 </label>
                 <input type='range' id='slide-amp' min='0' max='4095' value='0' oninput='onAmpChange(this.value)'>
                 <div class='preset-wrap'>
@@ -783,7 +783,7 @@
 
             <div class='vcss-panel'>
                 <div class='vcss-hdr'>
-                    <span>ESTADO DEL SUMIDERO VCSS &middot; ADS1115</span>
+                    <span>ESTADO DEL SUMIDERO DE CORRIENTE</span>
                     <div class='vcss-badges'>
                         <span class='vcss-badge off' id='rele-badge'>RELÉ +12V: AISLADO (0V)</span>
                         <span class='vcss-badge' id='comp-badge'>CONTROL AUTOMÁTICO: ACTIVO</span>

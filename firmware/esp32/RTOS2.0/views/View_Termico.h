@@ -579,7 +579,7 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
             <a href='index.html' class='nav-back'>&larr; Men&uacute;</a>
             <div>
                 <div class='hdr-title'>Control T&eacute;rmico</div>
-                <span class='hdr-sub'>4 Canales PI &middot; Termopares MAX6675 &middot; RTOS 2.0</span>
+                <span class='hdr-sub'>REGULACIÓN TÉRMICA EN 4 TINAS</span>
             </div>
             <div class='hdr-hb'>
                 <span class='hb-dot' id='hb-dot'></span>

@@ -587,7 +587,7 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
       <a href='index.html' class='nav-back'>&larr; Men&uacute;</a>
       <div>
         <div class='hdr-title'>Diagn&oacute;stico de Sensores</div>
-        <span class='hdr-sub'>I2C &middot; SPI &middot; 8 PERIF&Eacute;RICOS EN PLANTA &middot; RTOS 2.0</span>
+        <span class='hdr-sub'>SUPERVISIÓN DE PERIFÉRICOS</span>
       </div>
       <div class='hdr-hb'>
         <span class='hb-dot' id='hb-dot'></span>
@@ -612,9 +612,9 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
     <div class='filter-bar'>
       <span>SUBSISTEMAS:</span>
       <span class='filter-pill'><span class='cat-dot' style='background:#007acc'></span> Ambiental (I2C)</span>
-      <span class='filter-pill'><span class='cat-dot' style='background:#a855f7'></span> pH / ADS1115 (I2C)</span>
-      <span class='filter-pill'><span class='cat-dot' style='background:#f59e0b'></span> Potencia / MCP4725 (I2C)</span>
-      <span class='filter-pill'><span class='cat-dot' style='background:#ea580c'></span> Térmico / MAX6675 (SPI)</span>
+      <span class='filter-pill'><span class='cat-dot' style='background:#a855f7'></span> Sensor de pH</span>
+      <span class='filter-pill'><span class='cat-dot' style='background:#f59e0b'></span> Potencia VCSS</span>
+      <span class='filter-pill'><span class='cat-dot' style='background:#ea580c'></span> Termopares de Tinas</span>
     </div>
 
     <div class='grid' id='grid'></div>
@@ -746,10 +746,10 @@ var sensores=[
   {key:'bmp', name:'BMP280', bus:'I2C', addr:'0x76/77', desc:'Presión Atm.', cat:'Ambiental', color:'#06b6d4'},
   {key:'ads', name:'ADS1115', bus:'I2C', addr:'0x48', desc:'ADC pH 16-bit', cat:'pH / Sondas', color:'#a855f7'},
   {key:'dac', name:'MCP4725', bus:'I2C', addr:'0x60', desc:'DAC Corriente', cat:'Potencia VCSS', color:'#f59e0b'},
-  {key:'tc0', name:'MAX6675 #0', bus:'SPI', addr:'CS GPIO 5', desc:'Limpieza', cat:'Térmico', color:'#f97316'},
-  {key:'tc1', name:'MAX6675 #1', bus:'SPI', addr:'CS GPIO 4', desc:'Decapado', cat:'Térmico', color:'#f97316'},
-  {key:'tc2', name:'MAX6675 #2', bus:'SPI', addr:'CS GPIO 13', desc:'Celda Hull', cat:'Térmico', color:'#f97316'},
-  {key:'tc3', name:'MAX6675 #3', bus:'SPI', addr:'CS GPIO 14', desc:'Niquelado', cat:'Térmico', color:'#f97316'}
+  {key:'tc0', name:'MAX6675 #0', bus:'SPI', addr:'Canal 1', desc:'Limpieza', cat:'Térmico', color:'#f97316'},
+  {key:'tc1', name:'MAX6675 #1', bus:'SPI', addr:'Canal 2', desc:'Decapado', cat:'Térmico', color:'#f97316'},
+  {key:'tc2', name:'MAX6675 #2', bus:'SPI', addr:'Canal 3', desc:'Celda Hull', cat:'Térmico', color:'#f97316'},
+  {key:'tc3', name:'MAX6675 #3', bus:'SPI', addr:'Canal 4', desc:'Niquelado', cat:'Térmico', color:'#f97316'}
 ];
 
 var lastOk = Date.now();
