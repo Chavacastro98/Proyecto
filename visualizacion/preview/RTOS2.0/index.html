@@ -205,19 +205,28 @@
             font-family:Consolas,monospace;
         }
 
-        /* Title */
-        h1{
-            font-size:1.35em;
+        /* Brand Header */
+        .brand-header{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:14px;
+            margin-bottom:6px;
+        }
+        .brand-text{text-align:left;}
+        .brand-text h1{
+            font-size:1.4em;
             color:var(--text-primary);
             font-weight:700;
-            letter-spacing:0.1px;
-            margin-bottom:2px;
+            letter-spacing:0.4px;
+            margin:0 0 2px 0;
+            line-height:1.2;
         }
-        .sub-title{
+        .brand-text .sub-title{
             color:var(--text-muted);
             font-size:0.75em;
             font-weight:600;
-            margin-bottom:4px;
+            margin:0;
             font-family:Consolas,monospace;
         }
         .last-update{
@@ -399,8 +408,20 @@
             color:var(--text-primary);
         }
         .btn-tool:active{transform:scale(0.99);}
-        .tool-left{display:flex;align-items:center;gap:8px;}
-        .tool-left span.ico{font-size:1.1em;}
+        .tool-left{display:flex;align-items:center;gap:10px;}
+        .tool-tag{
+            font-family:Consolas,monospace;
+            font-size:0.72em;
+            font-weight:700;
+            padding:2px 6px;
+            border-radius:2px;
+            background:var(--ui-subpanel);
+            border:1px solid var(--ui-border);
+            color:var(--text-muted);
+            min-width:54px;
+            text-align:center;
+            letter-spacing:0.4px;
+        }
 
         /* Footer */
         .ver-foot{
@@ -472,8 +493,21 @@
                 <div class='chip-tag'>ESP32-S3 Dual-Core</div>
             </div>
 
-            <h1>Panel de Control</h1>
-            <div class='sub-title'>Sistema de Electrodeposici&oacute;n &middot; RTOS 2.0</div>
+            <div class='brand-header'>
+                <svg class='brand-icon' viewBox="0 0 48 48" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="42" height="42" rx="4" fill="var(--disp-panel)" stroke="var(--ui-border)" stroke-width="1.5"/>
+                    <path d="M 13 13 L 13 35" stroke="var(--accent-primary)" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M 13 14 L 23 14" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 13 24 L 20 24" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 13 34 L 23 34" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linecap="round"/>
+                    <text x="24" y="31" font-family="Consolas, monospace" font-size="13" font-weight="700" fill="var(--text-primary)" letter-spacing="-0.5">32</text>
+                    <circle cx="39" cy="14" r="2.2" fill="var(--metro-ok)"/>
+                </svg>
+                <div class='brand-text'>
+                    <h1>ELECTRODO-32</h1>
+                    <div class='sub-title'>Sistema de Electrodeposici&oacute;n &middot; RTOS 2.0</div>
+                </div>
+            </div>
             <div class='last-update' id='last-upd'>Conectado (Simulado)</div>
             
             <div class='failsafe-banner' id='fs-box'>
@@ -496,13 +530,13 @@
                 </div>
             </div>
 
-            <div class='proc-list'>
+                        <div class='proc-list'>
                 <a href='fuente.html' class='btn-proc'>
                     <div class='proc-main'>
                         <div class='proc-ico ico-fuente'>VCSS</div>
                         <div class='proc-info'>
                             <h3>Salida de Corriente</h3>
-                            <p>Control VCSS &middot; DC / Pulsada</p>
+                            <p>Fuente de Corriente</p>
                         </div>
                     </div>
                     <div class='proc-right'>
@@ -513,10 +547,10 @@
 
                 <a href='termico.html' class='btn-proc'>
                     <div class='proc-main'>
-                        <div class='proc-ico ico-termico'>ZCS</div>
+                        <div class='proc-ico ico-termico'>TEMP</div>
                         <div class='proc-info'>
                             <h3>Control T&eacute;rmico</h3>
-                            <p>Control PI &middot; Termopares MAX6675</p>
+                            <p>Regulaci&oacute;n T&eacute;rmica</p>
                         </div>
                     </div>
                     <div class='proc-right'>
@@ -530,7 +564,7 @@
                         <div class='proc-ico ico-ph'>pH</div>
                         <div class='proc-info'>
                             <h3>M&oacute;dulo de pH</h3>
-                            <p>Sensor Dedicado Canal A1 &middot; RTOS 2.0</p>
+                            <p>Sensor de pH</p>
                         </div>
                     </div>
                     <div class='proc-right'>
@@ -542,18 +576,18 @@
 
             <div class='sep'></div>
 
-            <div class='tools-grid'>
+                        <div class='tools-grid'>
                 <a href='sensores.html' class='btn-tool'>
                     <div class='tool-left'>
-                        <span class='tool-tag'>I2C</span>
-                        <span>Estado de Sensores (I2C/SPI)</span>
+                        <span class='tool-tag'>SENSOR</span>
+                        <span>Estado de Sensores</span>
                     </div>
                     <span>&rarr;</span>
                 </a>
                 <a href='wifi.html' class='btn-tool'>
                     <div class='tool-left'>
                         <span class='tool-tag'>WIFI</span>
-                        <span>Red Wi-Fi SoftAP</span>
+                        <span>Red Wi-Fi</span>
                     </div>
                     <span>&rarr;</span>
                 </a>
@@ -567,17 +601,18 @@
                 <a href='update.html' class='btn-tool'>
                     <div class='tool-left'>
                         <span class='tool-tag'>OTA</span>
-                        <span>Actualizar Firmware (OTA)</span>
+                        <span>Actualizar Firmware</span>
                     </div>
                     <span>&rarr;</span>
                 </a>
             </div>
 
-            <div class='ver-foot'>
-                <div>Firmware v<span id='fw-v'>2.0.0 (Sensor pH Dedicado A1)</span> &middot; ESP32</div>
+                        <div class='ver-foot'>
+                <div>Firmware v<span id='fw-v'>2.0.0</span> &middot; 2026-11-06 &middot; ESP32-S3</div>
                 <div class='dev-by'>Developed by Salvador&sup2; C</div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class='toast-container' id='toast-box'></div>

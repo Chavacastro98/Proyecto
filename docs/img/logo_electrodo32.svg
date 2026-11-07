@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="chassisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#252526"/>
+      <stop offset="100%" stop-color="#141414"/>
+    </linearGradient>
+  </defs>
+  <!-- Chasis de Instrumento -->
+  <rect x="2.5" y="2.5" width="43" height="43" rx="5" fill="url(#chassisGrad)" stroke="#3c3c3c" stroke-width="1.5"/>
+  <!-- Monograma 'E': Placas de Electrodo / Tren de Pulsos -->
+  <path d="M 12 12 L 12 36" stroke="#007acc" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 12 13.5 L 23 13.5" stroke="#007acc" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="M 12 24 L 20 24" stroke="#007acc" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="M 12 34.5 L 23 34.5" stroke="#007acc" stroke-width="2.8" stroke-linecap="round"/>
+  <!-- Cifra '32' en Tipografía Técnica Monoespaciada -->
+  <text x="24.5" y="31.5" font-family="Consolas, monospace, sans-serif" font-size="13.5" font-weight="700" fill="#f1f1f1" letter-spacing="-0.5">32</text>
+  <!-- Indicador de Enclavamiento / Pulso Activo (Verde Metrológico) -->
+  <circle cx="39" cy="14" r="2.2" fill="#4ec9b0"/>
+</svg>
