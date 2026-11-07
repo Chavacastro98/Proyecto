@@ -112,7 +112,31 @@
             padding:0;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{max-width:640px;margin:0 auto;padding:14px 14px 40px;}
+                .container{
+            width:100%;
+            max-width:980px;
+            margin:0 auto;
+            padding:14px 14px 40px;
+            transition:max-width 0.2s ease;
+        }
+        .fuente-grid{
+            display:grid;
+            grid-template-columns:1.05fr 0.95fr;
+            gap:18px;
+            align-items:start;
+        }
+        .fuente-col{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+        @media(max-width:820px){
+            .container{max-width:580px;}
+            .fuente-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
+        }
 
         .mono{
             font-family:Consolas,"Cascadia Code","SF Mono","Fira Code",monospace;
@@ -696,6 +720,9 @@
         </div>
 
         <div class='card'>
+                <div class='fuente-grid'>
+        <!-- Columna Izquierda: Instrumento y Salida -->
+        <div class='fuente-col'>
             <button class='btn-pwr btn-pwr-off' id='btn-pwr' onclick='togglePower()'>
                 <span>&#9211;</span> ENCENDER FUENTE
             </button>
@@ -728,7 +755,43 @@
                     <span>Nivel DAC: <b id='amp-bits'>0</b> / 4095</span>
                 </div>
             </div>
-
+            <div class='vcss-panel'>
+                <div class='vcss-hdr'>
+                    <span>ESTADO DEL SUMIDERO DE CORRIENTE</span>
+                    <div class='vcss-badges'>
+                        <span class='vcss-badge off' id='rele-badge'>RELÉ +12V: AISLADO (0V)</span>
+                        <span class='vcss-badge' id='comp-badge'>CONTROL AUTOMÁTICO: ACTIVO</span>
+                    </div>
+                </div>
+                <div class='vcss-grid'>
+                    <div class='vcss-cell'>
+                        <div class='vcss-lbl'>Rama Shunt 1 (A2)</div>
+                        <div class='vcss-val' id='vcss-r1'>0.00 A</div>
+                    </div>
+                    <div class='vcss-cell'>
+                        <div class='vcss-lbl'>Rama Shunt 2 (A3)</div>
+                        <div class='vcss-val' id='vcss-r2'>0.00 A</div>
+                    </div>
+                    <div class='vcss-cell'>
+                        <div class='vcss-lbl'>Factor Gm Calibrado</div>
+                        <div class='vcss-val' id='vcss-gm'>1.0000</div>
+                    </div>
+                    <div class='vcss-cell'>
+                        <div class='vcss-lbl'>Transconductancia</div>
+                        <div class='vcss-val' id='vcss-gm-tot'>2.000 S</div>
+                    </div>
+                </div>
+                <div style='display:flex;gap:6px;'>
+                    <button class='btn-cal' id='btn-cal' onclick='calibrarVCSS()'>Auto-Calibrar Shunts</button>
+                    <button class='btn-cal' id='btn-rst' onclick='resetCalibrarVCSS()'>Ganancia Predeterminada</button>
+                </div>
+                <button class='btn-cal' id='btn-comp' style='margin-top:6px;' onclick='toggleComp()'>
+                    Desactivar Control Autom&aacute;tico
+                </button>
+            </div>
+        </div>
+        <!-- Columna Derecha: Control y Modulación -->
+        <div class='fuente-col'>
             <div class='btn-mode-wrap'>
                 <button class='btn-m act' id='btn-dc' onclick='setModo(0)'>Modo DC Continuo</button>
                 <button class='btn-m inact' id='btn-pls' onclick='setModo(1)'>Modo Pulsado</button>
@@ -780,41 +843,8 @@
                     <input type='range' id='slide-duty' min='10' max='90' value='50' oninput='onDutyChange(this.value)'>
                 </div>
             </div>
-
-            <div class='vcss-panel'>
-                <div class='vcss-hdr'>
-                    <span>ESTADO DEL SUMIDERO DE CORRIENTE</span>
-                    <div class='vcss-badges'>
-                        <span class='vcss-badge off' id='rele-badge'>RELÉ +12V: AISLADO (0V)</span>
-                        <span class='vcss-badge' id='comp-badge'>CONTROL AUTOMÁTICO: ACTIVO</span>
-                    </div>
-                </div>
-                <div class='vcss-grid'>
-                    <div class='vcss-cell'>
-                        <div class='vcss-lbl'>Rama Shunt 1 (A2)</div>
-                        <div class='vcss-val' id='vcss-r1'>0.00 A</div>
-                    </div>
-                    <div class='vcss-cell'>
-                        <div class='vcss-lbl'>Rama Shunt 2 (A3)</div>
-                        <div class='vcss-val' id='vcss-r2'>0.00 A</div>
-                    </div>
-                    <div class='vcss-cell'>
-                        <div class='vcss-lbl'>Factor Gm Calibrado</div>
-                        <div class='vcss-val' id='vcss-gm'>1.0000</div>
-                    </div>
-                    <div class='vcss-cell'>
-                        <div class='vcss-lbl'>Transconductancia</div>
-                        <div class='vcss-val' id='vcss-gm-tot'>2.000 S</div>
-                    </div>
-                </div>
-                <div style='display:flex;gap:6px;'>
-                    <button class='btn-cal' id='btn-cal' onclick='calibrarVCSS()'>Auto-Calibrar Shunts</button>
-                    <button class='btn-cal' id='btn-rst' onclick='resetCalibrarVCSS()'>Ganancia Predeterminada</button>
-                </div>
-                <button class='btn-cal' id='btn-comp' style='margin-top:6px;' onclick='toggleComp()'>
-                    Desactivar Control Autom&aacute;tico
-                </button>
-            </div>
+        </div>
+    </div>
         </div>
     </div>
 

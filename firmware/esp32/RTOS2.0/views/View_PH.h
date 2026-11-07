@@ -126,7 +126,33 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
             padding:0;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .page{max-width:880px;margin:0 auto;padding:14px 14px 40px;}
+                .page{
+            width:100%;
+            max-width:1060px;
+            margin:0 auto;
+            padding:14px 14px 40px;
+            transition:max-width 0.2s ease;
+        }
+
+        .ph-desktop-grid{
+            display:grid;
+            grid-template-columns:1.08fr 0.92fr;
+            gap:16px;
+            align-items:start;
+        }
+        .ph-col{
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+
+        @media(max-width:880px){
+            .page{max-width:600px;}
+            .ph-desktop-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
+        }
 
         /* Elementos Monospace para Métricas */
         .mono{
@@ -1029,26 +1055,33 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
 <body>
 
 <div class='page'>
-
-    
-    </div>
-
-    <!-- Tarjeta Principal del Sensor Dedicado (Canal A1) -->
-    
-    <!-- Alerta de Interlock -->
-    <div class='il-alert' id='il-alert'>
-        <span class='il-icon'>&#9888;</span>
-        <span>INTERLOCK DE SEGURIDAD ACTIVO &mdash; M&oacute;dulo bloqueado (Fuente VCSS o Calefactores activos)</span>
-    </div>
-
-    <div class='card'>
-        <div class='card-t'>
-            <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH</span></div>
-            <span class='card-slope-badge mono' id='sl-lbl'>Salud Sonda: 98.6%</span>
+    <!-- Header / Toolbar de Instrumentación -->
+    <div class='hdr'>
+        <a href='/' class='nav-back'>&larr; Men&uacute; Principal</a>
+        <div style='text-align:center'>
+            <span class='hdr-title'>M&oacute;dulo de pH Metrol&oacute;gico</span>
+            <span class='hdr-sub'>MONITOREO DE ELECTROLITO</span>
         </div>
-        
-        <!-- Medidor de Precisión Metrológica (Display de Laboratorio) -->
-        <div class='ph-wrap'>
+        <div class='hdr-right'>
+            <button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>Modo D&iacute;a</span></button>
+            <div class='hdr-hb'><span class='hb-dot' id='hb-dot'></span><span id='hb-txt'>OK</span></div>
+            <div class='tog-wrap'>
+                <span class='tog-lbl act' id='tog-lbl'>ACTIVO</span>
+                <button class='tog on' id='ph-tog' onclick='togglePH()'></button>
+            </div>
+        </div>
+    </div>
+
+        <div class='ph-desktop-grid'>
+        <!-- Columna Izquierda: Medición Metrológica y Offset Hardware -->
+        <div class='ph-col'>
+            <div class='card'>
+                <div class='card-t'>
+                    <div class='card-t-left'><span class='card-dot'></span><span class='card-name'>Sensor de pH</span></div>
+                    <span class='card-slope-badge mono' id='sl-lbl'>Salud Sonda: 98.6%</span>
+                </div>
+                
+                <div class='ph-wrap'>
             <div class='ph-hud' id='ph-hud'>
                 <div class='ph-hud-top'>
                     <span class='ph-hud-pill'>CANAL DE MEDICIÓN</span>
@@ -1106,8 +1139,69 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
                 </div>
             </div>
         </div>
+
+                <div class='diag-box'>
+            <div class='diag-item'>
+                <div class='diag-lbl'>Voltaje Sonda (5.0V)</div>
+                <div class='diag-val' id='vs-val'>2.50 V</div>
+            </div>
+            <div class='diag-item'>
+                <div class='diag-lbl'>Voltaje ADC A1 (3.53V)</div>
+                <div class='diag-val' id='va-val'>1.765 V</div>
+            </div>
+        </div>
+            </div>
+
+            <!-- Panel de Ajuste de Offset de Hardware (En Corto) -->
+    <div class='off-panel'>
+        <div class='off-hdr'>
+            <div class='off-t'>
+                <span>Ajuste de Offset de Hardware (Placa PH-4502C en Corto)</span>
+            </div>
+            <button class='off-tog' id='off-tog' onclick='toggleOffset()'>ABRIR</button>
+        </div>
         
-        <!-- Selector de Modo de Calibración -->
+        <div class='off-body' id='off-body'>
+            <div class='off-desc'>
+                <b>Instrucciones de Alineaci&oacute;n:</b> Conecte el conector BNC en cortocircuito (sin electrodo o con puente).
+                Ajuste el potenci&oacute;metro multivuelta de la placa PH-4502C (Canal A1) hasta que el volt&iacute;metro marque exactamente
+                <b style='color:var(--metro-warn)'>1.765 V (&plusmn;10 mV)</b>. Esto establece el cero anal&oacute;gico neutro en pH 7.00.
+            </div>
+            
+            <div class='off-single-wrap'>
+                <div style='font-size:0.75em;color:var(--text-muted);font-weight:700;margin-bottom:8px;font-family:Consolas,monospace;'>
+                    CALIBRACIÓN DE REFERENCIA (pH 7.00)
+                </div>
+                <div style='padding:4px 0;'>
+                    <span class='vm-val' id='raw-v'>1.765</span><span class='vm-unit'>V</span>
+                    <div class='vm-mv' id='raw-mv'>1765.2 mV</div>
+                </div>
+                <div class='gauge-wrap'>
+                    <div class='gauge'>
+                        <div class='gauge-tgt'></div>
+                        <div class='gauge-ndl' id='g-ndl' style='left:50%'></div>
+                    </div>
+                </div>
+                <div class='off-diff' id='off-diff'>+0.2 mV</div>
+                <div>
+                    <span class='off-badge' id='off-badge'>
+                        &#10003; Calibrado (&plusmn;10 mV)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+
+        <!-- Columna Derecha: Calibración Química y Registros NVS -->
+        <div class='ph-col'>
+            <div class='card'>
+                <div class='card-t'>
+                    <div class='card-t-left'><span class='card-dot' style='background:var(--metro-ok);'></span><span class='card-name'>Calibraci&oacute;n de Sonda</span></div>
+                    <span class='card-slope-badge mono'>Buffers NIST</span>
+                </div>
+                
+                <!-- Selector de Modo de Calibración -->
         <div class='mode-sel'>
             <button class='mode-b act' id='m-0' onclick='setMode(0)'>TE&Oacute;RICO</button>
             <button class='mode-b' id='m-1' onclick='setMode(1)'>2 PUNTOS</button>
@@ -1125,20 +1219,9 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
         </div>
         
         <div class='cal-status-box cs-theory' id='cstat'>Modo Te&oacute;rico (Preconfigurado de F&aacute;brica)</div>
-        
-        <div class='diag-box'>
-            <div class='diag-item'>
-                <div class='diag-lbl'>Voltaje Sonda (5.0V)</div>
-                <div class='diag-val' id='vs-val'>2.50 V</div>
             </div>
-            <div class='diag-item'>
-                <div class='diag-lbl'>Voltaje ADC A1 (3.53V)</div>
-                <div class='diag-val' id='va-val'>1.765 V</div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Puntos Guardados en Flash NVS por Modo -->
+            <!-- Puntos Guardados en Flash NVS por Modo -->
     <div class='nvs-panel'>
         <div class='nvs-hdr'>
             <div class='nvs-t'>
@@ -1182,44 +1265,6 @@ const char HTML_PH[] PROGMEM = R"rawliteral(
             </div>
         </div>
     </div>
-
-    <!-- Panel de Ajuste de Offset de Hardware (En Corto) -->
-    <div class='off-panel'>
-        <div class='off-hdr'>
-            <div class='off-t'>
-                <span>Ajuste de Offset de Hardware (Placa PH-4502C en Corto)</span>
-            </div>
-            <button class='off-tog' id='off-tog' onclick='toggleOffset()'>ABRIR</button>
-        </div>
-        
-        <div class='off-body' id='off-body'>
-            <div class='off-desc'>
-                <b>Instrucciones de Alineaci&oacute;n:</b> Conecte el conector BNC en cortocircuito (sin electrodo o con puente).
-                Ajuste el potenci&oacute;metro multivuelta de la placa PH-4502C (Canal A1) hasta que el volt&iacute;metro marque exactamente
-                <b style='color:var(--metro-warn)'>1.765 V (&plusmn;10 mV)</b>. Esto establece el cero anal&oacute;gico neutro en pH 7.00.
-            </div>
-            
-            <div class='off-single-wrap'>
-                <div style='font-size:0.75em;color:var(--text-muted);font-weight:700;margin-bottom:8px;font-family:Consolas,monospace;'>
-                    CALIBRACIÓN DE REFERENCIA (pH 7.00)
-                </div>
-                <div style='padding:4px 0;'>
-                    <span class='vm-val' id='raw-v'>1.765</span><span class='vm-unit'>V</span>
-                    <div class='vm-mv' id='raw-mv'>1765.2 mV</div>
-                </div>
-                <div class='gauge-wrap'>
-                    <div class='gauge'>
-                        <div class='gauge-tgt'></div>
-                        <div class='gauge-ndl' id='g-ndl' style='left:50%'></div>
-                    </div>
-                </div>
-                <div class='off-diff' id='off-diff'>+0.2 mV</div>
-                <div>
-                    <span class='off-badge' id='off-badge'>
-                        &#10003; Calibrado (&plusmn;10 mV)
-                    </span>
-                </div>
-            </div>
         </div>
     </div>
 

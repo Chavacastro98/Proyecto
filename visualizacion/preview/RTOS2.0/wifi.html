@@ -92,7 +92,31 @@
             padding:0;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{max-width:680px;margin:0 auto;padding:14px 14px 40px;}
+                .container{
+            width:100%;
+            max-width:960px;
+            margin:0 auto;
+            padding:14px 14px 40px;
+            transition:max-width 0.2s ease;
+        }
+        .wifi-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:16px;
+            align-items:start;
+        }
+        .wifi-col{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        @media(max-width:768px){
+            .container{max-width:540px;}
+            .wifi-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
+        }
 
         /* Hub Nav */
         .hub-bar{
@@ -448,7 +472,10 @@
         </div>
 
         <!-- Panel de Estado en Vivo -->
-        <div class='status-box'>
+            <div class='wifi-grid'>
+        <!-- Columna 1: Estado y Telemetría Wi-Fi -->
+        <div class='wifi-col'>
+            <div class='status-box'>
             <div class='status-top'>
                 <div class='sys-badge' id='sys-badge'><span class='dot'></span>SoftAP Emitiendo</div>
                 <div class='chip-tag' id='chip-tag'>WPA2-PSK &middot; 802.11 b/g/n</div>
@@ -474,7 +501,10 @@
         </div>
 
         <!-- Formulario de Configuración -->
-        <div class='form-box'>
+        </div>
+        <!-- Columna 2: Parámetros y Credenciales -->
+        <div class='wifi-col'>
+            <div class='form-box'>
             <div class='form-title'>Credenciales de Punto de Acceso</div>
             <div class='form-desc'>Los cambios se guardan de forma permanente en memoria Flash no volátil (NVS).</div>
 
@@ -502,6 +532,8 @@
 
             <div class='status-msg msg-ok' id='status-msg'>[OK] Credenciales guardadas correctamente. Reinicie el nodo para aplicar el nuevo SSID.</div>
         </div>
+        </div>
+    </div>
     </div>
 
     <div class='toast-container' id='toast-box'></div>

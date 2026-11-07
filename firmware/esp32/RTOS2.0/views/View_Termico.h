@@ -115,194 +115,27 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
             padding:0;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{max-width:860px;margin:0 auto;padding:14px 14px 40px;}
-
-        .mono{
-            font-family:Consolas,"Cascadia Code","SF Mono","Fira Code",monospace;
-            font-variant-numeric:tabular-nums;
+                .container{
+            width:100%;
+            max-width:1100px;
+            margin:0 auto;
+            padding:14px 14px 40px;
+            transition:max-width 0.2s ease;
         }
 
-        /* Hub Nav */
-        .hub-bar{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:12px;
-        }
-        .hub-link{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            color:var(--accent-primary);
-            text-decoration:none;
-            font-size:0.75em;
-            font-weight:700;
-            padding:4px 10px;
-            background:var(--ui-panel);
-            border-radius:3px;
-            border:1px solid var(--ui-border);
-            transition:background 0.15s, border-color 0.15s;
-        }
-        .hub-link:hover{
-            background:var(--btn-hover-bg);
-            border-color:var(--accent-primary);
-        }
-
-        /* Theme Toggle Button */
-        .theme-btn{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            background:var(--ui-panel);
-            color:var(--text-secondary);
-            border:1px solid var(--ui-border);
-            padding:4px 10px;
-            font-size:0.75em;
-            font-weight:700;
-            border-radius:3px;
-            cursor:pointer;
-            transition:all 0.15s;
-        }
-        .theme-btn:hover{
-            border-color:var(--accent-primary);
-            color:var(--text-primary);
-        }
-
-        /* Header Toolbar */
-        .hdr{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            margin-bottom:14px;
-            padding:12px 16px;
-            background:var(--ui-panel);
-            border-radius:4px;
-            border:1px solid var(--ui-border);
-            border-top:2px solid var(--accent-primary);
-        }
-        .nav-back{
-            color:var(--accent-primary);
-            text-decoration:none;
-            font-weight:700;
-            font-size:0.8em;
-            display:inline-flex;
-            align-items:center;
-            gap:4px;
-        }
-        .nav-back:hover{text-decoration:underline;}
-        .hdr-title{
-            font-size:1.1em;
-            color:var(--text-primary);
-            font-weight:700;
-            letter-spacing:0.2px;
-        }
-        .hdr-sub{
-            font-size:0.68em;
-            color:var(--text-muted);
-            font-weight:600;
-            display:block;
-            margin-top:2px;
-            letter-spacing:0.6px;
-            font-family:Consolas,monospace;
-        }
-        .hdr-hb{
-            display:flex;
-            align-items:center;
-            gap:6px;
-            font-size:0.68em;
-            font-weight:700;
-            color:var(--text-muted);
-            font-family:Consolas,monospace;
-        }
-        .hb-dot{
-            width:7px;
-            height:7px;
-            border-radius:2px;
-            background:var(--metro-ok);
-        }
-        .hb-dot.off{background:var(--metro-err);}
-
-        /* Barra de Resumen / Status Toolbar */
-        .sum-bar{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:8px 14px;
-            margin-bottom:14px;
-            background:var(--ui-panel);
-            border-radius:3px;
-            border:1px solid var(--ui-border);
-            font-size:0.75em;
-            font-weight:700;
-            color:var(--text-muted);
-            font-family:Consolas,monospace;
-        }
-        .sum-pill{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            padding:3px 8px;
-            border-radius:2px;
-            font-size:0.9em;
-            font-weight:700;
-            border:1px solid transparent;
-        }
-        .sum-pill.active{
-            background:var(--metro-ok-bg);
-            color:var(--metro-ok);
-            border-color:var(--metro-ok-border);
-        }
-        .sum-pill.idle{
-            background:var(--ui-subpanel);
-            color:var(--text-muted);
-            border-color:var(--ui-border);
-        }
-
-        /* Botones de Control Maestro */
-        .btn-group{
-            display:flex;
-            gap:10px;
-            justify-content:center;
-            margin-bottom:16px;
-        }
-        .btn-pwr{
-            flex:1;
-            max-width:260px;
-            padding:10px 16px;
-            cursor:pointer;
-            border-radius:3px;
-            border:1px solid transparent;
-            font-weight:700;
-            font-size:0.8em;
-            transition:all 0.15s;
-            letter-spacing:0.5px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-family:Consolas,monospace;
-        }
-        .btn-pwr:active{transform:scale(0.99);}
-        .btn-act{
-            background:var(--metro-ok);
-            color:#ffffff;
-            border-color:var(--metro-ok-border);
-        }
-        .btn-act:hover{filter:brightness(1.08);}
-        .btn-stop{
-            background:var(--metro-err);
-            color:#ffffff;
-            border-color:var(--metro-err-border);
-        }
-        .btn-stop:hover{filter:brightness(1.08);}
-
-        /* Grid Simétrico 2x2 */
+        /* Grid de Tinas Térmicas (Desktop 4 columnas, Tablet 2 columnas, Móvil 1 columna) */
         .grid{
             display:grid;
-            grid-template-columns:repeat(2, 1fr);
-            gap:14px;
+            grid-template-columns:repeat(4, 1fr);
+            gap:12px;
         }
-        @media(max-width:680px){
-            .grid{grid-template-columns:1fr;}
+        @media(max-width:960px){
+            .container{max-width:840px;}
+            .grid{grid-template-columns:repeat(2, 1fr);gap:12px;}
+        }
+        @media(max-width:640px){
+            .container{max-width:520px;}
+            .grid{grid-template-columns:1fr;gap:12px;}
             .btn-group{flex-direction:column;}
             .btn-pwr{max-width:100%;}
         }

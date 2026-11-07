@@ -129,7 +129,31 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
             padding:0;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{max-width:640px;margin:0 auto;padding:14px 14px 40px;}
+                .container{
+            width:100%;
+            max-width:980px;
+            margin:0 auto;
+            padding:14px 14px 40px;
+            transition:max-width 0.2s ease;
+        }
+        .fuente-grid{
+            display:grid;
+            grid-template-columns:1.05fr 0.95fr;
+            gap:18px;
+            align-items:start;
+        }
+        .fuente-col{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+        @media(max-width:820px){
+            .container{max-width:580px;}
+            .fuente-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
+        }
 
         .mono{
             font-family:Consolas,"Cascadia Code","SF Mono","Fira Code",monospace;
@@ -709,6 +733,9 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
         </div>
 
         <div class='card'>
+                <div class='fuente-grid'>
+        <!-- Columna Izquierda: Instrumento y Salida -->
+        <div class='fuente-col'>
             <button class='btn-pwr btn-pwr-off' id='btn-power' onclick='togglePower()'>ENCENDER FUENTE</button>
             
             <div><span class='status-badge status-off' id='status-badge'>ESTADO: EN ESPERA (0.00 A)</span></div>
@@ -730,7 +757,41 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
 
             <!-- Pulse Indicator -->
             <div class='pulse-ind' id='pulse-ind'></div>
-
+            <!-- Panel Sensado VCSS -->
+            <div class='vcss-panel'>
+                <div class='vcss-hdr'>
+                    <span>MONITOREO DE CORRIENTE</span>
+                    <div class='vcss-badges'>
+                        <span class='vcss-badge' id='rele-badge'>REL&Eacute; +12V: AISLADO</span>
+                        <span class='vcss-badge' id='comp-badge'>CONTROL AUTOM&Aacute;TICO: ACTIVO</span>
+                    </div>
+                </div>
+                <div class='vcss-grid'>
+                    <div class='vcss-item'>
+                        <div class='vcss-lbl'>Rama 1 (MOSFET 1)</div>
+                        <div class='vcss-val' id='i1-val'>0.00 A</div>
+                        <div class='vcss-sub' id='v1-val'>0.000 V</div>
+                    </div>
+                    <div class='vcss-item'>
+                        <div class='vcss-lbl'>Rama 2 (MOSFET 2)</div>
+                        <div class='vcss-val' id='i2-val'>0.00 A</div>
+                        <div class='vcss-sub' id='v2-val'>0.000 V</div>
+                    </div>
+                    <div class='vcss-item'>
+                        <div class='vcss-lbl'>Total Medido</div>
+                        <div class='vcss-val' id='itot-val' style='color:#34d399;'>0.00 A</div>
+                        <div class='vcss-sub' id='gm-val'>Gm: 2.000 S</div>
+                    </div>
+                </div>
+                <div class='vcss-actions'>
+                    <button class='btn-vcss' id='btn-comp' onclick='toggleComp()'>Desactivar Control Autom&aacute;tico</button>
+                    <button class='btn-vcss btn-cal' id='btn-cal' onclick='calibrarVCSS()'>Auto-Calibrar</button>
+                    <button class='btn-vcss btn-reset' id='btn-rst' onclick='resetCalibrarVCSS()'>Ganancia Predeterminada</button>
+                </div>
+            </div>
+        </div>
+        <!-- Columna Derecha: Control y Modulación -->
+        <div class='fuente-col'>
             <div class='btn-mode-wrap'>
                 <button class='btn-m act' id='btn-dc' onclick='setModo(0)'>CONTINUA (DC)</button>
                 <button class='btn-m inact' id='btn-pulsed' onclick='setModo(1)'>PULSADA (1-100 Hz)</button>
@@ -778,39 +839,8 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
                     <input type='range' id='slide-duty' min='1' max='99' value='50' oninput='document.getElementById("duty-val").innerText=this.value+" %";drawPulseWave();sendParam("d", this.value);'>
                 </div>
             </div>
-
-            <!-- Panel Sensado VCSS -->
-            <div class='vcss-panel'>
-                <div class='vcss-hdr'>
-                    <span>MONITOREO DE CORRIENTE</span>
-                    <div class='vcss-badges'>
-                        <span class='vcss-badge' id='rele-badge'>REL&Eacute; +12V: AISLADO</span>
-                        <span class='vcss-badge' id='comp-badge'>CONTROL AUTOM&Aacute;TICO: ACTIVO</span>
-                    </div>
-                </div>
-                <div class='vcss-grid'>
-                    <div class='vcss-item'>
-                        <div class='vcss-lbl'>Rama 1 (MOSFET 1)</div>
-                        <div class='vcss-val' id='i1-val'>0.00 A</div>
-                        <div class='vcss-sub' id='v1-val'>0.000 V</div>
-                    </div>
-                    <div class='vcss-item'>
-                        <div class='vcss-lbl'>Rama 2 (MOSFET 2)</div>
-                        <div class='vcss-val' id='i2-val'>0.00 A</div>
-                        <div class='vcss-sub' id='v2-val'>0.000 V</div>
-                    </div>
-                    <div class='vcss-item'>
-                        <div class='vcss-lbl'>Total Medido</div>
-                        <div class='vcss-val' id='itot-val' style='color:#34d399;'>0.00 A</div>
-                        <div class='vcss-sub' id='gm-val'>Gm: 2.000 S</div>
-                    </div>
-                </div>
-                <div class='vcss-actions'>
-                    <button class='btn-vcss' id='btn-comp' onclick='toggleComp()'>Desactivar Control Autom&aacute;tico</button>
-                    <button class='btn-vcss btn-cal' id='btn-cal' onclick='calibrarVCSS()'>Auto-Calibrar</button>
-                    <button class='btn-vcss btn-reset' id='btn-rst' onclick='resetCalibrarVCSS()'>Ganancia Predeterminada</button>
-                </div>
-            </div>
+        </div>
+    </div>
         </div>
     </div>
 

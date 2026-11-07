@@ -119,13 +119,32 @@ const char HTML_CONSOLA[] PROGMEM = R"rawliteral(
       padding:14px 14px 30px;
       transition:background 0.2s ease, color 0.2s ease;
     }
-    .container{
-      max-width:960px;
+        .container{
+      max-width:1040px;
       width:100%;
       margin:0 auto;
       display:flex;
       flex-direction:column;
       flex:1;
+      transition:max-width 0.2s ease;
+    }
+
+    @media(max-width:680px){
+      .container{max-width:540px;}
+      .header-box{
+        flex-direction:column;
+        align-items:stretch;
+        gap:8px;
+      }
+      .actions{
+        justify-content:space-between;
+      }
+      .term-container{
+        min-height:380px;
+        font-size:0.75em;
+        padding:10px 12px;
+      }
+      .log-time{min-width:52px;}
     }
 
     /* Hub Nav */

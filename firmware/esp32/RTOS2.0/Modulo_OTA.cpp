@@ -145,9 +145,29 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
             padding:16px 14px;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{
+                .container, .card{
             width:100%;
-            max-width:540px;
+            max-width:920px;
+            transition:max-width 0.2s ease;
+        }
+        .ota-grid{
+            display:grid;
+            grid-template-columns:1fr 1.05fr;
+            gap:18px;
+            text-align:left;
+            align-items:start;
+        }
+        .ota-col{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        @media(max-width:768px){
+            .container, .card{max-width:520px;}
+            .ota-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
         }
 
         /* Hub Nav */
@@ -437,13 +457,22 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
         </div>
     </div>
 
-    <!-- Alerta de Interlock -->
+        <div class="ota-grid">
+        <!-- Columna Izquierda: Seguridad e Instrucciones -->
+        <div class="ota-col">
+            <!-- Alerta de Interlock -->
     <div class="il-warn" id="il-box">
         <span>&#9888;</span>
         <span><b>INTERLOCK ACTIVO:</b> No se permite la actualizaci&oacute;n con fuentes o calefactores en operaci&oacute;n. Ap&aacute;guelos primero.</span>
     </div>
-
-    <!-- Zona de Carga / Drop Zone -->
+            <div style="font-size:0.75em;color:var(--text-muted);background:var(--disp-panel);padding:10px 12px;border-radius:3px;border:1px solid var(--ui-border);line-height:1.4;font-family:Consolas,monospace;">
+                <b>[SEGURIDAD] Interlock Activo:</b> La actualización de firmware requiere que la fuente de corriente continua y los calentadores de las tinas permanezcan apagados.<br><br>
+                <b>[INFO] Partición Dual Flash:</b> El nuevo firmware se escribirá en la partición secundaria (OTA_1). Si la verificación SHA-256 es exitosa, el cargador de arranque activará la nueva versión.
+            </div>
+        </div>
+        <!-- Columna Derecha: Carga de Firmware y Flasheo -->
+        <div class="ota-col">
+            <!-- Zona de Carga / Drop Zone -->
     <div class="drop-zone" id="dz" onclick="document.getElementById('fi').click()">
         <input type="file" id="fi" accept=".bin" style="display:none;" onchange="onFile(this.files)">
         <div class="dz-icon">OTA</div>
@@ -451,11 +480,9 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
         <div class="dz-sub">Arrastre y suelte el archivo <code>.bin</code> o haga clic aqu&iacute; para examinar</div>
         <div class="dz-formats">FORMATOS SOPORTADOS: BINARIO COMPILADO (.bin) &middot; VERSIÓN INSTALADA: <b id="cur-ver">RTOS 2.0</b></div>
     </div>
-
-    <!-- Información del Archivo Seleccionado -->
+            <!-- Información del Archivo Seleccionado -->
     <div class="file-info" id="finfo" style="display:none;"></div>
-
-    <!-- Barra de Progreso -->
+            <!-- Barra de Progreso -->
     <div class="prog-wrap" id="pw" style="display:none;">
         <div class="prog-head">
             <span class="prog-lbl" id="pt-status">ESCRIBIENDO SECTORES EN FLASH NVS...</span>
@@ -465,14 +492,14 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
             <div class="prog-fill" id="pb" style="width:0%;"></div>
         </div>
     </div>
-
-    <!-- Mensaje de Estado -->
+            <!-- Mensaje de Estado -->
     <div class="st-msg" id="sm" style="display:none;"></div>
-
-    <!-- Botón de Flasheo -->
+            <!-- Botón de Flasheo -->
     <button class="btn-upld" id="btn-u" onclick="upload()" disabled>
         INICIAR TRANSFERENCIA E INSTALACIÓN OTA
     </button>
+        </div>
+    </div>
 </div>
 
 <script>

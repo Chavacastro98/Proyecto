@@ -109,7 +109,31 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
             padding:0;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{max-width:680px;margin:0 auto;padding:14px 14px 40px;}
+                .container{
+            width:100%;
+            max-width:960px;
+            margin:0 auto;
+            padding:14px 14px 40px;
+            transition:max-width 0.2s ease;
+        }
+        .wifi-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:16px;
+            align-items:start;
+        }
+        .wifi-col{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        @media(max-width:768px){
+            .container{max-width:540px;}
+            .wifi-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
+        }
 
         /* Hub Nav */
         .hub-bar{
@@ -483,7 +507,10 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
     </div>
 
     <!-- Live Status Card -->
-    <div class='status-box'>
+        <div class='wifi-grid'>
+        <!-- Columna 1: Estado y Telemetría Wi-Fi -->
+        <div class='wifi-col'>
+            <div class='status-box'>
         <div class='status-top'>
             <div class='sys-badge'><span class='dot'></span>Punto de Acceso Activo</div>
             <div class='chip-tag'>Canal 1 &middot; 2.4 GHz</div>
@@ -509,7 +536,10 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
     </div>
 
     <!-- Formulario de Reconfiguración -->
-    <div class='form-box'>
+        </div>
+        <!-- Columna 2: Parámetros y Credenciales -->
+        <div class='wifi-col'>
+            <div class='form-box'>
         <div class='form-title'>Reconfigurar Credenciales Wi-Fi</div>
         <div class='form-desc'>Las credenciales se almacenan permanentemente en la memoria Flash (NVS) del ESP32.</div>
 
@@ -556,9 +586,11 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
             </div>
         </form>
     </div>
-</div>
+        </div>
+    </div>
+    </div>
 
-<div class='toast-container' id='toast-box'></div>
+    <div class='toast-container' id='toast-box'></div>
 
 
 <script>

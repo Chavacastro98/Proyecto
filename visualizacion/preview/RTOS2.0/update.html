@@ -95,9 +95,29 @@
             padding:16px 14px;
             transition:background 0.2s ease, color 0.2s ease;
         }
-        .container{
+                .container{
             width:100%;
-            max-width:540px;
+            max-width:920px;
+            transition:max-width 0.2s ease;
+        }
+        .ota-grid{
+            display:grid;
+            grid-template-columns:1fr 1.05fr;
+            gap:18px;
+            text-align:left;
+            align-items:start;
+        }
+        .ota-col{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+        @media(max-width:768px){
+            .container{max-width:520px;}
+            .ota-grid{
+                grid-template-columns:1fr;
+                gap:14px;
+            }
         }
 
         /* Hub Nav */
@@ -381,19 +401,29 @@
                 <div style='width:36px'></div>
             </div>
 
-            <div class='ver-wrap'>
+                <div class='ota-grid'>
+                <!-- Columna Izquierda: Información de Versión y Seguridad -->
+                <div class='ota-col'>
+                    <div class='ver-wrap'>
                 <div>Versi&oacute;n Instalada: <span class='ver-badge'>2.0.0 (Producción RTOS 2.0)</span></div>
                 <div class='ver-chip'>Partici&oacute;n OTA_0</div>
             </div>
-
-            <div class='drop-zone' id='drop-zone' onclick="document.getElementById('file-input').click()">
+                    <div class='hw-note'>
+                        <b>[SEGURIDAD] Interlock de Carga:</b> El sumidero de corriente VCSS y los calefactores de las tinas deben permanecer apagados durante la escritura en Flash SPI.
+                    </div>
+                    <div class='hw-note'>
+                <b>[INFO] Nota de Hardware:</b> Este portal actualiza exclusivamente la memoria Flash SPI del ESP32-S3. El microcontrolador esclavo de potencia (Arduino Nano / ATmega328P) no se actualiza por OTA; debe reprogramarse mediante cable USB físico directo.
+            </div>
+                </div>
+                <!-- Columna Derecha: Carga de Binario y Flasheo -->
+                <div class='ota-col'>
+                    <div class='drop-zone' id='drop-zone' onclick="document.getElementById('file-input').click()">
                 <div class='box-ico-wrap'>OTA</div>
                 <div class='drop-text'>Haz clic para seleccionar o arrastra el archivo <b>.bin</b></div>
                 <div class='drop-sub'>Paquete compilado ESP32-S3 (Partición App)</div>
             </div>
             <input type='file' id='file-input' accept='.bin' style='display:none' onchange='onFileSelected(this)'>
-
-            <div class='file-info' id='file-info'>
+                    <div class='file-info' id='file-info'>
                 <span style='font-family:Consolas,monospace;font-weight:700;color:var(--text-muted);padding:0 6px;'>[BIN]</span>
                 <div style='flex:1'>
                     <div id='fn-txt' style='color:var(--text-primary)'>firmware_rtos_2.0.bin</div>
@@ -401,10 +431,8 @@
                 </div>
                 <span style='color:var(--metro-ok);font-weight:700;'>&#10003; LISTO</span>
             </div>
-
-            <button class='btn-upld' id='btn-upld' disabled onclick='simularFlasheo()'>INICIAR ACTUALIZACIÓN OTA</button>
-
-            <div class='prog-wrap' id='prog-wrap'>
+                    <button class='btn-upld' id='btn-upld' disabled onclick='simularFlasheo()'>INICIAR ACTUALIZACIÓN OTA</button>
+                    <div class='prog-wrap' id='prog-wrap'>
                 <div class='prog-bar-bg'>
                     <div class='prog-bar' id='prog-bar'></div>
                 </div>
@@ -413,14 +441,11 @@
                     <span id='byte-txt'>Flasheando en memoria Flash SPI...</span>
                 </div>
             </div>
-
-            <div class='st-msg st-ok' id='msg-ok'>
+                    <div class='st-msg st-ok' id='msg-ok'>
                 &#10004; <b>¡Actualización Inalámbrica Completada!</b><br>
                 El ESP32-S3 ha validado la partición secundaria y se reiniciará en el nuevo firmware.
             </div>
-
-            <div class='hw-note'>
-                ℹ️ <b>Nota de Hardware:</b> Este portal actualiza exclusivamente la memoria Flash SPI del ESP32-S3. El microcontrolador esclavo de potencia (Arduino Nano / ATmega328P) no se actualiza por OTA; debe reprogramarse mediante cable USB físico directo.
+                </div>
             </div>
         </div>
     </div>
