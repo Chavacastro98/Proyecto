@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Estudio de Isotipo Minimalista: Propuesta 1 (La Celda-Chip)</title>
+<style>
+  body { background: #141414; color: #e0e0e0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; padding: 24px; }
+  h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; color: #fff; }
+  p.lead { font-size: 13px; color: #888; max-width: 780px; margin-bottom: 24px; line-height: 1.4; }
+  
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media(max-width: 880px) { .cards-grid { grid-template-columns: 1fr; } }
+  
+  .card { background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 18px; }
+  .card-title { font-size: 14px; font-weight: 700; color: #38bdf8; margin-bottom: 12px; }
+  
+  .preview-stage { background: #18191c; border: 1px solid #2a2c30; border-radius: 4px; padding: 18px 12px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+  .preview-light { background: #f5f5f7; border-color: #ddd; color: #111; }
+  .preview-pcb { background: #0c2014; border: 1px solid #1a3a28; color: #e2f5e8; }
+  
+  .row-brand { display: flex; align-items: center; gap: 12px; }
+  .brand-text-demo { font-family: Consolas, monospace; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+  .brand-sub-demo { font-size: 10px; color: #888; font-family: Consolas, monospace; }
+  
+  .scales-row { display: flex; align-items: flex-end; gap: 16px; margin-top: 8px; }
+  .scale-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; color: #777; font-family: Consolas, monospace; }
+  
+  ul.features { margin: 12px 0 0 16px; font-size: 11px; color: #aaa; line-height: 1.5; padding: 0; }
+</style>
+</head>
+<body>
+  <h1>Estudio de Isotipo Minimalista &middot; Propuesta 1: La Celda-Chip</h1>
+  <p class="lead">
+    Evolución desde la ilustración inicial a un <b>isotipo geométrico de ingeniería</b>.
+    El encapsulado del microcontrolador (ESP32) funciona como la propia celda electrolítica, fusionando hardware embebido, electroquímica y control pulsado en solo 3 componentes esenciales.
+  </p>
+
+  <div class="cards-grid">
+    <!-- Variante A -->
+    <div class="card">
+      <div class="card-title">Variante 1A &middot; Color Industrial</div>
+      <div class="preview-stage">
+        <div class="row-brand">
+          <div style="width:44px;height:44px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pines laterales de circuito integrado (Pads dorados/acento) -->
+    <g fill="#d7ba7d">
+        <rect x="12" y="32" width="6" height="4" rx="1"/>
+        <rect x="12" y="44" width="6" height="4" rx="1"/>
+        <rect x="12" y="56" width="6" height="4" rx="1"/>
+        <rect x="12" y="68" width="6" height="4" rx="1"/>
+        
+        <rect x="82" y="32" width="6" height="4" rx="1"/>
+        <rect x="82" y="44" width="6" height="4" rx="1"/>
+        <rect x="82" y="56" width="6" height="4" rx="1"/>
+        <rect x="82" y="68" width="6" height="4" rx="1"/>
+    </g>
+    
+    <!-- Cuerpo del Chip / Tina (Borde y fondo oscuro) -->
+    <rect x="18" y="24" width="64" height="60" rx="4" fill="#14171d" stroke="#38bdf8" stroke-width="2.5"/>
+    
+    <!-- Corona de señal inalámbrica superior (Onda Wi-Fi minimalista) -->
+    <path d="M 38 14 A 18 18 0 0 1 62 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.8" fill="#38bdf8"/>
+    
+    <!-- Nivel de solución química / Menisco del baño -->
+    <line x1="24" y1="52" x2="76" y2="52" stroke="#4ec9b0" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>
+    <rect x="20" y="53" width="60" height="29" fill="#4ec9b0" fill-opacity="0.08" rx="2"/>
+    
+    <!-- Onda Cuadrada VCSS superior entre electrodos -->
+    <path d="M 36 34 H 43 V 28 H 57 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="miter"/>
+    
+    <!-- Electrodo Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="38" rx="1.5" fill="#e06c75"/>
+    
+    <!-- Electrodo Cátodo (-) con capa de recubrimiento depositada -->
+    <rect x="61" y="34" width="6" height="38" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="42" width="2" height="30" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+          <div>
+            <div class="brand-text-demo">ELECTRODO-32</div>
+            <div class="brand-sub-demo">RTOS 2.0 &middot; VCSS &amp; PID</div>
+          </div>
+        </div>
+        
+        <div class="scales-row">
+          <div class="scale-item">
+            <div style="width:20px;height:20px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pines laterales de circuito integrado (Pads dorados/acento) -->
+    <g fill="#d7ba7d">
+        <rect x="12" y="32" width="6" height="4" rx="1"/>
+        <rect x="12" y="44" width="6" height="4" rx="1"/>
+        <rect x="12" y="56" width="6" height="4" rx="1"/>
+        <rect x="12" y="68" width="6" height="4" rx="1"/>
+        
+        <rect x="82" y="32" width="6" height="4" rx="1"/>
+        <rect x="82" y="44" width="6" height="4" rx="1"/>
+        <rect x="82" y="56" width="6" height="4" rx="1"/>
+        <rect x="82" y="68" width="6" height="4" rx="1"/>
+    </g>
+    
+    <!-- Cuerpo del Chip / Tina (Borde y fondo oscuro) -->
+    <rect x="18" y="24" width="64" height="60" rx="4" fill="#14171d" stroke="#38bdf8" stroke-width="2.5"/>
+    
+    <!-- Corona de señal inalámbrica superior (Onda Wi-Fi minimalista) -->
+    <path d="M 38 14 A 18 18 0 0 1 62 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.8" fill="#38bdf8"/>
+    
+    <!-- Nivel de solución química / Menisco del baño -->
+    <line x1="24" y1="52" x2="76" y2="52" stroke="#4ec9b0" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>
+    <rect x="20" y="53" width="60" height="29" fill="#4ec9b0" fill-opacity="0.08" rx="2"/>
+    
+    <!-- Onda Cuadrada VCSS superior entre electrodos -->
+    <path d="M 36 34 H 43 V 28 H 57 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="miter"/>
+    
+    <!-- Electrodo Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="38" rx="1.5" fill="#e06c75"/>
+    
+    <!-- Electrodo Cátodo (-) con capa de recubrimiento depositada -->
+    <rect x="61" y="34" width="6" height="38" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="42" width="2" height="30" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+            <span>20px (Favicon)</span>
+          </div>
+          <div class="scale-item">
+            <div style="width:32px;height:32px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pines laterales de circuito integrado (Pads dorados/acento) -->
+    <g fill="#d7ba7d">
+        <rect x="12" y="32" width="6" height="4" rx="1"/>
+        <rect x="12" y="44" width="6" height="4" rx="1"/>
+        <rect x="12" y="56" width="6" height="4" rx="1"/>
+        <rect x="12" y="68" width="6" height="4" rx="1"/>
+        
+        <rect x="82" y="32" width="6" height="4" rx="1"/>
+        <rect x="82" y="44" width="6" height="4" rx="1"/>
+        <rect x="82" y="56" width="6" height="4" rx="1"/>
+        <rect x="82" y="68" width="6" height="4" rx="1"/>
+    </g>
+    
+    <!-- Cuerpo del Chip / Tina (Borde y fondo oscuro) -->
+    <rect x="18" y="24" width="64" height="60" rx="4" fill="#14171d" stroke="#38bdf8" stroke-width="2.5"/>
+    
+    <!-- Corona de señal inalámbrica superior (Onda Wi-Fi minimalista) -->
+    <path d="M 38 14 A 18 18 0 0 1 62 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.8" fill="#38bdf8"/>
+    
+    <!-- Nivel de solución química / Menisco del baño -->
+    <line x1="24" y1="52" x2="76" y2="52" stroke="#4ec9b0" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>
+    <rect x="20" y="53" width="60" height="29" fill="#4ec9b0" fill-opacity="0.08" rx="2"/>
+    
+    <!-- Onda Cuadrada VCSS superior entre electrodos -->
+    <path d="M 36 34 H 43 V 28 H 57 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="miter"/>
+    
+    <!-- Electrodo Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="38" rx="1.5" fill="#e06c75"/>
+    
+    <!-- Electrodo Cátodo (-) con capa de recubrimiento depositada -->
+    <rect x="61" y="34" width="6" height="38" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="42" width="2" height="30" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+            <span>32px (Header)</span>
+          </div>
+          <div class="scale-item">
+            <div style="width:64px;height:64px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pines laterales de circuito integrado (Pads dorados/acento) -->
+    <g fill="#d7ba7d">
+        <rect x="12" y="32" width="6" height="4" rx="1"/>
+        <rect x="12" y="44" width="6" height="4" rx="1"/>
+        <rect x="12" y="56" width="6" height="4" rx="1"/>
+        <rect x="12" y="68" width="6" height="4" rx="1"/>
+        
+        <rect x="82" y="32" width="6" height="4" rx="1"/>
+        <rect x="82" y="44" width="6" height="4" rx="1"/>
+        <rect x="82" y="56" width="6" height="4" rx="1"/>
+        <rect x="82" y="68" width="6" height="4" rx="1"/>
+    </g>
+    
+    <!-- Cuerpo del Chip / Tina (Borde y fondo oscuro) -->
+    <rect x="18" y="24" width="64" height="60" rx="4" fill="#14171d" stroke="#38bdf8" stroke-width="2.5"/>
+    
+    <!-- Corona de señal inalámbrica superior (Onda Wi-Fi minimalista) -->
+    <path d="M 38 14 A 18 18 0 0 1 62 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.8" fill="#38bdf8"/>
+    
+    <!-- Nivel de solución química / Menisco del baño -->
+    <line x1="24" y1="52" x2="76" y2="52" stroke="#4ec9b0" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>
+    <rect x="20" y="53" width="60" height="29" fill="#4ec9b0" fill-opacity="0.08" rx="2"/>
+    
+    <!-- Onda Cuadrada VCSS superior entre electrodos -->
+    <path d="M 36 34 H 43 V 28 H 57 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="miter"/>
+    
+    <!-- Electrodo Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="38" rx="1.5" fill="#e06c75"/>
+    
+    <!-- Electrodo Cátodo (-) con capa de recubrimiento depositada -->
+    <rect x="61" y="34" width="6" height="38" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="42" width="2" height="30" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+            <span>64px (Display)</span>
+          </div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li><b>Chasis ESP32 como tina:</b> Contorno perimetral con pads de cobre dorados laterales.</li>
+        <li><b>Electrodos en baño:</b> Ánodo (+) en rojo óxido, cátodo (-) en turquesa con zinc electrodepositado.</li>
+        <li><b>Paredes y fluido:</b> Menisco punteado y onda pulsada VCSS integrando los terminales.</li>
+      </ul>
+    </div>
+
+    <!-- Variante B -->
+    <div class="card">
+      <div class="card-title">Variante 1B &middot; Monoline (Apta para Silkscreen PCB)</div>
+      <div class="preview-stage preview-pcb" style="color: #e2f5e8;">
+        <div class="row-brand">
+          <div style="width:44px;height:44px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Versión monocromática pura (admite color vía CSS currentColor) -->
+    <path d="M 12 34 H 18 M 12 46 H 18 M 12 58 H 18 M 12 70 H 18
+             M 82 34 H 88 M 82 46 H 88 M 82 58 H 88 M 82 70 H 88" 
+          stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          
+    <rect x="18" y="22" width="64" height="62" rx="4" stroke="currentColor" stroke-width="3"/>
+    
+    <!-- Muesca Pin 1 / Notch -->
+    <path d="M 45 22 A 5 5 0 0 0 55 22" stroke="currentColor" stroke-width="2.5"/>
+    
+    <!-- Onda Wi-Fi / Antena -->
+    <path d="M 38 12 A 18 18 0 0 1 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- Onda Cuadrada VCSS pulsada -->
+    <path d="M 33 36 H 42 V 28 H 58 V 36 H 67" stroke="currentColor" stroke-width="3" stroke-linecap="square"/>
+    
+    <!-- Ánodo y Cátodo -->
+    <rect x="30" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    <rect x="64" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    
+    <!-- Capa de recubrimiento en cátodo -->
+    <rect x="71" y="44" width="2.5" height="28" rx="0.5" fill="currentColor"/>
+    
+    <!-- Línea de electrolito / Menisco -->
+    <line x1="22" y1="56" x2="78" y2="56" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.6"/>
+</svg></div>
+          <div>
+            <div class="brand-text-demo" style="color:#e2f5e8;">ELECTRODO-32</div>
+            <div class="brand-sub-demo" style="color:#7ab890;">PCB SILKSCREEN &middot; 1 TINTA</div>
+          </div>
+        </div>
+        
+        <div class="scales-row">
+          <div class="scale-item">
+            <div style="width:20px;height:20px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Versión monocromática pura (admite color vía CSS currentColor) -->
+    <path d="M 12 34 H 18 M 12 46 H 18 M 12 58 H 18 M 12 70 H 18
+             M 82 34 H 88 M 82 46 H 88 M 82 58 H 88 M 82 70 H 88" 
+          stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          
+    <rect x="18" y="22" width="64" height="62" rx="4" stroke="currentColor" stroke-width="3"/>
+    
+    <!-- Muesca Pin 1 / Notch -->
+    <path d="M 45 22 A 5 5 0 0 0 55 22" stroke="currentColor" stroke-width="2.5"/>
+    
+    <!-- Onda Wi-Fi / Antena -->
+    <path d="M 38 12 A 18 18 0 0 1 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- Onda Cuadrada VCSS pulsada -->
+    <path d="M 33 36 H 42 V 28 H 58 V 36 H 67" stroke="currentColor" stroke-width="3" stroke-linecap="square"/>
+    
+    <!-- Ánodo y Cátodo -->
+    <rect x="30" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    <rect x="64" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    
+    <!-- Capa de recubrimiento en cátodo -->
+    <rect x="71" y="44" width="2.5" height="28" rx="0.5" fill="currentColor"/>
+    
+    <!-- Línea de electrolito / Menisco -->
+    <line x1="22" y1="56" x2="78" y2="56" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.6"/>
+</svg></div>
+            <span style="color:#7ab890;">20px</span>
+          </div>
+          <div class="scale-item">
+            <div style="width:32px;height:32px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Versión monocromática pura (admite color vía CSS currentColor) -->
+    <path d="M 12 34 H 18 M 12 46 H 18 M 12 58 H 18 M 12 70 H 18
+             M 82 34 H 88 M 82 46 H 88 M 82 58 H 88 M 82 70 H 88" 
+          stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          
+    <rect x="18" y="22" width="64" height="62" rx="4" stroke="currentColor" stroke-width="3"/>
+    
+    <!-- Muesca Pin 1 / Notch -->
+    <path d="M 45 22 A 5 5 0 0 0 55 22" stroke="currentColor" stroke-width="2.5"/>
+    
+    <!-- Onda Wi-Fi / Antena -->
+    <path d="M 38 12 A 18 18 0 0 1 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- Onda Cuadrada VCSS pulsada -->
+    <path d="M 33 36 H 42 V 28 H 58 V 36 H 67" stroke="currentColor" stroke-width="3" stroke-linecap="square"/>
+    
+    <!-- Ánodo y Cátodo -->
+    <rect x="30" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    <rect x="64" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    
+    <!-- Capa de recubrimiento en cátodo -->
+    <rect x="71" y="44" width="2.5" height="28" rx="0.5" fill="currentColor"/>
+    
+    <!-- Línea de electrolito / Menisco -->
+    <line x1="22" y1="56" x2="78" y2="56" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.6"/>
+</svg></div>
+            <span style="color:#7ab890;">32px</span>
+          </div>
+          <div class="scale-item">
+            <div style="width:64px;height:64px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Versión monocromática pura (admite color vía CSS currentColor) -->
+    <path d="M 12 34 H 18 M 12 46 H 18 M 12 58 H 18 M 12 70 H 18
+             M 82 34 H 88 M 82 46 H 88 M 82 58 H 88 M 82 70 H 88" 
+          stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          
+    <rect x="18" y="22" width="64" height="62" rx="4" stroke="currentColor" stroke-width="3"/>
+    
+    <!-- Muesca Pin 1 / Notch -->
+    <path d="M 45 22 A 5 5 0 0 0 55 22" stroke="currentColor" stroke-width="2.5"/>
+    
+    <!-- Onda Wi-Fi / Antena -->
+    <path d="M 38 12 A 18 18 0 0 1 62 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- Onda Cuadrada VCSS pulsada -->
+    <path d="M 33 36 H 42 V 28 H 58 V 36 H 67" stroke="currentColor" stroke-width="3" stroke-linecap="square"/>
+    
+    <!-- Ánodo y Cátodo -->
+    <rect x="30" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    <rect x="64" y="36" width="6" height="36" rx="1" fill="currentColor"/>
+    
+    <!-- Capa de recubrimiento en cátodo -->
+    <rect x="71" y="44" width="2.5" height="28" rx="0.5" fill="currentColor"/>
+    
+    <!-- Línea de electrolito / Menisco -->
+    <line x1="22" y1="56" x2="78" y2="56" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.6"/>
+</svg></div>
+            <span style="color:#7ab890;">64px</span>
+          </div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li><b>100% Monocromático:</b> Funciona con <code>currentColor</code> para grabados láser, carátulas y PCB.</li>
+        <li><b>Muesca superior:</b> Notch circular de pin 1 de chip.</li>
+        <li><b>Máxima pregnancia:</b> Se puede trazar de memoria en 5 segundos.</li>
+      </ul>
+    </div>
+
+    <!-- Variante C -->
+    <div class="card">
+      <div class="card-title">Variante 1C &middot; Bisel Pin 1 &amp; Alta Síntesis</div>
+      <div class="preview-stage">
+        <div class="row-brand">
+          <div style="width:44px;height:44px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bathG2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4ec9b0" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#4ec9b0" stop-opacity="0.05"/>
+        </linearGradient>
+    </defs>
+    <!-- Pads dorados del IC -->
+    <g fill="#d7ba7d">
+        <rect x="13" y="34" width="5" height="4" rx="1"/>
+        <rect x="13" y="46" width="5" height="4" rx="1"/>
+        <rect x="13" y="58" width="5" height="4" rx="1"/>
+        <rect x="13" y="70" width="5" height="4" rx="1"/>
+        
+        <rect x="82" y="34" width="5" height="4" rx="1"/>
+        <rect x="82" y="46" width="5" height="4" rx="1"/>
+        <rect x="82" y="58" width="5" height="4" rx="1"/>
+        <rect x="82" y="70" width="5" height="4" rx="1"/>
+    </g>
+    
+    <!-- Chasis del Chip / Tina con chaflán Pin 1 -->
+    <path d="M 28 24 H 76 A 4 4 0 0 1 80 28 V 80 A 4 4 0 0 1 76 84 H 24 A 4 4 0 0 1 20 80 V 32 Z" 
+          fill="#14171f" stroke="#38bdf8" stroke-width="2.2"/>
+    <circle cx="27" cy="31" r="1.6" fill="#38bdf8" opacity="0.9"/>
+    
+    <!-- Onda Wi-Fi compacta -->
+    <path d="M 40 14 A 15 15 0 0 1 60 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.6" fill="#38bdf8"/>
+    
+    <!-- Baño Químico -->
+    <rect x="22" y="52" width="56" height="30" rx="2" fill="url(#bathG2)"/>
+    <line x1="22" y1="52" x2="78" y2="52" stroke="#4ec9b0" stroke-width="1.4" opacity="0.8"/>
+    
+    <!-- Onda Cuadrada VCSS -->
+    <path d="M 36 34 H 44 V 28 H 56 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    
+    <!-- Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="36" rx="1.5" fill="#f14c4c"/>
+    <!-- Cátodo (-) con recubrimiento -->
+    <rect x="61" y="34" width="6" height="36" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="44" width="2.2" height="26" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+          <div>
+            <div class="brand-text-demo">ELECTRODO-32</div>
+            <div class="brand-sub-demo">INSTRUMENT &amp; HARDWARE</div>
+          </div>
+        </div>
+        
+        <div class="scales-row">
+          <div class="scale-item">
+            <div style="width:20px;height:20px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bathG2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4ec9b0" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#4ec9b0" stop-opacity="0.05"/>
+        </linearGradient>
+    </defs>
+    <!-- Pads dorados del IC -->
+    <g fill="#d7ba7d">
+        <rect x="13" y="34" width="5" height="4" rx="1"/>
+        <rect x="13" y="46" width="5" height="4" rx="1"/>
+        <rect x="13" y="58" width="5" height="4" rx="1"/>
+        <rect x="13" y="70" width="5" height="4" rx="1"/>
+        
+        <rect x="82" y="34" width="5" height="4" rx="1"/>
+        <rect x="82" y="46" width="5" height="4" rx="1"/>
+        <rect x="82" y="58" width="5" height="4" rx="1"/>
+        <rect x="82" y="70" width="5" height="4" rx="1"/>
+    </g>
+    
+    <!-- Chasis del Chip / Tina con chaflán Pin 1 -->
+    <path d="M 28 24 H 76 A 4 4 0 0 1 80 28 V 80 A 4 4 0 0 1 76 84 H 24 A 4 4 0 0 1 20 80 V 32 Z" 
+          fill="#14171f" stroke="#38bdf8" stroke-width="2.2"/>
+    <circle cx="27" cy="31" r="1.6" fill="#38bdf8" opacity="0.9"/>
+    
+    <!-- Onda Wi-Fi compacta -->
+    <path d="M 40 14 A 15 15 0 0 1 60 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.6" fill="#38bdf8"/>
+    
+    <!-- Baño Químico -->
+    <rect x="22" y="52" width="56" height="30" rx="2" fill="url(#bathG2)"/>
+    <line x1="22" y1="52" x2="78" y2="52" stroke="#4ec9b0" stroke-width="1.4" opacity="0.8"/>
+    
+    <!-- Onda Cuadrada VCSS -->
+    <path d="M 36 34 H 44 V 28 H 56 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    
+    <!-- Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="36" rx="1.5" fill="#f14c4c"/>
+    <!-- Cátodo (-) con recubrimiento -->
+    <rect x="61" y="34" width="6" height="36" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="44" width="2.2" height="26" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+            <span>20px</span>
+          </div>
+          <div class="scale-item">
+            <div style="width:32px;height:32px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bathG2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4ec9b0" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#4ec9b0" stop-opacity="0.05"/>
+        </linearGradient>
+    </defs>
+    <!-- Pads dorados del IC -->
+    <g fill="#d7ba7d">
+        <rect x="13" y="34" width="5" height="4" rx="1"/>
+        <rect x="13" y="46" width="5" height="4" rx="1"/>
+        <rect x="13" y="58" width="5" height="4" rx="1"/>
+        <rect x="13" y="70" width="5" height="4" rx="1"/>
+        
+        <rect x="82" y="34" width="5" height="4" rx="1"/>
+        <rect x="82" y="46" width="5" height="4" rx="1"/>
+        <rect x="82" y="58" width="5" height="4" rx="1"/>
+        <rect x="82" y="70" width="5" height="4" rx="1"/>
+    </g>
+    
+    <!-- Chasis del Chip / Tina con chaflán Pin 1 -->
+    <path d="M 28 24 H 76 A 4 4 0 0 1 80 28 V 80 A 4 4 0 0 1 76 84 H 24 A 4 4 0 0 1 20 80 V 32 Z" 
+          fill="#14171f" stroke="#38bdf8" stroke-width="2.2"/>
+    <circle cx="27" cy="31" r="1.6" fill="#38bdf8" opacity="0.9"/>
+    
+    <!-- Onda Wi-Fi compacta -->
+    <path d="M 40 14 A 15 15 0 0 1 60 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.6" fill="#38bdf8"/>
+    
+    <!-- Baño Químico -->
+    <rect x="22" y="52" width="56" height="30" rx="2" fill="url(#bathG2)"/>
+    <line x1="22" y1="52" x2="78" y2="52" stroke="#4ec9b0" stroke-width="1.4" opacity="0.8"/>
+    
+    <!-- Onda Cuadrada VCSS -->
+    <path d="M 36 34 H 44 V 28 H 56 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    
+    <!-- Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="36" rx="1.5" fill="#f14c4c"/>
+    <!-- Cátodo (-) con recubrimiento -->
+    <rect x="61" y="34" width="6" height="36" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="44" width="2.2" height="26" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+            <span>32px</span>
+          </div>
+          <div class="scale-item">
+            <div style="width:64px;height:64px;"><svg class="brand-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bathG2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4ec9b0" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#4ec9b0" stop-opacity="0.05"/>
+        </linearGradient>
+    </defs>
+    <!-- Pads dorados del IC -->
+    <g fill="#d7ba7d">
+        <rect x="13" y="34" width="5" height="4" rx="1"/>
+        <rect x="13" y="46" width="5" height="4" rx="1"/>
+        <rect x="13" y="58" width="5" height="4" rx="1"/>
+        <rect x="13" y="70" width="5" height="4" rx="1"/>
+        
+        <rect x="82" y="34" width="5" height="4" rx="1"/>
+        <rect x="82" y="46" width="5" height="4" rx="1"/>
+        <rect x="82" y="58" width="5" height="4" rx="1"/>
+        <rect x="82" y="70" width="5" height="4" rx="1"/>
+    </g>
+    
+    <!-- Chasis del Chip / Tina con chaflán Pin 1 -->
+    <path d="M 28 24 H 76 A 4 4 0 0 1 80 28 V 80 A 4 4 0 0 1 76 84 H 24 A 4 4 0 0 1 20 80 V 32 Z" 
+          fill="#14171f" stroke="#38bdf8" stroke-width="2.2"/>
+    <circle cx="27" cy="31" r="1.6" fill="#38bdf8" opacity="0.9"/>
+    
+    <!-- Onda Wi-Fi compacta -->
+    <path d="M 40 14 A 15 15 0 0 1 60 14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="50" cy="18" r="1.6" fill="#38bdf8"/>
+    
+    <!-- Baño Químico -->
+    <rect x="22" y="52" width="56" height="30" rx="2" fill="url(#bathG2)"/>
+    <line x1="22" y1="52" x2="78" y2="52" stroke="#4ec9b0" stroke-width="1.4" opacity="0.8"/>
+    
+    <!-- Onda Cuadrada VCSS -->
+    <path d="M 36 34 H 44 V 28 H 56 V 34 H 64" stroke="#007acc" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    
+    <!-- Ánodo (+) -->
+    <rect x="33" y="34" width="6" height="36" rx="1.5" fill="#f14c4c"/>
+    <!-- Cátodo (-) con recubrimiento -->
+    <rect x="61" y="34" width="6" height="36" rx="1.5" fill="#4ec9b0"/>
+    <rect x="67" y="44" width="2.2" height="26" rx="0.5" fill="#d7ba7d"/>
+</svg></div>
+            <span>64px</span>
+          </div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li><b>Corte en esquina Pin 1:</b> Reproduce la esquina biselada del encapsulado físico ESP32.</li>
+        <li><b>Gradiente de baño tenue:</b> Mayor profundidad sin sobrecargar.</li>
+        <li><b>Equilibrio de grosores:</b> Líneas optimizadas para alta definición en pantallas Retina/OLED.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
