@@ -475,7 +475,7 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
 <div class='container'>
     <!-- Header -->
     <div class='hdr'>
-        <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute; Principal</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span></button></div>
+        <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute; Principal</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>Modo D&iacute;a</span></button></div>
         <div style='text-align:right;'>
             <div class='hdr-title'>Red Wi-Fi SoftAP</div>
             <span class='hdr-sub'>ESP32-S3 FreeRTOS RTOS 2.0</span>
@@ -525,7 +525,7 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
                 <label class='field-label'>Nueva Contrase&ntilde;a WPA2-PSK (M&iacute;nimo 8 Caracteres)</label>
                 <div class='input-wrapper'>
                     <input type='password' id='inp-pass' class='input-field' minlength='8' maxlength='64' required placeholder='M&iacute;nimo 8 caracteres'>
-                    <button type='button' class='btn-toggle-eye' onclick='togglePassVisual()' title='Mostrar / Ocultar'>&#128065;</button>
+                    <button type='button' class='btn-toggle-eye' onclick='togglePassVisual()' title='Mostrar / Ocultar'>VER</button>
                 </div>
             </div>
 
@@ -545,13 +545,13 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
 
             <div class='btn-grid'>
                 <button type='submit' id='btn-submit' class='btn btn-primary'>
-                    <span>&#128190;</span> Guardar Credenciales en NVS
+                    Guardar Credenciales en NVS
                 </button>
                 <button type='button' class='btn btn-secondary' onclick='restaurarDefecto()'>
                     <span>&#8635;</span> Valores por Defecto
                 </button>
                 <button type='button' class='btn btn-danger' onclick='solicitarReinicio()'>
-                    <span>&#9889;</span> Reiniciar ESP32
+                    Reiniciar ESP32
                 </button>
             </div>
         </form>
@@ -583,7 +583,7 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
     function updateThemeBtn(th) {
         var btn = document.getElementById('theme-btn-lbl');
         if (!btn) return;
-        btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+        btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
     }
 
     initTheme();
@@ -661,7 +661,7 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
 
         var btn = document.getElementById('btn-submit');
         btn.disabled = true;
-        btn.innerHTML = '<span>&#8987;</span> Guardando...';
+        btn.innerHTML = 'Guardando...';
 
         var body = 'ssid=' + encodeURIComponent(ssid) + '&pass=' + encodeURIComponent(pass);
 
@@ -682,13 +682,13 @@ const char HTML_WIFI[] PROGMEM = R"rawliteral(
         })
         .then(function(d){
             btn.disabled = false;
-            btn.innerHTML = '<span>&#128190;</span> Guardar Credenciales en NVS';
+            btn.innerHTML = 'Guardar Credenciales en NVS';
             showToast(d.msg || 'Credenciales guardadas con &eacute;xito en NVS', 'ok');
             cargarEstadoWifi();
         })
         .catch(function(err){
             btn.disabled = false;
-            btn.innerHTML = '<span>&#128190;</span> Guardar Credenciales en NVS';
+            btn.innerHTML = 'Guardar Credenciales en NVS';
             showToast('Fallo al guardar: ' + err.message, 'err');
         });
     }

@@ -428,7 +428,7 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
         <div style="display:flex;align-items:center;gap:12px;">
             <a href="/" class="nav-back">&larr; Men&uacute; RTOS 2.0</a>
             <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar Modo Día / Noche">
-                <span id="theme-btn-lbl">&#9728; Modo D&iacute;a</span>
+                <span id="theme-btn-lbl">Modo D&iacute;a</span>
             </button>
         </div>
         <div style="text-align:right;">
@@ -446,7 +446,7 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
     <!-- Zona de Carga / Drop Zone -->
     <div class="drop-zone" id="dz" onclick="document.getElementById('fi').click()">
         <input type="file" id="fi" accept=".bin" style="display:none;" onchange="onFile(this.files)">
-        <div class="dz-icon">&#128229;</div>
+        <div class="dz-icon">OTA</div>
         <div class="dz-title">SELECCIONAR ARCHIVO BINARIO DE FIRMWARE</div>
         <div class="dz-sub">Arrastre y suelte el archivo <code>.bin</code> o haga clic aqu&iacute; para examinar</div>
         <div class="dz-formats">FORMATOS SOPORTADOS: BINARIO COMPILADO (.bin) &middot; VERSIÓN INSTALADA: <b id="cur-ver">RTOS 2.0</b></div>
@@ -471,7 +471,7 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
 
     <!-- Botón de Flasheo -->
     <button class="btn-upld" id="btn-u" onclick="upload()" disabled>
-        <span>&#9889;</span> INICIAR TRANSFERENCIA E INSTALACIÓN OTA
+        INICIAR TRANSFERENCIA E INSTALACIÓN OTA
     </button>
 </div>
 
@@ -496,7 +496,7 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
     function updateThemeBtn(th) {
         var btn = document.getElementById('theme-btn-lbl');
         if (!btn) return;
-        btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+        btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
     }
 
     initTheme();
@@ -519,7 +519,7 @@ const char HTML_OTA[] PROGMEM = R"rawliteral(
         }
         var fi = document.getElementById('finfo');
         fi.style.display = 'flex';
-        fi.innerHTML = '<span style="font-size:1.4em">&#128230;</span> <div><b>' + selFile.name + '</b><br><span style="font-size:0.85em;color:var(--text-muted);font-family:Consolas,monospace;">' + (selFile.size/1024).toFixed(1) + ' KB &middot; Archivo Binario V&aacute;lido</span></div>';
+        fi.innerHTML = '<span style="font-family:Consolas,monospace;font-weight:700;color:var(--text-muted);margin-right:8px;">[BIN]</span> <div><b>' + selFile.name + '</b><br><span style="font-size:0.85em;color:var(--text-muted);font-family:Consolas,monospace;">' + (selFile.size/1024).toFixed(1) + ' KB &middot; Archivo Binario V&aacute;lido</span></div>';
         checkIL();
     }
 

@@ -700,7 +700,7 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
 
     <div class='container'>
         <div class='hdr'>
-            <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute;</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span></button></div>
+            <div style='display:flex;align-items:center;gap:12px;'><a href='/' class='nav-back'>&larr; Men&uacute;</a><button class='theme-btn' id='theme-btn' onclick='toggleTheme()' title='Alternar Tema'><span id='theme-btn-lbl'>Modo D&iacute;a</span></button></div>
             <div style='text-align:center'>
                 <span class='hdr-title'>Salida de Corriente</span>
                 <span class='hdr-sub'>CONTROL VCSS &middot; SHUNT DUAL &middot; RTOS 2.0</span>
@@ -840,7 +840,7 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
         function updateThemeBtn(th) {
             var btn = document.getElementById('theme-btn-lbl');
             if (!btn) return;
-            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+            btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
         }
 
         initTheme();
@@ -1244,7 +1244,7 @@ const char HTML_FUENTE[] PROGMEM = R"rawliteral(
                 if(r.status === 403){
                     showToast('&#9888; Bloqueado por Interlock — Apague el pH primero','err');
                 } else {
-                    showToast(nuevoEstado==1?'&#9889; Fuente ENCENDIDA':'Fuente APAGADA','ok');
+                    showToast(nuevoEstado==1?'Fuente ENCENDIDA':'Fuente APAGADA','ok');
                 }
                 loadFuenteData();
             }).catch(function(){showToast('Error de comunicaci\u00f3n','err');});

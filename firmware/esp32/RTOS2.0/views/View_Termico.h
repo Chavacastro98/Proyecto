@@ -571,7 +571,7 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
         <div class='hub-bar'>
             <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
             <button class='theme-btn' onclick='toggleTheme()' title='Alternar Modo Día / Noche'>
-                <span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span>
+                <span id='theme-btn-lbl'>Modo D&iacute;a</span>
             </button>
         </div>
 
@@ -636,7 +636,7 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
         function updateThemeBtn(th) {
             var btn = document.getElementById('theme-btn-lbl');
             if (!btn) return;
-            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+            btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
         }
 
         initTheme();
@@ -776,7 +776,7 @@ const char HTML_TERMICO[] PROGMEM = R"rawliteral(
                 if(r.status === 403){
                     showToast('&#9888; Bloqueado por Interlock — Apague el pH primero', 'err');
                 } else {
-                    showToast(run == 1 ? '&#128293; Sistema térmico ENCENDIDO' : 'Sistema térmico APAGADO', 'ok');
+                    showToast(run == 1 ? 'Sistema térmico ENCENDIDO' : 'Sistema térmico APAGADO', 'ok');
                 }
                 loadThermal();
             }); 

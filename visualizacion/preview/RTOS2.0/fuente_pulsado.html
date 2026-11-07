@@ -679,7 +679,7 @@
         <div class='hub-bar'>
             <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
             <button class='theme-btn' onclick='toggleTheme()' title='Alternar Modo Día / Noche'>
-                <span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span>
+                <span id='theme-btn-lbl'>Modo D&iacute;a</span>
             </button>
         </div>
 
@@ -852,7 +852,7 @@
         function updateThemeBtn(th) {
             var btn = document.getElementById('theme-btn-lbl');
             if (!btn) return;
-            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+            btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
         }
 
         initTheme();
@@ -1152,7 +1152,7 @@
         function togglePower(){
             fuenteActiva = !fuenteActiva;
             renderUI();
-            showToast(fuenteActiva ? '&#9889; Fuente ENCENDIDA' : 'Fuente APAGADA', fuenteActiva ? 'ok' : 'info');
+            showToast(fuenteActiva ? 'Fuente ENCENDIDA' : 'Fuente APAGADA', fuenteActiva ? 'ok' : 'info');
             fetch('/act_f?run=' + (fuenteActiva ? 1 : 0)).catch(function(){});
         }
 

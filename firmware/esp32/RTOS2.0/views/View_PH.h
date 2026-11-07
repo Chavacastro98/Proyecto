@@ -1280,7 +1280,7 @@ function toggleTheme() {
 function updateThemeBtn(th) {
     var btn = document.getElementById('theme-btn-lbl');
     if (!btn) return;
-    btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+    btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
 }
 
 initTheme();

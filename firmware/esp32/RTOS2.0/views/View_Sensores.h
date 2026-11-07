@@ -579,7 +579,7 @@ const char HTML_SENSORES[] PROGMEM = R"rawliteral(
     <div class='hub-bar'>
       <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
       <button class='theme-btn' onclick='toggleTheme()' title='Alternar Modo Día / Noche'>
-        <span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span>
+        <span id='theme-btn-lbl'>Modo D&iacute;a</span>
       </button>
     </div>
 
@@ -774,7 +774,7 @@ function toggleTheme() {
 function updateThemeBtn(th) {
     var btn = document.getElementById('theme-btn-lbl');
     if (!btn) return;
-    btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+    btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
 }
 
 initTheme();
@@ -872,7 +872,7 @@ function updHb(){
 function escanear(){
     var btn = document.getElementById('btn-scan');
     btn.className = 'btn-scan scanning';
-    btn.innerHTML = '&#8987; ESCANEANDO...';
+    btn.innerHTML = 'ESCANEANDO BUS...';
     btn.disabled = true;
     var prog = document.getElementById('scan-prog');
     if(prog) prog.className = 'scan-progress active';

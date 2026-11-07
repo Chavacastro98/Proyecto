@@ -292,10 +292,15 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
             display:flex;
             flex-direction:column;
             align-items:center;
-            gap:2px;
+            gap:4px;
             font-family:Consolas,monospace;
         }
-        .env-item span.icon{font-size:1.1em;}
+        .env-lbl{
+            font-size:0.95em;
+            color:var(--text-muted);
+            font-weight:700;
+            letter-spacing:0.4px;
+        }
         .env-val{
             font-size:1.2em;
             color:var(--text-primary);
@@ -328,15 +333,18 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
         .btn-proc:active{transform:scale(0.99);}
         .proc-main{display:flex;align-items:center;gap:10px;text-align:left;flex:1;}
         .proc-ico{
-            width:32px;
-            height:32px;
+            width:46px;
+            height:30px;
             border-radius:2px;
             display:flex;
             align-items:center;
             justify-content:center;
-            font-size:1.05em;
+            font-size:0.75em;
+            font-weight:700;
+            font-family:Consolas,monospace;
+            letter-spacing:0.5px;
             flex-shrink:0;
-            background:var(--ui-panel);
+            background:var(--ui-subpanel);
             border:1px solid var(--ui-border);
         }
         .ico-fuente{color:var(--accent-primary);}
@@ -473,7 +481,7 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
         <div class='hub-bar'>
             <a href='../index.html' class='hub-link'>&larr; Hub de Versiones (Tesis)</a>
             <button class='theme-btn' onclick='toggleTheme()' title='Alternar Modo Día / Noche'>
-                <span id='theme-btn-lbl'>&#9728; Modo D&iacute;a</span>
+                <span id='theme-btn-lbl'>Modo D&iacute;a</span>
             </button>
         </div>
 
@@ -488,24 +496,21 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
             <div class='last-update' id='last-upd'>Conectado (Simulado)</div>
             
             <div class='failsafe-banner' id='fs-box'>
-                <div><b>&#9888; PARADA FAIL-SAFE ACTIVADA:</b> <span id='fs-reason'></span></div>
+                <div><b>[FAIL-SAFE] PARADA ACTIVADA:</b> <span id='fs-reason'></span></div>
                 <button onclick='resetFailSafe()'>DESBLOQUEAR SISTEMA</button>
             </div>
 
             <div class='env-box'>
                 <div class='env-item'>
-                    <span class='icon'>&#127777;&#65039;</span>
-                    <span>Temp. Amb.</span>
+                    <span class='env-lbl'>TEMP. AMBIENTE</span>
                     <span class='env-val' id='amb_t'>24.6 &deg;C</span>
                 </div>
                 <div class='env-item'>
-                    <span class='icon'>&#128167;</span>
-                    <span>Humedad</span>
+                    <span class='env-lbl'>HUMEDAD</span>
                     <span class='env-val' id='amb_h'>48 %</span>
                 </div>
                 <div class='env-item'>
-                    <span class='icon'>&#129517;</span>
-                    <span>Presi&oacute;n</span>
+                    <span class='env-lbl'>PRESI&Oacute;N</span>
                     <span class='env-val' id='amb_p'>1013 hPa</span>
                 </div>
             </div>
@@ -513,7 +518,7 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
             <div class='proc-list'>
                 <a href='fuente.html' class='btn-proc'>
                     <div class='proc-main'>
-                        <div class='proc-ico ico-fuente'>&#9889;</div>
+                        <div class='proc-ico ico-fuente'>VCSS</div>
                         <div class='proc-info'>
                             <h3>Salida de Corriente</h3>
                             <p>Control VCSS &middot; DC / Pulsada</p>
@@ -527,7 +532,7 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
 
                 <a href='termico.html' class='btn-proc'>
                     <div class='proc-main'>
-                        <div class='proc-ico ico-termico'>&#128293;</div>
+                        <div class='proc-ico ico-termico'>ZCS</div>
                         <div class='proc-info'>
                             <h3>Control T&eacute;rmico</h3>
                             <p>Control PI &middot; Termopares MAX6675</p>
@@ -541,7 +546,7 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
 
                 <a href='ph.html' class='btn-proc'>
                     <div class='proc-main'>
-                        <div class='proc-ico ico-ph'>&#129514;</div>
+                        <div class='proc-ico ico-ph'>pH</div>
                         <div class='proc-info'>
                             <h3>M&oacute;dulo de pH</h3>
                             <p>Sensor Dedicado Canal A1 &middot; RTOS 2.0</p>
@@ -559,28 +564,28 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
             <div class='tools-grid'>
                 <a href='sensores.html' class='btn-tool'>
                     <div class='tool-left'>
-                        <span class='ico'>&#128269;</span>
+                        <span class='tool-tag'>I2C</span>
                         <span>Estado de Sensores (I2C/SPI)</span>
                     </div>
                     <span>&rarr;</span>
                 </a>
                 <a href='wifi.html' class='btn-tool'>
                     <div class='tool-left'>
-                        <span class='ico'>&#128246;</span>
+                        <span class='tool-tag'>WIFI</span>
                         <span>Red Wi-Fi SoftAP</span>
                     </div>
                     <span>&rarr;</span>
                 </a>
                 <a href='consola.html' class='btn-tool'>
                     <div class='tool-left'>
-                        <span class='ico'>&#128187;</span>
+                        <span class='tool-tag'>LOG</span>
                         <span>Consola de Diagn&oacute;stico</span>
                     </div>
                     <span>&rarr;</span>
                 </a>
                 <a href='update.html' class='btn-tool'>
                     <div class='tool-left'>
-                        <span class='ico'>&#128230;</span>
+                        <span class='tool-tag'>OTA</span>
                         <span>Actualizar Firmware (OTA)</span>
                     </div>
                     <span>&rarr;</span>
@@ -622,7 +627,7 @@ const char HTML_MENU[] PROGMEM = R"rawliteral(
         function updateThemeBtn(th) {
             var btn = document.getElementById('theme-btn-lbl');
             if (!btn) return;
-            btn.innerHTML = (th === 'dark') ? '&#9728; Modo D&iacute;a' : '&#9790; Modo Noche';
+            btn.innerHTML = (th === 'dark') ? 'Modo D&iacute;a' : 'Modo Noche';
         }
 
         initTheme();
