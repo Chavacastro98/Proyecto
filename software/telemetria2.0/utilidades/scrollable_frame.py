@@ -13,7 +13,6 @@ o cuando el escalado de pantalla (DPI scale 125%/150%) restringe la altura efect
 """
 
 import tkinter as tk
-from tkinter import ttk
 
 
 class ScrollableFrame(tk.Frame):
@@ -104,7 +103,7 @@ class ScrollableFrame(tk.Frame):
         """Ajusta el ancho y/o alto del frame interior al ancho/alto del canvas."""
         if not self.canvas.winfo_exists():
             return
-        
+
         # Ancho mínimo o coincidente
         if self.fit_width:
             content_req_w = self.content.winfo_reqwidth()

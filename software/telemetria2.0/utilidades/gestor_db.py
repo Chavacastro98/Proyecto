@@ -9,15 +9,14 @@ Proyecto: E.L.E.C.T.R.O.D.O-32 | Innovafest Guadalajara 2026 & SMEQ 2026
 =============================================================================
 """
 
-import os
-import sys
-import json
-import sqlite3
 import hashlib
+import json
 import logging
+import os
+import sqlite3
 import uuid
-import time
 from datetime import datetime
+
 import pandas as pd
 import requests
 
@@ -301,7 +300,7 @@ class GestorDB:
         p_fin = float(grav.get("peso_final_g", 0.0))
         area = float(grav.get("area_placa_cm2", 65.0))
         delta_p = p_fin - p_ini
-        
+
         # Rendimiento Faradaico (%) = (delta_p (mg) / m_teo (mg)) * 100
         rendimiento = 0.0
         if m_teo_max > 0 and delta_p > 0:
@@ -315,7 +314,7 @@ class GestorDB:
             cur = conn.cursor()
             cur.execute("SELECT id FROM ensayos WHERE nombre_carpeta = ?", (nombre_carpeta,))
             row = cur.fetchone()
-            
+
             if row:
                 ensayo_id = row["id"]
                 cur.execute("""
@@ -543,7 +542,7 @@ class SincronizadorSupabase:
                 pct = 10 + int((i / max(1, total_tel)) * 75)
                 if callback_progreso:
                     callback_progreso(pct, f"Subiendo telemetría 10Hz ({i + len(chunk)}/{total_tel} filas)...")
-                
+
                 resp_chunk = requests.post(f"{url}/rest/v1/telemetria_10hz", headers=headers, json=chunk, timeout=25)
                 if resp_chunk.status_code not in (200, 201):
                     raise RuntimeError(f"Error en bloque telemetría {i}: HTTP {resp_chunk.status_code} - {resp_chunk.text}")

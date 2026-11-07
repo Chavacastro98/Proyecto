@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <!-- Gradientes para Chasis Metálico ESP32 -->
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2a2d32"/>
+      <stop offset="50%" stop-color="#1e2024"/>
+      <stop offset="100%" stop-color="#141518"/>
+    </linearGradient>
+    <linearGradient id="fluidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#104e5b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0a2a32" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#007acc"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#00d2ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ==========================================
+       1. ONDAS WI-FI RADIANTES (Desde la Antena ESP32)
+       ========================================== -->
+  <g stroke="#38bdf8" stroke-linecap="round" fill="none">
+    <path d="M 40 10 A 28 28 0 0 1 80 10" stroke-width="2.5" opacity="0.45"/>
+    <path d="M 46 16 A 20 20 0 0 1 74 16" stroke-width="2.5" opacity="0.75"/>
+    <path d="M 52 22 A 12 12 0 0 1 68 22" stroke-width="2.5" opacity="1.0"/>
+    <circle cx="60" cy="27" r="2" fill="#38bdf8"/>
+  </g>
+
+  <!-- ==========================================
+       2. PINES CASTELLADOS / PADS DEL MÓDULO ESP32
+       ========================================== -->
+  <g fill="#d7ba7d">
+    <!-- Pines Laterales Izquierdos -->
+    <rect x="14" y="44" width="4" height="6" rx="1"/>
+    <rect x="14" y="54" width="4" height="6" rx="1"/>
+    <rect x="14" y="64" width="4" height="6" rx="1"/>
+    <rect x="14" y="74" width="4" height="6" rx="1"/>
+    <rect x="14" y="84" width="4" height="6" rx="1"/>
+    <rect x="14" y="94" width="4" height="6" rx="1"/>
+    <!-- Pines Laterales Derechos -->
+    <rect x="102" y="44" width="4" height="6" rx="1"/>
+    <rect x="102" y="54" width="4" height="6" rx="1"/>
+    <rect x="102" y="64" width="4" height="6" rx="1"/>
+    <rect x="102" y="74" width="4" height="6" rx="1"/>
+    <rect x="102" y="84" width="4" height="6" rx="1"/>
+    <rect x="102" y="94" width="4" height="6" rx="1"/>
+    <!-- Pines Inferiores -->
+    <rect x="36" y="112" width="6" height="4" rx="1"/>
+    <rect x="48" y="112" width="6" height="4" rx="1"/>
+    <rect x="66" y="112" width="6" height="4" rx="1"/>
+    <rect x="78" y="112" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- ==========================================
+       3. BLINDAJE METÁLICO RF (ESP32-S3 WROOM)
+       ========================================== -->
+  <!-- PCB Base -->
+  <rect x="17" y="32" width="86" height="81" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+  <!-- Franja Superior de Antena PCB -->
+  <rect x="21" y="34" width="78" height="9" rx="2" fill="#161b22"/>
+  <path d="M 26 38 H 34 V 35 H 42 V 38 H 50 V 35 H 58" stroke="#d7ba7d" stroke-width="1.5" fill="none"/>
+
+  <!-- Lata de Blindaje Metálico (Can) -->
+  <rect x="21" y="45" width="78" height="65" rx="3" fill="url(#shieldGrad)" stroke="#484f58" stroke-width="1.5"/>
+
+  <!-- ==========================================
+       4. VENTANA DE INSTRUMENTACIÓN (DIE VIEW)
+       ========================================== -->
+  <rect x="25" y="49" width="70" height="57" rx="3" fill="#0a0c10" stroke="#21262d" stroke-width="1.2"/>
+
+  <!-- ==========================================
+       5. ONDA CUADRADA SUPERIOR (VCSS PULSADO 10 Hz)
+       ========================================== -->
+  <path d="M 28 58 H 36 V 52 H 46 V 58 H 56 V 52 H 66 V 58 H 76 V 52 H 84 V 58 H 92" 
+        stroke="url(#pulseGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- ==========================================
+       6. TINA DE ELECTRODEPOSICIÓN Y ELECTROLITO
+       ========================================== -->
+  <!-- Cuba / Vaso de Precipitado -->
+  <path d="M 32 64 V 98 A 4 4 0 0 0 36 102 H 84 A 4 4 0 0 0 88 98 V 64" 
+        stroke="#4ec9b0" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Nivel de Líquido / Menisco -->
+  <path d="M 33 72 C 45 70, 50 74, 62 72 C 74 70, 80 74, 87 72 V 98 A 3 3 0 0 1 84 101 H 36 A 3 3 0 0 1 33 98 Z" 
+        fill="url(#fluidGrad)"/>
+  <path d="M 33 72 C 45 70, 50 74, 62 72 C 74 70, 80 74, 87 72" 
+        stroke="#4ec9b0" stroke-width="1.2" fill="none" opacity="0.8"/>
+
+  <!-- ==========================================
+       7. ÁNODO (+) Y CÁTODO (-) SUMERGIDOS
+       ========================================== -->
+  <!-- Ánodo (+) [Zinc/Níquel Donador] -->
+  <rect x="40" y="60" width="5.5" height="34" rx="1.5" fill="#e06c75" stroke="#be5046" stroke-width="1"/>
+  <!-- Línea de Conexión Eléctrica Ánodo -->
+  <line x1="42.7" y1="58" x2="42.7" y2="60" stroke="#e06c75" stroke-width="1.5"/>
+  <text x="42.7" y="56" font-family="Consolas, monospace" font-size="7" font-weight="900" fill="#e06c75" text-anchor="middle">+</text>
+
+  <!-- Cátodo (-) [Sustrato Al 6061 con Capa Formada] -->
+  <rect x="58" y="60" width="6.5" height="34" rx="1.5" fill="#61afef" stroke="#4d88c4" stroke-width="1"/>
+  <!-- Capa de Recubrimiento Galvanizado Depositada -->
+  <rect x="56.5" y="66" width="1.5" height="26" fill="#98c379"/>
+  <!-- Línea de Conexión Eléctrica Cátodo -->
+  <line x1="61.2" y1="58" x2="61.2" y2="60" stroke="#61afef" stroke-width="1.5"/>
+  <text x="61.2" y="56" font-family="Consolas, monospace" font-size="8" font-weight="900" fill="#61afef" text-anchor="middle">-</text>
+
+  <!-- Líneas de Campo Iónico / Migración Zn2+ / Ni2+ -->
+  <g stroke="#98c379" stroke-width="1" stroke-dasharray="1.5 2" opacity="0.85">
+    <line x1="47" y1="76" x2="55" y2="76"/>
+    <line x1="47" y1="82" x2="55" y2="82"/>
+    <line x1="47" y1="88" x2="55" y2="88"/>
+  </g>
+
+  <!-- ==========================================
+       8. TERMÓMETRO INDUSTRIAL (CONTROL TÉRMICO)
+       ========================================== -->
+  <!-- Vástago del Termómetro -->
+  <rect x="74.5" y="62" width="4" height="28" rx="2" fill="#1e2024" stroke="#d7ba7d" stroke-width="1"/>
+  <!-- Bulbo Inferior -->
+  <circle cx="76.5" cy="94" r="5" fill="#1e2024" stroke="#d7ba7d" stroke-width="1"/>
+  <!-- Columna de Mercurio / Fluido Térmico -->
+  <rect x="75.5" y="74" width="2" height="17" fill="#d7ba7d"/>
+  <circle cx="76.5" cy="94" r="3.5" fill="#d7ba7d"/>
+  <!-- Marcas de Graduación -->
+  <line x1="72.5" y1="68" x2="74.5" y2="68" stroke="#d7ba7d" stroke-width="0.8"/>
+  <line x1="71.5" y1="73" x2="74.5" y2="73" stroke="#d7ba7d" stroke-width="0.8"/>
+  <line x1="72.5" y1="78" x2="74.5" y2="78" stroke="#d7ba7d" stroke-width="0.8"/>
+  <line x1="71.5" y1="83" x2="74.5" y2="83" stroke="#d7ba7d" stroke-width="0.8"/>
+
+  <!-- ==========================================
+       9. IDENTIFICADOR DEL INSTRUMENTO
+       ========================================== -->
+  <text x="60" y="108" font-family="Consolas, monospace" font-size="5.5" font-weight="bold" fill="#858585" text-anchor="middle" letter-spacing="1">ELECTRODO-32</text>
+</svg>

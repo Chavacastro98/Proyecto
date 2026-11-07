@@ -24,6 +24,7 @@ for p in [DIR_ROOT, DIR_SOFTWARE, DIR_TEL2]:
         sys.path.insert(0, p)
 
 from utilidades import alarma
+from utilidades.scrollable_frame import ScrollableFrame
 from utilidades.sim_ph import (
     filtrar_senyal_ph,
     generar_datos_simulacion_ph,
@@ -35,8 +36,14 @@ from utilidades.sim_termica import (
     graficar_simulacion_termica,
     simular_tina,
 )
-from utilidades.scrollable_frame import ScrollableFrame
-from utilidades.tema import cargar_tema_preferido, guardar_tema_preferido, aplicar_estilo_treeview, estilizar_figura_matplotlib, TEMA_NOCHE, TEMA_DIA
+from utilidades.tema import (
+    TEMA_DIA,
+    TEMA_NOCHE,
+    aplicar_estilo_treeview,
+    cargar_tema_preferido,
+    estilizar_figura_matplotlib,
+    guardar_tema_preferido,
+)
 from utilidades.verificar_lut import (
     LUT_FIRMWARE_DEF,
     calcular_potencia_rms_lut,
@@ -244,8 +251,9 @@ class TestTema:
 
     def test_estilos_ttk_y_matplotlib(self):
         import tkinter as tk
-        from matplotlib.figure import Figure
+
         from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+        from matplotlib.figure import Figure
 
         try:
             root = tk.Tk()

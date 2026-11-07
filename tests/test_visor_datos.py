@@ -11,8 +11,9 @@ los filtros de etapa y la exportación en memoria/archivo temporal.
 
 import os
 import sys
-import pytest
+
 import pandas as pd
+import pytest
 
 # Rutas
 DIR_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,8 +24,8 @@ for p in [DIR_ROOT, DIR_SOFTWARE, DIR_TEL2]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from utilidades.tema import cargar_tema_preferido, guardar_tema_preferido, TEMA_DIA, TEMA_NOCHE
 from utilidades.gestor_db import GestorDB
+from utilidades.tema import TEMA_DIA, TEMA_NOCHE, cargar_tema_preferido, guardar_tema_preferido
 from ventanas.visor_datos import VISTAS_COLUMNAS
 
 
@@ -127,15 +128,10 @@ def test_consultas_paginadas_sqlite(tmp_path):
 
 def test_aplicar_tema_a_ventana_generica_y_figura():
     import tkinter as tk
-    from matplotlib.figure import Figure
+
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-    from utilidades.tema import (
-        aplicar_tema_a_ventana_generica,
-        aplicar_estilo_treeview,
-        estilizar_figura_matplotlib,
-        TEMA_DIA,
-        TEMA_NOCHE
-    )
+    from matplotlib.figure import Figure
+    from utilidades.tema import TEMA_DIA, aplicar_estilo_treeview, aplicar_tema_a_ventana_generica, estilizar_figura_matplotlib
 
     try:
         root = tk.Tk()

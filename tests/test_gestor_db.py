@@ -11,12 +11,10 @@ para verificar la lógica Offline-First, SHA-256 e integración REST con Supabas
 
 import os
 import sys
-import json
-import sqlite3
-import tempfile
-import pytest
 from unittest.mock import MagicMock, patch
+
 import pandas as pd
+import pytest
 
 # Incluir rutas del software SCADA para resolver módulos de utilidades
 DIR_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,12 +26,12 @@ for p in [DIR_ROOT, DIR_SOFTWARE, DIR_TEL2]:
         sys.path.insert(0, p)
 
 from utilidades.gestor_db import (
+    GestorDB,
+    SincronizadorSupabase,
     calcular_sha256,
     cargar_config_nube,
     guardar_config_nube,
     limpiar_url_supabase,
-    GestorDB,
-    SincronizadorSupabase
 )
 
 

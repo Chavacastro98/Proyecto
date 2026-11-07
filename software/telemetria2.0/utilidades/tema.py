@@ -15,7 +15,6 @@ Soporta conmutación en caliente entre temas y propagación a todas las ventanas
 
 import json
 import os
-import tkinter as tk
 from tkinter import ttk
 
 DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
@@ -90,7 +89,7 @@ TEMA_DIA = {
     "danger": "#c62828",         # Rojo bermellón
     "danger_bg": "#fee2e2",
     "info": "#1565c0",           # Azul acero
-    
+
     # Barra Acordeón de Gráficas (Estilo Perfmon)
     "bg_acc_hdr": "#ffffff",
     "bg_acc_hover": "#e8e8e8",
