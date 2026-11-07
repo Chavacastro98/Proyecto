@@ -70,4 +70,4 @@ jobs:
 
       - name: Compilar Sketch Nano
         run: |
-          arduino-cli compile --fqbn arduino:avr:nano firmware/arduino_nano/Firmware_Interlocks_Nano/
+          arduino-cli compile --fqbn arduino:avr:nano firmware/arduino_nano/nano2
